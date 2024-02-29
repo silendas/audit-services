@@ -7,8 +7,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import com.cms.audit.api.Management.User.dto.response.UserProfileInterface;
 import com.cms.audit.api.Management.User.models.User;
-import com.cms.audit.api.Management.User.response.UserProfileInterface;
 
 @Repository
 public interface UserProfileRepository extends JpaRepository<User, Long> {

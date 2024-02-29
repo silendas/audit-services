@@ -11,9 +11,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cms.audit.api.Management.Office.BranchOffice.dto.BranchDTO;
-import com.cms.audit.api.Management.Office.BranchOffice.response.Response;
 import com.cms.audit.api.Management.Office.BranchOffice.services.BranchService;
-import com.cms.audit.api.ResponseEntity.ResponseEntittyHandler;
+import com.cms.audit.api.common.response.GlobalResponse;
+import com.cms.audit.api.common.response.ResponseEntittyHandler;
 
 @RestController
 @RequestMapping("/api/branch_office")
@@ -24,33 +24,48 @@ public class BranchController {
 
     @GetMapping("/get")
     public ResponseEntity<Object> findAll(){
-        Response branchResponse = branchService.findAll(); 
-        return ResponseEntittyHandler.responseEntityGenerator(branchResponse.getData(),branchResponse.getMessage(), branchResponse.getStatus(), null);
+        GlobalResponse response = branchService.findAll(); 
+        if(response.getError() != null){
+            return ResponseEntittyHandler.allHandler(null, null, response.getStatus(), response.getError());
+        }
+        return ResponseEntittyHandler.allHandler(response.getData(),response.getMessage(), response.getStatus(), null);
     }
 
     @GetMapping("/get/{id}")
     public ResponseEntity<Object> findOne(@PathVariable("id") Long id){
-        Response branchResponse = branchService.findOne(id); 
-        return ResponseEntittyHandler.responseEntityGenerator(branchResponse.getData(),branchResponse.getMessage(), branchResponse.getStatus(), null);
+        GlobalResponse response = branchService.findOne(id); 
+        if(response.getError() != null){
+            return ResponseEntittyHandler.allHandler(null, null, response.getStatus(), response.getError());
+        }
+        return ResponseEntittyHandler.allHandler(response.getData(),response.getMessage(), response.getStatus(), null);
     }
 
     @GetMapping("/get/{id}/area_office")
     public ResponseEntity<Object> findOneByAreaId(@PathVariable("id") Long id){
-        Response branchResponse = branchService.findOneByAreaId(id); 
-        return ResponseEntittyHandler.responseEntityGenerator(branchResponse.getData(),branchResponse.getMessage(), branchResponse.getStatus(), null);
+        GlobalResponse response = branchService.findOneByAreaId(id); 
+        if(response.getError() != null){
+            return ResponseEntittyHandler.allHandler(null, null, response.getStatus(), response.getError());
+        }
+        return ResponseEntittyHandler.allHandler(response.getData(),response.getMessage(), response.getStatus(), null);
     }
 
     @PostMapping("/add")
     public ResponseEntity<Object> save(@RequestBody BranchDTO branchDTO){
-        Response branchResponse =  branchService.save(branchDTO);
-        return ResponseEntittyHandler.responseEntityGenerator(null,branchResponse.getMessage(), branchResponse.getStatus(), null);
+        GlobalResponse response =  branchService.save(branchDTO);
+        if(response.getError() != null){
+            return ResponseEntittyHandler.allHandler(null, null, response.getStatus(), response.getError());
+        }
+        return ResponseEntittyHandler.allHandler(response.getData(),response.getMessage(), response.getStatus(), null);
     }
 
     
     @PutMapping("/put")
     public ResponseEntity<Object> edit(@RequestBody BranchDTO branchDTO){
-        Response branchResponse =  branchService.edit(branchDTO);
-        return ResponseEntittyHandler.responseEntityGenerator(null,branchResponse.getMessage(), branchResponse.getStatus(), null);
+        GlobalResponse response =  branchService.edit(branchDTO);
+        if(response.getError() != null){
+            return ResponseEntittyHandler.allHandler(null, null, response.getStatus(), response.getError());
+        }
+        return ResponseEntittyHandler.allHandler(response.getData(),response.getMessage(), response.getStatus(), null);
     }
 
 

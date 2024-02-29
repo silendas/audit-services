@@ -11,8 +11,8 @@ import org.springframework.stereotype.Service;
 import com.cms.audit.api.Management.Role.dto.RoleDTO;
 import com.cms.audit.api.Management.Role.models.Role;
 import com.cms.audit.api.Management.Role.repository.RoleRepository;
-import com.cms.audit.api.Management.Role.response.Response;
 import com.cms.audit.api.Management.Role.response.RoleInterface;
+import com.cms.audit.api.common.response.GlobalResponse;
 
 import jakarta.transaction.Transactional;
 
@@ -23,30 +23,30 @@ public class RoleService {
     @Autowired
     private RoleRepository roleRepository;
 
-    public Response findAll() {
+    public GlobalResponse findAll() {
         try {
-            List<RoleInterface> roleResponse = roleRepository.findAllRole();
-            if (roleResponse.isEmpty()) {
-                return Response
+            List<RoleInterface> response = roleRepository.findAllRole();
+            if (response.isEmpty()) {
+                return GlobalResponse
                         .builder()
                         .message("Not Content")
                         .status(HttpStatus.NO_CONTENT)
                         .build();
             }
-            return Response
+            return GlobalResponse
                     .builder()
                     .message("Success")
-                    .data(roleResponse)
+                    .data(response)
                     .status(HttpStatus.OK)
                     .build();
         } catch (DataException e) {
-            return Response
+            return GlobalResponse
                     .builder()
                     .message("Exception :" + e.getMessage())
                     .status(HttpStatus.UNPROCESSABLE_ENTITY)
                     .build();
         } catch (Exception e) {
-            return Response
+            return GlobalResponse
                     .builder()
                     .message("Exception :" + e.getMessage())
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -55,30 +55,30 @@ public class RoleService {
 
     }
 
-    public Response findOne(Long id) {
+    public GlobalResponse findOne(Long id) {
         try {
-            List<RoleInterface> roleResponse = roleRepository.findOneRoleById(id);
-            if (roleResponse.isEmpty()) {
-                return Response
+            List<RoleInterface> response = roleRepository.findOneRoleById(id);
+            if (response.isEmpty()) {
+                return GlobalResponse
                         .builder()
                         .message("Not Content")
                         .status(HttpStatus.NO_CONTENT)
                         .build();
             }
-            return Response
+            return GlobalResponse
                     .builder()
                     .message("Success")
-                    .data(roleResponse)
+                    .data(response)
                     .status(HttpStatus.OK)
                     .build();
         } catch (DataException e) {
-            return Response
+            return GlobalResponse
                     .builder()
                     .message("Exception :" + e.getMessage())
                     .status(HttpStatus.UNPROCESSABLE_ENTITY)
                     .build();
         } catch (Exception e) {
-            return Response
+            return GlobalResponse
                     .builder()
                     .message("Exception :" + e.getMessage())
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -87,7 +87,7 @@ public class RoleService {
 
     }
 
-    public Response save(RoleDTO roleDTO) {
+    public GlobalResponse save(RoleDTO roleDTO) {
         try {
 
             Role role = new Role(
@@ -97,27 +97,27 @@ public class RoleService {
                 new Date()
             );
 
-            Role roleResponse = roleRepository.save(role);
-            if (roleResponse == null) {
-                return Response
+            Role response = roleRepository.save(role);
+            if (response == null) {
+                return GlobalResponse
                         .builder()
                         .message("Failed")
                         .status(HttpStatus.BAD_REQUEST)
                         .build();
             }
-            return Response
+            return GlobalResponse
                     .builder()
                     .message("Success")
                     .status(HttpStatus.OK)
                     .build();
         } catch (DataException e) {
-            return Response
+            return GlobalResponse
                     .builder()
                     .message("Exception :" + e.getMessage())
                     .status(HttpStatus.UNPROCESSABLE_ENTITY)
                     .build();
         } catch (Exception e) {
-            return Response
+            return GlobalResponse
                     .builder()
                     .message("Exception :" + e.getMessage())
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -125,7 +125,7 @@ public class RoleService {
         }
     }
 
-    public Response edit(RoleDTO roleDTO) {
+    public GlobalResponse edit(RoleDTO roleDTO) {
         try {
 
             Role roleGet = roleRepository.findById(roleDTO.getId()).get();
@@ -137,27 +137,27 @@ public class RoleService {
                 new Date()
             );
 
-            Role roleResponse = roleRepository.save(role);
-            if (roleResponse == null) {
-                return Response
+            Role response = roleRepository.save(role);
+            if (response == null) {
+                return GlobalResponse
                         .builder()
                         .message("Failed")
                         .status(HttpStatus.BAD_REQUEST)
                         .build();
             }
-            return Response
+            return GlobalResponse
                     .builder()
                     .message("Success")
                     .status(HttpStatus.OK)
                     .build();
         } catch (DataException e) {
-            return Response
+            return GlobalResponse
                     .builder()
                     .message("Exception :" + e.getMessage())
                     .status(HttpStatus.UNPROCESSABLE_ENTITY)
                     .build();
         } catch (Exception e) {
-            return Response
+            return GlobalResponse
                     .builder()
                     .message("Exception :" + e.getMessage())
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)

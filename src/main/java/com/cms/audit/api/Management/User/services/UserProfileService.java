@@ -16,10 +16,10 @@ import com.cms.audit.api.Management.Office.MainOffice.models.Main;
 import com.cms.audit.api.Management.Office.RegionOffice.models.Region;
 import com.cms.audit.api.Management.Role.models.Role;
 import com.cms.audit.api.Management.User.dto.UserDTO;
+import com.cms.audit.api.Management.User.dto.response.UserProfileInterface;
 import com.cms.audit.api.Management.User.models.User;
 import com.cms.audit.api.Management.User.repository.UserProfileRepository;
-import com.cms.audit.api.Management.User.response.Response;
-import com.cms.audit.api.Management.User.response.UserProfileInterface;
+import com.cms.audit.api.common.response.GlobalResponse;
 
 import jakarta.transaction.Transactional;
 
@@ -32,103 +32,97 @@ public class UserProfileService {
         @Autowired
         private PasswordEncoder passwordEncoder;
 
-        public Response findAll() {
+        public GlobalResponse findAll() {
                 try {
-                        List<UserProfileInterface> userResponse = userProfileRepository.findAllUserProfile();
-                        if (userResponse.isEmpty()) {
-                                return Response
+                        List<UserProfileInterface> response = userProfileRepository.findAllUserProfile();
+                        if (response.isEmpty()) {
+                                return GlobalResponse
                                                 .builder()
                                                 .message("Not Content")
                                                 .status(HttpStatus.NO_CONTENT)
                                                 .build();
                         }
-                        return Response
+                        return GlobalResponse
                                         .builder()
                                         .message("Success")
-                                        .data(userResponse)
+                                        .data(response)
                                         .status(HttpStatus.OK)
                                         .build();
                 } catch (DataException e) {
-                        return Response
-                                        .builder()
-                                        .message("Exception :" + e.getMessage())
+                        return GlobalResponse.builder()
+                                        .error(e)
                                         .status(HttpStatus.UNPROCESSABLE_ENTITY)
                                         .build();
                 } catch (Exception e) {
-                        return Response
-                                        .builder()
-                                        .message("Exception :" + e.getMessage())
+                        return GlobalResponse.builder()
+                                        .error(e)
                                         .status(HttpStatus.INTERNAL_SERVER_ERROR)
                                         .build();
                 }
 
         }
 
-        public Response findOne(Long id) {
+        public GlobalResponse findOne(Long id) {
                 try {
-                        List<UserProfileInterface> userResponse = userProfileRepository.findOneUserProfileById(id);
-                        if (userResponse.isEmpty()) {
-                                return Response
+                        List<UserProfileInterface> response = userProfileRepository.findOneUserProfileById(id);
+                        if (response.isEmpty()) {
+                                return GlobalResponse
                                                 .builder()
                                                 .message("Not Content")
                                                 .status(HttpStatus.NO_CONTENT)
                                                 .build();
                         }
-                        return Response
+                        return GlobalResponse
                                         .builder()
                                         .message("Success")
-                                        .data(userResponse)
+                                        .data(response)
                                         .status(HttpStatus.OK)
                                         .build();
                 } catch (DataException e) {
-                        return Response
-                                        .builder()
-                                        .message("Exception :" + e.getMessage())
+                        return GlobalResponse.builder()
+                                        .error(e)
                                         .status(HttpStatus.UNPROCESSABLE_ENTITY)
                                         .build();
                 } catch (Exception e) {
-                        return Response
-                                        .builder()
-                                        .message("Exception :" + e.getMessage())
+                        return GlobalResponse.builder()
+                                        .error(e)
                                         .status(HttpStatus.INTERNAL_SERVER_ERROR)
                                         .build();
                 }
 
         }
 
-        public Response findOneByMainId(Long id) {
+        public GlobalResponse findOneByMainId(Long id) {
                 try {
-                        List<UserProfileInterface> userResponse = userProfileRepository.findOneUserProfileByMainId(id);
-                        if (userResponse.isEmpty()) {
-                                return Response
+                        List<UserProfileInterface> response = userProfileRepository.findOneUserProfileByMainId(id);
+                        if (response.isEmpty()) {
+                                return GlobalResponse
                                                 .builder()
                                                 .message("Not Content")
                                                 .status(HttpStatus.NO_CONTENT)
                                                 .build();
                         }
-                        return Response
+                        return GlobalResponse
                                         .builder()
                                         .message("Success")
-                                        .data(userResponse)
+                                        .data(response)
                                         .status(HttpStatus.OK)
                                         .build();
                 } catch (DataException e) {
-                        return Response
-                                        .builder()
-                                        .message("Exception :" + e.getMessage())
+                        return GlobalResponse.builder()
+                                        .error(e)
                                         .status(HttpStatus.UNPROCESSABLE_ENTITY)
                                         .build();
                 } catch (Exception e) {
-                        return Response
-                                        .builder()
-                                        .message("Exception :" + e.getMessage())
+                        return GlobalResponse.builder()
+                                        .error(e)
                                         .status(HttpStatus.INTERNAL_SERVER_ERROR)
                                         .build();
                 }
 
         }
 
-        public Response save(UserDTO userDTO) {
+        public GlobalResponse save(UserDTO userDTO) {
                 try {
                         Level levelId = Level.builder()
                                         .id(userDTO.getLevel_id())
@@ -173,40 +167,38 @@ public class UserProfileService {
                                         new Date(),
                                         new Date());
 
-                        User userResponse = userProfileRepository.save(user);
-                        if (userResponse == null) {
-                                return Response
+                        User response = userProfileRepository.save(user);
+                        if (response == null) {
+                                return GlobalResponse
                                                 .builder()
                                                 .message("Failed")
                                                 .status(HttpStatus.BAD_REQUEST)
                                                 .build();
                         }
-                        return Response
+                        return GlobalResponse
                                         .builder()
                                         .message("Success")
                                         .status(HttpStatus.OK)
                                         .build();
                 } catch (DataException e) {
-                        return Response
-                                        .builder()
-                                        .message("Exception :" + e.getMessage())
+                        return GlobalResponse.builder()
+                                        .error(e)
                                         .status(HttpStatus.UNPROCESSABLE_ENTITY)
                                         .build();
                 } catch (Exception e) {
-                        return Response
-                                        .builder()
-                                        .message("Exception :" + e.getMessage())
+                        return GlobalResponse.builder()
+                                        .error(e)
                                         .status(HttpStatus.INTERNAL_SERVER_ERROR)
                                         .build();
                 }
         }
 
-        public Response edit(UserDTO userDTO) {
+        public GlobalResponse edit(UserDTO userDTO) {
                 try {
 
                         User userGet = userProfileRepository.findById(userDTO.getId()).get();
                         if (userGet == null) {
-                                return Response
+                                return GlobalResponse
                                                 .builder()
                                                 .message("Not Found")
                                                 .status(HttpStatus.BAD_REQUEST)
@@ -263,30 +255,28 @@ public class UserProfileService {
                                         userGet.getCreated_at(),
                                         new Date());
 
-                        User userResponse = userProfileRepository.save(user);
-                        if (userResponse == null) {
-                                return Response
+                        User response = userProfileRepository.save(user);
+                        if (response == null) {
+                                return GlobalResponse
                                                 .builder()
                                                 .message("Failed")
                                                 .status(HttpStatus.BAD_REQUEST)
                                                 .build();
                         }
 
-                        return Response
+                        return GlobalResponse
                                         .builder()
                                         .message("Success")
                                         .status(HttpStatus.OK)
                                         .build();
                 } catch (DataException e) {
-                        return Response
-                                        .builder()
-                                        .message("Exception :" + e.getMessage())
+                        return GlobalResponse.builder()
+                                        .error(e)
                                         .status(HttpStatus.UNPROCESSABLE_ENTITY)
                                         .build();
                 } catch (Exception e) {
-                        return Response
-                                        .builder()
-                                        .message("Exception :" + e.getMessage())
+                        return GlobalResponse.builder()
+                                        .error(e)
                                         .status(HttpStatus.INTERNAL_SERVER_ERROR)
                                         .build();
                 }

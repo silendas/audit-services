@@ -11,9 +11,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cms.audit.api.Management.Office.MainOffice.dto.MainDTO;
-import com.cms.audit.api.Management.Office.MainOffice.response.Response;
 import com.cms.audit.api.Management.Office.MainOffice.services.MainService;
-import com.cms.audit.api.ResponseEntity.ResponseEntittyHandler;
+import com.cms.audit.api.common.response.GlobalResponse;
+import com.cms.audit.api.common.response.ResponseEntittyHandler;
 
 @RestController
 @RequestMapping("/api/main_office")
@@ -24,27 +24,39 @@ public class MainController {
 
     @GetMapping("/get")
     public ResponseEntity<Object> findAll(){
-        Response mainResponse = mainService.findAll(); 
-        return ResponseEntittyHandler.responseEntityGenerator(mainResponse.getData(),mainResponse.getMessage(), mainResponse.getStatus(), null);
+        GlobalResponse response = mainService.findAll(); 
+        if(response.getError() != null){
+            return ResponseEntittyHandler.allHandler(null, null, response.getStatus(), response.getError());
+        }
+        return ResponseEntittyHandler.allHandler(response.getData(),response.getMessage(), response.getStatus(), null);
     }
 
     @GetMapping("/get/{id}")
     public ResponseEntity<Object> findOne(@PathVariable("id") Long id){
-        Response mainResponse = mainService.findOne(id); 
-        return ResponseEntittyHandler.responseEntityGenerator(mainResponse.getData(),mainResponse.getMessage(), mainResponse.getStatus(), null);
+        GlobalResponse response = mainService.findOne(id); 
+        if(response.getError() != null){
+            return ResponseEntittyHandler.allHandler(null, null, response.getStatus(), response.getError());
+        }
+        return ResponseEntittyHandler.allHandler(response.getData(),response.getMessage(), response.getStatus(), null);
     }
 
     @PostMapping("/add")
     public ResponseEntity<Object> save(@RequestBody MainDTO levelDTO){
-        Response mainResponse =  mainService.save(levelDTO);
-        return ResponseEntittyHandler.responseEntityGenerator(null,mainResponse.getMessage(), mainResponse.getStatus(), null);
+        GlobalResponse response =  mainService.save(levelDTO);
+        if(response.getError() != null){
+            return ResponseEntittyHandler.allHandler(null, null, response.getStatus(), response.getError());
+        }
+        return ResponseEntittyHandler.allHandler(response.getData(),response.getMessage(), response.getStatus(), null);
     }
 
     
     @PutMapping("/put")
     public ResponseEntity<Object> edit(@RequestBody MainDTO levelDTO){
-        Response mainResponse =  mainService.edit(levelDTO);
-        return ResponseEntittyHandler.responseEntityGenerator(null,mainResponse.getMessage(), mainResponse.getStatus(), null);
+        GlobalResponse response =  mainService.edit(levelDTO);
+        if(response.getError() != null){
+            return ResponseEntittyHandler.allHandler(null, null, response.getStatus(), response.getError());
+        }
+        return ResponseEntittyHandler.allHandler(response.getData(),response.getMessage(), response.getStatus(), null);
     }
 
 

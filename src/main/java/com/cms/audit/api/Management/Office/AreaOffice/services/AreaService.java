@@ -9,11 +9,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.cms.audit.api.Management.Office.AreaOffice.dto.AreaDTO;
+import com.cms.audit.api.Management.Office.AreaOffice.dto.response.AreaInterface;
 import com.cms.audit.api.Management.Office.AreaOffice.models.Area;
 import com.cms.audit.api.Management.Office.AreaOffice.repository.AreaRepository;
-import com.cms.audit.api.Management.Office.AreaOffice.response.AreaInterface;
-import com.cms.audit.api.Management.Office.AreaOffice.response.Response;
 import com.cms.audit.api.Management.Office.RegionOffice.models.Region;
+import com.cms.audit.api.common.response.GlobalResponse;
 
 import jakarta.transaction.Transactional;
 
@@ -24,30 +24,30 @@ public class AreaService {
     @Autowired
     private AreaRepository areaRepository;
 
-    public Response findAll() {
+    public GlobalResponse findAll() {
         try {
-            List<AreaInterface> areaResponse = areaRepository.findAllArea();
-            if (areaResponse.isEmpty()) {
-                return Response
+            List<AreaInterface> response = areaRepository.findAllArea();
+            if (response.isEmpty()) {
+                return GlobalResponse
                         .builder()
                         .message("Not Content")
                         .status(HttpStatus.NO_CONTENT)
                         .build();
             }
-            return Response
+            return GlobalResponse
                     .builder()
                     .message("Success")
-                    .data(areaResponse)
+                    .data(response)
                     .status(HttpStatus.OK)
                     .build();
         } catch (DataException e) {
-            return Response
+            return GlobalResponse
                     .builder()
                     .message("Exception :" + e.getMessage())
                     .status(HttpStatus.UNPROCESSABLE_ENTITY)
                     .build();
         } catch (Exception e) {
-            return Response
+            return GlobalResponse
                     .builder()
                     .message("Exception :" + e.getMessage())
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -56,30 +56,30 @@ public class AreaService {
 
     }
 
-    public Response findOne(Long id) {
+    public GlobalResponse findOne(Long id) {
         try {
-            List<AreaInterface> areaResponse = areaRepository.findOneAreaById(id);
-            if (areaResponse.isEmpty()) {
-                return Response
+            List<AreaInterface> response = areaRepository.findOneAreaById(id);
+            if (response.isEmpty()) {
+                return GlobalResponse
                         .builder()
                         .message("Not Content")
                         .status(HttpStatus.NO_CONTENT)
                         .build();
             }
-            return Response
+            return GlobalResponse
                     .builder()
                     .message("Success")
-                    .data(areaResponse)
+                    .data(response)
                     .status(HttpStatus.OK)
                     .build();
         } catch (DataException e) {
-            return Response
+            return GlobalResponse
                     .builder()
                     .message("Exception :" + e.getMessage())
                     .status(HttpStatus.UNPROCESSABLE_ENTITY)
                     .build();
         } catch (Exception e) {
-            return Response
+            return GlobalResponse
                     .builder()
                     .message("Exception :" + e.getMessage())
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -88,30 +88,30 @@ public class AreaService {
 
     }
 
-    public Response findOneByRegionId(Long id) {
+    public GlobalResponse findOneByRegionId(Long id) {
         try {
-            List<AreaInterface> areaResponse = areaRepository.findOneAreaByRegionId(id);
-            if (areaResponse.isEmpty()) {
-                return Response
+            List<AreaInterface> response = areaRepository.findOneAreaByRegionId(id);
+            if (response.isEmpty()) {
+                return GlobalResponse
                         .builder()
                         .message("Not Content")
                         .status(HttpStatus.NO_CONTENT)
                         .build();
             }
-            return Response
+            return GlobalResponse
                     .builder()
                     .message("Success")
-                    .data(areaResponse)
+                    .data(response)
                     .status(HttpStatus.OK)
                     .build();
         } catch (DataException e) {
-            return Response
+            return GlobalResponse
                     .builder()
                     .message("Exception :" + e.getMessage())
                     .status(HttpStatus.UNPROCESSABLE_ENTITY)
                     .build();
         } catch (Exception e) {
-            return Response
+            return GlobalResponse
                     .builder()
                     .message("Exception :" + e.getMessage())
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -120,7 +120,7 @@ public class AreaService {
 
     }
 
-    public Response save(AreaDTO branchDTO) {
+    public GlobalResponse save(AreaDTO branchDTO) {
         try {
 
             Region regionId = Region.builder()
@@ -134,27 +134,27 @@ public class AreaService {
                     new Date(),
                     regionId);
 
-            Area areaResponse = areaRepository.save(level);
-            if (areaResponse == null) {
-                return Response
+            Area response = areaRepository.save(level);
+            if (response == null) {
+                return GlobalResponse
                         .builder()
                         .message("Failed")
                         .status(HttpStatus.BAD_REQUEST)
                         .build();
             }
-            return Response
+            return GlobalResponse
                     .builder()
                     .message("Success")
                     .status(HttpStatus.OK)
                     .build();
         } catch (DataException e) {
-            return Response
+            return GlobalResponse
                     .builder()
                     .message("Exception :" + e.getMessage())
                     .status(HttpStatus.UNPROCESSABLE_ENTITY)
                     .build();
         } catch (Exception e) {
-            return Response
+            return GlobalResponse
                     .builder()
                     .message("Exception :" + e.getMessage())
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -162,7 +162,7 @@ public class AreaService {
         }
     }
 
-    public Response edit(AreaDTO branchDTO) {
+    public GlobalResponse edit(AreaDTO branchDTO) {
         try {
 
             Area levelGet = areaRepository.findById(branchDTO.getId()).get();
@@ -178,27 +178,27 @@ public class AreaService {
                     new Date(),
                     regionId);
 
-            Area areaResponse = areaRepository.save(level);
-            if (areaResponse == null) {
-                return Response
+            Area response = areaRepository.save(level);
+            if (response == null) {
+                return GlobalResponse
                         .builder()
                         .message("Failed")
                         .status(HttpStatus.BAD_REQUEST)
                         .build();
             }
-            return Response
+            return GlobalResponse
                     .builder()
                     .message("Success")
                     .status(HttpStatus.OK)
                     .build();
         } catch (DataException e) {
-            return Response
+            return GlobalResponse
                     .builder()
                     .message("Exception :" + e.getMessage())
                     .status(HttpStatus.UNPROCESSABLE_ENTITY)
                     .build();
         } catch (Exception e) {
-            return Response
+            return GlobalResponse
                     .builder()
                     .message("Exception :" + e.getMessage())
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)

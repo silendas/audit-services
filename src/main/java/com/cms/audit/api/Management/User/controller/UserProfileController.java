@@ -11,44 +11,59 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cms.audit.api.Management.User.dto.UserDTO;
-import com.cms.audit.api.Management.User.response.Response;
 import com.cms.audit.api.Management.User.services.UserProfileService;
-import com.cms.audit.api.ResponseEntity.ResponseEntittyHandler;
+import com.cms.audit.api.common.constant.BasePath;
+import com.cms.audit.api.common.response.GlobalResponse;
+import com.cms.audit.api.common.response.ResponseEntittyHandler;
 
 @RestController
-@RequestMapping("/api/users/profile")
+@RequestMapping(value = BasePath.BASE_PATH_USERS)
 public class UserProfileController {
     @Autowired
     private UserProfileService userProfileService;
 
     @GetMapping("/get")
     public ResponseEntity<Object> findAll(){
-        Response userProfileResponse = userProfileService.findAll(); 
-        return ResponseEntittyHandler.responseEntityGenerator(userProfileResponse.getData(),userProfileResponse.getMessage(), userProfileResponse.getStatus(), null);
+        GlobalResponse response = userProfileService.findAll(); 
+        if(response.getError() != null){
+        return ResponseEntittyHandler.allHandler(null,null, response.getStatus(), response.getError());
+        }
+        return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(), null);
     }
 
     @GetMapping("/get/{id}")
-    public ResponseEntity<Object> findOne(@PathVariable("id") Long id){
-        Response userProfileResponse = userProfileService.findOne(id); 
-        return ResponseEntittyHandler.responseEntityGenerator(userProfileResponse.getData(),userProfileResponse.getMessage(), userProfileResponse.getStatus(), null);
+    public ResponseEntity<Object> findOne(@PathVariable("id") Long id) {
+        GlobalResponse response = userProfileService.findOne(id);
+        if(response.getError() != null){
+            return ResponseEntittyHandler.allHandler(null,null, response.getStatus(), response.getError());
+            }
+            return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(), null);
     }
 
     @GetMapping("/get/{id}/main_office")
-    public ResponseEntity<Object> findOneByMainId(@PathVariable("id") Long id){
-        Response userProfileResponse = userProfileService.findOneByMainId(id); 
-        return ResponseEntittyHandler.responseEntityGenerator(userProfileResponse.getData(),userProfileResponse.getMessage(), userProfileResponse.getStatus(), null);
+    public ResponseEntity<Object> findOneByMainId(@PathVariable("id") Long id) {
+        GlobalResponse response = userProfileService.findOneByMainId(id);
+        if(response.getError() != null){
+            return ResponseEntittyHandler.allHandler(null,null, response.getStatus(), response.getError());
+            }
+            return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(), null);
     }
 
     @PostMapping("/add")
-    public ResponseEntity<Object> save(@RequestBody UserDTO userDTO){
-        Response userProfileResponse =  userProfileService.save(userDTO);
-        return ResponseEntittyHandler.responseEntityGenerator(userProfileResponse.getData(),userProfileResponse.getMessage(), userProfileResponse.getStatus(), null);
+    public ResponseEntity<Object> save(@RequestBody UserDTO userDTO) {
+        GlobalResponse response = userProfileService.save(userDTO);
+        if(response.getError() != null){
+            return ResponseEntittyHandler.allHandler(null,null, response.getStatus(), response.getError());
+            }
+            return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(), null);
     }
 
-    
     @PutMapping("/put")
-    public ResponseEntity<Object> edit(@RequestBody UserDTO userDTO){
-        Response userProfileResponse =  userProfileService.edit(userDTO);
-        return ResponseEntittyHandler.responseEntityGenerator(userProfileResponse.getData(),userProfileResponse.getMessage(), userProfileResponse.getStatus(), null);
+    public ResponseEntity<Object> edit(@RequestBody UserDTO userDTO) {
+        GlobalResponse response = userProfileService.edit(userDTO);
+        if(response.getError() != null){
+        return ResponseEntittyHandler.allHandler(null,null, response.getStatus(), response.getError());
+        }
+        return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(), null);
     }
 }

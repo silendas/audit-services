@@ -11,9 +11,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cms.audit.api.Management.Office.AreaOffice.dto.AreaDTO;
-import com.cms.audit.api.Management.Office.AreaOffice.response.Response;
 import com.cms.audit.api.Management.Office.AreaOffice.services.AreaService;
-import com.cms.audit.api.ResponseEntity.ResponseEntittyHandler;
+import com.cms.audit.api.common.response.GlobalResponse;
+import com.cms.audit.api.common.response.ResponseEntittyHandler;
 
 @RestController
 @RequestMapping("/api/area_office")
@@ -24,32 +24,47 @@ public class AreaController {
 
     @GetMapping("/get")
     public ResponseEntity<Object> findAll(){
-        Response areaResponse = areaService.findAll(); 
-        return ResponseEntittyHandler.responseEntityGenerator(areaResponse.getData(),areaResponse.getMessage(), areaResponse.getStatus(), null);
+        GlobalResponse response = areaService.findAll(); 
+        if(response.getError() != null){
+            return ResponseEntittyHandler.allHandler(null, null, response.getStatus(), response.getError());
+        }
+        return ResponseEntittyHandler.allHandler(response.getData(),response.getMessage(), response.getStatus(), null);
     }
 
     @GetMapping("/get/{id}")
     public ResponseEntity<Object> findOne(@PathVariable("id") Long id){
-        Response areaResponse = areaService.findOne(id); 
-        return ResponseEntittyHandler.responseEntityGenerator(areaResponse.getData(),areaResponse.getMessage(), areaResponse.getStatus(), null);
+        GlobalResponse response = areaService.findOne(id); 
+        if(response.getError() != null){
+            return ResponseEntittyHandler.allHandler(null, null, response.getStatus(), response.getError());
+        }
+        return ResponseEntittyHandler.allHandler(response.getData(),response.getMessage(), response.getStatus(), null);
     }
 
     @GetMapping("/get/{id}/region_office")
     public ResponseEntity<Object> findOneByRegionId(@PathVariable("id") Long id){
-        Response areaResponse = areaService.findOneByRegionId(id); 
-        return ResponseEntittyHandler.responseEntityGenerator(areaResponse.getData(),areaResponse.getMessage(), areaResponse.getStatus(), null);
+        GlobalResponse response = areaService.findOneByRegionId(id); 
+        if(response.getError() != null){
+            return ResponseEntittyHandler.allHandler(null, null, response.getStatus(), response.getError());
+        }
+        return ResponseEntittyHandler.allHandler(response.getData(),response.getMessage(), response.getStatus(), null);
     }
 
     @PostMapping("/add")
     public ResponseEntity<Object> save(@RequestBody AreaDTO areaDTO){
-        Response areaResponse =  areaService.save(areaDTO);
-        return ResponseEntittyHandler.responseEntityGenerator(null,areaResponse.getMessage(), areaResponse.getStatus(), null);
+        GlobalResponse response =  areaService.save(areaDTO);
+        if(response.getError() != null){
+            return ResponseEntittyHandler.allHandler(null, null, response.getStatus(), response.getError());
+        }
+        return ResponseEntittyHandler.allHandler(response.getData(),response.getMessage(), response.getStatus(), null);
     }
 
     @PutMapping("/put")
     public ResponseEntity<Object> edit(@RequestBody AreaDTO areaDTO){
-        Response areaResponse =  areaService.edit(areaDTO);
-        return ResponseEntittyHandler.responseEntityGenerator(null,areaResponse.getMessage(), areaResponse.getStatus(), null);
+        GlobalResponse response =  areaService.edit(areaDTO);
+        if(response.getError() != null){
+            return ResponseEntittyHandler.allHandler(null, null, response.getStatus(), response.getError());
+        }
+        return ResponseEntittyHandler.allHandler(response.getData(),response.getMessage(), response.getStatus(), null);
     }
 
 

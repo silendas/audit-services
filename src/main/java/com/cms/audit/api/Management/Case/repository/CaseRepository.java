@@ -7,8 +7,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import com.cms.audit.api.Management.Case.dto.response.CaseInterface;
 import com.cms.audit.api.Management.Case.models.Case;
-import com.cms.audit.api.Management.Case.response.CaseInterface;
 
 @Repository
 public interface CaseRepository extends JpaRepository<Case,Long>{

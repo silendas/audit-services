@@ -7,8 +7,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import com.cms.audit.api.Management.Penalty.dto.response.PenaltyInterface;
 import com.cms.audit.api.Management.Penalty.models.Penalty;
-import com.cms.audit.api.Management.Penalty.response.PenaltyInterface;
 
 @Repository
 public interface PenaltyRepository extends JpaRepository<Penalty,Long>{

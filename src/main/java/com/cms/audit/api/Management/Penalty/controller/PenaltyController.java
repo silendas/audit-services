@@ -12,9 +12,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cms.audit.api.Management.Penalty.dto.PenaltyDTO;
-import com.cms.audit.api.Management.Penalty.response.Response;
 import com.cms.audit.api.Management.Penalty.services.PenaltyService;
-import com.cms.audit.api.ResponseEntity.ResponseEntittyHandler;
+import com.cms.audit.api.common.response.GlobalResponse;
+import com.cms.audit.api.common.response.ResponseEntittyHandler;
 
 @RestController
 @RequestMapping("/api/penalty")
@@ -25,27 +25,39 @@ public class PenaltyController {
 
     @GetMapping("/get")
     public ResponseEntity<Object> findAll(){
-        Response PenaltyResponse = PenaltyService.findAll(); 
-        return ResponseEntittyHandler.responseEntityGenerator(PenaltyResponse.getData(),PenaltyResponse.getMessage(), PenaltyResponse.getStatus(), null);
+        GlobalResponse response = PenaltyService.findAll(); 
+        if(response.getError() != null){
+            return ResponseEntittyHandler.allHandler(null, null, response.getStatus(), response.getError());
+        }
+        return ResponseEntittyHandler.allHandler(response.getData(),response.getMessage(), response.getStatus(), null);
     }
 
     @GetMapping("/get/{id}")
     public ResponseEntity<Object> findOne(@PathVariable("id") Long id){
-        Response PenaltyResponse = PenaltyService.findOne(id); 
-        return ResponseEntittyHandler.responseEntityGenerator(PenaltyResponse.getData(),PenaltyResponse.getMessage(), PenaltyResponse.getStatus(), null);
+        GlobalResponse response = PenaltyService.findOne(id); 
+        if(response.getError() != null){
+            return ResponseEntittyHandler.allHandler(null, null, response.getStatus(), response.getError());
+        }
+        return ResponseEntittyHandler.allHandler(response.getData(),response.getMessage(), response.getStatus(), null);
     }
 
     @PostMapping("/add")
     public ResponseEntity<Object> save(@RequestBody PenaltyDTO PenaltyDTO){
-        Response PenaltyResponse =  PenaltyService.save(PenaltyDTO);
-        return ResponseEntittyHandler.responseEntityGenerator(PenaltyResponse.getData(),PenaltyResponse.getMessage(), PenaltyResponse.getStatus(), null);
+        GlobalResponse response =  PenaltyService.save(PenaltyDTO);
+        if(response.getError() != null){
+            return ResponseEntittyHandler.allHandler(null, null, response.getStatus(), response.getError());
+        }
+        return ResponseEntittyHandler.allHandler(response.getData(),response.getMessage(), response.getStatus(), null);
     }
 
     
     @PutMapping("/put")
     public ResponseEntity<Object> edit(@RequestBody PenaltyDTO PenaltyDTO){
-        Response PenaltyResponse =  PenaltyService.edit(PenaltyDTO);
-        return ResponseEntittyHandler.responseEntityGenerator(PenaltyResponse.getData(),PenaltyResponse.getMessage(), PenaltyResponse.getStatus(), null);
+        GlobalResponse response =  PenaltyService.edit(PenaltyDTO);
+        if(response.getError() != null){
+            return ResponseEntittyHandler.allHandler(null, null, response.getStatus(), response.getError());
+        }
+        return ResponseEntittyHandler.allHandler(response.getData(),response.getMessage(), response.getStatus(), null);
     }
 
 

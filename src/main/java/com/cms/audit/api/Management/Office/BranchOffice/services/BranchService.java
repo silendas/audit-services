@@ -10,10 +10,10 @@ import org.springframework.stereotype.Service;
 
 import com.cms.audit.api.Management.Office.AreaOffice.models.Area;
 import com.cms.audit.api.Management.Office.BranchOffice.dto.BranchDTO;
+import com.cms.audit.api.Management.Office.BranchOffice.dto.response.BranchInterface;
 import com.cms.audit.api.Management.Office.BranchOffice.models.Branch;
 import com.cms.audit.api.Management.Office.BranchOffice.repository.BranchRepository;
-import com.cms.audit.api.Management.Office.BranchOffice.response.BranchInterface;
-import com.cms.audit.api.Management.Office.BranchOffice.response.Response;
+import com.cms.audit.api.common.response.GlobalResponse;
 
 import jakarta.transaction.Transactional;
 
@@ -24,30 +24,30 @@ public class BranchService {
     @Autowired
     private BranchRepository branchRepository;
 
-    public Response findAll() {
+    public GlobalResponse findAll() {
         try {
-            List<BranchInterface> branchResponse = branchRepository.findAllBranch();
-            if (branchResponse.isEmpty()) {
-                return Response
+            List<BranchInterface> response = branchRepository.findAllBranch();
+            if (response.isEmpty()) {
+                return GlobalResponse
                         .builder()
                         .message("Not Content")
                         .status(HttpStatus.NO_CONTENT)
                         .build();
             }
-            return Response
+            return GlobalResponse
                     .builder()
                     .message("Success")
-                    .data(branchResponse)
+                    .data(response)
                     .status(HttpStatus.OK)
                     .build();
         } catch (DataException e) {
-            return Response
+            return GlobalResponse
                     .builder()
                     .message("Exception :" + e.getMessage())
                     .status(HttpStatus.UNPROCESSABLE_ENTITY)
                     .build();
         } catch (Exception e) {
-            return Response
+            return GlobalResponse
                     .builder()
                     .message("Exception :" + e.getMessage())
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -56,30 +56,30 @@ public class BranchService {
 
     }
 
-    public Response findOne(Long id) {
+    public GlobalResponse findOne(Long id) {
         try {
-            List<BranchInterface> branchResponse = branchRepository.findOneBranchById(id);
-            if (branchResponse.isEmpty()) {
-                return Response
+            List<BranchInterface> response = branchRepository.findOneBranchById(id);
+            if (response.isEmpty()) {
+                return GlobalResponse
                         .builder()
                         .message("Not Content")
                         .status(HttpStatus.NO_CONTENT)
                         .build();
             }
-            return Response
+            return GlobalResponse
                     .builder()
                     .message("Success")
-                    .data(branchResponse)
+                    .data(response)
                     .status(HttpStatus.OK)
                     .build();
         } catch (DataException e) {
-            return Response
+            return GlobalResponse
                     .builder()
                     .message("Exception :" + e.getMessage())
                     .status(HttpStatus.UNPROCESSABLE_ENTITY)
                     .build();
         } catch (Exception e) {
-            return Response
+            return GlobalResponse
                     .builder()
                     .message("Exception :" + e.getMessage())
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -88,30 +88,30 @@ public class BranchService {
 
     }
 
-    public Response findOneByAreaId(Long id) {
+    public GlobalResponse findOneByAreaId(Long id) {
         try {
-            List<BranchInterface> branchResponse = branchRepository.findOneBranchByRegionId(id);
-            if (branchResponse.isEmpty()) {
-                return Response
+            List<BranchInterface> response = branchRepository.findOneBranchByRegionId(id);
+            if (response.isEmpty()) {
+                return GlobalResponse
                         .builder()
                         .message("Not Content")
                         .status(HttpStatus.NO_CONTENT)
                         .build();
             }
-            return Response
+            return GlobalResponse
                     .builder()
                     .message("Success")
-                    .data(branchResponse)
+                    .data(response)
                     .status(HttpStatus.OK)
                     .build();
         } catch (DataException e) {
-            return Response
+            return GlobalResponse
                     .builder()
                     .message("Exception :" + e.getMessage())
                     .status(HttpStatus.UNPROCESSABLE_ENTITY)
                     .build();
         } catch (Exception e) {
-            return Response
+            return GlobalResponse
                     .builder()
                     .message("Exception :" + e.getMessage())
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -120,7 +120,7 @@ public class BranchService {
 
     }
 
-    public Response save(BranchDTO branchDTO) {
+    public GlobalResponse save(BranchDTO branchDTO) {
         try {
 
             Area areaId = Area
@@ -135,27 +135,27 @@ public class BranchService {
                     new Date(),
                     areaId);
 
-            Branch branchResponse = branchRepository.save(level);
-            if (branchResponse == null) {
-                return Response
+            Branch response = branchRepository.save(level);
+            if (response == null) {
+                return GlobalResponse
                         .builder()
                         .message("Failed")
                         .status(HttpStatus.BAD_REQUEST)
                         .build();
             }
-            return Response
+            return GlobalResponse
                     .builder()
                     .message("Success")
                     .status(HttpStatus.OK)
                     .build();
         } catch (DataException e) {
-            return Response
+            return GlobalResponse
                     .builder()
                     .message("Exception :" + e.getMessage())
                     .status(HttpStatus.UNPROCESSABLE_ENTITY)
                     .build();
         } catch (Exception e) {
-            return Response
+            return GlobalResponse
                     .builder()
                     .message("Exception :" + e.getMessage())
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -163,7 +163,7 @@ public class BranchService {
         }
     }
 
-    public Response edit(BranchDTO branchDTO) {
+    public GlobalResponse edit(BranchDTO branchDTO) {
         try {
 
             Branch levelGet = branchRepository.findById(branchDTO.getId()).get();
@@ -180,27 +180,27 @@ public class BranchService {
                     new Date(),
                     areaId);
 
-            Branch branchResponse = branchRepository.save(level);
-            if (branchResponse == null) {
-                return Response
+            Branch response = branchRepository.save(level);
+            if (response == null) {
+                return GlobalResponse
                         .builder()
                         .message("Failed")
                         .status(HttpStatus.BAD_REQUEST)
                         .build();
             }
-            return Response
+            return GlobalResponse
                     .builder()
                     .message("Success")
                     .status(HttpStatus.OK)
                     .build();
         } catch (DataException e) {
-            return Response
+            return GlobalResponse
                     .builder()
                     .message("Exception :" + e.getMessage())
                     .status(HttpStatus.UNPROCESSABLE_ENTITY)
                     .build();
         } catch (Exception e) {
-            return Response
+            return GlobalResponse
                     .builder()
                     .message("Exception :" + e.getMessage())
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)

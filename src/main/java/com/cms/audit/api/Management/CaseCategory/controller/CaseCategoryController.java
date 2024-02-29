@@ -12,9 +12,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cms.audit.api.Management.CaseCategory.dto.CaseCategoryDTO;
-import com.cms.audit.api.Management.CaseCategory.response.Response;
 import com.cms.audit.api.Management.CaseCategory.services.CaseCategoryService;
-import com.cms.audit.api.ResponseEntity.ResponseEntittyHandler;
+import com.cms.audit.api.common.response.GlobalResponse;
+import com.cms.audit.api.common.response.ResponseEntittyHandler;
 
 @RestController
 @RequestMapping("/api/case_category")
@@ -25,32 +25,47 @@ public class CaseCategoryController {
 
     @GetMapping("/get")
     public ResponseEntity<Object> findAll(){
-        Response caseCategoryResponse = caseCategoryService.findAll(); 
-        return ResponseEntittyHandler.responseEntityGenerator(caseCategoryResponse.getData(),caseCategoryResponse.getMessage(), caseCategoryResponse.getStatus(), null);
+        GlobalResponse response = caseCategoryService.findAll(); 
+        if(response.getError() != null){
+            return ResponseEntittyHandler.allHandler(null, null, response.getStatus(), response.getError());
+        }
+        return ResponseEntittyHandler.allHandler(response.getData(),response.getMessage(), response.getStatus(), null);
     }
 
     @GetMapping("/get/{id}")
     public ResponseEntity<Object> findOne(@PathVariable("id") Long id){
-        Response caseCategoryResponse = caseCategoryService.findOne(id); 
-        return ResponseEntittyHandler.responseEntityGenerator(caseCategoryResponse.getData(),caseCategoryResponse.getMessage(), caseCategoryResponse.getStatus(), null);
+        GlobalResponse response = caseCategoryService.findOne(id); 
+        if(response.getError() != null){
+            return ResponseEntittyHandler.allHandler(null, null, response.getStatus(), response.getError());
+        }
+        return ResponseEntittyHandler.allHandler(response.getData(),response.getMessage(), response.getStatus(), null);
     }
 
     @GetMapping("/get/{id}/cases")
     public ResponseEntity<Object> findOneByCasesId(@PathVariable("id") Long id){
-        Response caseCategoryResponse = caseCategoryService.findOneByCasesId(id); 
-        return ResponseEntittyHandler.responseEntityGenerator(caseCategoryResponse.getData(),caseCategoryResponse.getMessage(), caseCategoryResponse.getStatus(), null);
+        GlobalResponse response = caseCategoryService.findOneByCasesId(id); 
+        if(response.getError() != null){
+            return ResponseEntittyHandler.allHandler(null, null, response.getStatus(), response.getError());
+        }
+        return ResponseEntittyHandler.allHandler(response.getData(),response.getMessage(), response.getStatus(), null);
     }
 
     @PostMapping("/add")
     public ResponseEntity<Object> save(@RequestBody CaseCategoryDTO caseCategoryDTO){
-        Response caseCategoryResponse =  caseCategoryService.save(caseCategoryDTO);
-        return ResponseEntittyHandler.responseEntityGenerator(caseCategoryResponse.getData(),caseCategoryResponse.getMessage(), caseCategoryResponse.getStatus(), null);
+        GlobalResponse response =  caseCategoryService.save(caseCategoryDTO);
+        if(response.getError() != null){
+            return ResponseEntittyHandler.allHandler(null, null, response.getStatus(), response.getError());
+        }
+        return ResponseEntittyHandler.allHandler(response.getData(),response.getMessage(), response.getStatus(), null);
     }
     
     @PutMapping("/put")
     public ResponseEntity<Object> edit(@RequestBody CaseCategoryDTO caseCategoryDTO){
-        Response caseCategoryResponse =  caseCategoryService.edit(caseCategoryDTO);
-        return ResponseEntittyHandler.responseEntityGenerator(caseCategoryResponse.getData(),caseCategoryResponse.getMessage(), caseCategoryResponse.getStatus(), null);
+        GlobalResponse response =  caseCategoryService.edit(caseCategoryDTO);
+        if(response.getError() != null){
+            return ResponseEntittyHandler.allHandler(null, null, response.getStatus(), response.getError());
+        }
+        return ResponseEntittyHandler.allHandler(response.getData(),response.getMessage(), response.getStatus(), null);
     }
 
 

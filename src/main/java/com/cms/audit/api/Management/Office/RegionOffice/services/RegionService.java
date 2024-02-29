@@ -10,10 +10,10 @@ import org.springframework.stereotype.Service;
 
 import com.cms.audit.api.Management.Office.MainOffice.models.Main;
 import com.cms.audit.api.Management.Office.RegionOffice.dto.RegionDTO;
+import com.cms.audit.api.Management.Office.RegionOffice.dto.response.RegionInterface;
 import com.cms.audit.api.Management.Office.RegionOffice.models.Region;
 import com.cms.audit.api.Management.Office.RegionOffice.repository.RegionRepository;
-import com.cms.audit.api.Management.Office.RegionOffice.response.RegionInterface;
-import com.cms.audit.api.Management.Office.RegionOffice.response.Response;
+import com.cms.audit.api.common.response.GlobalResponse;
 
 import jakarta.transaction.Transactional;
 
@@ -24,30 +24,30 @@ public class RegionService {
     @Autowired
     private RegionRepository regionRepository;
 
-    public Response findAll() {
+    public GlobalResponse findAll() {
         try {
-            List<RegionInterface> regionResponse = regionRepository.findAllRegion();
-            if (regionResponse.isEmpty()) {
-                return Response
+            List<RegionInterface> response = regionRepository.findAllRegion();
+            if (response.isEmpty()) {
+                return GlobalResponse
                         .builder()
                         .message("Not Content")
                         .status(HttpStatus.NO_CONTENT)
                         .build();
             }
-            return Response
+            return GlobalResponse
                     .builder()
                     .message("Success")
-                    .data(regionResponse)
+                    .data(response)
                     .status(HttpStatus.OK)
                     .build();
         } catch (DataException e) {
-            return Response
+            return GlobalResponse
                     .builder()
                     .message("Exception :" + e.getMessage())
                     .status(HttpStatus.UNPROCESSABLE_ENTITY)
                     .build();
         } catch (Exception e) {
-            return Response
+            return GlobalResponse
                     .builder()
                     .message("Exception :" + e.getMessage())
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -56,30 +56,30 @@ public class RegionService {
 
     }
 
-    public Response findOne(Long id) {
+    public GlobalResponse findOne(Long id) {
         try {
-            List<RegionInterface> regionResponse = regionRepository.findOneRegionById(id);
-            if (regionResponse.isEmpty()) {
-                return Response
+            List<RegionInterface> response = regionRepository.findOneRegionById(id);
+            if (response.isEmpty()) {
+                return GlobalResponse
                         .builder()
                         .message("Not Content")
                         .status(HttpStatus.NO_CONTENT)
                         .build();
             }
-            return Response
+            return GlobalResponse
                     .builder()
                     .message("Success")
-                    .data(regionResponse)
+                    .data(response)
                     .status(HttpStatus.OK)
                     .build();
         } catch (DataException e) {
-            return Response
+            return GlobalResponse
                     .builder()
                     .message("Exception :" + e.getMessage())
                     .status(HttpStatus.UNPROCESSABLE_ENTITY)
                     .build();
         } catch (Exception e) {
-            return Response
+            return GlobalResponse
                     .builder()
                     .message("Exception :" + e.getMessage())
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -88,30 +88,30 @@ public class RegionService {
 
     }
 
-    public Response findOneByMainId(Long id) {
+    public GlobalResponse findOneByMainId(Long id) {
         try {
-            List<RegionInterface> regionResponse = regionRepository.findOneRegionByMainId(id);
-            if (regionResponse.isEmpty()) {
-                return Response
+            List<RegionInterface> response = regionRepository.findOneRegionByMainId(id);
+            if (response.isEmpty()) {
+                return GlobalResponse
                         .builder()
                         .message("Not Content")
                         .status(HttpStatus.NO_CONTENT)
                         .build();
             }
-            return Response
+            return GlobalResponse
                     .builder()
                     .message("Success")
-                    .data(regionResponse)
+                    .data(response)
                     .status(HttpStatus.OK)
                     .build();
         } catch (DataException e) {
-            return Response
+            return GlobalResponse
                     .builder()
                     .message("Exception :" + e.getMessage())
                     .status(HttpStatus.UNPROCESSABLE_ENTITY)
                     .build();
         } catch (Exception e) {
-            return Response
+            return GlobalResponse
                     .builder()
                     .message("Exception :" + e.getMessage())
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -120,7 +120,7 @@ public class RegionService {
 
     }
 
-    public Response save(RegionDTO regionDTO) {
+    public GlobalResponse save(RegionDTO regionDTO) {
         try {
 
             Main mainId = Main.builder()
@@ -134,27 +134,27 @@ public class RegionService {
                     new Date(),
                     mainId);
 
-            Region regionResponse = regionRepository.save(region);
-            if (regionResponse == null) {
-                return Response
+            Region response = regionRepository.save(region);
+            if (response == null) {
+                return GlobalResponse
                         .builder()
                         .message("Failed")
                         .status(HttpStatus.BAD_REQUEST)
                         .build();
             }
-            return Response
+            return GlobalResponse
                     .builder()
                     .message("Success")
                     .status(HttpStatus.OK)
                     .build();
         } catch (DataException e) {
-            return Response
+            return GlobalResponse
                     .builder()
                     .message("Exception :" + e.getMessage())
                     .status(HttpStatus.UNPROCESSABLE_ENTITY)
                     .build();
         } catch (Exception e) {
-            return Response
+            return GlobalResponse
                     .builder()
                     .message("Exception :" + e.getMessage())
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -162,7 +162,7 @@ public class RegionService {
         }
     }
 
-    public Response edit(RegionDTO regionDTO) {
+    public GlobalResponse edit(RegionDTO regionDTO) {
         try {
 
             Region regionGet = regionRepository.findById(regionDTO.getId()).get();
@@ -178,27 +178,27 @@ public class RegionService {
                     new Date(),
                     mainId);
 
-            Region regionResponse = regionRepository.save(region);
-            if (regionResponse == null) {
-                return Response
+            Region response = regionRepository.save(region);
+            if (response == null) {
+                return GlobalResponse
                         .builder()
                         .message("Failed")
                         .status(HttpStatus.BAD_REQUEST)
                         .build();
             }
-            return Response
+            return GlobalResponse
                     .builder()
                     .message("Success")
                     .status(HttpStatus.OK)
                     .build();
         } catch (DataException e) {
-            return Response
+            return GlobalResponse
                     .builder()
                     .message("Exception :" + e.getMessage())
                     .status(HttpStatus.UNPROCESSABLE_ENTITY)
                     .build();
         } catch (Exception e) {
-            return Response
+            return GlobalResponse
                     .builder()
                     .message("Exception :" + e.getMessage())
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)

@@ -9,10 +9,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.cms.audit.api.Management.Case.dto.CaseDTO;
+import com.cms.audit.api.Management.Case.dto.response.CaseInterface;
 import com.cms.audit.api.Management.Case.models.Case;
 import com.cms.audit.api.Management.Case.repository.CaseRepository;
-import com.cms.audit.api.Management.Case.response.CaseInterface;
-import com.cms.audit.api.Management.Case.response.Response;
+import com.cms.audit.api.common.response.GlobalResponse;
 
 import jakarta.transaction.Transactional;
 
@@ -23,30 +23,30 @@ public class CaseService {
     @Autowired
     private CaseRepository caseRepository;
 
-    public Response findAll() {
+    public GlobalResponse findAll() {
         try {
-            List<CaseInterface> caseResponse = caseRepository.findAllCase();
-            if (caseResponse.isEmpty()) {
-                return Response
+            List<CaseInterface> response = caseRepository.findAllCase();
+            if (response.isEmpty()) {
+                return GlobalResponse
                         .builder()
                         .message("Not Content")
                         .status(HttpStatus.NO_CONTENT)
                         .build();
             }
-            return Response
+            return GlobalResponse
                     .builder()
                     .message("Success")
-                    .data(caseResponse)
+                    .data(response)
                     .status(HttpStatus.OK)
                     .build();
         } catch (DataException e) {
-            return Response
+            return GlobalResponse
                     .builder()
                     .message("Exception :" + e.getMessage())
                     .status(HttpStatus.UNPROCESSABLE_ENTITY)
                     .build();
         } catch (Exception e) {
-            return Response
+            return GlobalResponse
                     .builder()
                     .message("Exception :" + e.getMessage())
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -55,30 +55,30 @@ public class CaseService {
 
     }
 
-    public Response findOne(Long id) {
+    public GlobalResponse findOne(Long id) {
         try {
-            List<CaseInterface> caseResponse = caseRepository.findOneCaseById(id);
-            if (caseResponse.isEmpty()) {
-                return Response
+            List<CaseInterface> response = caseRepository.findOneCaseById(id);
+            if (response.isEmpty()) {
+                return GlobalResponse
                         .builder()
                         .message("Not Content")
                         .status(HttpStatus.NO_CONTENT)
                         .build();
             }
-            return Response
+            return GlobalResponse
                     .builder()
                     .message("Success")
-                    .data(caseResponse)
+                    .data(response)
                     .status(HttpStatus.OK)
                     .build();
         } catch (DataException e) {
-            return Response
+            return GlobalResponse
                     .builder()
                     .message("Exception :" + e.getMessage())
                     .status(HttpStatus.UNPROCESSABLE_ENTITY)
                     .build();
         } catch (Exception e) {
-            return Response
+            return GlobalResponse
                     .builder()
                     .message("Exception :" + e.getMessage())
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -87,7 +87,7 @@ public class CaseService {
 
     }
 
-    public Response save(CaseDTO caseDTO) {
+    public GlobalResponse save(CaseDTO caseDTO) {
         try {
 
             Case caseEntity = new Case(
@@ -99,27 +99,27 @@ public class CaseService {
                 new Date()
             );
 
-            Case caseResponse = caseRepository.save(caseEntity);
-            if (caseResponse == null) {
-                return Response
+            Case response = caseRepository.save(caseEntity);
+            if (response == null) {
+                return GlobalResponse
                         .builder()
                         .message("Failed")
                         .status(HttpStatus.BAD_REQUEST)
                         .build();
             }
-            return Response
+            return GlobalResponse
                     .builder()
                     .message("Success")
                     .status(HttpStatus.OK)
                     .build();
         } catch (DataException e) {
-            return Response
+            return GlobalResponse
                     .builder()
                     .message("Exception :" + e.getMessage())
                     .status(HttpStatus.UNPROCESSABLE_ENTITY)
                     .build();
         } catch (Exception e) {
-            return Response
+            return GlobalResponse
                     .builder()
                     .message("Exception :" + e.getMessage())
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -127,7 +127,7 @@ public class CaseService {
         }
     }
 
-    public Response edit(CaseDTO caseDTO) {
+    public GlobalResponse edit(CaseDTO caseDTO) {
         try {
 
             Case caseGet = caseRepository.findById(caseDTO.getId()).get();
@@ -141,27 +141,27 @@ public class CaseService {
                 new Date()
             );
 
-            Case caseResponse = caseRepository.save(caseEntity);
-            if (caseResponse == null) {
-                return Response
+            Case response = caseRepository.save(caseEntity);
+            if (response == null) {
+                return GlobalResponse
                         .builder()
                         .message("Failed")
                         .status(HttpStatus.BAD_REQUEST)
                         .build();
             }
-            return Response
+            return GlobalResponse
                     .builder()
                     .message("Success")
                     .status(HttpStatus.OK)
                     .build();
         } catch (DataException e) {
-            return Response
+            return GlobalResponse
                     .builder()
                     .message("Exception :" + e.getMessage())
                     .status(HttpStatus.UNPROCESSABLE_ENTITY)
                     .build();
         } catch (Exception e) {
-            return Response
+            return GlobalResponse
                     .builder()
                     .message("Exception :" + e.getMessage())
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)

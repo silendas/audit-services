@@ -7,8 +7,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import com.cms.audit.api.Management.Level.dto.response.LevelInterface;
 import com.cms.audit.api.Management.Level.models.Level;
-import com.cms.audit.api.Management.Level.response.LevelInterface;
 
 @Repository
 public interface LevelRepository extends JpaRepository<Level, Long>{

@@ -42,6 +42,7 @@ public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long id;
 
     @OneToOne
@@ -68,26 +69,34 @@ public class User implements UserDetails {
     @JoinColumn(name = "branch_id", unique = false, nullable = true)
     private Branch branch;
 
+    @Column(name = "email")
     private String email;
 
+    @Column(name = "nip")
     private String nip;
 
+    @Column(name = "username")
     private String username;
 
+    @Column(name = "password")
     private String password;
 
-    private String full_name;
+    @Column(name = "fullname")
+    private String fullname;
 
+    @Column(name = "initial_name")
     private String initial_name;
 
-    @Column(length = 2)
+    @Column(name = "is_active",length = 2)
     private Integer is_active;
 
-    @Column(length = 2)
+    @Column(name = "is_deleted",length = 2)
     private Integer is_deleted;
 
+    @Column(name = "created_at")
     private Date created_at;
 
+    @Column(name = "updated_at")
     private Date updated_at;
 
     @Override

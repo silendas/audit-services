@@ -9,10 +9,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.cms.audit.api.Management.Level.dto.LevelDTO;
+import com.cms.audit.api.Management.Level.dto.response.LevelInterface;
 import com.cms.audit.api.Management.Level.models.Level;
 import com.cms.audit.api.Management.Level.repository.LevelRepository;
-import com.cms.audit.api.Management.Level.response.LevelInterface;
-import com.cms.audit.api.Management.Level.response.Response;
+import com.cms.audit.api.common.response.GlobalResponse;
 
 import jakarta.transaction.Transactional;
 
@@ -23,30 +23,30 @@ public class LevelService {
     @Autowired
     private LevelRepository levelRepository;
 
-    public Response findAll() {
+    public GlobalResponse findAll() {
         try {
-            List<LevelInterface> levelResponse = levelRepository.findAllLevel();
-            if (levelResponse.isEmpty()) {
-                return Response
+            List<LevelInterface> response = levelRepository.findAllLevel();
+            if (response.isEmpty()) {
+                return GlobalResponse
                         .builder()
                         .message("Not Content")
                         .status(HttpStatus.NO_CONTENT)
                         .build();
             }
-            return Response
+            return GlobalResponse
                     .builder()
                     .message("Success")
-                    .data(levelResponse)
+                    .data(response)
                     .status(HttpStatus.OK)
                     .build();
         } catch (DataException e) {
-            return Response
+            return GlobalResponse
                     .builder()
                     .message("Exception :" + e.getMessage())
                     .status(HttpStatus.UNPROCESSABLE_ENTITY)
                     .build();
         } catch (Exception e) {
-            return Response
+            return GlobalResponse
                     .builder()
                     .message("Exception :" + e.getMessage())
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -55,30 +55,30 @@ public class LevelService {
 
     }
 
-    public Response findOne(Long id) {
+    public GlobalResponse findOne(Long id) {
         try {
-            List<LevelInterface> levelResponse = levelRepository.findOneLevelById(id);
-            if (levelResponse.isEmpty()) {
-                return Response
+            List<LevelInterface> response = levelRepository.findOneLevelById(id);
+            if (response.isEmpty()) {
+                return GlobalResponse
                         .builder()
                         .message("Not Content")
                         .status(HttpStatus.NO_CONTENT)
                         .build();
             }
-            return Response
+            return GlobalResponse
                     .builder()
                     .message("Success")
-                    .data(levelResponse)
+                    .data(response)
                     .status(HttpStatus.OK)
                     .build();
         } catch (DataException e) {
-            return Response
+            return GlobalResponse
                     .builder()
                     .message("Exception :" + e.getMessage())
                     .status(HttpStatus.UNPROCESSABLE_ENTITY)
                     .build();
         } catch (Exception e) {
-            return Response
+            return GlobalResponse
                     .builder()
                     .message("Exception :" + e.getMessage())
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -87,7 +87,7 @@ public class LevelService {
 
     }
 
-    public Response save(LevelDTO levelDTO) {
+    public GlobalResponse save(LevelDTO levelDTO) {
         try {
 
             Level level = new Level(
@@ -98,27 +98,27 @@ public class LevelService {
                 new Date()
             );
 
-            Level levelResponse = levelRepository.save(level);
-            if (levelResponse == null) {
-                return Response
+            Level response = levelRepository.save(level);
+            if (response == null) {
+                return GlobalResponse
                         .builder()
                         .message("Failed")
                         .status(HttpStatus.BAD_REQUEST)
                         .build();
             }
-            return Response
+            return GlobalResponse
                     .builder()
                     .message("Success")
                     .status(HttpStatus.OK)
                     .build();
         } catch (DataException e) {
-            return Response
+            return GlobalResponse
                     .builder()
                     .message("Exception :" + e.getMessage())
                     .status(HttpStatus.UNPROCESSABLE_ENTITY)
                     .build();
         } catch (Exception e) {
-            return Response
+            return GlobalResponse
                     .builder()
                     .message("Exception :" + e.getMessage())
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -126,7 +126,7 @@ public class LevelService {
         }
     }
 
-    public Response edit(LevelDTO levelDTO) {
+    public GlobalResponse edit(LevelDTO levelDTO) {
         try {
 
             Level levelGet = levelRepository.findById(levelDTO.getId()).get();
@@ -139,27 +139,27 @@ public class LevelService {
                 new Date()
             );
 
-            Level levelResponse = levelRepository.save(level);
-            if (levelResponse == null) {
-                return Response
+            Level response = levelRepository.save(level);
+            if (response == null) {
+                return GlobalResponse
                         .builder()
                         .message("Failed")
                         .status(HttpStatus.BAD_REQUEST)
                         .build();
             }
-            return Response
+            return GlobalResponse
                     .builder()
                     .message("Success")
                     .status(HttpStatus.OK)
                     .build();
         } catch (DataException e) {
-            return Response
+            return GlobalResponse
                     .builder()
                     .message("Exception :" + e.getMessage())
                     .status(HttpStatus.UNPROCESSABLE_ENTITY)
                     .build();
         } catch (Exception e) {
-            return Response
+            return GlobalResponse
                     .builder()
                     .message("Exception :" + e.getMessage())
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
