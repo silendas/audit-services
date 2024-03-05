@@ -12,7 +12,6 @@ import lombok.ToString;
 @Getter
 @NoArgsConstructor
 public class AreaDTO {
-    private Long id;
     private String name;
     private Long region_id;
 }

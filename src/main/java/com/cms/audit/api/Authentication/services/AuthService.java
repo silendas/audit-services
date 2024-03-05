@@ -1,8 +1,6 @@
 package com.cms.audit.api.Authentication.services;
 
 import java.util.Optional;
-import java.util.Set;
-import java.util.HashSet;
 
 import org.hibernate.exception.DataException;
 import org.springframework.http.HttpStatus;
@@ -12,6 +10,7 @@ import org.springframework.security.core.AuthenticationException;
 //import org.springframework.security.crypto.password.PasswordEncoder;
 //import org.springframework.security.web.firewall.RequestRejectedException;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.cms.audit.api.Authentication.dto.SigninDTO;
 import com.cms.audit.api.Authentication.dto.response.AuthResponse;
@@ -40,12 +39,8 @@ public class AuthService {
                         Optional<User> response = authRepository.findOneUsersByEmailOrUsername(signinDTO.getUsername(),
                                         signinDTO.getUsername());
                         if (!response.isPresent()) {
-                                return AuthResponse.builder()
-                                                .message("Wrong username or email")
-                                                .status(HttpStatus.BAD_REQUEST)
-                                                .build();
-                        }
-                        ;
+                                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Login error");
+                        };
 
                         // valdite auth manager user
                         authenticationManager.authenticate(
@@ -64,25 +59,13 @@ public class AuthService {
                                         .status(HttpStatus.OK)
                                         .build();
                 } catch (DataException e) {
-                        return AuthResponse.builder()
-                                        .error(e)
-                                        .status(HttpStatus.UNPROCESSABLE_ENTITY)
-                                        .build();
+                        throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Data error");
                 } catch (AuthenticationException e) {
-                        return AuthResponse.builder()
-                                        .error(e)
-                                        .status(HttpStatus.FORBIDDEN)
-                                        .build();
+                        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Auth error");
                 } catch (JwtException e) {
-                        return AuthResponse.builder()
-                                        .error(e)
-                                        .status(HttpStatus.FORBIDDEN)
-                                        .build();
+                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "JWT error");
                 } catch (Exception e) {
-                        return AuthResponse.builder()
-                                        .error(e)
-                                        .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                                        .build();
+                        throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Server error");
                 }
 
         }

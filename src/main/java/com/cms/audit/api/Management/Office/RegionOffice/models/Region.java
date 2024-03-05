@@ -3,7 +3,6 @@ package com.cms.audit.api.Management.Office.RegionOffice.models;
 import java.util.Date;
 
 import com.cms.audit.api.Management.Office.MainOffice.models.Main;
-import com.cms.audit.api.Management.User.models.User;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -34,6 +33,9 @@ public class Region {
     private Date created_at;
 
     private Date updated_at;
+
+    @Column(length = 2, nullable = true)
+    private Integer is_delete;
 
     @ManyToOne
     @JoinColumn(name = "main_id")

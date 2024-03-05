@@ -32,6 +32,9 @@ public class Level {
 
     private String code;
 
+    @Column(length = 2, nullable = true)
+    private Integer is_delete;
+
     private Date created_at;
 
     private Date updated_at;

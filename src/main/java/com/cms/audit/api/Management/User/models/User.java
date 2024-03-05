@@ -21,7 +21,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import lombok.AllArgsConstructor;
@@ -45,28 +45,28 @@ public class User implements UserDetails {
     @Column(name = "id")
     private Long id;
 
-    @OneToOne
-    @JoinColumn(name = "role_id", unique = false, nullable = true)
+    @ManyToOne
+    @JoinColumn(name = "role_id")
     private Role role;
     
-    @OneToOne
-    @JoinColumn(name = "level_id", unique = false, nullable = true)
+    @ManyToOne
+    @JoinColumn(name = "level_id")
     private Level level;
 
-    @OneToOne
-    @JoinColumn(name = "main_id", unique = false, nullable = true)
+    @ManyToOne
+    @JoinColumn(name = "main_id", nullable = true)
     private Main main;
 
-    @OneToOne
-    @JoinColumn(name = "region_id", unique = false, nullable = true)
+    @ManyToOne
+    @JoinColumn(name = "region_id", nullable = true)
     private Region region;
 
-    @OneToOne
-    @JoinColumn(name = "area_id", unique = false, nullable = true)
+    @ManyToOne
+    @JoinColumn(name = "area_id", nullable = true)
     private Area area;
 
-    @OneToOne
-    @JoinColumn(name = "branch_id", unique = false, nullable = true)
+    @ManyToOne
+    @JoinColumn(name = "branch_id", nullable = true)
     private Branch branch;
 
     @Column(name = "email")
@@ -87,11 +87,11 @@ public class User implements UserDetails {
     @Column(name = "initial_name")
     private String initial_name;
 
-    @Column(name = "is_active",length = 2)
+    @Column(name = "is_active",length = 2, nullable = true)
     private Integer is_active;
 
-    @Column(name = "is_deleted",length = 2)
-    private Integer is_deleted;
+    @Column(name = "is_delete",length = 2, nullable = true)
+    private Integer is_delete;
 
     @Column(name = "created_at")
     private Date created_at;

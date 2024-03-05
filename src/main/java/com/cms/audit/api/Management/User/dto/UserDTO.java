@@ -12,15 +12,12 @@ import lombok.ToString;
 @Getter
 @NoArgsConstructor
 public class UserDTO {
-    private Long id;
     private String email;
     private String nip;
     private String username;
     private String password;
     private String full_name;
     private String initial_name;
-    private Integer is_active;
-    private Integer is_delete;
     private Long role_id;
     private Long level_id;
     private Long main_id;

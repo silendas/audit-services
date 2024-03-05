@@ -8,12 +8,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import com.cms.audit.api.Common.response.GlobalResponse;
+import com.cms.audit.api.Management.Level.models.Level;
 import com.cms.audit.api.Management.Office.AreaOffice.dto.AreaDTO;
 import com.cms.audit.api.Management.Office.AreaOffice.dto.response.AreaInterface;
 import com.cms.audit.api.Management.Office.AreaOffice.models.Area;
 import com.cms.audit.api.Management.Office.AreaOffice.repository.AreaRepository;
 import com.cms.audit.api.Management.Office.RegionOffice.models.Region;
-import com.cms.audit.api.common.response.GlobalResponse;
 
 import jakarta.transaction.Transactional;
 
@@ -127,14 +128,15 @@ public class AreaService {
                     .id(branchDTO.getRegion_id())
                     .build();
 
-            Area level = new Area(
+            Area area = new Area(
                     null,
                     branchDTO.getName(),
                     new Date(),
                     new Date(),
+                    0,
                     regionId);
 
-            Area response = areaRepository.save(level);
+            Area response = areaRepository.save(area);
             if (response == null) {
                 return GlobalResponse
                         .builder()
@@ -162,23 +164,55 @@ public class AreaService {
         }
     }
 
-    public GlobalResponse edit(AreaDTO branchDTO) {
+    public GlobalResponse edit(AreaDTO branchDTO, Long id) {
         try {
 
-            Area levelGet = areaRepository.findById(branchDTO.getId()).get();
+            Area levelGet = areaRepository.findById(id).get();
 
             Region regionId = Region.builder()
                     .id(branchDTO.getRegion_id())
                     .build();
 
-            Area level = new Area(
-                    branchDTO.getId(),
+            Area area = new Area(
+                    id,
                     branchDTO.getName(),
                     levelGet.getCreated_at(),
                     new Date(),
+                    0,
                     regionId);
 
-            Area response = areaRepository.save(level);
+            Area response = areaRepository.save(area);
+            if (response == null) {
+                return GlobalResponse
+                        .builder()
+                        .message("Failed")
+                        .status(HttpStatus.BAD_REQUEST)
+                        .build();
+            }
+            return GlobalResponse
+                    .builder()
+                    .message("Success")
+                    .status(HttpStatus.OK)
+                    .build();
+        } catch (DataException e) {
+            return GlobalResponse
+                    .builder()
+                    .message("Exception :" + e.getMessage())
+                    .status(HttpStatus.UNPROCESSABLE_ENTITY)
+                    .build();
+        } catch (Exception e) {
+            return GlobalResponse
+                    .builder()
+                    .message("Exception :" + e.getMessage())
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .build();
+        }
+    }
+
+    public GlobalResponse delete(Long id) {
+        try {
+
+            Level response = areaRepository.softDelete(id);
             if (response == null) {
                 return GlobalResponse
                         .builder()

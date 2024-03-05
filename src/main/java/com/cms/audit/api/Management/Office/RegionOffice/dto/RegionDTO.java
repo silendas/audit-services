@@ -12,7 +12,6 @@ import lombok.ToString;
 @Getter
 @NoArgsConstructor
 public class RegionDTO {
-    private Long id;
     private String name;
     private Long main_id;
 }

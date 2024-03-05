@@ -35,6 +35,9 @@ public class Area {
 
     private Date updated_at;
 
+    @Column(length = 2, nullable = true)
+    private Integer is_delete;
+
     @ManyToOne
     @JoinColumn(name = "region_id")
     private Region region;

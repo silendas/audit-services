@@ -8,12 +8,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import com.cms.audit.api.Common.response.GlobalResponse;
+import com.cms.audit.api.Management.Office.BranchOffice.models.Branch;
 import com.cms.audit.api.Management.Office.MainOffice.models.Main;
 import com.cms.audit.api.Management.Office.RegionOffice.dto.RegionDTO;
 import com.cms.audit.api.Management.Office.RegionOffice.dto.response.RegionInterface;
 import com.cms.audit.api.Management.Office.RegionOffice.models.Region;
 import com.cms.audit.api.Management.Office.RegionOffice.repository.RegionRepository;
-import com.cms.audit.api.common.response.GlobalResponse;
 
 import jakarta.transaction.Transactional;
 
@@ -132,6 +133,7 @@ public class RegionService {
                     regionDTO.getName(),
                     new Date(),
                     new Date(),
+                    0,
                     mainId);
 
             Region response = regionRepository.save(region);
@@ -162,20 +164,21 @@ public class RegionService {
         }
     }
 
-    public GlobalResponse edit(RegionDTO regionDTO) {
+    public GlobalResponse edit(RegionDTO regionDTO, Long id) {
         try {
 
-            Region regionGet = regionRepository.findById(regionDTO.getId()).get();
+            Region regionGet = regionRepository.findById(id).get();
 
             Main mainId = Main.builder()
                     .id(regionDTO.getMain_id())
                     .build();
 
             Region region = new Region(
-                    regionDTO.getId(),
+                    id,
                     regionDTO.getName(),
                     regionGet.getCreated_at(),
                     new Date(),
+                    0,
                     mainId);
 
             Region response = regionRepository.save(region);
@@ -205,5 +208,37 @@ public class RegionService {
                     .build();
         }
     }
+
+    public GlobalResponse delete(Long id) {
+        try {
+
+            Branch response = regionRepository.softDelete(id);
+            if (response == null) {
+                return GlobalResponse
+                        .builder()
+                        .message("Failed")
+                        .status(HttpStatus.BAD_REQUEST)
+                        .build();
+            }
+            return GlobalResponse
+                    .builder()
+                    .message("Success")
+                    .status(HttpStatus.OK)
+                    .build();
+        } catch (DataException e) {
+            return GlobalResponse
+                    .builder()
+                    .message("Exception :" + e.getMessage())
+                    .status(HttpStatus.UNPROCESSABLE_ENTITY)
+                    .build();
+        } catch (Exception e) {
+            return GlobalResponse
+                    .builder()
+                    .message("Exception :" + e.getMessage())
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .build();
+        }
+    }
+
 
 }

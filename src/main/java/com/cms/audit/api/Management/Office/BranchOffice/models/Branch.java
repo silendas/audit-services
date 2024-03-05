@@ -35,6 +35,9 @@ public class Branch {
 
     private Date updated_at;
 
+    @Column(length = 2, nullable = true)
+    private Integer is_delete;
+
     @ManyToOne
     @JoinColumn(name = "area_id")
     private Area area;

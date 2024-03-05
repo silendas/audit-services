@@ -12,6 +12,5 @@ import lombok.ToString;
 @Getter
 @NoArgsConstructor
 public class MainDTO {
-    private Long id;
     private String name;
 }

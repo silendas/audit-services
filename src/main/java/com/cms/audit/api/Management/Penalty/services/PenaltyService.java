@@ -8,11 +8,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import com.cms.audit.api.Common.response.GlobalResponse;
+import com.cms.audit.api.Management.Case.models.Case;
 import com.cms.audit.api.Management.Penalty.dto.PenaltyDTO;
 import com.cms.audit.api.Management.Penalty.dto.response.PenaltyInterface;
 import com.cms.audit.api.Management.Penalty.models.Penalty;
 import com.cms.audit.api.Management.Penalty.repository.PenaltyRepository;
-import com.cms.audit.api.common.response.GlobalResponse;
 
 import jakarta.transaction.Transactional;
 
@@ -93,6 +94,7 @@ public class PenaltyService {
             Penalty Penalty = new Penalty(
                 null,
                 PenaltyDTO.getName(),
+                0,
                 new Date(),
                 new Date()
             );
@@ -125,19 +127,50 @@ public class PenaltyService {
         }
     }
 
-    public GlobalResponse edit(PenaltyDTO PenaltyDTO) {
+    public GlobalResponse edit(PenaltyDTO PenaltyDTO, Long id) {
         try {
-
-            Penalty PenaltyGet = PenaltyRepository.findById(PenaltyDTO.getId()).get();
+            Penalty PenaltyGet = PenaltyRepository.findById(id).get();
 
             Penalty Penalty = new Penalty(
-                PenaltyDTO.getId(),
+                id,
                 PenaltyDTO.getName(),
+                0,
                 PenaltyGet.getCreated_at(),
                 new Date()
             );
 
             Penalty response = PenaltyRepository.save(Penalty);
+            if (response == null) {
+                return GlobalResponse
+                        .builder()
+                        .message("Failed")
+                        .status(HttpStatus.BAD_REQUEST)
+                        .build();
+            }
+            return GlobalResponse
+                    .builder()
+                    .message("Success")
+                    .status(HttpStatus.OK)
+                    .build();
+        } catch (DataException e) {
+            return GlobalResponse
+                    .builder()
+                    .message("Exception :" + e.getMessage())
+                    .status(HttpStatus.UNPROCESSABLE_ENTITY)
+                    .build();
+        } catch (Exception e) {
+            return GlobalResponse
+                    .builder()
+                    .message("Exception :" + e.getMessage())
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .build();
+        }
+    }
+
+    public GlobalResponse delete(Long id) {
+        try {
+
+            Penalty response = PenaltyRepository.softDelete(id);
             if (response == null) {
                 return GlobalResponse
                         .builder()

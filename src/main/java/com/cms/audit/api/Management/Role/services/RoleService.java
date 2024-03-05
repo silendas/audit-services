@@ -8,11 +8,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import com.cms.audit.api.Common.response.GlobalResponse;
+import com.cms.audit.api.Management.Penalty.models.Penalty;
+import com.cms.audit.api.Management.Penalty.repository.PenaltyRepository;
 import com.cms.audit.api.Management.Role.dto.RoleDTO;
+import com.cms.audit.api.Management.Role.dto.response.RoleInterface;
 import com.cms.audit.api.Management.Role.models.Role;
 import com.cms.audit.api.Management.Role.repository.RoleRepository;
-import com.cms.audit.api.Management.Role.response.RoleInterface;
-import com.cms.audit.api.common.response.GlobalResponse;
 
 import jakarta.transaction.Transactional;
 
@@ -91,11 +93,11 @@ public class RoleService {
         try {
 
             Role role = new Role(
-                null,
-                roleDTO.getName(),
-                new Date(),
-                new Date()
-            );
+                    null,
+                    roleDTO.getName(),
+                    0,
+                    new Date(),
+                    new Date());
 
             Role response = roleRepository.save(role);
             if (response == null) {
@@ -125,19 +127,48 @@ public class RoleService {
         }
     }
 
-    public GlobalResponse edit(RoleDTO roleDTO) {
+    public GlobalResponse edit(RoleDTO roleDTO, Long id) {
         try {
-
-            Role roleGet = roleRepository.findById(roleDTO.getId()).get();
+            Role roleGet = roleRepository.findById(id).get();
 
             Role role = new Role(
-                roleDTO.getId(),
-                roleDTO.getName(),
-                roleGet.getCreated_at(),
-                new Date()
-            );
+                    id,
+                    roleDTO.getName(),
+                    0,
+                    roleGet.getCreated_at(),
+                    new Date());
 
             Role response = roleRepository.save(role);
+            if (response == null) {
+                return GlobalResponse
+                        .builder()
+                        .message("Failed")
+                        .status(HttpStatus.BAD_REQUEST)
+                        .build();
+            }
+            return GlobalResponse
+                    .builder()
+                    .message("Success")
+                    .status(HttpStatus.OK)
+                    .build();
+        } catch (DataException e) {
+            return GlobalResponse
+                    .builder()
+                    .message("Exception :" + e.getMessage())
+                    .status(HttpStatus.UNPROCESSABLE_ENTITY)
+                    .build();
+        } catch (Exception e) {
+            return GlobalResponse
+                    .builder()
+                    .message("Exception :" + e.getMessage())
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .build();
+        }
+    }
+
+    public GlobalResponse delete(Long id) {
+        try {
+            Role response = roleRepository.softDelete(id);
             if (response == null) {
                 return GlobalResponse
                         .builder()

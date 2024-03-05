@@ -8,12 +8,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import com.cms.audit.api.Common.response.GlobalResponse;
+import com.cms.audit.api.Management.Level.models.Level;
 import com.cms.audit.api.Management.Office.AreaOffice.models.Area;
 import com.cms.audit.api.Management.Office.BranchOffice.dto.BranchDTO;
 import com.cms.audit.api.Management.Office.BranchOffice.dto.response.BranchInterface;
 import com.cms.audit.api.Management.Office.BranchOffice.models.Branch;
 import com.cms.audit.api.Management.Office.BranchOffice.repository.BranchRepository;
-import com.cms.audit.api.common.response.GlobalResponse;
 
 import jakarta.transaction.Transactional;
 
@@ -133,6 +134,7 @@ public class BranchService {
                     branchDTO.getName(),
                     new Date(),
                     new Date(),
+                    0,
                     areaId);
 
             Branch response = branchRepository.save(level);
@@ -163,24 +165,56 @@ public class BranchService {
         }
     }
 
-    public GlobalResponse edit(BranchDTO branchDTO) {
+    public GlobalResponse edit(BranchDTO branchDTO, Long id) {
         try {
 
-            Branch levelGet = branchRepository.findById(branchDTO.getId()).get();
+            Branch levelGet = branchRepository.findById(id).get();
 
             Area areaId = Area
                     .builder()
                     .id(branchDTO.getArea_id())
                     .build();
 
-            Branch level = new Branch(
-                    branchDTO.getId(),
+            Branch branch = new Branch(
+                    id,
                     branchDTO.getName(),
                     levelGet.getCreated_at(),
                     new Date(),
+                    0,
                     areaId);
 
-            Branch response = branchRepository.save(level);
+            Branch response = branchRepository.save(branch);
+            if (response == null) {
+                return GlobalResponse
+                        .builder()
+                        .message("Failed")
+                        .status(HttpStatus.BAD_REQUEST)
+                        .build();
+            }
+            return GlobalResponse
+                    .builder()
+                    .message("Success")
+                    .status(HttpStatus.OK)
+                    .build();
+        } catch (DataException e) {
+            return GlobalResponse
+                    .builder()
+                    .message("Exception :" + e.getMessage())
+                    .status(HttpStatus.UNPROCESSABLE_ENTITY)
+                    .build();
+        } catch (Exception e) {
+            return GlobalResponse
+                    .builder()
+                    .message("Exception :" + e.getMessage())
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .build();
+        }
+    }
+
+    public GlobalResponse delete(Long id) {
+        try {
+
+            Branch response = branchRepository.softDelete(id);
             if (response == null) {
                 return GlobalResponse
                         .builder()

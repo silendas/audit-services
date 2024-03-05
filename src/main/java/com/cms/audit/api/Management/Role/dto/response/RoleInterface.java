@@ -1,4 +1,4 @@
-package com.cms.audit.api.Management.Role.response;
+package com.cms.audit.api.Management.Role.dto.response;
 
 public interface RoleInterface {
 

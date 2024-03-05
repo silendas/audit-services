@@ -2,8 +2,6 @@ package com.cms.audit.api.Management.Office.MainOffice.models;
 
 import java.util.Date;
 
-import com.cms.audit.api.Management.User.models.User;
-
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -29,6 +27,9 @@ public class Main {
     private Long id;
 
     private String name;
+
+    @Column(length = 2, nullable = true)
+    private Integer is_delete;
 
     private Date created_at;
 

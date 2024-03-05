@@ -12,7 +12,6 @@ import lombok.ToString;
 @Getter
 @NoArgsConstructor
 public class CaseCategoryDTO {
-    private Long id;
     private String name;
     private Long cases_id;
     private Integer is_delete;

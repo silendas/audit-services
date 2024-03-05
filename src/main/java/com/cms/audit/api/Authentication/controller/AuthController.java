@@ -11,9 +11,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.cms.audit.api.Authentication.dto.SigninDTO;
 import com.cms.audit.api.Authentication.dto.response.AuthResponse;
 import com.cms.audit.api.Authentication.services.AuthService;
-import com.cms.audit.api.common.constant.BasePath;
-import com.cms.audit.api.common.response.ErrorResponseEntityHandler;
-import com.cms.audit.api.common.response.ResponseEntittyHandler;
+import com.cms.audit.api.Common.constant.BasePath;
+import com.cms.audit.api.Common.response.ResponseEntittyHandler;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -38,7 +37,8 @@ public class AuthController {
     public ResponseEntity<Object> logout(HttpServletRequest request) {
         final String tokenHeader = request.getHeader("Authorization");
         if (tokenHeader == null) {
-            return ErrorResponseEntityHandler.error("Failed", "Authorized", "Unauthorized", HttpStatus.BAD_REQUEST);
+            return ResponseEntittyHandler.allHandler(null, "No token", HttpStatus.BAD_REQUEST, null);
+
         }
 
         // Jwt token

@@ -12,6 +12,5 @@ import lombok.ToString;
 @Getter
 @NoArgsConstructor
 public class PenaltyDTO {
-    private Long id;
     private String name;
 }

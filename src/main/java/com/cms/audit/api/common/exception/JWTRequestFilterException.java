@@ -1,4 +1,4 @@
-package com.cms.audit.api.common.exception;
+package com.cms.audit.api.Common.exception;
 
 public class JWTRequestFilterException extends RuntimeException {
     public JWTRequestFilterException(String message) {

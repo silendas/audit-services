@@ -8,11 +8,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import com.cms.audit.api.Common.response.GlobalResponse;
 import com.cms.audit.api.Management.Case.dto.CaseDTO;
 import com.cms.audit.api.Management.Case.dto.response.CaseInterface;
 import com.cms.audit.api.Management.Case.models.Case;
 import com.cms.audit.api.Management.Case.repository.CaseRepository;
-import com.cms.audit.api.common.response.GlobalResponse;
 
 import jakarta.transaction.Transactional;
 
@@ -127,13 +127,12 @@ public class CaseService {
         }
     }
 
-    public GlobalResponse edit(CaseDTO caseDTO) {
+    public GlobalResponse edit(CaseDTO caseDTO, Long id) {
         try {
-
-            Case caseGet = caseRepository.findById(caseDTO.getId()).get();
+            Case caseGet = caseRepository.findById(id).get();
 
             Case caseEntity = new Case(
-                caseDTO.getId(),
+                id,
                 caseDTO.getName(),
                 caseDTO.getCode(),
                 0,
@@ -142,6 +141,37 @@ public class CaseService {
             );
 
             Case response = caseRepository.save(caseEntity);
+            if (response == null) {
+                return GlobalResponse
+                        .builder()
+                        .message("Failed")
+                        .status(HttpStatus.BAD_REQUEST)
+                        .build();
+            }
+            return GlobalResponse
+                    .builder()
+                    .message("Success")
+                    .status(HttpStatus.OK)
+                    .build();
+        } catch (DataException e) {
+            return GlobalResponse
+                    .builder()
+                    .message("Exception :" + e.getMessage())
+                    .status(HttpStatus.UNPROCESSABLE_ENTITY)
+                    .build();
+        } catch (Exception e) {
+            return GlobalResponse
+                    .builder()
+                    .message("Exception :" + e.getMessage())
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .build();
+        }
+    }
+
+    public GlobalResponse delete(Long id) {
+        try {
+
+            Case response = caseRepository.softDelete(id);
             if (response == null) {
                 return GlobalResponse
                         .builder()

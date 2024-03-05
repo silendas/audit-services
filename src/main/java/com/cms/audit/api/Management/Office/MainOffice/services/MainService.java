@@ -8,11 +8,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import com.cms.audit.api.Common.response.GlobalResponse;
+import com.cms.audit.api.Management.Office.BranchOffice.models.Branch;
 import com.cms.audit.api.Management.Office.MainOffice.dto.MainDTO;
 import com.cms.audit.api.Management.Office.MainOffice.dto.response.MainInterface;
 import com.cms.audit.api.Management.Office.MainOffice.models.Main;
 import com.cms.audit.api.Management.Office.MainOffice.repository.MainRepository;
-import com.cms.audit.api.common.response.GlobalResponse;
 
 import jakarta.transaction.Transactional;
 
@@ -93,6 +94,7 @@ public class MainService {
             Main level = new Main(
                 null,
                 mainDTO.getName(),
+                0,
                 new Date(),
                 new Date()
             );
@@ -125,14 +127,15 @@ public class MainService {
         }
     }
 
-    public GlobalResponse edit(MainDTO mainDTO) {
+    public GlobalResponse edit(MainDTO mainDTO, Long id) {
         try {
 
-            Main levelGet = mainRepository.findById(mainDTO.getId()).get();
+            Main levelGet = mainRepository.findById(id).get();
 
             Main level = new Main(
-                mainDTO.getId(),
+                id,
                 mainDTO.getName(),
+                0,
                 levelGet.getCreated_at(),
                 new Date()
             );
@@ -164,5 +167,37 @@ public class MainService {
                     .build();
         }
     }
+
+    public GlobalResponse delete(Long id) {
+        try {
+
+            Branch response = mainRepository.softDelete(id);
+            if (response == null) {
+                return GlobalResponse
+                        .builder()
+                        .message("Failed")
+                        .status(HttpStatus.BAD_REQUEST)
+                        .build();
+            }
+            return GlobalResponse
+                    .builder()
+                    .message("Success")
+                    .status(HttpStatus.OK)
+                    .build();
+        } catch (DataException e) {
+            return GlobalResponse
+                    .builder()
+                    .message("Exception :" + e.getMessage())
+                    .status(HttpStatus.UNPROCESSABLE_ENTITY)
+                    .build();
+        } catch (Exception e) {
+            return GlobalResponse
+                    .builder()
+                    .message("Exception :" + e.getMessage())
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .build();
+        }
+    }
+
 
 }

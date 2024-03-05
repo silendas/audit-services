@@ -12,7 +12,6 @@ import lombok.ToString;
 @Getter
 @NoArgsConstructor
 public class LevelDTO {
-    private Long id;
     private String name;
     private String code;
 }

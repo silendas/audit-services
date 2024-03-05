@@ -28,6 +28,9 @@ public class Penalty {
 
     private String name;
 
+    @Column(length = 2, nullable = true)
+    private Integer is_delete;
+
     private Date created_at;
 
     private Date updated_at;
