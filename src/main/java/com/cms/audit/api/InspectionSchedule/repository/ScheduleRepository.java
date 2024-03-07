@@ -44,8 +44,8 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
     @Query(value = "SELECT * FROM inspection_schedule u WHERE u.id = :scheduleId AND u.status <> 'CLOSE' ", nativeQuery = true)
     public Optional<Schedule> findOneScheduleById(@Param("scheduleId") Long scheduleId);
 
-    @Query(value = "SELECT * FROM inspection_schedule u WHERE u.id = :scheduleId AND u.status <> 'CLOSE' ", nativeQuery = true)
-    public Optional<Schedule> findOneByStartDate(@Param("scheduleId") Long scheduleId);
+//     @Query(value = "SELECT * FROM inspection_schedule u WHERE u.id = :scheduleId AND u.status <> 'CLOSE' ", nativeQuery = true)
+//     public Optional<Schedule> findOneByStartDate(@Param("scheduleId") Long scheduleId);
 
     @Query(value = "SELECT * FROM inspection_schedule u WHERE u.status = :status", nativeQuery = true)
     public List<Schedule> findOneScheduleByStatus(@Param("status") String scheduleId);
