@@ -2,15 +2,16 @@ package com.cms.audit.api.Management.User.services;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import org.hibernate.exception.DataException;
+import org.hibernate.tool.schema.spi.SqlScriptException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.cms.audit.api.Common.response.GlobalResponse;
 import com.cms.audit.api.Management.Level.models.Level;
 import com.cms.audit.api.Management.Office.AreaOffice.models.Area;
 import com.cms.audit.api.Management.Office.BranchOffice.models.Branch;
@@ -19,9 +20,10 @@ import com.cms.audit.api.Management.Office.RegionOffice.models.Region;
 import com.cms.audit.api.Management.Role.models.Role;
 import com.cms.audit.api.Management.User.dto.ChangePasswordDTO;
 import com.cms.audit.api.Management.User.dto.UserDTO;
-import com.cms.audit.api.Management.User.dto.response.UserProfileInterface;
+import com.cms.audit.api.Management.User.dto.response.DropDownUser;
 import com.cms.audit.api.Management.User.models.User;
 import com.cms.audit.api.Management.User.repository.UserRepository;
+import com.cms.audit.api.common.response.GlobalResponse;
 
 import jakarta.transaction.Transactional;
 
@@ -36,9 +38,9 @@ public class UserService {
 
         public GlobalResponse findAll() {
                 try {
-                        List<UserProfileInterface> response = userRepository.findAllUserProfile();
+                        List<User> response = userRepository.findAll();
                         if (response.isEmpty()) {
-                                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Not Found");
+                                return GlobalResponse.builder().message("No Content").status(HttpStatus.NO_CONTENT).build();
                         }
                         return GlobalResponse
                                         .builder()
@@ -58,9 +60,9 @@ public class UserService {
 
         public GlobalResponse findOne(Long id) {
                 try {
-                        List<UserProfileInterface> response = userRepository.findOneUserProfileById(id);
-                        if (response.isEmpty()) {
-                                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Not Found");
+                        Optional<User> response = userRepository.findById(id);
+                        if (!response.isPresent()) {
+                                return GlobalResponse.builder().message("No Content").status(HttpStatus.NO_CONTENT).build();
                         }
                         return GlobalResponse
                                         .builder()
@@ -79,9 +81,9 @@ public class UserService {
 
         public GlobalResponse findOneByMainId(Long id) {
                 try {
-                        List<UserProfileInterface> response = userRepository.findOneUserProfileByMainId(id);
+                        List<User> response = userRepository.findUserByMain(id);
                         if (response.isEmpty()) {
-                                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Not Found");
+                                return GlobalResponse.builder().message("No Content").status(HttpStatus.NO_CONTENT).build();
                         }
                         return GlobalResponse
                                         .builder()
@@ -95,14 +97,13 @@ public class UserService {
                 } catch (Exception e) {
                         throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Server error");
                 }
-
         }
 
         public GlobalResponse findOneByRegionId(Long id) {
                 try {
-                        List<UserProfileInterface> response = userRepository.findOneUserProfileByRegionId(id);
+                        List<User> response = userRepository.findUserByRegion(id);
                         if (response.isEmpty()) {
-                                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Not Found");
+                                return GlobalResponse.builder().message("No Content").status(HttpStatus.NO_CONTENT).build();
                         }
                         return GlobalResponse
                                         .builder()
@@ -118,12 +119,52 @@ public class UserService {
                 }
 
         }
+        
+        public GlobalResponse dropDownByRegionId(Long id) {
+                try {
+                        List<DropDownUser> response = userRepository.findDropDownByRegion(id);
+                        if (response.isEmpty()) {
+                                return GlobalResponse.builder().message("No Content").status(HttpStatus.NO_CONTENT).build();
+                        }
+                        return GlobalResponse
+                                        .builder()
+                                        .message("Success")
+                                        .data(response)
+                                        .status(HttpStatus.OK)
+                                        .build();
+                } catch (DataException e) {
+                        throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Data error");
+
+                } catch (Exception e) {
+                        throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Server error");
+                }
+        }
+
+        public GlobalResponse dropDownByMainId(Long id) {
+                try {
+                        List<DropDownUser> response = userRepository.findDropDownByMain(id);
+                        if (response.isEmpty()) {
+                                return GlobalResponse.builder().message("No Content").status(HttpStatus.NO_CONTENT).build();
+                        }
+                        return GlobalResponse
+                                        .builder()
+                                        .message("Success")
+                                        .data(response)
+                                        .status(HttpStatus.OK)
+                                        .build();
+                } catch (DataException e) {
+                        throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Data error");
+
+                } catch (Exception e) {
+                        throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Server error");
+                }
+        }
 
         public GlobalResponse findOneByAreaId(Long id) {
                 try {
-                        List<UserProfileInterface> response = userRepository.findOneUserProfileByAreaId(id);
+                        List<User> response = userRepository.findUserByArea(id);
                         if (response.isEmpty()) {
-                                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Not Found");
+                                return GlobalResponse.builder().message("No Content").status(HttpStatus.NO_CONTENT).build();
                         }
                         return GlobalResponse
                                         .builder()
@@ -142,9 +183,9 @@ public class UserService {
 
         public GlobalResponse findOneByBranchId(Long id) {
                 try {
-                        List<UserProfileInterface> response = userRepository.findOneUserProfileByBranchId(id);
+                        List<User> response = userRepository.findUserByBranch(id);
                         if (response.isEmpty()) {
-                                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Not Found");
+                                return GlobalResponse.builder().message("No Content").status(HttpStatus.NO_CONTENT).build();
                         }
                         return GlobalResponse
                                         .builder()
@@ -158,7 +199,6 @@ public class UserService {
                 } catch (Exception e) {
                         throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Server error");
                 }
-
         }
 
         public GlobalResponse save(UserDTO userDTO) {
@@ -215,6 +255,8 @@ public class UserService {
                                         .message("Success")
                                         .status(HttpStatus.OK)
                                         .build();
+                } catch (SqlScriptException e) {
+                        throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Sql error");
                 } catch (DataException e) {
                         throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Data error");
 
@@ -294,8 +336,28 @@ public class UserService {
 
         public GlobalResponse delete(Long id) {
                 try {
+                        Optional<User> getUser = userRepository.findById(id);
 
-                        User response = userRepository.softDelete(id);
+                        User user = new User(
+                                id, 
+                                getUser.get().getRole(), 
+                                getUser.get().getLevel(), 
+                                getUser.get().getMain(), 
+                                getUser.get().getRegion(), 
+                                getUser.get().getArea(), 
+                                getUser.get().getBranch(), 
+                                getUser.get().getEmail(), 
+                                getUser.get().getNip(), 
+                                getUser.get().getUsername(), 
+                                getUser.get().getPassword(), 
+                                getUser.get().getFullname(), 
+                                getUser.get().getInitial_name(), 
+                                0, 
+                                1, 
+                                getUser.get().getCreated_at(), 
+                                new Date());
+
+                        User response = userRepository.save(user);
                         if (response == null) {
                                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Bad Request");
                         }
@@ -311,13 +373,31 @@ public class UserService {
                 }
         }
 
-        public GlobalResponse changePassword(ChangePasswordDTO changePasswordDTO,Long id) {
+        public GlobalResponse changePassword(ChangePasswordDTO changePasswordDTO, Long id) {
                 try {
 
-                        User response = userRepository.changePassword(id, changePasswordDTO.getPassword());
-                        if (response == null) {
-                                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Bad Request");
-                        }
+                        Optional<User> getUser = userRepository.findById(id);
+
+                        User user = new User(
+                                id, 
+                                getUser.get().getRole(), 
+                                getUser.get().getLevel(), 
+                                getUser.get().getMain(), 
+                                getUser.get().getRegion(), 
+                                getUser.get().getArea(), 
+                                getUser.get().getBranch(), 
+                                getUser.get().getEmail(), 
+                                getUser.get().getNip(), 
+                                getUser.get().getUsername(), 
+                                passwordEncoder.encode(changePasswordDTO.getPassword()), 
+                                getUser.get().getFullname(), 
+                                getUser.get().getInitial_name(), 
+                                0, 
+                                1, 
+                                getUser.get().getCreated_at(), 
+                                new Date());
+
+                        User response = userRepository.save(user);
                         return GlobalResponse
                                         .builder()
                                         .message("Success")

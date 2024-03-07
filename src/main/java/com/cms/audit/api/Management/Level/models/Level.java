@@ -2,6 +2,8 @@ package com.cms.audit.api.Management.Level.models;
 
 import java.util.Date;
 
+import org.springframework.data.annotation.CreatedDate;
+
 import com.cms.audit.api.Management.User.models.User;
 
 import jakarta.persistence.*;

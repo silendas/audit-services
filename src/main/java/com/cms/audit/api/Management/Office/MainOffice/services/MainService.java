@@ -8,12 +8,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import com.cms.audit.api.Common.response.GlobalResponse;
 import com.cms.audit.api.Management.Office.BranchOffice.models.Branch;
 import com.cms.audit.api.Management.Office.MainOffice.dto.MainDTO;
-import com.cms.audit.api.Management.Office.MainOffice.dto.response.MainInterface;
 import com.cms.audit.api.Management.Office.MainOffice.models.Main;
 import com.cms.audit.api.Management.Office.MainOffice.repository.MainRepository;
+import com.cms.audit.api.common.response.GlobalResponse;
 
 import jakarta.transaction.Transactional;
 
@@ -26,7 +25,7 @@ public class MainService {
 
     public GlobalResponse findAll() {
         try {
-            List<MainInterface> response = mainRepository.findAllMain();
+            List<Main> response = mainRepository.findAllMain();
             if (response.isEmpty()) {
                 return GlobalResponse
                         .builder()
@@ -58,7 +57,7 @@ public class MainService {
 
     public GlobalResponse findOne(Long id) {
         try {
-            List<MainInterface> response = mainRepository.findOneMainById(id);
+            List<Main> response = mainRepository.findOneMainById(id);
             if (response.isEmpty()) {
                 return GlobalResponse
                         .builder()

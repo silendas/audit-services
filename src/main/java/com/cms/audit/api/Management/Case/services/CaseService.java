@@ -8,11 +8,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import com.cms.audit.api.Common.response.GlobalResponse;
 import com.cms.audit.api.Management.Case.dto.CaseDTO;
-import com.cms.audit.api.Management.Case.dto.response.CaseInterface;
 import com.cms.audit.api.Management.Case.models.Case;
 import com.cms.audit.api.Management.Case.repository.CaseRepository;
+import com.cms.audit.api.common.response.GlobalResponse;
 
 import jakarta.transaction.Transactional;
 
@@ -25,7 +24,7 @@ public class CaseService {
 
     public GlobalResponse findAll() {
         try {
-            List<CaseInterface> response = caseRepository.findAllCase();
+            List<Case> response = caseRepository.findAllCase();
             if (response.isEmpty()) {
                 return GlobalResponse
                         .builder()
@@ -57,7 +56,7 @@ public class CaseService {
 
     public GlobalResponse findOne(Long id) {
         try {
-            List<CaseInterface> response = caseRepository.findOneCaseById(id);
+            List<Case> response = caseRepository.findOneCaseById(id);
             if (response.isEmpty()) {
                 return GlobalResponse
                         .builder()

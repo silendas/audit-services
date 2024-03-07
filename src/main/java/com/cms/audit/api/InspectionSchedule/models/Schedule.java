@@ -5,9 +5,10 @@ import java.util.Date;
 import com.cms.audit.api.Management.Office.BranchOffice.models.Branch;
 import com.cms.audit.api.Management.User.models.User;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -33,11 +34,13 @@ public class Schedule {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "user_id",length = 2)
-    private Integer userId;
+    @ManyToOne
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    private User user;
 
-    @Column(name = "branch_id",length = 2)
-    private Integer branchId;
+    @ManyToOne
+    @JoinColumn(name = "branch_id", referencedColumnName = "id")
+    private Branch branch;
 
     @Column(name = "description")
     private String description;
@@ -54,11 +57,13 @@ public class Schedule {
     @Column(name = "end_date_realization")
     private Date end_date_realization;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "status")
-    private String status;
+    private EStatus status;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "category")
-    private String category;
+    private ECategory category;
 
     @Column(name = "is_delete",length = 2, nullable = true)
     private Integer is_delete;

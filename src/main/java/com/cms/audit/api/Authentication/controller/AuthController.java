@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.cms.audit.api.Authentication.dto.SigninDTO;
 import com.cms.audit.api.Authentication.dto.response.AuthResponse;
 import com.cms.audit.api.Authentication.services.AuthService;
-import com.cms.audit.api.Common.constant.BasePath;
-import com.cms.audit.api.Common.response.ResponseEntittyHandler;
+import com.cms.audit.api.common.constant.BasePath;
+import com.cms.audit.api.common.response.ResponseEntittyHandler;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -27,9 +27,6 @@ public class AuthController {
     @PostMapping(path = "/login", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> login(@RequestBody SigninDTO signinDTO) {
         AuthResponse response = authService.login(signinDTO);
-        if (response.getError() != null) {
-            return ResponseEntittyHandler.allHandler(null, null, response.getStatus(), response.getError());
-        }
         return ResponseEntittyHandler.authSuccess(response.getToken(), response.getStatus());
     }
 
@@ -40,15 +37,8 @@ public class AuthController {
             return ResponseEntittyHandler.allHandler(null, "No token", HttpStatus.BAD_REQUEST, null);
 
         }
-
-        // Jwt token
         String jwtToken = tokenHeader.substring(7);
-
         AuthResponse response = authService.logout(jwtToken);
-        if (response.getError() != null) {
-            return ResponseEntittyHandler.allHandler(null, null, response.getStatus(), response.getError());
-        }
-
         return ResponseEntittyHandler.authSuccess(null, HttpStatus.OK);
     }
 }

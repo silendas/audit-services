@@ -1,4 +1,4 @@
-package com.cms.audit.api.Common.response;
+package com.cms.audit.api.common.response;
 
 import org.springframework.http.HttpStatus;
 

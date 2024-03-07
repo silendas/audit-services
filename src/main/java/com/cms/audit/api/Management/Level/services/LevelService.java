@@ -2,18 +2,18 @@ package com.cms.audit.api.Management.Level.services;
 
 import java.util.List;
 import java.util.Date;
+import java.util.Optional;
 
 import org.hibernate.exception.DataException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import com.cms.audit.api.Common.response.GlobalResponse;
 import com.cms.audit.api.Management.Case.models.Case;
 import com.cms.audit.api.Management.Level.dto.LevelDTO;
-import com.cms.audit.api.Management.Level.dto.response.LevelInterface;
 import com.cms.audit.api.Management.Level.models.Level;
 import com.cms.audit.api.Management.Level.repository.LevelRepository;
+import com.cms.audit.api.common.response.GlobalResponse;
 
 import jakarta.transaction.Transactional;
 
@@ -26,7 +26,7 @@ public class LevelService {
 
     public GlobalResponse findAll() {
         try {
-            List<LevelInterface> response = levelRepository.findAllLevel();
+            List<Level> response = levelRepository.findAllLevel();
             if (response.isEmpty()) {
                 return GlobalResponse
                         .builder()
@@ -58,8 +58,8 @@ public class LevelService {
 
     public GlobalResponse findOne(Long id) {
         try {
-            List<LevelInterface> response = levelRepository.findOneLevelById(id);
-            if (response.isEmpty()) {
+            Optional<Level> response = levelRepository.findOneLevelById(id);
+            if (!response.isPresent()) {
                 return GlobalResponse
                         .builder()
                         .message("Not Content")

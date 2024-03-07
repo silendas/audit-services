@@ -2,19 +2,18 @@ package com.cms.audit.api.InspectionSchedule.controller;
 
 import org.springframework.web.bind.annotation.RestController;
 
-import com.cms.audit.api.Common.constant.BasePath;
-import com.cms.audit.api.Common.response.GlobalResponse;
-import com.cms.audit.api.Common.response.ResponseEntittyHandler;
 import com.cms.audit.api.InspectionSchedule.dto.ScheduleDTO;
-import com.cms.audit.api.InspectionSchedule.dto.ScheduleFilterDTO;
+import com.cms.audit.api.InspectionSchedule.models.EStatus;
 import com.cms.audit.api.InspectionSchedule.service.ScheduleService;
+import com.cms.audit.api.common.constant.BasePath;
+import com.cms.audit.api.common.response.GlobalResponse;
+import com.cms.audit.api.common.response.ResponseEntittyHandler;
 
 import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -44,7 +43,10 @@ public class MainScheduleConroller {
     }
 
     @GetMapping("/filter")
-    public ResponseEntity<Object> filterByDateRange(@RequestParam Integer userId, @RequestParam Date startDate, @RequestParam Date endDate) {
+    public ResponseEntity<Object> filterByDateRange(
+            @RequestParam Long userId, 
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate, 
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate) {
         GlobalResponse response = scheduleService.getByRangeDateAndUserId(userId, "REGULAR",startDate, endDate);
         return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(), null);
     }
@@ -64,12 +66,6 @@ public class MainScheduleConroller {
     @PostMapping
     public ResponseEntity<Object> add(@RequestBody ScheduleDTO scheduleDTO) {
         GlobalResponse response = scheduleService.insertRegularSchedule(scheduleDTO);
-        return ResponseEntittyHandler.allHandler(null, response.getMessage(), response.getStatus(), null);
-    }
-
-    @PostMapping("/reschedule")
-    public ResponseEntity<Object> reschedule(@RequestBody ScheduleDTO scheduleDTO) {
-        GlobalResponse response = scheduleService.reSchedule(scheduleDTO);
         return ResponseEntittyHandler.allHandler(null, response.getMessage(), response.getStatus(), null);
     }
 

@@ -2,18 +2,18 @@ package com.cms.audit.api.Management.CaseCategory.services;
 
 import java.util.List;
 import java.util.Date;
+import java.util.Optional;
 
 import org.hibernate.exception.DataException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import com.cms.audit.api.Common.response.GlobalResponse;
 import com.cms.audit.api.Management.Case.models.Case;
 import com.cms.audit.api.Management.CaseCategory.dto.CaseCategoryDTO;
-import com.cms.audit.api.Management.CaseCategory.dto.response.CaseCategoryInterface;
 import com.cms.audit.api.Management.CaseCategory.models.CaseCategory;
 import com.cms.audit.api.Management.CaseCategory.repository.CaseCategoryRepository;
+import com.cms.audit.api.common.response.GlobalResponse;
 
 import jakarta.transaction.Transactional;
 
@@ -26,7 +26,7 @@ public class CaseCategoryService {
 
     public GlobalResponse findAll() {
         try {
-            List<CaseCategoryInterface> response = caseCategoryRepository.findAllCaseCategory();
+            List<CaseCategory> response = caseCategoryRepository.findAllCaseCategory();
             if (response.isEmpty()) {
                 return GlobalResponse
                         .builder()
@@ -58,8 +58,8 @@ public class CaseCategoryService {
 
     public GlobalResponse findOne(Long id) {
         try {
-            List<CaseCategoryInterface> response = caseCategoryRepository.findOneCaseCategoryById(id);
-            if (response.isEmpty()) {
+            Optional<CaseCategory> response = caseCategoryRepository.findOneCaseCategoryById(id);
+            if (!response.isPresent()) {
                 return GlobalResponse
                         .builder()
                         .message("Not Content")
@@ -90,7 +90,7 @@ public class CaseCategoryService {
 
     public GlobalResponse findOneByCasesId(Long id) {
         try {
-            List<CaseCategoryInterface> response = caseCategoryRepository.findOneCaseCategoryByCasesId(id);
+            List<CaseCategory> response = caseCategoryRepository.findOneCaseCategoryByCasesId(id);
             if (response.isEmpty()) {
                 return GlobalResponse
                         .builder()

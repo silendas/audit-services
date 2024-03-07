@@ -2,19 +2,20 @@ package com.cms.audit.api.Management.Penalty.services;
 
 import java.util.List;
 import java.util.Date;
+import java.util.Optional;
 
 import org.hibernate.exception.DataException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import com.cms.audit.api.Common.response.GlobalResponse;
 import com.cms.audit.api.Management.Case.models.Case;
 import com.cms.audit.api.Management.Penalty.dto.PenaltyDTO;
-import com.cms.audit.api.Management.Penalty.dto.response.PenaltyInterface;
 import com.cms.audit.api.Management.Penalty.models.Penalty;
 import com.cms.audit.api.Management.Penalty.repository.PenaltyRepository;
+import com.cms.audit.api.common.response.GlobalResponse;
 
+import jakarta.annotation.security.PermitAll;
 import jakarta.transaction.Transactional;
 
 @Service
@@ -26,7 +27,7 @@ public class PenaltyService {
 
     public GlobalResponse findAll() {
         try {
-            List<PenaltyInterface> response = PenaltyRepository.findAllPenalty();
+            List<Penalty> response = PenaltyRepository.findAllPenalty();
             if (response.isEmpty()) {
                 return GlobalResponse
                         .builder()
@@ -58,8 +59,8 @@ public class PenaltyService {
 
     public GlobalResponse findOne(Long id) {
         try {
-            List<PenaltyInterface> response = PenaltyRepository.findOnePenaltyById(id);
-            if (response.isEmpty()) {
+            Optional<Penalty> response = PenaltyRepository.findOnePenaltyById(id);
+            if (!response.isPresent()) {
                 return GlobalResponse
                         .builder()
                         .message("Not Content")

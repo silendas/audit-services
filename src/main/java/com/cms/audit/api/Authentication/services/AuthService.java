@@ -79,11 +79,7 @@ public class AuthService {
                                 .status(HttpStatus.OK)
                                 .build();
                 } catch (Exception e) {
-                        return AuthResponse
-                        .builder()
-                        .error(e)
-                        .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                        .build();
+                        throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Server error");
                 }
         }
 }

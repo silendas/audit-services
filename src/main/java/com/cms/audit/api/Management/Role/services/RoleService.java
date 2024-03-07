@@ -1,6 +1,7 @@
 package com.cms.audit.api.Management.Role.services;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Date;
 
 import org.hibernate.exception.DataException;
@@ -8,13 +9,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import com.cms.audit.api.Common.response.GlobalResponse;
-import com.cms.audit.api.Management.Penalty.models.Penalty;
-import com.cms.audit.api.Management.Penalty.repository.PenaltyRepository;
 import com.cms.audit.api.Management.Role.dto.RoleDTO;
-import com.cms.audit.api.Management.Role.dto.response.RoleInterface;
 import com.cms.audit.api.Management.Role.models.Role;
 import com.cms.audit.api.Management.Role.repository.RoleRepository;
+import com.cms.audit.api.common.response.GlobalResponse;
 
 import jakarta.transaction.Transactional;
 
@@ -27,7 +25,7 @@ public class RoleService {
 
     public GlobalResponse findAll() {
         try {
-            List<RoleInterface> response = roleRepository.findAllRole();
+            List<Role> response = roleRepository.findAll();
             if (response.isEmpty()) {
                 return GlobalResponse
                         .builder()
@@ -59,8 +57,8 @@ public class RoleService {
 
     public GlobalResponse findOne(Long id) {
         try {
-            List<RoleInterface> response = roleRepository.findOneRoleById(id);
-            if (response.isEmpty()) {
+            Optional<Role> response = roleRepository.findById(id);
+            if (!response.isPresent()) {
                 return GlobalResponse
                         .builder()
                         .message("Not Content")

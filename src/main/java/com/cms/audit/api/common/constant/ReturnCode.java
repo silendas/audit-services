@@ -1,4 +1,4 @@
-package com.cms.audit.api.Common.constant;
+package com.cms.audit.api.common.constant;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

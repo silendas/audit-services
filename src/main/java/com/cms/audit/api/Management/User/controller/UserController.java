@@ -11,15 +11,15 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.cms.audit.api.Common.constant.BasePath;
-import com.cms.audit.api.Common.response.GlobalResponse;
-import com.cms.audit.api.Common.response.ResponseEntittyHandler;
 import com.cms.audit.api.Management.User.dto.ChangePasswordDTO;
 import com.cms.audit.api.Management.User.dto.UserDTO;
 import com.cms.audit.api.Management.User.services.UserService;
+import com.cms.audit.api.common.constant.BasePath;
+import com.cms.audit.api.common.response.GlobalResponse;
+import com.cms.audit.api.common.response.ResponseEntittyHandler;
 
 @RestController
-@RequestMapping(value = BasePath.BASE_PATH_USERS)
+@RequestMapping(value = BasePath.BASE_PATH_USER)
 public class UserController {
     @Autowired
     private UserService userService;
