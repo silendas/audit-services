@@ -27,15 +27,19 @@ public class Area {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long id;
 
+    @Column(name = "name")
     private String name;
 
+    @Column(name = "created_at")
     private Date created_at;
 
+    @Column(name = "updated_at")
     private Date updated_at;
 
-    @Column(length = 2, nullable = true)
+    @Column(name = "is_delete",length = 2, nullable = true)
     private Integer is_delete;
 
     @ManyToOne

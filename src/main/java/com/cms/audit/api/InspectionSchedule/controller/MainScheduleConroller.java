@@ -2,7 +2,9 @@ package com.cms.audit.api.InspectionSchedule.controller;
 
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cms.audit.api.InspectionSchedule.dto.EditScheduleDTO;
 import com.cms.audit.api.InspectionSchedule.dto.ScheduleDTO;
+import com.cms.audit.api.InspectionSchedule.models.ECategory;
 import com.cms.audit.api.InspectionSchedule.models.EStatus;
 import com.cms.audit.api.InspectionSchedule.service.ScheduleService;
 import com.cms.audit.api.common.constant.BasePath;
@@ -70,8 +72,8 @@ public class MainScheduleConroller {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Object> put(@RequestBody ScheduleDTO scheduleDTO, @PathVariable("id") Long id) {
-        GlobalResponse response = scheduleService.editRegularSchedule(scheduleDTO, id);
+    public ResponseEntity<Object> put(@RequestBody EditScheduleDTO scheduleDTO, @PathVariable("id") Long id) {
+        GlobalResponse response = scheduleService.editSchedule(scheduleDTO, id, ECategory.REGULAR);
         return ResponseEntittyHandler.allHandler(null, response.getMessage(), response.getStatus(), null);
     }
     

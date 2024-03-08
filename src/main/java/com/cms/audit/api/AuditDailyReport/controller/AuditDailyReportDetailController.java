@@ -9,10 +9,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cms.audit.api.AuditDailyReport.dto.AuditDailyReportDetailDTO;
+import com.cms.audit.api.AuditDailyReport.dto.EditAuditDailyReportDetailDTO;
 import com.cms.audit.api.AuditDailyReport.service.AuditDailyReportDetailService;
 import com.cms.audit.api.common.constant.BasePath;
 import com.cms.audit.api.common.response.GlobalResponse;
@@ -28,21 +29,21 @@ public class AuditDailyReportDetailController {
     @GetMapping
     public ResponseEntity<Object> get() {
         GlobalResponse response = service.get();
-        return ResponseEntittyHandler.allHandler(null, response.getMessage(), response.getStatus(),
+        return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(),
                 response.getError());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Object> get(@RequestParam("id") Long id) {
+    public ResponseEntity<Object> get(@PathVariable("id") Long id) {
         GlobalResponse response = service.getById(id);
-        return ResponseEntittyHandler.allHandler(null, response.getMessage(), response.getStatus(),
+        return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(),
                 response.getError());
     }
 
     @GetMapping("/{id}/lha")
-    public ResponseEntity<Object> getByLHA(@RequestParam("id") Long id) {
+    public ResponseEntity<Object> getByLHA(@PathVariable("id") Long id) {
         GlobalResponse response = service.getByLHAId(id);
-        return ResponseEntittyHandler.allHandler(null, response.getMessage(), response.getStatus(),
+        return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(),
                 response.getError());
     }
 
@@ -54,7 +55,7 @@ public class AuditDailyReportDetailController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Object> put(@RequestBody AuditDailyReportDetailDTO dto, @PathVariable("id") Long id) {
+    public ResponseEntity<Object> put(@RequestBody EditAuditDailyReportDetailDTO dto, @PathVariable("id") Long id) {
         GlobalResponse response = service.edit(dto, id);
         return ResponseEntittyHandler.allHandler(null, response.getMessage(), response.getStatus(),
                 response.getError());

@@ -13,5 +13,5 @@ import lombok.ToString;
 @Getter
 @NoArgsConstructor
 public class EditStatusDTO {
-    private String created_by;
+    private String update_by;
 }

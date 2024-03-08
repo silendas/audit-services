@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.cms.audit.api.Management.Role.dto.RoleDTO;
+import com.cms.audit.api.Management.Role.dto.response.RoleInterface;
 import com.cms.audit.api.Management.Role.models.Role;
 import com.cms.audit.api.Management.Role.repository.RoleRepository;
 import com.cms.audit.api.common.response.GlobalResponse;
@@ -25,7 +26,39 @@ public class RoleService {
 
     public GlobalResponse findAll() {
         try {
-            List<Role> response = roleRepository.findAll();
+            List<Role> response = roleRepository.findAllRole();
+            if (response.isEmpty()) {
+                return GlobalResponse
+                        .builder()
+                        .message("Not Content")
+                        .status(HttpStatus.NO_CONTENT)
+                        .build();
+            }
+            return GlobalResponse
+                    .builder()
+                    .message("Success")
+                    .data(response)
+                    .status(HttpStatus.OK)
+                    .build();
+        } catch (DataException e) {
+            return GlobalResponse
+                    .builder()
+                    .message("Exception :" + e.getMessage())
+                    .status(HttpStatus.UNPROCESSABLE_ENTITY)
+                    .build();
+        } catch (Exception e) {
+            return GlobalResponse
+                    .builder()
+                    .message("Exception :" + e.getMessage())
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .build();
+        }
+
+    }
+
+    public GlobalResponse findSpecific() {
+        try {
+            List<RoleInterface> response = roleRepository.findSpecificRole();
             if (response.isEmpty()) {
                 return GlobalResponse
                         .builder()
@@ -57,7 +90,7 @@ public class RoleService {
 
     public GlobalResponse findOne(Long id) {
         try {
-            Optional<Role> response = roleRepository.findById(id);
+            Optional<Role> response = roleRepository.findOneRoleById(id);
             if (!response.isPresent()) {
                 return GlobalResponse
                         .builder()
@@ -166,7 +199,16 @@ public class RoleService {
 
     public GlobalResponse delete(Long id) {
         try {
-            Role response = roleRepository.softDelete(id);
+            Role roleGet = roleRepository.findById(id).get();
+
+            Role role = new Role(
+                    id,
+                    roleGet.getName(),
+                    1,
+                    roleGet.getCreated_at(),
+                    new Date());
+
+            Role response = roleRepository.save(role);
             if (response == null) {
                 return GlobalResponse
                         .builder()

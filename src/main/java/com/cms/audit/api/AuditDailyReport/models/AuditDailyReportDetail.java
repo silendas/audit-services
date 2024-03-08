@@ -2,6 +2,9 @@ package com.cms.audit.api.AuditDailyReport.models;
 
 import java.util.Date;
 
+import com.cms.audit.api.Management.Case.models.Case;
+import com.cms.audit.api.Management.CaseCategory.models.CaseCategory;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -33,6 +36,14 @@ public class AuditDailyReportDetail {
     @JoinColumn(name = "audit_daily_report_id")
     private AuditDailyReport auditDailyReport;
 
+    @ManyToOne
+    @JoinColumn(name = "cases_id")
+    private Case cases;
+
+    @ManyToOne
+    @JoinColumn(name = "case_category_id")
+    private CaseCategory caseCategory;
+
     @Column(name = "description")
     private String description;
 
@@ -50,6 +61,9 @@ public class AuditDailyReportDetail {
 
     @Column(name = "created_by")
     private String created_by;
+
+    @Column(name = "updated_by")
+    private String updated_by;
 
     @Column(name = "created_at")
     private Date created_at;

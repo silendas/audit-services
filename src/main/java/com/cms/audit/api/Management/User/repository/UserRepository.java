@@ -18,22 +18,22 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     Optional<User> findByEmail(String email);
 
-    @Query(value = "SELECT * FROM users u where u.main_id = :id", nativeQuery = true)
+    @Query(value = "SELECT * FROM users u where u.main_id = :id AND u.is_delete <> 1", nativeQuery = true)
     List<User> findUserByMain(@Param("id") Long id);
 
-    @Query(value = "SELECT * FROM users u where u.region_id = :id", nativeQuery = true)
+    @Query(value = "SELECT * FROM users u where u.region_id = :id AND u.is_delete <> 1", nativeQuery = true)
     List<User> findUserByRegion(@Param("id") Long id);
 
-    @Query(value = "SELECT * FROM users u where u.branch_id = :id", nativeQuery = true)
+    @Query(value = "SELECT * FROM users u where u.branch_id = :id AND u.is_delete <> 1", nativeQuery = true)
     List<User> findUserByBranch(@Param("id") Long id);
 
-    @Query(value = "SELECT * FROM users u where u.area_id = :id", nativeQuery = true)
+    @Query(value = "SELECT * FROM users u where u.area_id = :id AND u.is_delete <> 1", nativeQuery = true)
     List<User> findUserByArea(@Param("id") Long id);
 
-    @Query(value = "SELECT u.id, u.fullname FROM users u where u.region_id = :id", nativeQuery = true)
+    @Query(value = "SELECT u.id, u.fullname, u.initial_name FROM users u where u.region_id = :id AND u.is_delete <> 1", nativeQuery = true)
     List<DropDownUser> findDropDownByRegion(@Param("id") Long id);
 
-    @Query(value = "SELECT u.id, u.fullname FROM users u where u.main_id = :id", nativeQuery = true)
+    @Query(value = "SELECT u.id, u.fullname, u.initial_name FROM users u where u.main_id = :id AND u.is_delete <> 1", nativeQuery = true)
     List<DropDownUser> findDropDownByMain(@Param("id") Long id);
 
 }

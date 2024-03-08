@@ -22,5 +22,5 @@ public class RescheduleDTO {
     private Date start_date;
     private Date end_date;
     private String description;
-    private String createdBy;
+    private String created_by;
 }

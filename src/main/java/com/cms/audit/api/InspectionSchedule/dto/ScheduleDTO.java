@@ -22,5 +22,5 @@ public class ScheduleDTO {
     private Date end_date;
     private String description;
     private EStatus status;
-    private String createdBy;
+    private String created_by;
 }

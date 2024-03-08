@@ -10,9 +10,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.cms.audit.api.InspectionSchedule.dto.EditScheduleDTO;
 import com.cms.audit.api.InspectionSchedule.dto.RescheduleDTO;
 import com.cms.audit.api.InspectionSchedule.dto.ScheduleDTO;
-import com.cms.audit.api.InspectionSchedule.dto.response.ScheduleInterface;
 import com.cms.audit.api.InspectionSchedule.models.ECategory;
 import com.cms.audit.api.InspectionSchedule.models.EStatus;
 import com.cms.audit.api.InspectionSchedule.models.Schedule;
@@ -117,12 +117,11 @@ public class ScheduleService {
                                         .status(HttpStatus.INTERNAL_SERVER_ERROR)
                                         .build();
                 }
-
         }
 
         public GlobalResponse getByRegionId(Long id) {
                 try {
-                        List<ScheduleInterface> response = scheduleRepository.findOneScheduleByRegionId(id);
+                        List<Schedule> response = scheduleRepository.findOneScheduleByRegionId(id);
                         if (response.isEmpty()) {
                                 return GlobalResponse
                                                 .builder()
@@ -296,7 +295,7 @@ public class ScheduleService {
                                         ECategory.REGULAR,
                                         0,
                                         null,
-                                        scheduleDTO.getCreatedBy(),
+                                        scheduleDTO.getCreated_by(),
                                         new Date(),
                                         new Date());
 
@@ -307,7 +306,7 @@ public class ScheduleService {
                         if (!checkIfExist.isEmpty()) {
                                 return GlobalResponse
                                                 .builder()
-                                                .message("Already exist")
+                                                .message("Start and end date is already exist")
                                                 .status(HttpStatus.FOUND)
                                                 .build();
                         }
@@ -365,12 +364,12 @@ public class ScheduleService {
                                         ECategory.SPECIAL,
                                         0,
                                         null,
-                                        scheduleDTO.getCreatedBy(),
+                                        scheduleDTO.getCreated_by(),
                                         new Date(),
                                         new Date());
 
                         // change all todo or progress status to pending status
-                        scheduleRepository.editStatusPendingScheduleByDate(scheduleDTO.getUser_id(), scheduleDTO.getCreatedBy(),scheduleDTO.getStart_date(), scheduleDTO.getEnd_date());
+                        scheduleRepository.editStatusPendingScheduleByDate(scheduleDTO.getUser_id(), scheduleDTO.getCreated_by(),scheduleDTO.getStart_date(), scheduleDTO.getEnd_date());
 
                         // Schedule response = scheduleRepository.save(schedule);
                         Schedule response = scheduleRepository.save(schedule);
@@ -425,8 +424,8 @@ public class ScheduleService {
                                         EStatus.NA,
                                         ECategory.REGULAR,
                                         0,
-                                        dto.getCreatedBy(),
-                                        dto.getCreatedBy(),
+                                        dto.getCreated_by(),
+                                        dto.getCreated_by(),
                                         new Date(),
                                         new Date());
 
@@ -436,7 +435,7 @@ public class ScheduleService {
                         if (!checkIfExist.isEmpty()) {
                                 return GlobalResponse
                                                 .builder()
-                                                .message("Already exist")
+                                                .message("Start and end date is already exist")
                                                 .status(HttpStatus.FOUND)
                                                 .build();
                         }
@@ -458,7 +457,7 @@ public class ScheduleService {
                                         ECategory.REGULAR,
                                         0,
                                         getBefore.get().getCreatedBy(),
-                                        dto.getCreatedBy(),
+                                        dto.getCreated_by(),
                                         getBefore.get().getCreated_at(),
                                         new Date());
 
@@ -484,107 +483,34 @@ public class ScheduleService {
                 }
         }
 
-        public GlobalResponse editRegularSchedule(ScheduleDTO scheduleDTO, Long id) {
+        public GlobalResponse editSchedule(EditScheduleDTO editScheduleDTO, Long id, ECategory category) {
                 try {
                         Optional<Schedule> getSChedule = scheduleRepository.findById(id);
 
                         Branch branchId = Branch.builder()
-                                        .id(scheduleDTO.getBranch_id())
+                                        .id(editScheduleDTO.getBranch_id())
                                         .build();
 
                         User userId = User.builder()
-                                        .id(scheduleDTO.getUser_id())
+                                        .id(editScheduleDTO.getUser_id())
                                         .build();
 
                         Schedule schedule = new Schedule(
                                         id,
                                         userId,
                                         branchId,
-                                        scheduleDTO.getDescription(),
-                                        scheduleDTO.getStart_date(),
-                                        scheduleDTO.getEnd_date(),
-                                        null,
-                                        null,
-                                        scheduleDTO.getStatus(),
-                                        ECategory.REGULAR,
+                                        editScheduleDTO.getDescription(),
+                                        editScheduleDTO.getStart_date(),
+                                        editScheduleDTO.getEnd_date(),
+                                        editScheduleDTO.getStart_date_realization(),
+                                        editScheduleDTO.getEnd_date_realization(),
+                                        editScheduleDTO.getStatus(),
+                                        category,
                                         0,
-                                        scheduleDTO.getCreatedBy(),
-                                        scheduleDTO.getCreatedBy(),
+                                        editScheduleDTO.getUpdate_by(),
+                                        getSChedule.get().getCreatedBy(),
                                         getSChedule.get().getCreated_at(),
                                         new Date());
-
-                        List<Schedule> checkIfExist = scheduleRepository.findScheduleInDateRangeByUserId(
-                                        scheduleDTO.getUser_id(), "REGULAR", scheduleDTO.getStart_date(),
-                                        scheduleDTO.getEnd_date());
-                        if (!checkIfExist.isEmpty()) {
-                                return GlobalResponse
-                                                .builder()
-                                                .message("Already exist")
-                                                .status(HttpStatus.FOUND)
-                                                .build();
-                        }
-
-                        scheduleRepository.save(schedule);
-
-                        return GlobalResponse
-                                        .builder()
-                                        .message("Success")
-                                        .status(HttpStatus.OK)
-                                        .build();
-                } catch (DataException e) {
-                        return GlobalResponse
-                                        .builder()
-                                        .message("Exception :" + e.getMessage())
-                                        .status(HttpStatus.UNPROCESSABLE_ENTITY)
-                                        .build();
-                } catch (Exception e) {
-                        return GlobalResponse
-                                        .builder()
-                                        .message("Exception :" + e.getMessage())
-                                        .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                                        .build();
-                }
-        }
-
-        public GlobalResponse editSpecialSchedule(ScheduleDTO scheduleDTO, Long id) {
-                try {
-                        Optional<Schedule> getSChedule = scheduleRepository.findById(id);
-
-                        Branch branchId = Branch.builder()
-                                        .id(scheduleDTO.getBranch_id())
-                                        .build();
-
-                        User userId = User.builder()
-                                        .id(scheduleDTO.getUser_id())
-                                        .build();
-
-                        Schedule schedule = new Schedule(
-                                        id,
-                                        userId,
-                                        branchId,
-                                        scheduleDTO.getDescription(),
-                                        scheduleDTO.getStart_date(),
-                                        scheduleDTO.getEnd_date(),
-                                        null,
-                                        null,
-                                        scheduleDTO.getStatus(),
-                                        ECategory.SPECIAL,
-                                        0,
-                                        scheduleDTO.getCreatedBy(),
-                                        scheduleDTO.getCreatedBy(),
-                                        getSChedule.get().getCreated_at(),
-                                        new Date());
-
-                        List<Schedule> checkIfExist = scheduleRepository.findScheduleInDateRangeByUserId(
-                                        scheduleDTO.getUser_id(), "REGULAR", scheduleDTO.getStart_date(),
-                                        scheduleDTO.getEnd_date());
-                        if (!checkIfExist.isEmpty()) {
-                                return GlobalResponse
-                                                .builder()
-                                                .message("Already exist")
-                                                .status(HttpStatus.FOUND)
-                                                .build();
-                        }
 
                         scheduleRepository.save(schedule);
 
@@ -669,8 +595,34 @@ public class ScheduleService {
 
         public GlobalResponse delete(Long id) {
                 try {
+                        Optional<Schedule> getBefore = scheduleRepository.findById(id);
 
-                        User response = scheduleRepository.softDelete(id);
+                        Branch branchId = Branch.builder()
+                                        .id(getBefore.get().getBranch().getId())
+                                        .build();
+
+                        User userId = User.builder()
+                                        .id(getBefore.get().getUser().getId())
+                                        .build();
+
+                        Schedule schedule = new Schedule(
+                                        getBefore.get().getId(),
+                                        userId,
+                                        branchId,
+                                        getBefore.get().getDescription(),
+                                        getBefore.get().getStart_date(),
+                                        getBefore.get().getEnd_date(),
+                                        getBefore.get().getStart_date_realization(),
+                                        getBefore.get().getEnd_date_realization(),
+                                        getBefore.get().getStatus(),
+                                        getBefore.get().getCategory(),
+                                        1,
+                                        getBefore.get().getCreatedBy(),
+                                        getBefore.get().getUpdatedBy(),
+                                        getBefore.get().getCreated_at(),
+                                        new Date());
+
+                        Schedule response = scheduleRepository.save(schedule);
                         if (response == null) {
                                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Bad Request");
                         }

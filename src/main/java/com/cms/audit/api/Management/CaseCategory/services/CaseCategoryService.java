@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import com.cms.audit.api.Management.Case.models.Case;
 import com.cms.audit.api.Management.CaseCategory.dto.CaseCategoryDTO;
+import com.cms.audit.api.Management.CaseCategory.dto.response.CaseCategoryInterface;
 import com.cms.audit.api.Management.CaseCategory.models.CaseCategory;
 import com.cms.audit.api.Management.CaseCategory.repository.CaseCategoryRepository;
 import com.cms.audit.api.common.response.GlobalResponse;
@@ -27,6 +28,38 @@ public class CaseCategoryService {
     public GlobalResponse findAll() {
         try {
             List<CaseCategory> response = caseCategoryRepository.findAllCaseCategory();
+            if (response.isEmpty()) {
+                return GlobalResponse
+                        .builder()
+                        .message("Not Content")
+                        .status(HttpStatus.NO_CONTENT)
+                        .build();
+            }
+            return GlobalResponse
+                    .builder()
+                    .message("Success")
+                    .data(response)
+                    .status(HttpStatus.OK)
+                    .build();
+        } catch (DataException e) {
+            return GlobalResponse
+                    .builder()
+                    .message("Exception :" + e.getMessage())
+                    .status(HttpStatus.UNPROCESSABLE_ENTITY)
+                    .build();
+        } catch (Exception e) {
+            return GlobalResponse
+                    .builder()
+                    .message("Exception :" + e.getMessage())
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .build();
+        }
+
+    }
+
+    public GlobalResponse findSpecific() {
+        try {
+            List<CaseCategoryInterface> response = caseCategoryRepository.findSpecificCaseCategory();
             if (response.isEmpty()) {
                 return GlobalResponse
                         .builder()
@@ -120,12 +153,44 @@ public class CaseCategoryService {
 
     }
 
+    public GlobalResponse findSpecificByCasesId(Long id) {
+        try {
+            List<CaseCategoryInterface> response = caseCategoryRepository.findSpecificCaseCategoryByCases(id);
+            if (response.isEmpty()) {
+                return GlobalResponse
+                        .builder()
+                        .message("Not Content")
+                        .status(HttpStatus.NO_CONTENT)
+                        .build();
+            }
+            return GlobalResponse
+                    .builder()
+                    .message("Success")
+                    .data(response)
+                    .status(HttpStatus.OK)
+                    .build();
+        } catch (DataException e) {
+            return GlobalResponse
+                    .builder()
+                    .message("Exception :" + e.getMessage())
+                    .status(HttpStatus.UNPROCESSABLE_ENTITY)
+                    .build();
+        } catch (Exception e) {
+            return GlobalResponse
+                    .builder()
+                    .message("Exception :" + e.getMessage())
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .build();
+        }
+
+    }
+
     public GlobalResponse save(CaseCategoryDTO caseCategoryDTO) {
         try {
 
             Case caseId = Case
                     .builder()
-                    .id(caseCategoryDTO.getCases_id())
+                    .id(caseCategoryDTO.getCase_id())
                     .build();
 
             CaseCategory caseCategoryEntity = new CaseCategory(
@@ -170,7 +235,7 @@ public class CaseCategoryService {
 
             Case caseId = Case
                     .builder()
-                    .id(caseCategoryDTO.getCases_id())
+                    .id(caseCategoryDTO.getCase_id())
                     .build();
 
             CaseCategory caseCategoryEntity = new CaseCategory(
@@ -212,8 +277,23 @@ public class CaseCategoryService {
 
     public GlobalResponse delete(Long id) {
         try {
+            CaseCategory caseCategoryGet = caseCategoryRepository.findById(id).get();
 
-            CaseCategory response = caseCategoryRepository.softDelete(id);
+            Case caseId = Case
+                    .builder()
+                    .id(caseCategoryGet.getCases().getId())
+                    .build();
+
+            CaseCategory caseCategoryEntity = new CaseCategory(
+                    id,
+                    caseCategoryGet.getName(),
+                    1,
+                    caseCategoryGet.getCreated_at(),
+                    new Date(),
+                    caseId
+                    );
+
+            CaseCategory response = caseCategoryRepository.save(caseCategoryEntity);
             if (response == null) {
                 return GlobalResponse
                         .builder()

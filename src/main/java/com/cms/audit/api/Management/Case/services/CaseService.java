@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.cms.audit.api.Management.Case.dto.CaseDTO;
+import com.cms.audit.api.Management.Case.dto.response.CaseInterface;
 import com.cms.audit.api.Management.Case.models.Case;
 import com.cms.audit.api.Management.Case.repository.CaseRepository;
 import com.cms.audit.api.common.response.GlobalResponse;
@@ -25,6 +26,38 @@ public class CaseService {
     public GlobalResponse findAll() {
         try {
             List<Case> response = caseRepository.findAllCase();
+            if (response.isEmpty()) {
+                return GlobalResponse
+                        .builder()
+                        .message("Not Content")
+                        .status(HttpStatus.NO_CONTENT)
+                        .build();
+            }
+            return GlobalResponse
+                    .builder()
+                    .message("Success")
+                    .data(response)
+                    .status(HttpStatus.OK)
+                    .build();
+        } catch (DataException e) {
+            return GlobalResponse
+                    .builder()
+                    .message("Exception :" + e.getMessage())
+                    .status(HttpStatus.UNPROCESSABLE_ENTITY)
+                    .build();
+        } catch (Exception e) {
+            return GlobalResponse
+                    .builder()
+                    .message("Exception :" + e.getMessage())
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .build();
+        }
+
+    }
+
+    public GlobalResponse findSpecific() {
+        try {
+            List<CaseInterface> response = caseRepository.findSpecificCase();
             if (response.isEmpty()) {
                 return GlobalResponse
                         .builder()
@@ -169,8 +202,18 @@ public class CaseService {
 
     public GlobalResponse delete(Long id) {
         try {
+            Case caseGet = caseRepository.findById(id).get();
 
-            Case response = caseRepository.softDelete(id);
+            Case caseEntity = new Case(
+                id,
+                caseGet.getName(),
+                caseGet.getCode(),
+                1,
+                caseGet.getCreated_at(),
+                new Date()
+            );
+
+            Case response = caseRepository.save(caseEntity);
             if (response == null) {
                 return GlobalResponse
                         .builder()

@@ -11,9 +11,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.cms.audit.api.AuditDailyReport.dto.AuditDailyReportDetailDTO;
+import com.cms.audit.api.AuditDailyReport.dto.EditAuditDailyReportDetailDTO;
 import com.cms.audit.api.AuditDailyReport.models.AuditDailyReport;
 import com.cms.audit.api.AuditDailyReport.models.AuditDailyReportDetail;
 import com.cms.audit.api.AuditDailyReport.repository.AuditDailyReportDetailRepository;
+import com.cms.audit.api.Management.Case.models.Case;
+import com.cms.audit.api.Management.CaseCategory.models.CaseCategory;
 import com.cms.audit.api.common.response.GlobalResponse;
 
 import jakarta.transaction.Transactional;
@@ -26,7 +29,14 @@ public class AuditDailyReportDetailService {
 
     public GlobalResponse get() {
         try {
-            List<AuditDailyReportDetail> response = repository.findAll();
+            List<AuditDailyReportDetail> response = repository.findAllLHADetail();
+            if (response.isEmpty()) {
+                return GlobalResponse
+                        .builder()
+                        .message("No Content")
+                        .status(HttpStatus.NO_CONTENT)
+                        .build();
+            }
             return GlobalResponse
                     .builder()
                     .message("Success")
@@ -56,9 +66,9 @@ public class AuditDailyReportDetailService {
 
     public GlobalResponse getById(Long id) {
         try {
-            AuditDailyReportDetail response = repository.findById(id).orElseThrow(()-> new IllegalStateException(
-                "lha with id " + id + " does now exist"
-            ));
+            AuditDailyReportDetail response = repository.findOneByLHADetailId(id)
+                    .orElseThrow(() -> new IllegalStateException(
+                            "lha with id " + id + " does now exist"));
             return GlobalResponse
                     .builder()
                     .message("Success")
@@ -88,9 +98,14 @@ public class AuditDailyReportDetailService {
 
     public GlobalResponse getByLHAId(Long id) {
         try {
-            AuditDailyReportDetail response = repository.findByLHAId(id).orElseThrow(()-> new IllegalStateException(
-                "lha with id " + id + " does now exist"
-            ));
+            List<AuditDailyReportDetail> response = repository.findByLHAId(id);
+            if (response.isEmpty()) {
+                return GlobalResponse
+                        .builder()
+                        .message("No Content")
+                        .status(HttpStatus.NO_CONTENT)
+                        .build();
+            }
             return GlobalResponse
                     .builder()
                     .message("Success")
@@ -121,26 +136,29 @@ public class AuditDailyReportDetailService {
     public GlobalResponse save(AuditDailyReportDetailDTO dto) {
         try {
 
-            AuditDailyReport setId = AuditDailyReport.builder().id(dto.getAuditDailyReport_Id()).build();
-            
+            AuditDailyReport setId = AuditDailyReport.builder().id(dto.getAudit_daily_report_Id()).build();
+            Case setCaseId = Case.builder().id(dto.getCase_id()).build();
+            CaseCategory setCCId = CaseCategory.builder().id(dto.getCase_category_id()).build();
+
             AuditDailyReportDetail auditDailyReport = new AuditDailyReportDetail(
-                null,
-                setId,
-                dto.getDescription(),
-                dto.getSuggestion(),
-                dto.getTemporary_recommendations(),
-                dto.getPermanent_recommendations(),
-                0,
-                dto.getCreated_by(),
-                new Date(),
-                new Date()
-            );
+                    null,
+                    setId,
+                    setCaseId,
+                    setCCId,
+                    dto.getDescription(),
+                    dto.getSuggestion(),
+                    dto.getTemporary_recommendations(),
+                    dto.getPermanent_recommendations(),
+                    0,
+                    dto.getCreate_by(),
+                    dto.getCreate_by(),
+                    new Date(),
+                    new Date());
 
             AuditDailyReportDetail response = repository.save(auditDailyReport);
             return GlobalResponse
                     .builder()
                     .message("Success")
-                    .data(response)
                     .status(HttpStatus.OK)
                     .build();
         } catch (ResponseStatusException e) {
@@ -164,35 +182,39 @@ public class AuditDailyReportDetailService {
         }
     }
 
-    public GlobalResponse edit(AuditDailyReportDetailDTO dto, Long id) {
+    public GlobalResponse edit(EditAuditDailyReportDetailDTO dto, Long id) {
         try {
             Optional<AuditDailyReportDetail> getBefore = repository.findById(id);
-            if(!getBefore.isPresent()){
+            if (!getBefore.isPresent()) {
                 return GlobalResponse
-                .builder()
-                .message("Not Found")
-                .status(HttpStatus.NOT_FOUND)
-                .build();
+                        .builder()
+                        .message("Not Found")
+                        .status(HttpStatus.NOT_FOUND)
+                        .build();
             }
-            
+
+            Case setCaseId = Case.builder().id(dto.getCase_id()).build();
+            CaseCategory setCCId = CaseCategory.builder().id(dto.getCase_category_id()).build();
+
             AuditDailyReportDetail auditDailyReport = new AuditDailyReportDetail(
-                id,
-                getBefore.get().getAuditDailyReport(),
-                dto.getDescription(),
-                dto.getSuggestion(),
-                dto.getTemporary_recommendations(),
-                dto.getPermanent_recommendations(),
-                0,
-                dto.getCreated_by(),
-                getBefore.get().getCreated_at(),
-                new Date()
-            );
+                    id,
+                    getBefore.get().getAuditDailyReport(),
+                    setCaseId,
+                    setCCId,
+                    dto.getDescription(),
+                    dto.getSuggestion(),
+                    dto.getTemporary_recommendations(),
+                    dto.getPermanent_recommendations(),
+                    0,
+                    getBefore.get().getCreated_by(),
+                    dto.getUpdate_by(),
+                    getBefore.get().getCreated_at(),
+                    new Date());
 
             AuditDailyReportDetail response = repository.save(auditDailyReport);
             return GlobalResponse
                     .builder()
                     .message("Success")
-                    .data(response)
                     .status(HttpStatus.OK)
                     .build();
         } catch (ResponseStatusException e) {
@@ -218,11 +240,38 @@ public class AuditDailyReportDetailService {
 
     public GlobalResponse delete(Long id) {
         try {
-            AuditDailyReportDetail response = repository.softDelete(id);
+            Optional<AuditDailyReportDetail> getBefore = repository.findById(id);
+            if (!getBefore.isPresent()) {
+                return GlobalResponse
+                        .builder()
+                        .message("Not Found")
+                        .status(HttpStatus.NOT_FOUND)
+                        .build();
+            }
+
+            Case setCaseId = Case.builder().id(getBefore.get().getCases().getId()).build();
+            CaseCategory setCCId = CaseCategory.builder().id(getBefore.get().getCaseCategory().getId()).build();
+
+            AuditDailyReportDetail auditDailyReport = new AuditDailyReportDetail(
+                    id,
+                    getBefore.get().getAuditDailyReport(),
+                    setCaseId,
+                    setCCId,
+                    getBefore.get().getDescription(),
+                    getBefore.get().getSuggestion(),
+                    getBefore.get().getTemporary_recommendations(),
+                    getBefore.get().getPermanent_recommendations(),
+                    1,
+                    getBefore.get().getCreated_by(),
+                    getBefore.get().getUpdated_by(),
+                    getBefore.get().getCreated_at(),
+                    new Date());
+
+            AuditDailyReportDetail response = repository.save(auditDailyReport);
+
             return GlobalResponse
                     .builder()
                     .message("Success")
-                    .data(response)
                     .status(HttpStatus.OK)
                     .build();
         } catch (ResponseStatusException e) {

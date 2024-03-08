@@ -239,7 +239,7 @@ public class UserService {
                                         userDTO.getNip(),
                                         userDTO.getUsername(),
                                         passwordEncoder.encode(userDTO.getPassword()),
-                                        userDTO.getFull_name(),
+                                        userDTO.getFullname(),
                                         userDTO.getInitial_name(),
                                         1,
                                         0,
@@ -309,7 +309,7 @@ public class UserService {
                                         userDTO.getNip(),
                                         userDTO.getUsername(),
                                         passwordEncoder.encode(userDTO.getPassword()),
-                                        userDTO.getFull_name(),
+                                        userDTO.getFullname(),
                                         userDTO.getInitial_name(),
                                         1,
                                         0,
@@ -392,8 +392,8 @@ public class UserService {
                                 passwordEncoder.encode(changePasswordDTO.getPassword()), 
                                 getUser.get().getFullname(), 
                                 getUser.get().getInitial_name(), 
-                                0, 
                                 1, 
+                                0, 
                                 getUser.get().getCreated_at(), 
                                 new Date());
 

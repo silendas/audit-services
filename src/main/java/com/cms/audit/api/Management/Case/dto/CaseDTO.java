@@ -14,5 +14,4 @@ import lombok.ToString;
 public class CaseDTO {
     private String name;
     private String code;
-    private Integer is_delete;
 }

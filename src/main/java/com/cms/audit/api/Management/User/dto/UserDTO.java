@@ -16,7 +16,7 @@ public class UserDTO {
     private String nip;
     private String username;
     private String password;
-    private String full_name;
+    private String fullname;
     private String initial_name;
     private Long role_id;
     private Long level_id;

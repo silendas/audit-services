@@ -9,13 +9,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import com.cms.audit.api.Management.Case.models.Case;
 import com.cms.audit.api.Management.Penalty.dto.PenaltyDTO;
+import com.cms.audit.api.Management.Penalty.dto.response.PenaltyInterface;
 import com.cms.audit.api.Management.Penalty.models.Penalty;
 import com.cms.audit.api.Management.Penalty.repository.PenaltyRepository;
 import com.cms.audit.api.common.response.GlobalResponse;
 
-import jakarta.annotation.security.PermitAll;
 import jakarta.transaction.Transactional;
 
 @Service
@@ -28,6 +27,38 @@ public class PenaltyService {
     public GlobalResponse findAll() {
         try {
             List<Penalty> response = PenaltyRepository.findAllPenalty();
+            if (response.isEmpty()) {
+                return GlobalResponse
+                        .builder()
+                        .message("Not Content")
+                        .status(HttpStatus.NO_CONTENT)
+                        .build();
+            }
+            return GlobalResponse
+                    .builder()
+                    .message("Success")
+                    .data(response)
+                    .status(HttpStatus.OK)
+                    .build();
+        } catch (DataException e) {
+            return GlobalResponse
+                    .builder()
+                    .message("Exception :" + e.getMessage())
+                    .status(HttpStatus.UNPROCESSABLE_ENTITY)
+                    .build();
+        } catch (Exception e) {
+            return GlobalResponse
+                    .builder()
+                    .message("Exception :" + e.getMessage())
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .build();
+        }
+
+    }
+
+    public GlobalResponse findSpecific() {
+        try {
+            List<PenaltyInterface> response = PenaltyRepository.findSpecificPenalty();
             if (response.isEmpty()) {
                 return GlobalResponse
                         .builder()
@@ -130,17 +161,17 @@ public class PenaltyService {
 
     public GlobalResponse edit(PenaltyDTO PenaltyDTO, Long id) {
         try {
-            Penalty PenaltyGet = PenaltyRepository.findById(id).get();
+            Penalty getPenalty = PenaltyRepository.findById(id).get();
 
-            Penalty Penalty = new Penalty(
+            Penalty penalty = new Penalty(
                 id,
                 PenaltyDTO.getName(),
                 0,
-                PenaltyGet.getCreated_at(),
+                getPenalty.getCreated_at(),
                 new Date()
             );
 
-            Penalty response = PenaltyRepository.save(Penalty);
+            Penalty response = PenaltyRepository.save(penalty);
             if (response == null) {
                 return GlobalResponse
                         .builder()
@@ -170,8 +201,17 @@ public class PenaltyService {
 
     public GlobalResponse delete(Long id) {
         try {
+            Penalty getPenalty = PenaltyRepository.findById(id).get();
 
-            Penalty response = PenaltyRepository.softDelete(id);
+            Penalty penalty = new Penalty(
+                id,
+                getPenalty.getName(),
+                1,
+                getPenalty.getCreated_at(),
+                new Date()
+            );
+
+            Penalty response = PenaltyRepository.save(penalty);
             if (response == null) {
                 return GlobalResponse
                         .builder()

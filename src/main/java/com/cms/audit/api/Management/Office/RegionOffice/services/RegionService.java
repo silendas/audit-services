@@ -2,6 +2,7 @@ package com.cms.audit.api.Management.Office.RegionOffice.services;
 
 import java.util.List;
 import java.util.Date;
+import java.util.Optional;
 
 import org.hibernate.exception.DataException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +28,39 @@ public class RegionService {
 
     public GlobalResponse findAll() {
         try {
-            List<RegionInterface> response = regionRepository.findAllRegion();
+            List<Region> response = regionRepository.findAllRegion();
+            if (response.isEmpty()) {
+                return GlobalResponse
+                        .builder()
+                        .message("Not Content")
+                        .status(HttpStatus.NO_CONTENT)
+                        .build();
+            }
+            return GlobalResponse
+                    .builder()
+                    .message("Success")
+                    .data(response)
+                    .status(HttpStatus.OK)
+                    .build();
+        } catch (DataException e) {
+            return GlobalResponse
+                    .builder()
+                    .message("Exception :" + e.getMessage())
+                    .status(HttpStatus.UNPROCESSABLE_ENTITY)
+                    .build();
+        } catch (Exception e) {
+            return GlobalResponse
+                    .builder()
+                    .message("Exception :" + e.getMessage())
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .build();
+        }
+
+    }
+
+    public GlobalResponse findSpecific() {
+        try {
+            List<RegionInterface> response = regionRepository.findSpecificRegion();
             if (response.isEmpty()) {
                 return GlobalResponse
                         .builder()
@@ -59,7 +92,7 @@ public class RegionService {
 
     public GlobalResponse findOne(Long id) {
         try {
-            List<RegionInterface> response = regionRepository.findOneRegionById(id);
+            Optional<Region> response = regionRepository.findOneRegionById(id);
             if (response.isEmpty()) {
                 return GlobalResponse
                         .builder()
@@ -91,7 +124,7 @@ public class RegionService {
 
     public GlobalResponse findOneByMainId(Long id) {
         try {
-            List<RegionInterface> response = regionRepository.findOneRegionByMainId(id);
+            List<Region> response = regionRepository.findRegionByMainId(id);
             if (response.isEmpty()) {
                 return GlobalResponse
                         .builder()
@@ -121,16 +154,49 @@ public class RegionService {
 
     }
 
-    public GlobalResponse save(RegionDTO regionDTO) {
+    public GlobalResponse findSpecificByMainId(Long id) {
+        try {
+            List<RegionInterface> response = regionRepository.findSpecificRegionByMainId(id);
+            if (response.isEmpty()) {
+                return GlobalResponse
+                        .builder()
+                        .message("Not Content")
+                        .status(HttpStatus.NO_CONTENT)
+                        .build();
+            }
+            return GlobalResponse
+                    .builder()
+                    .message("Success")
+                    .data(response)
+                    .status(HttpStatus.OK)
+                    .build();
+        } catch (DataException e) {
+            return GlobalResponse
+                    .builder()
+                    .message("Exception :" + e.getMessage())
+                    .status(HttpStatus.UNPROCESSABLE_ENTITY)
+                    .build();
+        } catch (Exception e) {
+            return GlobalResponse
+                    .builder()
+                    .message("Exception :" + e.getMessage())
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .build();
+        }
+
+    }
+
+
+    public GlobalResponse save(RegionDTO dto) {
         try {
 
             Main mainId = Main.builder()
-                    .id(regionDTO.getMain_id())
+                    .id(dto.getMain_id())
                     .build();
 
             Region region = new Region(
                     null,
-                    regionDTO.getName(),
+                    dto.getName(),
                     new Date(),
                     new Date(),
                     0,
@@ -164,18 +230,18 @@ public class RegionService {
         }
     }
 
-    public GlobalResponse edit(RegionDTO regionDTO, Long id) {
+    public GlobalResponse edit(RegionDTO dto, Long id) {
         try {
 
             Region regionGet = regionRepository.findById(id).get();
 
             Main mainId = Main.builder()
-                    .id(regionDTO.getMain_id())
+                    .id(dto.getMain_id())
                     .build();
 
             Region region = new Region(
                     id,
-                    regionDTO.getName(),
+                    dto.getName(),
                     regionGet.getCreated_at(),
                     new Date(),
                     0,
@@ -211,8 +277,21 @@ public class RegionService {
 
     public GlobalResponse delete(Long id) {
         try {
+            Region regionGet = regionRepository.findById(id).get();
 
-            Branch response = regionRepository.softDelete(id);
+            Main mainId = Main.builder()
+                    .id(regionGet.getMain().getId())
+                    .build();
+
+            Region region = new Region(
+                    id,
+                    regionGet.getName(),
+                    regionGet.getCreated_at(),
+                    new Date(),
+                    1,
+                    mainId);
+
+            Region response = regionRepository.save(region);
             if (response == null) {
                 return GlobalResponse
                         .builder()

@@ -3,6 +3,8 @@ package com.cms.audit.api.AuditDailyReport.models;
 import java.util.Date;
 
 import com.cms.audit.api.InspectionSchedule.models.Schedule;
+import com.cms.audit.api.Management.Office.BranchOffice.models.Branch;
+import com.cms.audit.api.Management.User.models.User;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -23,7 +25,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "audit_dailt_report")
+@Table(name = "audit_daily_report")
 public class AuditDailyReport {
     
     @Id
@@ -35,6 +37,14 @@ public class AuditDailyReport {
     @JoinColumn(name = "schedule_id")
     private Schedule schedule;
 
+    @ManyToOne
+    @JoinColumn(name = "branch_id")
+    private Branch branch;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+
     @Column(name = "is_research",length = 2)
     private Long isResearch;
 
@@ -43,6 +53,9 @@ public class AuditDailyReport {
 
     @Column(name = "created_by")
     private String created_by;
+
+    @Column(name = "updated_by")
+    private String updated_by;
     
     @Column(name = "created_at")
     private Date created_at;

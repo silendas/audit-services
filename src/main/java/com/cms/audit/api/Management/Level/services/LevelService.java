@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import com.cms.audit.api.Management.Case.models.Case;
 import com.cms.audit.api.Management.Level.dto.LevelDTO;
+import com.cms.audit.api.Management.Level.dto.response.LevelInterface;
 import com.cms.audit.api.Management.Level.models.Level;
 import com.cms.audit.api.Management.Level.repository.LevelRepository;
 import com.cms.audit.api.common.response.GlobalResponse;
@@ -27,6 +28,38 @@ public class LevelService {
     public GlobalResponse findAll() {
         try {
             List<Level> response = levelRepository.findAllLevel();
+            if (response.isEmpty()) {
+                return GlobalResponse
+                        .builder()
+                        .message("Not Content")
+                        .status(HttpStatus.NO_CONTENT)
+                        .build();
+            }
+            return GlobalResponse
+                    .builder()
+                    .message("Success")
+                    .data(response)
+                    .status(HttpStatus.OK)
+                    .build();
+        } catch (DataException e) {
+            return GlobalResponse
+                    .builder()
+                    .message("Exception :" + e.getMessage())
+                    .status(HttpStatus.UNPROCESSABLE_ENTITY)
+                    .build();
+        } catch (Exception e) {
+            return GlobalResponse
+                    .builder()
+                    .message("Exception :" + e.getMessage())
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .build();
+        }
+
+    }
+
+    public GlobalResponse findSpecific() {
+        try {
+            List<LevelInterface> response = levelRepository.findSpecificLevel();
             if (response.isEmpty()) {
                 return GlobalResponse
                         .builder()
@@ -88,13 +121,13 @@ public class LevelService {
 
     }
 
-    public GlobalResponse save(LevelDTO levelDTO) {
+    public GlobalResponse save(LevelDTO dto) {
         try {
 
             Level level = new Level(
                     null,
-                    levelDTO.getName(),
-                    levelDTO.getCode(),
+                    dto.getName(),
+                    dto.getCode(),
                     0,
                     new Date(),
                     new Date());
@@ -127,14 +160,14 @@ public class LevelService {
         }
     }
 
-    public GlobalResponse edit(LevelDTO levelDTO, Long id) {
+    public GlobalResponse edit(LevelDTO dto, Long id) {
         try {
             Level levelGet = levelRepository.findById(id).get();
 
             Level level = new Level(
                     id,
-                    levelDTO.getName(),
-                    levelDTO.getCode(),
+                    dto.getName(),
+                    dto.getCode(),
                     0,
                     levelGet.getCreated_at(),
                     new Date());
@@ -169,8 +202,17 @@ public class LevelService {
 
     public GlobalResponse delete(Long id) {
         try {
+            Level dto = levelRepository.findById(id).get();
 
-            Level response = levelRepository.softDelete(id);
+            Level level = new Level(
+                    id,
+                    dto.getName(),
+                    dto.getCode(),
+                    1,
+                    dto.getCreated_at(),
+                    new Date());
+
+            Level response = levelRepository.save(level);
             if (response == null) {
                 return GlobalResponse
                         .builder()

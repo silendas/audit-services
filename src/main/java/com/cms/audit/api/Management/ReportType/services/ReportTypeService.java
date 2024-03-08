@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import com.cms.audit.api.Management.Penalty.models.Penalty;
 import com.cms.audit.api.Management.Penalty.repository.PenaltyRepository;
 import com.cms.audit.api.Management.ReportType.dto.ReportTypeDTO;
+import com.cms.audit.api.Management.ReportType.dto.response.ReportTypeInterface;
 import com.cms.audit.api.Management.ReportType.models.ReportType;
 import com.cms.audit.api.Management.ReportType.repository.ReportTypeRepository;
 import com.cms.audit.api.common.response.GlobalResponse;
@@ -27,7 +28,39 @@ public class ReportTypeService {
 
     public GlobalResponse findAll() {
         try {
-            List<ReportType> response = reportTypeRepository.findAll();
+            List<ReportType> response = reportTypeRepository.findAllReportType();
+            if (response.isEmpty()) {
+                return GlobalResponse
+                        .builder()
+                        .message("Not Content")
+                        .status(HttpStatus.NO_CONTENT)
+                        .build();
+            }
+            return GlobalResponse
+                    .builder()
+                    .message("Success")
+                    .data(response)
+                    .status(HttpStatus.OK)
+                    .build();
+        } catch (DataException e) {
+            return GlobalResponse
+                    .builder()
+                    .message("Exception :" + e.getMessage())
+                    .status(HttpStatus.UNPROCESSABLE_ENTITY)
+                    .build();
+        } catch (Exception e) {
+            return GlobalResponse
+                    .builder()
+                    .message("Exception :" + e.getMessage())
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .build();
+        }
+
+    }
+
+    public GlobalResponse findSpecific() {
+        try {
+            List<ReportTypeInterface> response = reportTypeRepository.findSpecificReportType();
             if (response.isEmpty()) {
                 return GlobalResponse
                         .builder()
@@ -59,7 +92,7 @@ public class ReportTypeService {
 
     public GlobalResponse findOne(Long id) {
         try {
-            Optional<ReportType> response = reportTypeRepository.findById(id);
+            Optional<ReportType> response = reportTypeRepository.findOneReportTypeById(id);
             if (!response.isPresent()) {
                 return GlobalResponse
                         .builder()
@@ -92,7 +125,7 @@ public class ReportTypeService {
     public GlobalResponse save(ReportTypeDTO dto) {
         try {
 
-            ReportType role = new ReportType(
+            ReportType reportType = new ReportType(
                     null,
                     dto.getName(),
                     dto.getCode(),
@@ -100,7 +133,7 @@ public class ReportTypeService {
                     new Date(),
                     new Date());
 
-            ReportType response = reportTypeRepository.save(role);
+            ReportType response = reportTypeRepository.save(reportType);
             if (response == null) {
                 return GlobalResponse
                         .builder()
@@ -130,17 +163,17 @@ public class ReportTypeService {
 
     public GlobalResponse edit(ReportTypeDTO dto, Long id) {
         try {
-            ReportType roleGet = reportTypeRepository.findById(id).get();
+            ReportType getReport = reportTypeRepository.findById(id).get();
 
-            ReportType role = new ReportType(
+            ReportType reportType = new ReportType(
                     id,
                     dto.getName(),
                     dto.getCode(),
                     0,
-                    roleGet.getCreated_at(),
+                    getReport.getCreated_at(),
                     new Date());
 
-            ReportType response = reportTypeRepository.save(role);
+            ReportType response = reportTypeRepository.save(reportType);
             if (response == null) {
                 return GlobalResponse
                         .builder()
@@ -170,7 +203,17 @@ public class ReportTypeService {
 
     public GlobalResponse delete(Long id) {
         try {
-            ReportType response = reportTypeRepository.softDelete(id);
+            ReportType getReport = reportTypeRepository.findById(id).get();
+
+            ReportType reportType = new ReportType(
+                    id,
+                    getReport.getName(),
+                    getReport.getCode(),
+                    1,
+                    getReport.getCreated_at(),
+                    new Date());
+
+            ReportType response = reportTypeRepository.save(reportType);
             if (response == null) {
                 return GlobalResponse
                         .builder()

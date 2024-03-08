@@ -39,13 +39,13 @@ public class NeedApproveController {
 
     @PutMapping("/approve/{id}")
     public ResponseEntity<Object> rescheduleApprove(@PathVariable("id") Long id, EditStatusDTO dto) {
-        GlobalResponse response = service.editStatus(id, EStatus.TODO, dto.getCreated_by());
+        GlobalResponse response = service.editStatus(id, EStatus.TODO, dto.getUpdate_by());
         return ResponseEntittyHandler.allHandler(null, response.getMessage(), response.getStatus(), null);
     }
 
-    @PutMapping("/rejected/{id}")
+    @PutMapping("/reject/{id}")
     public ResponseEntity<Object> rescheduleRejected(@PathVariable("id") Long id, EditStatusDTO dto) {
-        GlobalResponse response = service.editStatus(id, EStatus.REJECTED, dto.getCreated_by());
+        GlobalResponse response = service.editStatus(id, EStatus.REJECTED, dto.getUpdate_by());
         return ResponseEntittyHandler.allHandler(null, response.getMessage(), response.getStatus(), null);
     }
 

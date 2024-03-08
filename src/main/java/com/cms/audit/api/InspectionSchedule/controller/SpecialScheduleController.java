@@ -8,7 +8,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cms.audit.api.InspectionSchedule.dto.EditScheduleDTO;
 import com.cms.audit.api.InspectionSchedule.dto.ScheduleDTO;
+import com.cms.audit.api.InspectionSchedule.models.ECategory;
 import com.cms.audit.api.InspectionSchedule.service.ScheduleService;
 import com.cms.audit.api.common.constant.BasePath;
 import com.cms.audit.api.common.response.GlobalResponse;
@@ -57,8 +59,8 @@ public class SpecialScheduleController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Object> put(@RequestBody ScheduleDTO scheduleDTO, @PathVariable("id") Long id) {
-        GlobalResponse response = scheduleService.editSpecialSchedule(scheduleDTO, id);
+    public ResponseEntity<Object> put(@RequestBody EditScheduleDTO scheduleDTO, @PathVariable("id") Long id) {
+        GlobalResponse response = scheduleService.editSchedule(scheduleDTO, id, ECategory.SPECIAL);
         return ResponseEntittyHandler.allHandler(null, response.getMessage(), response.getStatus(), null);
     }
 

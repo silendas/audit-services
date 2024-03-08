@@ -8,7 +8,6 @@ public interface BasePath {
     String BASE_PATH_USER = BASE_API+"/users";
     String BASE_PATH_ROLE = BASE_API+"/role";
     String BASE_PATH_LEVEL = BASE_API+"/level";
-    String BASE_PATH_DROP_DOWN_USER = BASE_API+"/dropdown";
 
     String BASE_PATH_MAIN_SCHEDULE = BASE_API+"/main-schedule";
     String BASE_PATH_SPECIAL_SCHEDULE = BASE_API+"/special-schedule";
@@ -23,8 +22,13 @@ public interface BasePath {
     String BASE_PATH_MAIN_OFFICE = BASE_API+"/main";
     String BASE_PATH_REGION_OFFICE = BASE_API+"/region";
 
+    String BASE_PATH_DROP_DOWN = BASE_API+"/dropdown";
+
     String BASE_PATH_LHA = BASE_API+"/lha";
-    String BASE_PATH_LHA_DETAIL = BASE_API+"/lha-details";
+    String BASE_PATH_LHA_DETAIL = BASE_API+"/lha-detail";
+
+    String BASE_PATH_CLARIFICATION = BASE_API+"/clarification";
+
 
     String BASE_PATH_PENALTY = BASE_API+"/penalty";
     String BASE_PATH_REPORT_TYPE = BASE_API+"/report-type";

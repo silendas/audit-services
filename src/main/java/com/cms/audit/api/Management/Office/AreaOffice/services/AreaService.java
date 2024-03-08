@@ -2,6 +2,7 @@ package com.cms.audit.api.Management.Office.AreaOffice.services;
 
 import java.util.List;
 import java.util.Date;
+import java.util.Optional;
 
 import org.hibernate.exception.DataException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +28,39 @@ public class AreaService {
 
     public GlobalResponse findAll() {
         try {
-            List<AreaInterface> response = areaRepository.findAllArea();
+            List<Area> response = areaRepository.findAllArea();
+            if (response.isEmpty()) {
+                return GlobalResponse
+                        .builder()
+                        .message("Not Content")
+                        .status(HttpStatus.NO_CONTENT)
+                        .build();
+            }
+            return GlobalResponse
+                    .builder()
+                    .message("Success")
+                    .data(response)
+                    .status(HttpStatus.OK)
+                    .build();
+        } catch (DataException e) {
+            return GlobalResponse
+                    .builder()
+                    .message("Exception :" + e.getMessage())
+                    .status(HttpStatus.UNPROCESSABLE_ENTITY)
+                    .build();
+        } catch (Exception e) {
+            return GlobalResponse
+                    .builder()
+                    .message("Exception :" + e.getMessage())
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .build();
+        }
+
+    }
+
+    public GlobalResponse findSpecific() {
+        try {
+            List<AreaInterface> response = areaRepository.findSpecificArea();
             if (response.isEmpty()) {
                 return GlobalResponse
                         .builder()
@@ -59,8 +92,8 @@ public class AreaService {
 
     public GlobalResponse findOne(Long id) {
         try {
-            List<AreaInterface> response = areaRepository.findOneAreaById(id);
-            if (response.isEmpty()) {
+            Optional<Area> response = areaRepository.findOneAreaById(id);
+            if (!response.isPresent()) {
                 return GlobalResponse
                         .builder()
                         .message("Not Content")
@@ -91,7 +124,7 @@ public class AreaService {
 
     public GlobalResponse findOneByRegionId(Long id) {
         try {
-            List<AreaInterface> response = areaRepository.findOneAreaByRegionId(id);
+            List<Area> response = areaRepository.findAreaByRegionId(id);
             if (response.isEmpty()) {
                 return GlobalResponse
                         .builder()
@@ -121,16 +154,48 @@ public class AreaService {
 
     }
 
-    public GlobalResponse save(AreaDTO branchDTO) {
+    public GlobalResponse findSpecificByRegionId(Long id) {
+        try {
+            List<AreaInterface> response = areaRepository.findSpecificAreaByRegionId(id);
+            if (response.isEmpty()) {
+                return GlobalResponse
+                        .builder()
+                        .message("Not Content")
+                        .status(HttpStatus.NO_CONTENT)
+                        .build();
+            }
+            return GlobalResponse
+                    .builder()
+                    .message("Success")
+                    .data(response)
+                    .status(HttpStatus.OK)
+                    .build();
+        } catch (DataException e) {
+            return GlobalResponse
+                    .builder()
+                    .message("Exception :" + e.getMessage())
+                    .status(HttpStatus.UNPROCESSABLE_ENTITY)
+                    .build();
+        } catch (Exception e) {
+            return GlobalResponse
+                    .builder()
+                    .message("Exception :" + e.getMessage())
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .build();
+        }
+
+    }
+
+    public GlobalResponse save(AreaDTO dto) {
         try {
 
             Region regionId = Region.builder()
-                    .id(branchDTO.getRegion_id())
+                    .id(dto.getRegion_id())
                     .build();
 
             Area area = new Area(
                     null,
-                    branchDTO.getName(),
+                    dto.getName(),
                     new Date(),
                     new Date(),
                     0,
@@ -164,19 +229,19 @@ public class AreaService {
         }
     }
 
-    public GlobalResponse edit(AreaDTO branchDTO, Long id) {
+    public GlobalResponse edit(AreaDTO dto, Long id) {
         try {
 
-            Area levelGet = areaRepository.findById(id).get();
+            Area areaGet = areaRepository.findById(id).get();
 
             Region regionId = Region.builder()
-                    .id(branchDTO.getRegion_id())
+                    .id(dto.getRegion_id())
                     .build();
 
             Area area = new Area(
                     id,
-                    branchDTO.getName(),
-                    levelGet.getCreated_at(),
+                    dto.getName(),
+                    areaGet.getCreated_at(),
                     new Date(),
                     0,
                     regionId);
@@ -212,7 +277,21 @@ public class AreaService {
     public GlobalResponse delete(Long id) {
         try {
 
-            Level response = areaRepository.softDelete(id);
+            Area areaGet = areaRepository.findById(id).get();
+
+            Region regionId = Region.builder()
+                    .id(areaGet.getRegion().getId())
+                    .build();
+
+            Area area = new Area(
+                    id,
+                    areaGet.getName(),
+                    areaGet.getCreated_at(),
+                    new Date(),
+                    1,
+                    regionId);
+
+            Area response = areaRepository.save(area);
             if (response == null) {
                 return GlobalResponse
                         .builder()

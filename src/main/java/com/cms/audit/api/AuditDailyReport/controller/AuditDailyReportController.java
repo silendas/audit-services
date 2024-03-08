@@ -3,6 +3,7 @@ package com.cms.audit.api.AuditDailyReport.controller;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cms.audit.api.AuditDailyReport.dto.AuditDailyReportDTO;
+import com.cms.audit.api.AuditDailyReport.dto.EditAuditDailyReportDTO;
 import com.cms.audit.api.AuditDailyReport.service.AuditDailyReportService;
 import com.cms.audit.api.common.constant.BasePath;
 import com.cms.audit.api.common.response.GlobalResponse;
@@ -11,7 +12,7 @@ import com.cms.audit.api.common.response.ResponseEntittyHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -30,13 +31,19 @@ public class AuditDailyReportController {
     @GetMapping
     public ResponseEntity<Object> get() {
         GlobalResponse response = auditDailyReportService.get();
-        return ResponseEntittyHandler.allHandler(null, response.getMessage(), response.getStatus(), response.getError());
+        return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(), response.getError());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Object> get(@RequestParam("id") Long id) {
+    public ResponseEntity<Object> get(@PathVariable("id") Long id) {
         GlobalResponse response = auditDailyReportService.getById(id);
-        return ResponseEntittyHandler.allHandler(null, response.getMessage(), response.getStatus(), response.getError());
+        return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(), response.getError());
+    }
+
+    @GetMapping("/{id}/schedule")
+    public ResponseEntity<Object> getBySchedule(@PathVariable("id") Long id) {
+        GlobalResponse response = auditDailyReportService.getByScheduleId(id);
+        return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(), response.getError());
     }
 
     @PostMapping
@@ -46,7 +53,7 @@ public class AuditDailyReportController {
     }
     
     @PutMapping("/{id}")
-    public ResponseEntity<Object> put(@RequestBody AuditDailyReportDTO dto, @PathVariable("id") Long id) {
+    public ResponseEntity<Object> put(@RequestBody EditAuditDailyReportDTO dto, @PathVariable("id") Long id) {
         GlobalResponse response = auditDailyReportService.edit(dto, id);
         return ResponseEntittyHandler.allHandler(null, response.getMessage(), response.getStatus(), response.getError());
     }
