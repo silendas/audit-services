@@ -6,6 +6,8 @@ import java.util.Optional;
 
 import org.hibernate.exception.DataException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -16,9 +18,13 @@ import com.cms.audit.api.InspectionSchedule.dto.ScheduleDTO;
 import com.cms.audit.api.InspectionSchedule.models.ECategory;
 import com.cms.audit.api.InspectionSchedule.models.EStatus;
 import com.cms.audit.api.InspectionSchedule.models.Schedule;
+import com.cms.audit.api.InspectionSchedule.repository.PagSchedule;
 import com.cms.audit.api.InspectionSchedule.repository.ScheduleRepository;
 import com.cms.audit.api.Management.Office.BranchOffice.models.Branch;
+import com.cms.audit.api.Management.Office.RegionOffice.models.Region;
+import com.cms.audit.api.Management.Office.RegionOffice.repository.RegionRepository;
 import com.cms.audit.api.Management.User.models.User;
+import com.cms.audit.api.Management.User.repository.UserRepository;
 import com.cms.audit.api.common.response.GlobalResponse;
 
 import jakarta.transaction.Transactional;
@@ -28,11 +34,23 @@ import jakarta.transaction.Transactional.TxType;
 public class ScheduleService {
 
         @Autowired
-        private ScheduleRepository scheduleRepository;
+        private ScheduleRepository repository;
 
-        public GlobalResponse get() {
+        @Autowired
+        private LogScheduleService logService;
+
+        @Autowired
+        private PagSchedule pagSchedule;
+
+        @Autowired
+        private UserRepository userRepository;
+
+        @Autowired
+        private RegionRepository regionRepository;
+
+        public GlobalResponse get(String name, int page, int size) {
                 try {
-                        List<Schedule> response = scheduleRepository.findAll();
+                        Page<Schedule> response = pagSchedule.findAll(PageRequest.of(page, size));
                         if (response.isEmpty()) {
                                 return GlobalResponse
                                                 .builder()
@@ -60,9 +78,9 @@ public class ScheduleService {
 
         }
 
-        public GlobalResponse getMainSchedule() {
+        public GlobalResponse getMainSchedule(int page, int size) {
                 try {
-                        List<Schedule> response = scheduleRepository.findAllScheduleForRegular();
+                        Page<Schedule> response = pagSchedule.findByCategoryInByOrderByIdDesc("REGULAR", PageRequest.of(page, size));
                         if (response.isEmpty()) {
                                 return GlobalResponse
                                                 .builder()
@@ -90,9 +108,9 @@ public class ScheduleService {
 
         }
 
-        public GlobalResponse getSpecialSchedule() {
+        public GlobalResponse getSpecialSchedule(int page, int size) {
                 try {
-                        List<Schedule> response = scheduleRepository.findAllScheduleForSpecial();
+                        Page<Schedule> response = pagSchedule.findByCategoryInByOrderByIdDesc("SPECIAL", PageRequest.of(page, size));
                         if (response.isEmpty()) {
                                 return GlobalResponse
                                                 .builder()
@@ -119,9 +137,9 @@ public class ScheduleService {
                 }
         }
 
-        public GlobalResponse getByRegionId(Long id) {
+        public GlobalResponse getByRegionId(Long id, String category, int page, int size) {
                 try {
-                        List<Schedule> response = scheduleRepository.findOneScheduleByRegionId(id);
+                        Page<Schedule> response = pagSchedule.findByRegionId(id, category,PageRequest.of(page, size));
                         if (response.isEmpty()) {
                                 return GlobalResponse
                                                 .builder()
@@ -151,7 +169,7 @@ public class ScheduleService {
 
         public GlobalResponse getById(Long id) {
                 try {
-                        Optional<Schedule> response = scheduleRepository.findOneScheduleById(id);
+                        Optional<Schedule> response = repository.findOneScheduleById(id);
                         if (!response.isPresent()) {
                                 return GlobalResponse
                                                 .builder()
@@ -179,9 +197,9 @@ public class ScheduleService {
 
         }
 
-        public GlobalResponse getByStatus(String status) {
+        public GlobalResponse getByStatus(String status,int page, int size) {
                 try {
-                        List<Schedule> response = scheduleRepository.findOneScheduleByStatus(status);
+                        Page<Schedule> response = pagSchedule.findOneScheduleByStatus(status,PageRequest.of(page, size));
                         if (response.isEmpty()) {
                                 return GlobalResponse
                                                 .builder()
@@ -209,9 +227,9 @@ public class ScheduleService {
 
         }
 
-        public GlobalResponse getByUserId(Long id) {
+        public GlobalResponse getByUserId(Long id,String category,int page, int size) {
                 try {
-                        List<Schedule> response = scheduleRepository.findAllScheduleByUserId(id);
+                        Page<Schedule> response = pagSchedule.findAllScheduleByUserId(id,category, PageRequest.of(page, size));
                         if (response.isEmpty()) {
                                 return GlobalResponse
                                                 .builder()
@@ -239,11 +257,11 @@ public class ScheduleService {
 
         }
 
-        public GlobalResponse getByRangeDateAndUserId(Long id, String category, Date start_date, Date end_date) {
+        public GlobalResponse getByRangeDateAndUserId(Long id, String category, Date start_date, Date end_date,int page, int size) {
                 try {
-                        List<Schedule> response = scheduleRepository.findScheduleInDateRangeByUserId(id,
+                        Page<Schedule> response = pagSchedule.findScheduleInDateRangeByUserId(id,
                                         category,
-                                        start_date, end_date);
+                                        start_date, end_date, PageRequest.of(page, size));
                         if (response.isEmpty()) {
                                 return GlobalResponse
                                                 .builder()
@@ -300,7 +318,7 @@ public class ScheduleService {
                                         new Date());
 
                         // check if schedule already exist?
-                        List<Schedule> checkIfExist = scheduleRepository.findScheduleInDateRangeByUserId(
+                        List<Schedule> checkIfExist = repository.findScheduleInDateRangeByUserId(
                                         scheduleDTO.getUser_id(), "REGULAR", scheduleDTO.getStart_date(),
                                         scheduleDTO.getEnd_date());
                         if (!checkIfExist.isEmpty()) {
@@ -311,7 +329,7 @@ public class ScheduleService {
                                                 .build();
                         }
 
-                        Schedule response = scheduleRepository.save(schedule);
+                        Schedule response = repository.save(schedule);
                         if (response == null) {
                                 return GlobalResponse
                                                 .builder()
@@ -319,6 +337,8 @@ public class ScheduleService {
                                                 .status(HttpStatus.UNPROCESSABLE_ENTITY)
                                                 .build();
                         }
+
+                        logService.save(response.getCreatedBy(), response.getDescription(), response.getId(), ECategory.REGULAR, response.getStatus());
 
                         return GlobalResponse
                                         .builder()
@@ -369,10 +389,10 @@ public class ScheduleService {
                                         new Date());
 
                         // change all todo or progress status to pending status
-                        scheduleRepository.editStatusPendingScheduleByDate(scheduleDTO.getUser_id(), scheduleDTO.getCreated_by(),scheduleDTO.getStart_date(), scheduleDTO.getEnd_date());
+                        repository.editStatusPendingScheduleByDate(scheduleDTO.getUser_id(), scheduleDTO.getCreated_by(),scheduleDTO.getStart_date(), scheduleDTO.getEnd_date());
 
-                        // Schedule response = scheduleRepository.save(schedule);
-                        Schedule response = scheduleRepository.save(schedule);
+                        // Schedule response = repository.save(schedule);
+                        Schedule response = repository.save(schedule);
                         if (response == null) {
                                 return GlobalResponse
                                                 .builder()
@@ -380,6 +400,8 @@ public class ScheduleService {
                                                 .status(HttpStatus.UNPROCESSABLE_ENTITY)
                                                 .build();
                         }
+
+                        logService.save(response.getCreatedBy(), response.getDescription(), response.getId(), ECategory.SPECIAL, response.getStatus());
 
                         return GlobalResponse
                                         .builder()
@@ -429,7 +451,7 @@ public class ScheduleService {
                                         new Date(),
                                         new Date());
 
-                        List<Schedule> checkIfExist = scheduleRepository.findScheduleInDateRangeByUserId(
+                        List<Schedule> checkIfExist = repository.findScheduleInDateRangeByUserId(
                                         dto.getUser_id(), "REGULAR", dto.getStart_date(),
                                         dto.getEnd_date());
                         if (!checkIfExist.isEmpty()) {
@@ -440,9 +462,11 @@ public class ScheduleService {
                                                 .build();
                         }
 
-                        Schedule response1 = scheduleRepository.save(schedule1);
+                        Schedule response1 = repository.save(schedule1);
 
-                        Optional<Schedule> getBefore = scheduleRepository.findById(dto.getSchedule_id());
+                        logService.save(response1.getCreatedBy(), response1.getDescription(), response1.getId(), ECategory.REGULAR, response1.getStatus());
+
+                        Optional<Schedule> getBefore = repository.findById(dto.getSchedule_id());
 
                         Schedule schedule2 = new Schedule(
                                         getBefore.get().getId(),
@@ -461,7 +485,9 @@ public class ScheduleService {
                                         getBefore.get().getCreated_at(),
                                         new Date());
 
-                        Schedule response2 = scheduleRepository.save(schedule2);
+                        Schedule response2 = repository.save(schedule2);
+
+                        logService.save(response2.getCreatedBy(), response2.getDescription(), response2.getId(), ECategory.REGULAR, response2.getStatus());
 
                         return GlobalResponse
                                         .builder()
@@ -485,7 +511,7 @@ public class ScheduleService {
 
         public GlobalResponse editSchedule(EditScheduleDTO editScheduleDTO, Long id, ECategory category) {
                 try {
-                        Optional<Schedule> getSChedule = scheduleRepository.findById(id);
+                        Optional<Schedule> getSChedule = repository.findById(id);
 
                         Branch branchId = Branch.builder()
                                         .id(editScheduleDTO.getBranch_id())
@@ -512,7 +538,9 @@ public class ScheduleService {
                                         getSChedule.get().getCreated_at(),
                                         new Date());
 
-                        scheduleRepository.save(schedule);
+                        Schedule response = repository.save(schedule);
+
+                        logService.edit(response.getCreatedBy(), response.getDescription(), response.getId(), ECategory.REGULAR, response.getStatus());
 
                         return GlobalResponse
                                         .builder()
@@ -536,7 +564,7 @@ public class ScheduleService {
 
         public GlobalResponse editStatus(Long id, EStatus status, String updateBy) {
                 try {
-                        Optional<Schedule> getBefore = scheduleRepository.findById(id);
+                        Optional<Schedule> getBefore = repository.findById(id);
 
                         Branch branchId = Branch.builder()
                                         .id(getBefore.get().getBranch().getId())
@@ -563,8 +591,7 @@ public class ScheduleService {
                                         getBefore.get().getCreated_at(),
                                         new Date());
 
-                        Schedule response = scheduleRepository.save(schedule);
-
+                        Schedule response = repository.save(schedule);
                         if (response == null) {
                                 return GlobalResponse
                                                 .builder()
@@ -572,6 +599,8 @@ public class ScheduleService {
                                                 .status(HttpStatus.UNPROCESSABLE_ENTITY)
                                                 .build();
                         }
+
+                        logService.edit(response.getCreatedBy(), response.getDescription(), response.getId(), ECategory.REGULAR, response.getStatus());
 
                         return GlobalResponse
                                         .builder()
@@ -595,7 +624,7 @@ public class ScheduleService {
 
         public GlobalResponse delete(Long id) {
                 try {
-                        Optional<Schedule> getBefore = scheduleRepository.findById(id);
+                        Optional<Schedule> getBefore = repository.findById(id);
 
                         Branch branchId = Branch.builder()
                                         .id(getBefore.get().getBranch().getId())
@@ -622,10 +651,11 @@ public class ScheduleService {
                                         getBefore.get().getCreated_at(),
                                         new Date());
 
-                        Schedule response = scheduleRepository.save(schedule);
+                        Schedule response = repository.save(schedule);
                         if (response == null) {
                                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Bad Request");
                         }
+                        logService.delete(response.getCreatedBy(), response.getDescription(), response.getId(), ECategory.REGULAR, response.getStatus());
                         return GlobalResponse
                                         .builder()
                                         .message("Success")

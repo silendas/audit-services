@@ -6,6 +6,8 @@ import java.util.Optional;
 
 import org.hibernate.exception.DataException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +16,7 @@ import com.cms.audit.api.Management.Office.MainOffice.dto.MainDTO;
 import com.cms.audit.api.Management.Office.MainOffice.dto.response.MainInterface;
 import com.cms.audit.api.Management.Office.MainOffice.models.Main;
 import com.cms.audit.api.Management.Office.MainOffice.repository.MainRepository;
+import com.cms.audit.api.Management.Office.MainOffice.repository.PagMain;
 import com.cms.audit.api.common.response.GlobalResponse;
 
 import jakarta.transaction.Transactional;
@@ -25,9 +28,12 @@ public class MainService {
     @Autowired
     private MainRepository mainRepository;
 
-    public GlobalResponse findAll() {
+    @Autowired
+    private PagMain pagMain;
+
+    public GlobalResponse findAll(String name, int page, int size) {
         try {
-            List<Main> response = mainRepository.findAllMain();
+            Page<Main> response = pagMain.findByNameContaining(name, PageRequest.of(page, size));
             if (response.isEmpty()) {
                 return GlobalResponse
                         .builder()

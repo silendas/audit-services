@@ -1,5 +1,7 @@
 package com.cms.audit.api.InspectionSchedule.controller;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,8 +26,9 @@ public class NeedApproveController {
     private ScheduleService service;
 
     @GetMapping
-    public ResponseEntity<Object> get() {
-        GlobalResponse response = service.getByStatus("NA");
+    public ResponseEntity<Object> get(@RequestParam("page") Optional<Integer> page,
+            @RequestParam("size") Optional<Integer> size) {
+        GlobalResponse response = service.getByStatus("NA", page.orElse(0), size.orElse(10));
         return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(),
                 response.getError());
     }

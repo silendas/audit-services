@@ -6,14 +6,20 @@ import java.util.Optional;
 
 import org.hibernate.exception.DataException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
+import com.cms.audit.api.Management.Office.AreaOffice.models.Area;
 import com.cms.audit.api.Management.Office.BranchOffice.models.Branch;
 import com.cms.audit.api.Management.Office.MainOffice.models.Main;
+import com.cms.audit.api.Management.Office.MainOffice.repository.MainRepository;
 import com.cms.audit.api.Management.Office.RegionOffice.dto.RegionDTO;
 import com.cms.audit.api.Management.Office.RegionOffice.dto.response.RegionInterface;
 import com.cms.audit.api.Management.Office.RegionOffice.models.Region;
+import com.cms.audit.api.Management.Office.RegionOffice.repository.PagRegion;
 import com.cms.audit.api.Management.Office.RegionOffice.repository.RegionRepository;
 import com.cms.audit.api.common.response.GlobalResponse;
 
@@ -26,9 +32,15 @@ public class RegionService {
     @Autowired
     private RegionRepository regionRepository;
 
-    public GlobalResponse findAll() {
+    @Autowired
+    private MainRepository mainRepository;
+
+    @Autowired
+    private PagRegion pagRegion;
+
+    public GlobalResponse findAll(String name, int page, int size) {
         try {
-            List<Region> response = regionRepository.findAllRegion();
+            Page<Region> response = pagRegion.findByNameContaining(name, PageRequest.of(page, size));
             if (response.isEmpty()) {
                 return GlobalResponse
                         .builder()
@@ -122,9 +134,17 @@ public class RegionService {
 
     }
 
-    public GlobalResponse findOneByMainId(Long id) {
+    public GlobalResponse findOneByMainId(Long id, int page, int size) {
         try {
-            List<Region> response = regionRepository.findRegionByMainId(id);
+            Optional<Main> setMain = mainRepository.findById(id);
+            if(!setMain.isPresent()){
+                return GlobalResponse
+                .builder()
+                .message("No Content")
+                .status(HttpStatus.NO_CONTENT)
+                .build();
+        }
+            Page<Region> response = pagRegion.findByMain(setMain.get(), PageRequest.of(page, size));
             if (response.isEmpty()) {
                 return GlobalResponse
                         .builder()

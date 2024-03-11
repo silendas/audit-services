@@ -1,6 +1,7 @@
 package com.cms.audit.api.InspectionSchedule.controller;
 
 import java.util.Date;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -32,8 +33,10 @@ public class SpecialScheduleController {
     private ScheduleService scheduleService;
 
     @GetMapping
-    public ResponseEntity<Object> getAll() {
-        GlobalResponse response = scheduleService.getSpecialSchedule();
+    public ResponseEntity<Object> getAll(
+            @RequestParam("page") Optional<Integer> page,
+            @RequestParam("size") Optional<Integer> size) {
+        GlobalResponse response = scheduleService.getSpecialSchedule(page.orElse(0), size.orElse(10));
         return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(), null);
     }
 
@@ -43,12 +46,29 @@ public class SpecialScheduleController {
         return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(), null);
     }
 
+
     @GetMapping("/filter")
     public ResponseEntity<Object> filterByDateRange(
             @RequestParam Long userId,
-            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
-            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate) {
-        GlobalResponse response = scheduleService.getByRangeDateAndUserId(userId, "SPECIAL", startDate, endDate);
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date start_date,
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date end_date,
+            @RequestParam("page") Optional<Integer> page,
+            @RequestParam("size") Optional<Integer> size) {
+        GlobalResponse response = scheduleService.getByRangeDateAndUserId(userId, "SPECIAL", start_date, end_date,page.orElse(0), size.orElse(10));
+        return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(), null);
+    }
+
+    @GetMapping("/{id}/user")
+    public ResponseEntity<Object> getByUserId(@PathVariable("id") Long id, @RequestParam("page") Optional<Integer> page,
+    @RequestParam("size") Optional<Integer> size) {
+        GlobalResponse response = scheduleService.getByUserId(id,"SPECIAL",page.orElse(0), size.orElse(10));
+        return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(), null);
+    }
+
+    @GetMapping("/{id}/region")
+    public ResponseEntity<Object> getByRegionId(@PathVariable("id") Long id, @RequestParam("page") Optional<Integer> page,
+    @RequestParam("size") Optional<Integer> size) {
+        GlobalResponse response = scheduleService.getByRegionId(id,"SPECIAL",page.orElse(0),size.orElse(10));
         return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(), null);
     }
 

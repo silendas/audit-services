@@ -3,7 +3,6 @@ package com.cms.audit.api.Management.Office.AreaOffice.models;
 import java.util.Date;
 
 import com.cms.audit.api.Management.Office.RegionOffice.models.Region;
-import com.cms.audit.api.Management.User.models.User;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

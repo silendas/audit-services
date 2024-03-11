@@ -1,19 +1,26 @@
 package com.cms.audit.api.Management.Office.BranchOffice.services;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.Optional;
 
 import org.hibernate.exception.DataException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.cms.audit.api.Management.Office.AreaOffice.models.Area;
+import com.cms.audit.api.Management.Office.AreaOffice.repository.AreaRepository;
 import com.cms.audit.api.Management.Office.BranchOffice.dto.BranchDTO;
 import com.cms.audit.api.Management.Office.BranchOffice.dto.response.BranchInterface;
 import com.cms.audit.api.Management.Office.BranchOffice.models.Branch;
 import com.cms.audit.api.Management.Office.BranchOffice.repository.BranchRepository;
+import com.cms.audit.api.Management.Office.BranchOffice.repository.PagBranch;
 import com.cms.audit.api.common.response.GlobalResponse;
 
 import jakarta.transaction.Transactional;
@@ -25,9 +32,15 @@ public class BranchService {
     @Autowired
     private BranchRepository branchRepository;
 
-    public GlobalResponse findAll() {
+    @Autowired
+    private AreaRepository areaRepository;
+
+    @Autowired
+    private PagBranch pagBranch;
+
+    public GlobalResponse findAll(String name, int page, int size) {
         try {
-            List<Branch> response = branchRepository.findAllBranch();
+            Page<Branch> response = pagBranch.findByNameContaining(name, PageRequest.of(page, size));
             if (response.isEmpty()) {
                 return GlobalResponse
                         .builder()
@@ -35,6 +48,9 @@ public class BranchService {
                         .status(HttpStatus.NO_CONTENT)
                         .build();
             }
+            // Map<String, Object> data = new LinkedHashMap<>();
+            // data.put("recordCount", response.size());
+            // data.put("result", response);
             return GlobalResponse
                     .builder()
                     .message("Success")
@@ -121,9 +137,17 @@ public class BranchService {
 
     }
 
-    public GlobalResponse findOneByAreaId(Long id) {
+    public GlobalResponse findByAreaId(Long id, int page, int size) {
         try {
-            List<Branch> response = branchRepository.findBranchByAreaId(id);
+            Optional<Area> setArea = areaRepository.findById(id);
+            if (!setArea.isPresent()) {
+                return GlobalResponse
+                        .builder()
+                        .message("No Content")
+                        .status(HttpStatus.NO_CONTENT)
+                        .build();
+            }
+            Page<Branch> response = pagBranch.findByArea(setArea.get(), PageRequest.of(page, size));
             if (response.isEmpty()) {
                 return GlobalResponse
                         .builder()
@@ -131,6 +155,9 @@ public class BranchService {
                         .status(HttpStatus.NO_CONTENT)
                         .build();
             }
+            // Map<String, Object> data = new LinkedHashMap<>();
+            // data.put("recordCount", response.size());
+            // data.put("result", response);
             return GlobalResponse
                     .builder()
                     .message("Success")

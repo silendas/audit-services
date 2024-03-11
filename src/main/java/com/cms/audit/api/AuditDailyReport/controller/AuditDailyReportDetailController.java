@@ -1,5 +1,7 @@
 package com.cms.audit.api.AuditDailyReport.controller;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -9,7 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cms.audit.api.AuditDailyReport.dto.AuditDailyReportDetailDTO;
@@ -27,8 +29,10 @@ public class AuditDailyReportDetailController {
     private AuditDailyReportDetailService service;
 
     @GetMapping
-    public ResponseEntity<Object> get() {
-        GlobalResponse response = service.get();
+    public ResponseEntity<Object> get(
+        @RequestParam("page") Optional<Integer> page,
+        @RequestParam("size") Optional<Integer> size) {
+        GlobalResponse response = service.get(page.orElse(0), size.orElse(10));
         return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(),
                 response.getError());
     }
@@ -40,9 +44,19 @@ public class AuditDailyReportDetailController {
                 response.getError());
     }
 
-    @GetMapping("/{id}/lha")
-    public ResponseEntity<Object> getByLHA(@PathVariable("id") Long id) {
-        GlobalResponse response = service.getByLHAId(id);
+    @GetMapping("/{id}/lha/all")
+    public ResponseEntity<Object> getByLHA(
+        @PathVariable("id") Long id,
+        @RequestParam("page") Optional<Integer> page,
+        @RequestParam("size") Optional<Integer> size) {
+        GlobalResponse response = service.getByLHAId(id, page.orElse(0),size.orElse(10));
+        return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(),
+                response.getError());
+    }
+
+    @GetMapping("/{id}/lha/last")
+    public ResponseEntity<Object> getOneByLHA(@PathVariable("id") Long id) {
+        GlobalResponse response = service.getOneByLHAId(id);
         return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(),
                 response.getError());
     }

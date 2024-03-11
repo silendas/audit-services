@@ -1,7 +1,7 @@
 package com.cms.audit.api.common.response;
 
-import java.util.Map;
 import java.util.LinkedHashMap;
+import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -71,9 +71,9 @@ public class ResponseEntittyHandler {
 
         if (error != null) {
             Map<String, Object> err = new LinkedHashMap<>();
-            meta.put("name", error.getCause());
-            meta.put("message", error.getMessage());
-            meta.put("header", error.getLocalizedMessage());
+            err.put("name", error.getClass());
+            err.put("message", error.getMessage());
+            err.put("header", error.getStackTrace());
 
             map.put("meta", meta);
             map.put("status", status.value());

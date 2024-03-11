@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.cms.audit.api.Management.User.dto.response.DropDownUser;
+import com.cms.audit.api.Management.User.dto.response.UserProfileInterface;
 import com.cms.audit.api.Management.User.models.User;
 
 @Repository
@@ -17,6 +18,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findOneUsersByEmailOrUsername(String email, String username);
 
     Optional<User> findByEmail(String email);
+    
+    @Query(value = "SELECT u.id, u.role_id, u.level_id, u.nip, u.fullname, u.initial_name, u.email, u.username, u.password, u.is_active, u.created_at,u.updated_at FROM users u", nativeQuery = true)
+    List<UserProfileInterface> findSpecificUser();
 
     @Query(value = "SELECT * FROM users u where u.main_id = :id AND u.is_delete <> 1", nativeQuery = true)
     List<User> findUserByMain(@Param("id") Long id);

@@ -5,6 +5,8 @@ import java.util.Date;
 
 import org.hibernate.exception.DataException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -12,6 +14,7 @@ import com.cms.audit.api.Management.Case.dto.CaseDTO;
 import com.cms.audit.api.Management.Case.dto.response.CaseInterface;
 import com.cms.audit.api.Management.Case.models.Case;
 import com.cms.audit.api.Management.Case.repository.CaseRepository;
+import com.cms.audit.api.Management.Case.repository.PagCase;
 import com.cms.audit.api.common.response.GlobalResponse;
 
 import jakarta.transaction.Transactional;
@@ -23,9 +26,12 @@ public class CaseService {
     @Autowired
     private CaseRepository caseRepository;
 
-    public GlobalResponse findAll() {
+    @Autowired
+    private PagCase pagCase;
+
+    public GlobalResponse findAll(String name, int page, int size) {
         try {
-            List<Case> response = caseRepository.findAllCase();
+            Page<Case> response = pagCase.findByNameContaining(name, PageRequest.of(page, size));
             if (response.isEmpty()) {
                 return GlobalResponse
                         .builder()

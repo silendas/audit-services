@@ -1,5 +1,7 @@
 package com.cms.audit.api.Clarifications.dto;
 
+import java.util.Date;
+
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 
@@ -14,14 +16,14 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ClarificationDTO {
-    private Long auditDailyReportId;
-    private Long casesId;
-    private Long caseCategoryId;
-    private Long reportTypeId;
+    private Long user_id;
+    private Long case_id;
+    private Long case_category_id;
+    private Long report_type_id;
     private Long report_number;
     private String code;
     private String nominal_loss;
-    private String evaluation_limitation;
+    private Date evaluation_limitation;
     private String supervisor;
     private String auditee_leader;
     private String file_name;
@@ -29,6 +31,5 @@ public class ClarificationDTO {
     private String reason;
     private String priority;
     private String evaluation;
-    private String is_follow_up;
-    private String status;
+    private Long is_follow_up;
 }

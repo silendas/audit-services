@@ -7,21 +7,29 @@ import java.util.Optional;
 import org.hibernate.exception.DataException;
 import org.hibernate.tool.schema.spi.SqlScriptException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.cms.audit.api.Management.Level.models.Level;
 import com.cms.audit.api.Management.Office.AreaOffice.models.Area;
+import com.cms.audit.api.Management.Office.AreaOffice.repository.AreaRepository;
 import com.cms.audit.api.Management.Office.BranchOffice.models.Branch;
+import com.cms.audit.api.Management.Office.BranchOffice.repository.BranchRepository;
 import com.cms.audit.api.Management.Office.MainOffice.models.Main;
+import com.cms.audit.api.Management.Office.MainOffice.repository.MainRepository;
 import com.cms.audit.api.Management.Office.RegionOffice.models.Region;
+import com.cms.audit.api.Management.Office.RegionOffice.repository.RegionRepository;
 import com.cms.audit.api.Management.Role.models.Role;
 import com.cms.audit.api.Management.User.dto.ChangePasswordDTO;
 import com.cms.audit.api.Management.User.dto.UserDTO;
 import com.cms.audit.api.Management.User.dto.response.DropDownUser;
 import com.cms.audit.api.Management.User.models.User;
+import com.cms.audit.api.Management.User.repository.PagUser;
 import com.cms.audit.api.Management.User.repository.UserRepository;
 import com.cms.audit.api.common.response.GlobalResponse;
 
@@ -34,13 +42,29 @@ public class UserService {
         private UserRepository userRepository;
 
         @Autowired
+        private MainRepository mainRepository;
+
+        @Autowired
+        private RegionRepository regionRepository;
+
+        @Autowired
+        private AreaRepository areaRepository;
+
+        @Autowired
+        private BranchRepository branchRepository;
+
+        @Autowired
+        private PagUser pagUser;
+
+        @Autowired
         private PasswordEncoder passwordEncoder;
 
-        public GlobalResponse findAll() {
+        public GlobalResponse findAll(int page, int size) {
                 try {
-                        List<User> response = userRepository.findAll();
+                        Page<User> response = pagUser.findAll(PageRequest.of(page, size));
                         if (response.isEmpty()) {
-                                return GlobalResponse.builder().message("No Content").status(HttpStatus.NO_CONTENT).build();
+                                return GlobalResponse.builder().message("No Content").status(HttpStatus.NO_CONTENT)
+                                                .build();
                         }
                         return GlobalResponse
                                         .builder()
@@ -62,7 +86,8 @@ public class UserService {
                 try {
                         Optional<User> response = userRepository.findById(id);
                         if (!response.isPresent()) {
-                                return GlobalResponse.builder().message("No Content").status(HttpStatus.NO_CONTENT).build();
+                                return GlobalResponse.builder().message("No Content").status(HttpStatus.NO_CONTENT)
+                                                .build();
                         }
                         return GlobalResponse
                                         .builder()
@@ -79,9 +104,17 @@ public class UserService {
 
         }
 
-        public GlobalResponse findOneByMainId(Long id) {
+        public GlobalResponse findOneByMainId(Long id, int page, int size) {
                 try {
-                        List<User> response = userRepository.findUserByMain(id);
+                        Optional<Main> setMain = mainRepository.findById(id);
+                        if(!setMain.isPresent()){
+                                return GlobalResponse
+                                .builder()
+                                .message("No Content")
+                                .status(HttpStatus.NO_CONTENT)
+                                .build();
+                        }
+                        Page<User> response = pagUser.findByMain(setMain.get(), PageRequest.of(page, size));
                         if (response.isEmpty()) {
                                 return GlobalResponse.builder().message("No Content").status(HttpStatus.NO_CONTENT).build();
                         }
@@ -99,11 +132,20 @@ public class UserService {
                 }
         }
 
-        public GlobalResponse findOneByRegionId(Long id) {
+        public GlobalResponse findOneByRegionId(Long id, int page, int size) {
                 try {
-                        List<User> response = userRepository.findUserByRegion(id);
+                        Optional<Region> set = regionRepository.findById(id);
+                        if(!set.isPresent()){
+                                return GlobalResponse
+                                .builder()
+                                .message("No Content")
+                                .status(HttpStatus.NO_CONTENT)
+                                .build();
+                        }
+                        Page<User> response = pagUser.findByRegion(set.get(), PageRequest.of(page, size));
                         if (response.isEmpty()) {
-                                return GlobalResponse.builder().message("No Content").status(HttpStatus.NO_CONTENT).build();
+                                return GlobalResponse.builder().message("No Content").status(HttpStatus.NO_CONTENT)
+                                                .build();
                         }
                         return GlobalResponse
                                         .builder()
@@ -119,12 +161,13 @@ public class UserService {
                 }
 
         }
-        
+
         public GlobalResponse dropDownByRegionId(Long id) {
                 try {
                         List<DropDownUser> response = userRepository.findDropDownByRegion(id);
                         if (response.isEmpty()) {
-                                return GlobalResponse.builder().message("No Content").status(HttpStatus.NO_CONTENT).build();
+                                return GlobalResponse.builder().message("No Content").status(HttpStatus.NO_CONTENT)
+                                                .build();
                         }
                         return GlobalResponse
                                         .builder()
@@ -144,7 +187,8 @@ public class UserService {
                 try {
                         List<DropDownUser> response = userRepository.findDropDownByMain(id);
                         if (response.isEmpty()) {
-                                return GlobalResponse.builder().message("No Content").status(HttpStatus.NO_CONTENT).build();
+                                return GlobalResponse.builder().message("No Content").status(HttpStatus.NO_CONTENT)
+                                                .build();
                         }
                         return GlobalResponse
                                         .builder()
@@ -160,11 +204,13 @@ public class UserService {
                 }
         }
 
-        public GlobalResponse findOneByAreaId(Long id) {
+        public GlobalResponse findOneByAreaId(Long id, int page, int size) {
                 try {
-                        List<User> response = userRepository.findUserByArea(id);
+                        Area set = areaRepository.findById(id).orElseThrow(()-> new ResponseStatusException(HttpStatus.NO_CONTENT));
+                        Page<User> response = pagUser.findByArea(set, PageRequest.of(page, size));
                         if (response.isEmpty()) {
-                                return GlobalResponse.builder().message("No Content").status(HttpStatus.NO_CONTENT).build();
+                                return GlobalResponse.builder().message("No Content").status(HttpStatus.NO_CONTENT)
+                                                .build();
                         }
                         return GlobalResponse
                                         .builder()
@@ -181,11 +227,13 @@ public class UserService {
 
         }
 
-        public GlobalResponse findOneByBranchId(Long id) {
+        public GlobalResponse findOneByBranchId(Long id, int page, int size) {
                 try {
-                        List<User> response = userRepository.findUserByBranch(id);
+                        Branch set = branchRepository.findById(id).orElseThrow(()-> new ResponseStatusException(HttpStatus.NO_CONTENT));
+                        Page<User> response = pagUser.findByBranch(set, PageRequest.of(page, size));
                         if (response.isEmpty()) {
-                                return GlobalResponse.builder().message("No Content").status(HttpStatus.NO_CONTENT).build();
+                                return GlobalResponse.builder().message("No Content").status(HttpStatus.NO_CONTENT)
+                                                .build();
                         }
                         return GlobalResponse
                                         .builder()
@@ -339,23 +387,23 @@ public class UserService {
                         Optional<User> getUser = userRepository.findById(id);
 
                         User user = new User(
-                                id, 
-                                getUser.get().getRole(), 
-                                getUser.get().getLevel(), 
-                                getUser.get().getMain(), 
-                                getUser.get().getRegion(), 
-                                getUser.get().getArea(), 
-                                getUser.get().getBranch(), 
-                                getUser.get().getEmail(), 
-                                getUser.get().getNip(), 
-                                getUser.get().getUsername(), 
-                                getUser.get().getPassword(), 
-                                getUser.get().getFullname(), 
-                                getUser.get().getInitial_name(), 
-                                0, 
-                                1, 
-                                getUser.get().getCreated_at(), 
-                                new Date());
+                                        id,
+                                        getUser.get().getRole(),
+                                        getUser.get().getLevel(),
+                                        getUser.get().getMain(),
+                                        getUser.get().getRegion(),
+                                        getUser.get().getArea(),
+                                        getUser.get().getBranch(),
+                                        getUser.get().getEmail(),
+                                        getUser.get().getNip(),
+                                        getUser.get().getUsername(),
+                                        getUser.get().getPassword(),
+                                        getUser.get().getFullname(),
+                                        getUser.get().getInitial_name(),
+                                        0,
+                                        1,
+                                        getUser.get().getCreated_at(),
+                                        new Date());
 
                         User response = userRepository.save(user);
                         if (response == null) {
@@ -379,23 +427,23 @@ public class UserService {
                         Optional<User> getUser = userRepository.findById(id);
 
                         User user = new User(
-                                id, 
-                                getUser.get().getRole(), 
-                                getUser.get().getLevel(), 
-                                getUser.get().getMain(), 
-                                getUser.get().getRegion(), 
-                                getUser.get().getArea(), 
-                                getUser.get().getBranch(), 
-                                getUser.get().getEmail(), 
-                                getUser.get().getNip(), 
-                                getUser.get().getUsername(), 
-                                passwordEncoder.encode(changePasswordDTO.getPassword()), 
-                                getUser.get().getFullname(), 
-                                getUser.get().getInitial_name(), 
-                                1, 
-                                0, 
-                                getUser.get().getCreated_at(), 
-                                new Date());
+                                        id,
+                                        getUser.get().getRole(),
+                                        getUser.get().getLevel(),
+                                        getUser.get().getMain(),
+                                        getUser.get().getRegion(),
+                                        getUser.get().getArea(),
+                                        getUser.get().getBranch(),
+                                        getUser.get().getEmail(),
+                                        getUser.get().getNip(),
+                                        getUser.get().getUsername(),
+                                        passwordEncoder.encode(changePasswordDTO.getPassword()),
+                                        getUser.get().getFullname(),
+                                        getUser.get().getInitial_name(),
+                                        1,
+                                        0,
+                                        getUser.get().getCreated_at(),
+                                        new Date());
 
                         User response = userRepository.save(user);
                         return GlobalResponse

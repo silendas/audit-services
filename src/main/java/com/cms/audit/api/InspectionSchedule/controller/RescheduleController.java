@@ -1,5 +1,7 @@
 package com.cms.audit.api.InspectionSchedule.controller;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,14 +25,15 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 @RestController
 @RequestMapping(value = BasePath.BASE_PATH_RESCHEDULE)
-public class Reschedule {
+public class RescheduleController {
 
     @Autowired
     private ScheduleService scheduleService;
 
     @GetMapping
-    public ResponseEntity<Object> get() {
-        GlobalResponse response = scheduleService.getByStatus("PENDING");
+    public ResponseEntity<Object> get( @RequestParam("page") Optional<Integer> page,
+            @RequestParam("size") Optional<Integer> size) {
+        GlobalResponse response = scheduleService.getByStatus("PENDING",page.orElse(0), size.orElse(10));
         return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(),response.getError());
     }
     

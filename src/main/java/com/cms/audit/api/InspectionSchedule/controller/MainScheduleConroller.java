@@ -12,6 +12,7 @@ import com.cms.audit.api.common.response.GlobalResponse;
 import com.cms.audit.api.common.response.ResponseEntittyHandler;
 
 import java.util.Date;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -28,13 +29,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RestController
 @RequestMapping(value = BasePath.BASE_PATH_MAIN_SCHEDULE)
 public class MainScheduleConroller {
-    
+
     @Autowired
     private ScheduleService scheduleService;
 
     @GetMapping
-    public ResponseEntity<Object> getAll() {
-        GlobalResponse response = scheduleService.getMainSchedule();
+    public ResponseEntity<Object> getAll(
+            @RequestParam("page") Optional<Integer> page,
+            @RequestParam("size") Optional<Integer> size) {
+        GlobalResponse response = scheduleService.getMainSchedule(page.orElse(0), size.orElse(10));
         return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(), null);
     }
 
@@ -46,25 +49,29 @@ public class MainScheduleConroller {
 
     @GetMapping("/filter")
     public ResponseEntity<Object> filterByDateRange(
-            @RequestParam Long userId, 
-            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate, 
-            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate) {
-        GlobalResponse response = scheduleService.getByRangeDateAndUserId(userId, "REGULAR",startDate, endDate);
+            @RequestParam Long userId,
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date start_date,
+            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date end_date,
+            @RequestParam("page") Optional<Integer> page,
+            @RequestParam("size") Optional<Integer> size) {
+        GlobalResponse response = scheduleService.getByRangeDateAndUserId(userId, "REGULAR", start_date, end_date,page.orElse(0), size.orElse(10));
         return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(), null);
     }
 
     @GetMapping("/{id}/user")
-    public ResponseEntity<Object> getByUserId(@PathVariable("id") Long id) {
-        GlobalResponse response = scheduleService.getByUserId(id);
+    public ResponseEntity<Object> getByUserId(@PathVariable("id") Long id, @RequestParam("page") Optional<Integer> page,
+    @RequestParam("size") Optional<Integer> size) {
+        GlobalResponse response = scheduleService.getByUserId(id,"REGULAR",page.orElse(0), size.orElse(10));
         return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(), null);
     }
 
     @GetMapping("/{id}/region")
-    public ResponseEntity<Object> getByRegionId(@PathVariable("id") Long id) {
-        GlobalResponse response = scheduleService.getByRegionId(id);
+    public ResponseEntity<Object> getByRegionId(@PathVariable("id") Long id, @RequestParam("page") Optional<Integer> page,
+    @RequestParam("size") Optional<Integer> size) {
+        GlobalResponse response = scheduleService.getByRegionId(id,"REGULAR",page.orElse(0),size.orElse(10));
         return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(), null);
     }
-    
+
     @PostMapping
     public ResponseEntity<Object> add(@RequestBody ScheduleDTO scheduleDTO) {
         GlobalResponse response = scheduleService.insertRegularSchedule(scheduleDTO);
@@ -76,7 +83,7 @@ public class MainScheduleConroller {
         GlobalResponse response = scheduleService.editSchedule(scheduleDTO, id, ECategory.REGULAR);
         return ResponseEntittyHandler.allHandler(null, response.getMessage(), response.getStatus(), null);
     }
-    
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Object> delete(@PathVariable("id") Long id) {
         GlobalResponse response = scheduleService.delete(id);

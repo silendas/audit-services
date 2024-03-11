@@ -6,6 +6,8 @@ import java.util.Optional;
 
 import org.hibernate.exception.DataException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -15,6 +17,7 @@ import com.cms.audit.api.AuditDailyReport.dto.EditAuditDailyReportDetailDTO;
 import com.cms.audit.api.AuditDailyReport.models.AuditDailyReport;
 import com.cms.audit.api.AuditDailyReport.models.AuditDailyReportDetail;
 import com.cms.audit.api.AuditDailyReport.repository.AuditDailyReportDetailRepository;
+import com.cms.audit.api.AuditDailyReport.repository.PagAuditDailyReportDetail;
 import com.cms.audit.api.Management.Case.models.Case;
 import com.cms.audit.api.Management.CaseCategory.models.CaseCategory;
 import com.cms.audit.api.common.response.GlobalResponse;
@@ -27,9 +30,12 @@ public class AuditDailyReportDetailService {
     @Autowired
     private AuditDailyReportDetailRepository repository;
 
-    public GlobalResponse get() {
+    @Autowired
+    private PagAuditDailyReportDetail pag;
+
+    public GlobalResponse get(int page, int size) {
         try {
-            List<AuditDailyReportDetail> response = repository.findAllLHADetail();
+            Page<AuditDailyReportDetail> response = pag.findAllLHADetail(PageRequest.of(page, size));
             if (response.isEmpty()) {
                 return GlobalResponse
                         .builder()
@@ -96,10 +102,47 @@ public class AuditDailyReportDetailService {
         }
     }
 
-    public GlobalResponse getByLHAId(Long id) {
+    public GlobalResponse getByLHAId(Long id, int page, int size) {
         try {
-            List<AuditDailyReportDetail> response = repository.findByLHAId(id);
+            Page<AuditDailyReportDetail> response = pag.findByLHAId(id, PageRequest.of(page, size));
             if (response.isEmpty()) {
+                return GlobalResponse
+                        .builder()
+                        .message("No Content")
+                        .status(HttpStatus.NO_CONTENT)
+                        .build();
+            }
+            return GlobalResponse
+                    .builder()
+                    .message("Success")
+                    .data(response)
+                    .status(HttpStatus.OK)
+                    .build();
+        } catch (ResponseStatusException e) {
+            return GlobalResponse
+                    .builder()
+                    .error(e)
+                    .status(HttpStatus.BAD_REQUEST)
+                    .build();
+        } catch (DataException e) {
+            return GlobalResponse
+                    .builder()
+                    .error(e)
+                    .status(HttpStatus.UNPROCESSABLE_ENTITY)
+                    .build();
+        } catch (Exception e) {
+            return GlobalResponse
+                    .builder()
+                    .error(e)
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .build();
+        }
+    }
+
+    public GlobalResponse getOneByLHAId(Long id) {
+        try {
+            Optional<AuditDailyReportDetail> response = repository.findOneByLHAId(id);
+            if (!response.isPresent()) {
                 return GlobalResponse
                         .builder()
                         .message("No Content")

@@ -26,7 +26,7 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/login")
-    public ResponseEntity<Object> login(@ModelAttribute SigninDTO signinDTO) {
+    public ResponseEntity<Object> login(@RequestBody SigninDTO signinDTO) {
         AuthResponse response = authService.login(signinDTO);
         return ResponseEntittyHandler.authSuccess(response.getToken(), response.getStatus());
     }
@@ -36,10 +36,9 @@ public class AuthController {
         final String tokenHeader = request.getHeader("Authorization");
         if (tokenHeader == null) {
             return ResponseEntittyHandler.allHandler(null, "No token", HttpStatus.BAD_REQUEST, null);
-
         }
         String jwtToken = tokenHeader.substring(7);
-        AuthResponse response = authService.logout(jwtToken);
+        authService.logout(jwtToken);
         return ResponseEntittyHandler.authSuccess(null, HttpStatus.OK);
     }
 }

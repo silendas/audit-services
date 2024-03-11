@@ -1,5 +1,7 @@
 package com.cms.audit.api.Management.Office.RegionOffice.controller;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -9,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cms.audit.api.Management.Office.RegionOffice.dto.RegionDTO;
@@ -25,8 +28,11 @@ public class RegionController {
     private RegionService regionService;
 
     @GetMapping
-    public ResponseEntity<Object> findAll() {
-        GlobalResponse response = regionService.findAll();
+    public ResponseEntity<Object> findAll(
+            @RequestParam("name") Optional<String> name,
+            @RequestParam("page") Optional<Integer> page,
+            @RequestParam("size") Optional<Integer> size) {
+        GlobalResponse response = regionService.findAll(name.orElse(""), page.orElse(0), size.orElse(10));
         if (response.getError() != null) {
             return ResponseEntittyHandler.allHandler(null, null, response.getStatus(), response.getError());
         }
@@ -43,8 +49,11 @@ public class RegionController {
     }
 
     @GetMapping("/{id}/main")
-    public ResponseEntity<Object> findOneByMainId(@PathVariable("id") Long id) {
-        GlobalResponse response = regionService.findOneByMainId(id);
+    public ResponseEntity<Object> findOneByMainId(
+            @PathVariable("id") Long id,
+            @RequestParam("page") Optional<Integer> page,
+            @RequestParam("size") Optional<Integer> size) {
+        GlobalResponse response = regionService.findOneByMainId(id, page.orElse(0), size.orElse(10));
         if (response.getError() != null) {
             return ResponseEntittyHandler.allHandler(null, null, response.getStatus(), response.getError());
         }

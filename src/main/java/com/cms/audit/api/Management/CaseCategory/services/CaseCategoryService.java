@@ -6,14 +6,21 @@ import java.util.Optional;
 
 import org.hibernate.exception.DataException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.cms.audit.api.Management.Case.models.Case;
+import com.cms.audit.api.Management.Case.repository.CaseRepository;
 import com.cms.audit.api.Management.CaseCategory.dto.CaseCategoryDTO;
 import com.cms.audit.api.Management.CaseCategory.dto.response.CaseCategoryInterface;
 import com.cms.audit.api.Management.CaseCategory.models.CaseCategory;
 import com.cms.audit.api.Management.CaseCategory.repository.CaseCategoryRepository;
+import com.cms.audit.api.Management.CaseCategory.repository.PagCaseCategory;
+import com.cms.audit.api.Management.Office.AreaOffice.models.Area;
+import com.cms.audit.api.Management.Office.BranchOffice.models.Branch;
 import com.cms.audit.api.common.response.GlobalResponse;
 
 import jakarta.transaction.Transactional;
@@ -25,9 +32,15 @@ public class CaseCategoryService {
     @Autowired
     private CaseCategoryRepository caseCategoryRepository;
 
-    public GlobalResponse findAll() {
+    @Autowired
+    private PagCaseCategory pagCaseCategory;
+
+    @Autowired
+    private CaseRepository caseRepository;
+
+    public GlobalResponse findAll(String name, int page, int size) {
         try {
-            List<CaseCategory> response = caseCategoryRepository.findAllCaseCategory();
+            Page<CaseCategory> response = pagCaseCategory.findByNameContaining(name, PageRequest.of(page, size));
             if (response.isEmpty()) {
                 return GlobalResponse
                         .builder()
@@ -121,9 +134,17 @@ public class CaseCategoryService {
 
     }
 
-    public GlobalResponse findOneByCasesId(Long id) {
+    public GlobalResponse findOneByCasesId(Long id, int page, int size) {
         try {
-            List<CaseCategory> response = caseCategoryRepository.findOneCaseCategoryByCasesId(id);
+            Optional<Case> set = caseRepository.findById(id);
+            if(!set.isPresent()){
+                return GlobalResponse
+                .builder()
+                .message("No Content")
+                .status(HttpStatus.NO_CONTENT)
+                .build();
+        }
+            Page<CaseCategory> response = pagCaseCategory.findByCases(set.get(), PageRequest.of(page, size));
             if (response.isEmpty()) {
                 return GlobalResponse
                         .builder()

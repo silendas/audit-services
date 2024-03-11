@@ -24,13 +24,14 @@ public interface BasePath {
 
     String BASE_PATH_DROP_DOWN = BASE_API+"/dropdown";
 
+    String BASE_PATH_PENALTY = BASE_API+"/penalty";
+    String BASE_PATH_REPORT_TYPE = BASE_API+"/report-type";
+
     String BASE_PATH_LHA = BASE_API+"/lha";
     String BASE_PATH_LHA_DETAIL = BASE_API+"/lha-detail";
 
     String BASE_PATH_CLARIFICATION = BASE_API+"/clarification";
 
-
-    String BASE_PATH_PENALTY = BASE_API+"/penalty";
-    String BASE_PATH_REPORT_TYPE = BASE_API+"/report-type";
+    String BASE_PATH_BAP = BASE_API+"/bap";
 
 }
