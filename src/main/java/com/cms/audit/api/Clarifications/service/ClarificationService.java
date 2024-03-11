@@ -1,9 +1,7 @@
 package com.cms.audit.api.Clarifications.service;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.Date;
-import java.util.List;
 import java.util.Optional;
 
 import org.apache.tomcat.util.http.fileupload.impl.IOFileUploadException;
@@ -11,13 +9,11 @@ import org.hibernate.exception.DataException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.cms.audit.api.AuditDailyReport.models.AuditDailyReport;
 import com.cms.audit.api.Clarifications.dto.EditClarificationDTO;
 import com.cms.audit.api.Clarifications.dto.GenerateCKDTO;
 import com.cms.audit.api.Clarifications.dto.response.NumberClarificationInterface;
@@ -32,18 +28,13 @@ import com.cms.audit.api.Management.Office.BranchOffice.repository.BranchReposit
 import com.cms.audit.api.Management.ReportType.models.ReportType;
 import com.cms.audit.api.Management.User.models.User;
 import com.cms.audit.api.Management.User.repository.UserRepository;
+import com.cms.audit.api.NewsInspection.models.NewsInspection;
+import com.cms.audit.api.NewsInspection.repository.NewsInspectionRepository;
 import com.cms.audit.api.common.constant.FolderPath;
 import com.cms.audit.api.common.constant.convertDateToRoman;
-import com.cms.audit.api.common.constant.randomValueNumber;
 import com.cms.audit.api.common.pdf.GeneratePdf;
 import com.cms.audit.api.common.response.GlobalResponse;
 import com.cms.audit.api.common.response.PDFResponse;
-import com.itextpdf.kernel.geom.PageSize;
-import com.itextpdf.kernel.pdf.PdfDocument;
-import com.itextpdf.kernel.pdf.PdfWriter;
-import com.itextpdf.layout.Document;
-import com.itextpdf.layout.element.Cell;
-import com.itextpdf.layout.element.Table;
 
 @Service
 public class ClarificationService {
@@ -59,6 +50,9 @@ public class ClarificationService {
 
     @Autowired
     private CaseRepository caseRepository;
+
+    @Autowired
+    private NewsInspectionRepository newsInspectionRepository;
 
     @Autowired
     private PagClarification pag;
@@ -328,8 +322,58 @@ public class ClarificationService {
                 getClarification.get().getCreated_at(),
                 new Date());
 
-            repository.save(clarification2);
+            Clarification response2 = repository.save(clarification2);
 
+            Long reportNumber = null;
+            String rptNum = null;
+
+            Optional<NumberClarificationInterface> checkClBefore = newsInspectionRepository.checkNumberBAP(response2.getUser().getId());
+                        if (checkClBefore.isPresent()) {
+                                if (checkClBefore.get().getCreated_Year() == Long
+                                                .valueOf(convertDateToRoman.getIntYear())) {
+                                        reportNumber = checkClBefore.get().getReport_Number() + 1;
+                                        if (reportNumber < 10) {
+                                                rptNum = "00" + reportNumber;
+                                        } else if (reportNumber < 100) {
+                                                rptNum = "0" + reportNumber;
+                                        } else {
+                                                rptNum = reportNumber.toString();
+                                        }
+                                } else {
+                                        rptNum = "001";
+                                        reportNumber = Long.valueOf(1);
+                                }
+                        } else {
+                                rptNum = "001";
+                                reportNumber = Long.valueOf(1);
+                        }
+
+                        String branchName = response2.getUser().getBranch().getName();
+                        String initialName = response2.getUser().getInitial_name();
+                        String caseName = response2.getCases().getCode();
+                        String lvlCode = response2.getUser().getLevel().getCode();
+                        String romanMonth = convertDateToRoman.getRomanMonth();
+                        Integer thisYear = convertDateToRoman.getIntYear();
+
+                        String reportCode = rptNum + lvlCode + "/" + initialName + "-" + caseName
+                                        + "/BA/" + branchName + "/" + romanMonth + "/" + thisYear;
+
+                        ReportType setReportId = ReportType.builder().id(Long.valueOf(2)).build();
+                        Clarification setClarificationId = Clarification.builder().id(response2.getId()).build();
+
+                        NewsInspection newsInspection = new NewsInspection(
+                            null, 
+                            setUserId, 
+                            setClarificationId, 
+                            setReportId, 
+                            null, 
+                            null, 
+                            reportNumber, 
+                            reportCode, 
+                            new Date(), 
+                            new Date());
+
+                        newsInspectionRepository.save(newsInspection);
 
             return GlobalResponse
                     .builder()

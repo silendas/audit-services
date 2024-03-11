@@ -16,6 +16,8 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.cms.audit.api.Clarifications.models.Clarification;
 import com.cms.audit.api.Clarifications.repository.ClarificationRepository;
+import com.cms.audit.api.Management.ReportType.models.ReportType;
+import com.cms.audit.api.Management.User.models.User;
 import com.cms.audit.api.NewsInspection.models.NewsInspection;
 import com.cms.audit.api.NewsInspection.repository.NewsInspectionRepository;
 import com.cms.audit.api.NewsInspection.repository.PagNewsInspection;
@@ -160,15 +162,21 @@ public class NewsInspectionService {
             String fileName = file.getOriginalFilename();
             String filePath = path;
 
+            User setUserId = User.builder().id(getBAP.getUser().getId()).build();
+            ReportType setRTId = ReportType.builder().id(getBAP.getReportType().getId()).build();
             Clarification setClarificationId = Clarification.builder().id(getBAP.getClarification().getId()).build();
 
             NewsInspection clarification = new NewsInspection(
                     id,
+                    setUserId,
                     setClarificationId,
+                    setRTId,
                     fileName,
                     filePath,
                     getBAP.getReport_number(),
-                    getBAP.getCode());
+                    getBAP.getCode(),
+                    getBAP.getCreated_at(),
+                    new Date());
             repository.save(clarification);
 
             file.transferTo(new File(filePath));

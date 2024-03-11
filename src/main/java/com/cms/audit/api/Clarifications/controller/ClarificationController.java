@@ -106,7 +106,7 @@ public class ClarificationController {
                 response.getError());
     }
 
-    @PutMapping(value = "/file/{id}", consumes = { MediaType.APPLICATION_PDF_VALUE, "application/msword",
+    @PostMapping(value = "/file/{id}", consumes = { MediaType.APPLICATION_PDF_VALUE, "application/msword",
             "application/vnd.openxmlformats-officedocument.wordprocessingml.document" })
     public ResponseEntity<Object> upload(@RequestParam("file") MultipartFile file,
             @PathVariable("id") Long id) {

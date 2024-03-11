@@ -3,6 +3,7 @@ package com.cms.audit.api.NewsInspection.models;
 import java.util.Date;
 
 import com.cms.audit.api.Clarifications.models.Clarification;
+import com.cms.audit.api.Management.ReportType.models.ReportType;
 import com.cms.audit.api.Management.User.models.User;
 
 import jakarta.persistence.*;
@@ -30,8 +31,16 @@ public class NewsInspection {
     private Long id;
 
     @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    @ManyToOne
     @JoinColumn(name = "clarification_id")
     private Clarification clarification;
+
+    @ManyToOne
+    @JoinColumn(name = "report_type_id")
+    private ReportType reportType;
 
     @Column(name = "file_name")
     private String fileName;
@@ -44,4 +53,10 @@ public class NewsInspection {
 
     @Column(name = "code")
     private String code;
+    
+    @Column(name = "created_at", columnDefinition = "DATE")
+    private Date created_at;
+
+    @Column(name = "updated_at", columnDefinition = "DATE")
+    private Date updated_at;
 }
