@@ -474,6 +474,7 @@ public class GeneratePdf {
                 nested6.addCell(new Cell().add(""));
                 nested6.addCell(new Cell().add("Surat Pembebanan/PG").setBorder(Border.NO_BORDER).setFontSize(7).setBold());
                 body6.addCell(new Cell().add(nested6).setBorder(Border.NO_BORDER));
+                body6.addCell(new Cell().add("").setBorder(Border.NO_BORDER).setHeight(10));
                 body6.addCell(new Cell().add("( Form ini agar diserahkan kembali ke Divisi Pengawasan paling lambat tanggal  29 Januari 2020 )").setBold().setFontSize(7).setBorder(Border.NO_BORDER).setTextAlignment(TextAlignment.CENTER));
                 body.addCell(new Cell().add(body6).setBorder(Border.NO_BORDER));
 

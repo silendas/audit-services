@@ -21,19 +21,22 @@ import com.cms.audit.api.Management.User.repository.UserRepository;
 import com.cms.audit.api.common.constant.FolderPath;
 import com.cms.audit.api.common.response.GlobalResponse;
 
-public abstract class AuditWorkingPaperService {
+import jakarta.transaction.Transactional;
+
+@Service
+@Transactional
+public class AuditWorkingPaperService {
     
     @Autowired 
     private AuditWorkingPaperRepository repository;
 
-    @Autowired 
-    private UserRepository userRepository;
+
 
     @Autowired 
     private PagAuditWorkingPaper pag;
 
 
-    private final String FOLDER_PATH = FolderPath.FOLDER_PATH_WORKING_PAPER;
+    //private final String FOLDER_PATH = FolderPath.FOLDER_PATH_WORKING_PAPER;
 
 
     public GlobalResponse getAll(int page, int size) {

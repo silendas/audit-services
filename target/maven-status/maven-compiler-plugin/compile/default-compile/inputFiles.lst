@@ -15,9 +15,11 @@ C:\Project\Spring Boot\final\last\bck\audit-services\src\main\java\com\cms\audit
 C:\Project\Spring Boot\final\last\bck\audit-services\src\main\java\com\cms\audit\api\common\constant\convertDateToRoman.java
 C:\Project\Spring Boot\final\last\bck\audit-services\src\main\java\com\cms\audit\api\Management\CaseCategory\repository\PagCaseCategory.java
 C:\Project\Spring Boot\final\last\bck\audit-services\src\main\java\com\cms\audit\api\InspectionSchedule\controller\SpecialScheduleController.java
+C:\Project\Spring Boot\final\last\bck\audit-services\src\main\java\com\cms\audit\api\AuditWorkingPaper\service\AuditWorkingPaperService.java
 C:\Project\Spring Boot\final\last\bck\audit-services\src\main\java\com\cms\audit\api\Clarifications\models\Clarification.java
 C:\Project\Spring Boot\final\last\bck\audit-services\src\main\java\com\cms\audit\api\FollowUp\models\FollowUp.java
 C:\Project\Spring Boot\final\last\bck\audit-services\src\main\java\com\cms\audit\api\Management\Penalty\models\Penalty.java
+C:\Project\Spring Boot\final\last\bck\audit-services\src\main\java\com\cms\audit\api\AuditWorkingPaper\models\AuditWorkingPaper.java
 C:\Project\Spring Boot\final\last\bck\audit-services\src\main\java\com\cms\audit\api\common\dto\ResponseDto.java
 C:\Project\Spring Boot\final\last\bck\audit-services\src\main\java\com\cms\audit\api\Management\Office\MainOffice\services\MainService.java
 C:\Project\Spring Boot\final\last\bck\audit-services\src\main\java\com\cms\audit\api\Management\Office\AreaOffice\models\Area.java
@@ -105,6 +107,7 @@ C:\Project\Spring Boot\final\last\bck\audit-services\src\main\java\com\cms\audit
 C:\Project\Spring Boot\final\last\bck\audit-services\src\main\java\com\cms\audit\api\Management\Case\services\CaseService.java
 C:\Project\Spring Boot\final\last\bck\audit-services\src\main\java\com\cms\audit\api\common\dto\ErrorObjectDto.java
 C:\Project\Spring Boot\final\last\bck\audit-services\src\main\java\com\cms\audit\api\Management\Office\MainOffice\models\Main.java
+C:\Project\Spring Boot\final\last\bck\audit-services\src\main\java\com\cms\audit\api\AuditWorkingPaper\repository\PagAuditWorkingPaper.java
 C:\Project\Spring Boot\final\last\bck\audit-services\src\main\java\com\cms\audit\api\Config\Jwt\JwtService.java
 C:\Project\Spring Boot\final\last\bck\audit-services\src\main\java\com\cms\audit\api\Management\User\dto\response\DropDownUser.java
 C:\Project\Spring Boot\final\last\bck\audit-services\src\main\java\com\cms\audit\api\common\constant\ReturnCode.java
@@ -116,6 +119,7 @@ C:\Project\Spring Boot\final\last\bck\audit-services\src\main\java\com\cms\audit
 C:\Project\Spring Boot\final\last\bck\audit-services\src\main\java\com\cms\audit\api\Management\Office\MainOffice\dto\MainDTO.java
 C:\Project\Spring Boot\final\last\bck\audit-services\src\main\java\com\cms\audit\api\Authentication\dto\response\AuthResponse.java
 C:\Project\Spring Boot\final\last\bck\audit-services\src\main\java\com\cms\audit\api\common\dto\BaseResponse.java
+C:\Project\Spring Boot\final\last\bck\audit-services\src\main\java\com\cms\audit\api\AuditWorkingPaper\dto\AuditWorkingPaperDTO.java
 C:\Project\Spring Boot\final\last\bck\audit-services\src\main\java\com\cms\audit\api\Config\Jwt\InMemoryTokenBlacklist.java
 C:\Project\Spring Boot\final\last\bck\audit-services\src\main\java\com\cms\audit\api\Management\CaseCategory\repository\CaseCategoryRepository.java
 C:\Project\Spring Boot\final\last\bck\audit-services\src\main\java\com\cms\audit\api\Management\Office\RegionOffice\dto\RegionDTO.java
@@ -148,8 +152,10 @@ C:\Project\Spring Boot\final\last\bck\audit-services\src\main\java\com\cms\audit
 C:\Project\Spring Boot\final\last\bck\audit-services\src\main\java\com\cms\audit\api\AuditDailyReport\controller\AuditDailyReportDetailController.java
 C:\Project\Spring Boot\final\last\bck\audit-services\src\main\java\com\cms\audit\api\common\constant\randomValueNumber.java
 C:\Project\Spring Boot\final\last\bck\audit-services\src\main\java\com\cms\audit\api\Management\Level\models\Level.java
+C:\Project\Spring Boot\final\last\bck\audit-services\src\main\java\com\cms\audit\api\AuditWorkingPaper\controller\AuditWorkingPaperController.java
 C:\Project\Spring Boot\final\last\bck\audit-services\src\main\java\com\cms\audit\api\Management\ReportType\dto\ReportTypeDTO.java
 C:\Project\Spring Boot\final\last\bck\audit-services\src\main\java\com\cms\audit\api\AuditDailyReport\repository\AuditDailyReportRepository.java
+C:\Project\Spring Boot\final\last\bck\audit-services\src\main\java\com\cms\audit\api\AuditWorkingPaper\repository\AuditWorkingPaperRepository.java
 C:\Project\Spring Boot\final\last\bck\audit-services\src\main\java\com\cms\audit\api\Management\Office\RegionOffice\repository\RegionRepository.java
 C:\Project\Spring Boot\final\last\bck\audit-services\src\main\java\com\cms\audit\api\Management\User\models\User.java
 C:\Project\Spring Boot\final\last\bck\audit-services\src\main\java\com\cms\audit\api\Management\Office\BranchOffice\dto\response\BranchInterface.java
