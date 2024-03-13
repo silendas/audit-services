@@ -17,7 +17,6 @@ import com.cms.audit.api.Management.Office.AreaOffice.services.AreaService;
 import com.cms.audit.api.Management.Office.BranchOffice.services.BranchService;
 import com.cms.audit.api.Management.Office.MainOffice.services.MainService;
 import com.cms.audit.api.Management.Office.RegionOffice.services.RegionService;
-import com.cms.audit.api.Management.Penalty.models.Penalty;
 import com.cms.audit.api.Management.Penalty.services.PenaltyService;
 import com.cms.audit.api.Management.ReportType.services.ReportTypeService;
 import com.cms.audit.api.Management.Role.services.RoleService;

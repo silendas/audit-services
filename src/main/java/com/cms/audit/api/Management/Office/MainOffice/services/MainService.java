@@ -37,8 +37,8 @@ public class MainService {
             if (response.isEmpty()) {
                 return GlobalResponse
                         .builder()
-                        .message("Not Content")
-                        .status(HttpStatus.NO_CONTENT)
+                        .message("No Content")
+                        .status(HttpStatus.OK)
                         .build();
             }
             return GlobalResponse
@@ -69,8 +69,8 @@ public class MainService {
             if (response.isEmpty()) {
                 return GlobalResponse
                         .builder()
-                        .message("Not Content")
-                        .status(HttpStatus.NO_CONTENT)
+                        .message("No Content")
+                        .status(HttpStatus.OK)
                         .build();
             }
             return GlobalResponse
@@ -101,8 +101,8 @@ public class MainService {
             if (!response.isPresent()) {
                 return GlobalResponse
                         .builder()
-                        .message("Not Content")
-                        .status(HttpStatus.NO_CONTENT)
+                        .message("No Content")
+                        .status(HttpStatus.OK)
                         .build();
             }
             return GlobalResponse

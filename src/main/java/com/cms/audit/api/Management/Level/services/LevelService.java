@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import com.cms.audit.api.Management.Case.models.Case;
 import com.cms.audit.api.Management.Level.dto.LevelDTO;
 import com.cms.audit.api.Management.Level.dto.response.LevelInterface;
 import com.cms.audit.api.Management.Level.models.Level;
@@ -31,8 +30,8 @@ public class LevelService {
             if (response.isEmpty()) {
                 return GlobalResponse
                         .builder()
-                        .message("Not Content")
-                        .status(HttpStatus.NO_CONTENT)
+                        .message("No Content")
+                        .status(HttpStatus.OK)
                         .build();
             }
             return GlobalResponse
@@ -63,8 +62,8 @@ public class LevelService {
             if (response.isEmpty()) {
                 return GlobalResponse
                         .builder()
-                        .message("Not Content")
-                        .status(HttpStatus.NO_CONTENT)
+                        .message("No Content")
+                        .status(HttpStatus.OK)
                         .build();
             }
             return GlobalResponse
@@ -95,8 +94,8 @@ public class LevelService {
             if (!response.isPresent()) {
                 return GlobalResponse
                         .builder()
-                        .message("Not Content")
-                        .status(HttpStatus.NO_CONTENT)
+                        .message("No Content")
+                        .status(HttpStatus.OK)
                         .build();
             }
             return GlobalResponse

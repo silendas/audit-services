@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -43,7 +43,7 @@ public class LevelController {
     }
 
     @PostMapping
-    public ResponseEntity<Object> save(@RequestBody LevelDTO levelDTO){
+    public ResponseEntity<Object> save(@ModelAttribute LevelDTO levelDTO){
         GlobalResponse response =  levelService.save(levelDTO);
         if(response.getError() != null){
             return ResponseEntittyHandler.allHandler(null, null, response.getStatus(), response.getError());
@@ -52,7 +52,7 @@ public class LevelController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Object> edit(@RequestBody LevelDTO levelDTO, @PathVariable("id") Long id){
+    public ResponseEntity<Object> edit(@ModelAttribute LevelDTO levelDTO, @PathVariable("id") Long id){
         GlobalResponse response =  levelService.edit(levelDTO, id);
         if(response.getError() != null){
             return ResponseEntittyHandler.allHandler(null, null, response.getStatus(), response.getError());

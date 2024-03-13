@@ -45,7 +45,7 @@ public class CaseCategoryService {
                 return GlobalResponse
                         .builder()
                         .message("Not Content")
-                        .status(HttpStatus.NO_CONTENT)
+                        .status(HttpStatus.OK)
                         .build();
             }
             return GlobalResponse
@@ -77,7 +77,7 @@ public class CaseCategoryService {
                 return GlobalResponse
                         .builder()
                         .message("Not Content")
-                        .status(HttpStatus.NO_CONTENT)
+                        .status(HttpStatus.OK)
                         .build();
             }
             return GlobalResponse
@@ -109,7 +109,7 @@ public class CaseCategoryService {
                 return GlobalResponse
                         .builder()
                         .message("Not Content")
-                        .status(HttpStatus.NO_CONTENT)
+                        .status(HttpStatus.OK)
                         .build();
             }
             return GlobalResponse
@@ -141,7 +141,7 @@ public class CaseCategoryService {
                 return GlobalResponse
                 .builder()
                 .message("No Content")
-                .status(HttpStatus.NO_CONTENT)
+                .status(HttpStatus.OK)
                 .build();
         }
             Page<CaseCategory> response = pagCaseCategory.findByCases(set.get(), PageRequest.of(page, size));
@@ -149,7 +149,7 @@ public class CaseCategoryService {
                 return GlobalResponse
                         .builder()
                         .message("Not Content")
-                        .status(HttpStatus.NO_CONTENT)
+                        .status(HttpStatus.OK)
                         .build();
             }
             return GlobalResponse
@@ -181,7 +181,7 @@ public class CaseCategoryService {
                 return GlobalResponse
                         .builder()
                         .message("Not Content")
-                        .status(HttpStatus.NO_CONTENT)
+                        .status(HttpStatus.OK)
                         .build();
             }
             return GlobalResponse

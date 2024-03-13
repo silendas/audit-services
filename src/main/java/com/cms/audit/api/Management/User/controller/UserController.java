@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -94,7 +94,7 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<Object> save(@RequestBody UserDTO userDTO) {
+    public ResponseEntity<Object> save(@ModelAttribute UserDTO userDTO) {
         GlobalResponse response = userService.save(userDTO);
         if (response.getError() != null) {
             return ResponseEntittyHandler.allHandler(null, null, response.getStatus(), response.getError());
@@ -103,7 +103,7 @@ public class UserController {
     }
 
     @PostMapping("/change-password/{id}")
-    public ResponseEntity<Object> changePassword(@RequestBody ChangePasswordDTO changePasswordDTO,
+    public ResponseEntity<Object> changePassword(@ModelAttribute ChangePasswordDTO changePasswordDTO,
             @PathVariable("id") Long id) {
         GlobalResponse response = userService.changePassword(changePasswordDTO, id);
         if (response.getError() != null) {
@@ -113,7 +113,7 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Object> edit(@RequestBody UserDTO userDTO, @PathVariable("id") Long id) {
+    public ResponseEntity<Object> edit(@ModelAttribute UserDTO userDTO, @PathVariable("id") Long id) {
         GlobalResponse response = userService.edit(userDTO, id);
         if (response.getError() != null) {
             return ResponseEntittyHandler.allHandler(null, null, response.getStatus(), response.getError());

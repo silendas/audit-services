@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -62,7 +62,7 @@ public class AreaController {
     }
 
     @PostMapping
-    public ResponseEntity<Object> save(@RequestBody AreaDTO areaDTO) {
+    public ResponseEntity<Object> save(@ModelAttribute AreaDTO areaDTO) {
         GlobalResponse response = areaService.save(areaDTO);
         if (response.getError() != null) {
             return ResponseEntittyHandler.allHandler(null, null, response.getStatus(), response.getError());
@@ -71,7 +71,7 @@ public class AreaController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Object> edit(@RequestBody AreaDTO areaDTO, @PathVariable("id") Long id) {
+    public ResponseEntity<Object> edit(@ModelAttribute AreaDTO areaDTO, @PathVariable("id") Long id) {
         GlobalResponse response = areaService.edit(areaDTO, id);
         if (response.getError() != null) {
             return ResponseEntittyHandler.allHandler(null, null, response.getStatus(), response.getError());

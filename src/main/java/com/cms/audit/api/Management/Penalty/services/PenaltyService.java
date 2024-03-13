@@ -30,8 +30,8 @@ public class PenaltyService {
             if (response.isEmpty()) {
                 return GlobalResponse
                         .builder()
-                        .message("Not Content")
-                        .status(HttpStatus.NO_CONTENT)
+                        .message("No Content")
+                        .status(HttpStatus.OK)
                         .build();
             }
             return GlobalResponse
@@ -62,8 +62,8 @@ public class PenaltyService {
             if (response.isEmpty()) {
                 return GlobalResponse
                         .builder()
-                        .message("Not Content")
-                        .status(HttpStatus.NO_CONTENT)
+                        .message("No Content")
+                        .status(HttpStatus.OK)
                         .build();
             }
             return GlobalResponse
@@ -94,8 +94,8 @@ public class PenaltyService {
             if (!response.isPresent()) {
                 return GlobalResponse
                         .builder()
-                        .message("Not Content")
-                        .status(HttpStatus.NO_CONTENT)
+                        .message("No Content")
+                        .status(HttpStatus.OK)
                         .build();
             }
             return GlobalResponse
@@ -210,7 +210,6 @@ public class PenaltyService {
                 getPenalty.getCreated_at(),
                 new Date()
             );
-
             Penalty response = PenaltyRepository.save(penalty);
             if (response == null) {
                 return GlobalResponse

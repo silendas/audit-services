@@ -17,15 +17,11 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class EditClarificationDTO {
-    private String nominal_loss;
+public class InputClarificationDTO {
     private Date evaluation_limitation;
     private String location;
     private String auditee;
     private String auditee_leader;
     private String description;
-    private String recomendation;
     private EPriority priority;
-    private String evaluation;
-    private Long is_follow_up;
 }

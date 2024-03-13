@@ -69,7 +69,7 @@ public class AuditDailyReportService {
                                 return GlobalResponse
                                                 .builder()
                                                 .message("No Content")
-                                                .status(HttpStatus.NO_CONTENT)
+                                                .status(HttpStatus.OK)
                                                 .build();
                         }
                         return GlobalResponse
@@ -106,7 +106,7 @@ public class AuditDailyReportService {
                                 return GlobalResponse
                                                 .builder()
                                                 .message("No Content")
-                                                .status(HttpStatus.NO_CONTENT)
+                                                .status(HttpStatus.OK)
                                                 .build();
                         }
                         return GlobalResponse
@@ -143,7 +143,7 @@ public class AuditDailyReportService {
                                 return GlobalResponse
                                                 .builder()
                                                 .message("No Content")
-                                                .status(HttpStatus.NO_CONTENT)
+                                                .status(HttpStatus.OK)
                                                 .build();
                         }
                         return GlobalResponse
@@ -180,7 +180,7 @@ public class AuditDailyReportService {
                                 return GlobalResponse
                                 .builder()
                                 .message("No Content")
-                                .status(HttpStatus.NO_CONTENT)
+                                .status(HttpStatus.OK)
                                 .build();
                         }
                         return GlobalResponse
@@ -244,7 +244,7 @@ public class AuditDailyReportService {
                                 return GlobalResponse
                                                 .builder()
                                                 .message("No Content")
-                                                .status(HttpStatus.NO_CONTENT)
+                                                .status(HttpStatus.OK)
                                                 .build();
                         }
                         if (getSchedule.get().getStart_date_realization() == null) {
@@ -310,10 +310,10 @@ public class AuditDailyReportService {
                         }
 
                         User getUser = userRepository.findById(dto.getUser_id())
-                                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NO_CONTENT, "no content"));
+                                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.OK, "no content"));
 
                         Case getCase = caseRepository.findById(dto.getCase_id())
-                                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NO_CONTENT, "no content"));
+                                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.OK, "no content"));
 
                         Long reportNumber = null;
                         String rptNum = null;

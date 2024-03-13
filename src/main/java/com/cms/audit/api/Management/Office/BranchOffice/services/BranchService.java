@@ -44,8 +44,8 @@ public class BranchService {
             if (response.isEmpty()) {
                 return GlobalResponse
                         .builder()
-                        .message("Not Content")
-                        .status(HttpStatus.NO_CONTENT)
+                        .message("No Content")
+                        .status(HttpStatus.OK)
                         .build();
             }
             // Map<String, Object> data = new LinkedHashMap<>();
@@ -79,8 +79,8 @@ public class BranchService {
             if (response.isEmpty()) {
                 return GlobalResponse
                         .builder()
-                        .message("Not Content")
-                        .status(HttpStatus.NO_CONTENT)
+                        .message("No Content")
+                        .status(HttpStatus.OK)
                         .build();
             }
             return GlobalResponse
@@ -111,8 +111,8 @@ public class BranchService {
             if (response.isEmpty()) {
                 return GlobalResponse
                         .builder()
-                        .message("Not Content")
-                        .status(HttpStatus.NO_CONTENT)
+                        .message("No Content")
+                        .status(HttpStatus.OK)
                         .build();
             }
             return GlobalResponse
@@ -144,15 +144,15 @@ public class BranchService {
                 return GlobalResponse
                         .builder()
                         .message("No Content")
-                        .status(HttpStatus.NO_CONTENT)
+                        .status(HttpStatus.OK)
                         .build();
             }
             Page<Branch> response = pagBranch.findByArea(setArea.get(), PageRequest.of(page, size));
             if (response.isEmpty()) {
                 return GlobalResponse
                         .builder()
-                        .message("Not Content")
-                        .status(HttpStatus.NO_CONTENT)
+                        .message("No Content")
+                        .status(HttpStatus.OK)
                         .build();
             }
             // Map<String, Object> data = new LinkedHashMap<>();
@@ -186,8 +186,8 @@ public class BranchService {
             if (response.isEmpty()) {
                 return GlobalResponse
                         .builder()
-                        .message("Not Content")
-                        .status(HttpStatus.NO_CONTENT)
+                        .message("No Content")
+                        .status(HttpStatus.OK)
                         .build();
             }
             return GlobalResponse
@@ -218,8 +218,8 @@ public class BranchService {
             if (response.isEmpty()) {
                 return GlobalResponse
                         .builder()
-                        .message("Not Content")
-                        .status(HttpStatus.NO_CONTENT)
+                        .message("No Content")
+                        .status(HttpStatus.OK)
                         .build();
             }
             return GlobalResponse

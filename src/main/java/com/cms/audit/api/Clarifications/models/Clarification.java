@@ -92,7 +92,7 @@ public class Clarification {
     private EPriority priority;
 
     @Column(name = "evaluation")
-    private String evaluation;
+    private Long evaluation;
 
     @Column(name = "is_follow_up", length = 2)
     private Long is_follow_up;

@@ -2,41 +2,33 @@ package com.cms.audit.api.Clarifications.controller;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.util.Date;
 import java.util.Optional;
 
-import javax.print.attribute.standard.Media;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.RestClient.ResponseSpec;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.cms.audit.api.Clarifications.dto.ClarificationDTO;
-import com.cms.audit.api.Clarifications.dto.EditClarificationDTO;
+import com.cms.audit.api.Clarifications.dto.InputClarificationDTO;
 import com.cms.audit.api.Clarifications.dto.GenerateCKDTO;
+import com.cms.audit.api.Clarifications.dto.IdentificationDTO;
 import com.cms.audit.api.Clarifications.models.Clarification;
 import com.cms.audit.api.Clarifications.service.ClarificationService;
 import com.cms.audit.api.common.constant.BasePath;
-import com.cms.audit.api.common.pdf.GeneratePdf;
 import com.cms.audit.api.common.response.GlobalResponse;
 import com.cms.audit.api.common.response.ResponseEntittyHandler;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -93,14 +85,21 @@ public class ClarificationController {
     }
 
     @PostMapping("/{id}")
-    public ResponseEntity<Object> save(@RequestBody EditClarificationDTO dto, @PathVariable("id") Long id) {
-        GlobalResponse response = service.edit(dto,id);
+    public ResponseEntity<Object> save(@ModelAttribute InputClarificationDTO dto, @PathVariable("id") Long id) {
+        GlobalResponse response = service.inputClarification(dto,id);
+        return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(),
+                response.getError());
+    }
+
+    @PostMapping("/identification/{id}")
+    public ResponseEntity<Object> saveIdentification(@ModelAttribute IdentificationDTO dto, @PathVariable("id") Long id) {
+        GlobalResponse response = service.identificationClarification(dto, id);
         return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(),
                 response.getError());
     }
     
     @PostMapping("/generate")
-    public ResponseEntity<Object> generateNumber(@RequestBody GenerateCKDTO dto) {
+    public ResponseEntity<Object> generateNumber(@ModelAttribute GenerateCKDTO dto) {
         GlobalResponse response = service.generateCK(dto);
         return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(),
                 response.getError());

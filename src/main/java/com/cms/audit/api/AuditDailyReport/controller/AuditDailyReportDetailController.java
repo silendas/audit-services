@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -62,14 +62,14 @@ public class AuditDailyReportDetailController {
     }
 
     @PostMapping
-    public ResponseEntity<Object> post(@RequestBody AuditDailyReportDetailDTO dto) {
+    public ResponseEntity<Object> post(@ModelAttribute AuditDailyReportDetailDTO dto) {
         GlobalResponse response = service.save(dto);
         return ResponseEntittyHandler.allHandler(null, response.getMessage(), response.getStatus(),
                 response.getError());
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Object> put(@RequestBody EditAuditDailyReportDetailDTO dto, @PathVariable("id") Long id) {
+    public ResponseEntity<Object> put(@ModelAttribute EditAuditDailyReportDetailDTO dto, @PathVariable("id") Long id) {
         GlobalResponse response = service.edit(dto, id);
         return ResponseEntittyHandler.allHandler(null, response.getMessage(), response.getStatus(),
                 response.getError());

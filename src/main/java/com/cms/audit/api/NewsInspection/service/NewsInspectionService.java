@@ -1,6 +1,8 @@
 package com.cms.audit.api.NewsInspection.service;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.net.MalformedURLException;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -22,6 +24,7 @@ import com.cms.audit.api.NewsInspection.models.NewsInspection;
 import com.cms.audit.api.NewsInspection.repository.NewsInspectionRepository;
 import com.cms.audit.api.NewsInspection.repository.PagNewsInspection;
 import com.cms.audit.api.common.constant.FolderPath;
+import com.cms.audit.api.common.pdf.GeneratePdf;
 import com.cms.audit.api.common.response.GlobalResponse;
 
 import jakarta.transaction.Transactional;
@@ -48,7 +51,7 @@ public class NewsInspectionService {
                 return GlobalResponse
                 .builder()
                 .message("NoContent")
-                .status(HttpStatus.NO_CONTENT)
+                .status(HttpStatus.OK)
                 .build();
             }
             return GlobalResponse
@@ -85,7 +88,7 @@ public class NewsInspectionService {
                 return GlobalResponse
                 .builder()
                 .message("NoContent")
-                .status(HttpStatus.NO_CONTENT)
+                .status(HttpStatus.OK)
                 .build();
             }
             return GlobalResponse
@@ -122,7 +125,7 @@ public class NewsInspectionService {
                 return GlobalResponse
                 .builder()
                 .message("NoContent")
-                .status(HttpStatus.NO_CONTENT)
+                .status(HttpStatus.OK)
                 .build();
             }
             return GlobalResponse
@@ -152,10 +155,14 @@ public class NewsInspectionService {
         }
     }
 
+    public void generatePdf() throws FileNotFoundException, MalformedURLException{
+        GeneratePdf.generateFollowUpPDF(null);
+    }
+
     public GlobalResponse uploadFile(MultipartFile file, Long id) {
         try {
             NewsInspection getBAP = repository.findById(id)
-                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NO_CONTENT, "No Content"));
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.OK, "No Content"));
 
             String path = FOLDER_PATH + file.getOriginalFilename();
 

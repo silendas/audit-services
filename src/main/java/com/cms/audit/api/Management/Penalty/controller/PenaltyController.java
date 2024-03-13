@@ -1,7 +1,6 @@
 package com.cms.audit.api.Management.Penalty.controller;
 
 
-import org.hibernate.query.hql.internal.BasicDotIdentifierConsumer.BaseLocalSequencePart;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -9,7 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -45,7 +44,7 @@ public class PenaltyController {
     }
 
     @PostMapping
-    public ResponseEntity<Object> save(@RequestBody PenaltyDTO PenaltyDTO){
+    public ResponseEntity<Object> save(@ModelAttribute PenaltyDTO PenaltyDTO){
         GlobalResponse response =  PenaltyService.save(PenaltyDTO);
         if(response.getError() != null){
             return ResponseEntittyHandler.allHandler(null, null, response.getStatus(), response.getError());
@@ -55,7 +54,7 @@ public class PenaltyController {
 
     
     @PutMapping("/{id}")
-    public ResponseEntity<Object> edit(@RequestBody PenaltyDTO PenaltyDTO, @PathVariable("id") Long id){
+    public ResponseEntity<Object> edit(@ModelAttribute PenaltyDTO PenaltyDTO, @PathVariable("id") Long id){
         GlobalResponse response =  PenaltyService.edit(PenaltyDTO, id);
         if(response.getError() != null){
             return ResponseEntittyHandler.allHandler(null, null, response.getStatus(), response.getError());

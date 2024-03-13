@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -63,7 +63,7 @@ public class CaseCategoryController {
     }
 
     @PostMapping
-    public ResponseEntity<Object> save(@RequestBody CaseCategoryDTO caseCategoryDTO){
+    public ResponseEntity<Object> save(@ModelAttribute CaseCategoryDTO caseCategoryDTO){
         GlobalResponse response =  caseCategoryService.save(caseCategoryDTO);
         if(response.getError() != null){
             return ResponseEntittyHandler.allHandler(null, null, response.getStatus(), response.getError());
@@ -72,7 +72,7 @@ public class CaseCategoryController {
     }
     
     @PutMapping("/{id}")
-    public ResponseEntity<Object> edit(@RequestBody CaseCategoryDTO caseCategoryDTO, @PathVariable("id") Long id){
+    public ResponseEntity<Object> edit(@ModelAttribute CaseCategoryDTO caseCategoryDTO, @PathVariable("id") Long id){
         GlobalResponse response =  caseCategoryService.edit(caseCategoryDTO, id);
         if(response.getError() != null){
             return ResponseEntittyHandler.allHandler(null, null, response.getStatus(), response.getError());

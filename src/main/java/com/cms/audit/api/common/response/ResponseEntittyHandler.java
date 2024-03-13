@@ -10,10 +10,10 @@ public class ResponseEntittyHandler {
     public static ResponseEntity<Object> authSuccess(String token, HttpStatus status) {
 
         Map<String, Object> meta = new LinkedHashMap<>();
-        meta.put("time_stamp", null);
+        meta.put("timestamp", null);
         meta.put("api_version", null);
 
-        Map<String, Object> data = new LinkedHashMap<>();      
+        Map<String, Object> data = new LinkedHashMap<>();
         if (token != null) {
             data.put("token", token);
             data.put("refresh", null);
@@ -28,43 +28,10 @@ public class ResponseEntittyHandler {
         return new ResponseEntity<Object>(map, status);
     }
 
-    public static ResponseEntity<Object> pagination(Object data, String message, HttpStatus status, Exception error) {
-
-        Map<String, Object> meta = new LinkedHashMap<>();
-        meta.put("time_stamp", null);
-        meta.put("pagination", null);
-        meta.put("api_version", null);
-
-        Map<String, Object> map = new LinkedHashMap<>();
-
-
-        if (error != null) {
-            Map<String, Object> err = new LinkedHashMap<>();
-            meta.put("name", error.getCause());
-            meta.put("message", error.getMessage());
-            meta.put("header", error.getClass());
-
-            map.put("meta", meta);
-            map.put("error", err);
-            map.put("status", status.value());
-        } 
-
-        if(message != null){
-            map.put("meta", meta);
-            map.put("message", message);
-            map.put("status", status.value());
-            if (data != null) {
-                map.put("data", data);
-            }
-        }
-
-        return new ResponseEntity<Object>(map, status);
-    }
-
     public static ResponseEntity<Object> allHandler(Object data, String message, HttpStatus status, Exception error) {
 
         Map<String, Object> meta = new LinkedHashMap<>();
-        meta.put("time_stamp", null);
+        meta.put("timestamp", null);
         meta.put("api_version", null);
 
         Map<String, Object> map = new LinkedHashMap<>();
@@ -78,15 +45,13 @@ public class ResponseEntittyHandler {
             map.put("meta", meta);
             map.put("status", status.value());
             map.put("error", err);
-        } 
+        }
 
-        if(message != null){
+        if (message != null) {
             map.put("meta", meta);
             map.put("message", message);
             map.put("status", status.value());
-            if (data != null) {
-                map.put("data", data);
-            }
+            map.put("data", data);
         }
 
         return new ResponseEntity<Object>(map, status);

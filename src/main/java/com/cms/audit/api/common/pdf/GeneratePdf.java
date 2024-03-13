@@ -357,10 +357,128 @@ public class GeneratePdf {
                 pdfDocument.setDefaultPageSize(PageSize.A4);
                 Document document = new Document(pdfDocument);
 
+                // body
+                float parentLenght[] = { 600f };
+                Table parent = new Table(parentLenght).setHorizontalAlignment(HorizontalAlignment.CENTER).setPadding(10)
+                                .setBorder(Border.NO_BORDER).setMarginTop(0);
+                // body
+
+                // body
+                float bodyLenght[] = { 600f };
+                Table body = new Table(bodyLenght).setHorizontalAlignment(HorizontalAlignment.CENTER).setPadding(10)
+                                .setBorder(Border.NO_BORDER);
+                // body
+
+                // section 1
                 float headerLenght[] = { 540f };
                 Table header = new Table(headerLenght).setHorizontalAlignment(HorizontalAlignment.CENTER);
-                header.addCell(new Cell().add("FORM TINDAK LANJUT REKOMENDASI AUDIT").setBold().setFontSize(8));
-                document.add(header);
+                header.addCell(new Cell().add("FORM TINDAK LANJUT REKOMENDASI AUDIT").setBold().setFontSize(9)
+                                .setBorder(Border.NO_BORDER).setTextAlignment(TextAlignment.CENTER));
+                body.addCell(new Cell().add(header).setBorder(Border.NO_BORDER));
+                // section 1
+
+                // section 2
+                float blank1lenght[] = { 540f };
+                Table blank1 = new Table(blank1lenght).setHorizontalAlignment(HorizontalAlignment.CENTER)
+                                .setBorder(Border.NO_BORDER);
+                blank1.addCell(new Cell().add("").setPadding(5).setBorder(Border.NO_BORDER));
+                body.addCell(new Cell().add(blank1).setBorder(Border.NO_BORDER));
+                // section 2
+
+                // section 3
+                float body1Lenght[] = { 540f };
+                Table body1 = new Table(body1Lenght).setHorizontalAlignment(HorizontalAlignment.LEFT);
+                body1.addCell(new Cell().add(
+                                "Menindaklanjuti dari hasil Hasil temuan Auditor Internal, sesuai dengan klarifikasi Nomor : "
+                                                + "05C/RR-AI/WIL/PJ/I/2020" + " tanggal " + "28 Januari 2020"
+                                                + " PT Cinortha MS Wilayah JAMBI cabang Jambi" + " perihal : ")
+                                .setFontSize(8).setBorder(Border.NO_BORDER));
+                body.addCell(new Cell().add(body1).setBorder(Border.NO_BORDER));
+
+                // section 3
+
+                // section 4
+                float body2Lenght[] = { 540f };
+                Table body2 = new Table(body2Lenght).setHorizontalAlignment(HorizontalAlignment.LEFT);
+                body2.addCell(new Cell().add(
+                                "1. Berdasarkan temuan auditor dan permintaan klarifikasi Nomor 02.03.04C/RR-AI/WIL/PJ/I/2020, terkait tindakan asusila/pelecehan kepada promotor cabang jambi a.n Najmi rahayu yang dilakukan oleh kepala wilayah a.n Memet Riyadi pada tgl 19 januari 2020. ")
+                                .setFontSize(8).setBorder(Border.NO_BORDER).setBold().setPaddingLeft(10));
+                body.addCell(new Cell().add(body2).setBorder(Border.NO_BORDER));
+                // section 4
+
+                // section 5
+                float body3Lenght[] = { 540f };
+                Table body3 = new Table(body3Lenght).setHorizontalAlignment(HorizontalAlignment.LEFT);
+                body3.addCell(new Cell().add("*Data terlampir").setFontSize(8).setBorder(Border.NO_BORDER).setBold()
+                                .setPaddingLeft(10));
+                body3.addCell(new Cell().add("maka kami menerangkan bahwa :").setBorder(Border.NO_BORDER).setFontSize(7)
+                                .setPaddingLeft(15));
+                body.addCell(new Cell().add(body3).setBorder(Border.NO_BORDER));
+                // section 5
+
+                // blank line
+                document.add(blank1);
+                // blank line
+
+                // section 6
+                float body4Lenght[] = { 18f, 120f, 390f };
+                Table body4 = new Table(body4Lenght).setHorizontalAlignment(HorizontalAlignment.LEFT);
+                body4.addCell(new Cell().add("").setFontSize(8).setBold().setMargin(5));
+                body4.addCell(new Cell().add("Meberikan Sanksi ").setBorder(Border.NO_BORDER).setFontSize(7)
+                                .setPaddingLeft(15));
+                body4.addCell(new Cell().add(
+                                ": ........................................................................................................................................................")
+                                .setBorder(Border.NO_BORDER).setFontSize(7).setPaddingLeft(15));
+                body4.addCell(new Cell().add("").setBorder(Border.NO_BORDER));
+                body4.addCell(new Cell().add("").setBorder(Border.NO_BORDER));
+                body4.addCell(new Cell().add("").setBorder(Border.NO_BORDER));
+                body4.addCell(new Cell().add("").setFontSize(8).setBold().setMargin(5));
+                body4.addCell(new Cell().add("TIdak Memberikan Sanksi ").setBorder(Border.NO_BORDER).setFontSize(7)
+                                .setPaddingLeft(15));
+                body4.addCell(new Cell().add(
+                                ": ........................................................................................................................................................")
+                                .setBorder(Border.NO_BORDER).setFontSize(7).setPaddingLeft(15));
+                body.addCell(new Cell().add(body4).setBorder(Border.NO_BORDER));
+                // section 6
+
+                // blank line
+                document.add(blank1);
+                // blank line
+
+                //section 7
+                float body5Lenght[] = { 540f };
+                Table body5 = new Table(body5Lenght).setHorizontalAlignment(HorizontalAlignment.LEFT);
+                body5.addCell(new Cell().add("Dengan penjelasan :").setBold().setBorder(Border.NO_BORDER).setFontSize(7));
+                body5.addCell(new Cell().add("").setBorder(Border.NO_BORDER).setHeight(140).setFontSize(7));
+                body5.addCell(new Cell().add(".............. , ...... Januari 2024").setBorder(Border.NO_BORDER).setFontSize(7));
+                body5.addCell(new Cell().add("").setBorder(Border.NO_BORDER).setHeight(40));
+                body5.addCell(new Cell().add("Terry Irfan").setBorderLeft(Border.NO_BORDER).setBorderRight(Border.NO_BORDER).setBorderTop(Border.NO_BORDER).setFontSize(7));
+                body5.addCell(new Cell().add("Ka. Div " + "Operasional").setBorder(Border.NO_BORDER).setFontSize(7).setHeight(40));
+                body.addCell(new Cell().add(body5).setBorder(Border.NO_BORDER));
+                //section 7
+
+                float body6Lenght[] = { 540f };
+                Table body6 = new Table(body6Lenght).setHorizontalAlignment(HorizontalAlignment.LEFT);
+                body6.addCell(new Cell().add("Lampiran :").setBold().setFontSize(7).setBorder(Border.NO_BORDER));
+                body6.addCell(new Cell().add("Photo Copy sangsi administrasi berupa :").setBold().setFontSize(7).setBorder(Border.NO_BORDER));
+                float nestedbody6llenght[] = { 18f, 25f, 18f, 25f, 18f, 25f, 18f, 25f, 18f, 350f };
+                Table nested6 = new Table(nestedbody6llenght);
+                nested6.addCell(new Cell().add(""));
+                nested6.addCell(new Cell().add("ST").setBorder(Border.NO_BORDER).setFontSize(7).setBold());
+                nested6.addCell(new Cell().add(""));
+                nested6.addCell(new Cell().add("SP 1").setBorder(Border.NO_BORDER).setFontSize(7).setBold());
+                nested6.addCell(new Cell().add(""));
+                nested6.addCell(new Cell().add("SP 2").setBorder(Border.NO_BORDER).setFontSize(7).setBold());
+                nested6.addCell(new Cell().add(""));
+                nested6.addCell(new Cell().add("SP 3").setBorder(Border.NO_BORDER).setFontSize(7).setBold());
+                nested6.addCell(new Cell().add(""));
+                nested6.addCell(new Cell().add("Surat Pembebanan/PG").setBorder(Border.NO_BORDER).setFontSize(7).setBold());
+                body6.addCell(new Cell().add(nested6).setBorder(Border.NO_BORDER));
+                body6.addCell(new Cell().add("( Form ini agar diserahkan kembali ke Divisi Pengawasan paling lambat tanggal  29 Januari 2020 )").setBold().setFontSize(7).setBorder(Border.NO_BORDER).setTextAlignment(TextAlignment.CENTER));
+                body.addCell(new Cell().add(body6).setBorder(Border.NO_BORDER));
+
+                parent.addCell(new Cell().add(body).setPadding(5));
+                document.add(parent);
 
                 document.close();
         }

@@ -43,8 +43,8 @@ public class AreaService {
             if (response.isEmpty()) {
                 return GlobalResponse
                         .builder()
-                        .message("Not Content")
-                        .status(HttpStatus.NO_CONTENT)
+                        .message("No Content")
+                        .status(HttpStatus.OK)
                         .build();
             }
             return GlobalResponse
@@ -75,8 +75,8 @@ public class AreaService {
             if (response.isEmpty()) {
                 return GlobalResponse
                         .builder()
-                        .message("Not Content")
-                        .status(HttpStatus.NO_CONTENT)
+                        .message("No Content")
+                        .status(HttpStatus.OK)
                         .build();
             }
             return GlobalResponse
@@ -107,8 +107,8 @@ public class AreaService {
             if (!response.isPresent()) {
                 return GlobalResponse
                         .builder()
-                        .message("Not Content")
-                        .status(HttpStatus.NO_CONTENT)
+                        .message("No Content")
+                        .status(HttpStatus.OK)
                         .build();
             }
             return GlobalResponse
@@ -140,15 +140,15 @@ public class AreaService {
                 return GlobalResponse
                 .builder()
                 .message("No Content")
-                .status(HttpStatus.NO_CONTENT)
+                .status(HttpStatus.OK)
                 .build();
         }
             Page<Area> response = pagArea.findByRegion(setRegion.get(), PageRequest.of(page, size));
             if (response.isEmpty()) {
                 return GlobalResponse
                         .builder()
-                        .message("Not Content")
-                        .status(HttpStatus.NO_CONTENT)
+                        .message("No Content")
+                        .status(HttpStatus.OK)
                         .build();
             }
             return GlobalResponse
@@ -179,8 +179,8 @@ public class AreaService {
             if (response.isEmpty()) {
                 return GlobalResponse
                         .builder()
-                        .message("Not Content")
-                        .status(HttpStatus.NO_CONTENT)
+                        .message("No Content")
+                        .status(HttpStatus.OK)
                         .build();
             }
             return GlobalResponse

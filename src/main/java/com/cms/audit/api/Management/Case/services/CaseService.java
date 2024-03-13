@@ -1,6 +1,7 @@
 package com.cms.audit.api.Management.Case.services;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Date;
 
 import org.hibernate.exception.DataException;
@@ -35,8 +36,8 @@ public class CaseService {
             if (response.isEmpty()) {
                 return GlobalResponse
                         .builder()
-                        .message("Not Content")
-                        .status(HttpStatus.NO_CONTENT)
+                        .message("No Content")
+                        .status(HttpStatus.OK)
                         .build();
             }
             return GlobalResponse
@@ -67,8 +68,8 @@ public class CaseService {
             if (response.isEmpty()) {
                 return GlobalResponse
                         .builder()
-                        .message("Not Content")
-                        .status(HttpStatus.NO_CONTENT)
+                        .message("No Content")
+                        .status(HttpStatus.OK)
                         .build();
             }
             return GlobalResponse
@@ -95,12 +96,12 @@ public class CaseService {
 
     public GlobalResponse findOne(Long id) {
         try {
-            List<Case> response = caseRepository.findOneCaseById(id);
-            if (response.isEmpty()) {
+            Optional<Case> response = caseRepository.findOneCaseById(id);
+            if (!response.isPresent()) {
                 return GlobalResponse
                         .builder()
-                        .message("Not Content")
-                        .status(HttpStatus.NO_CONTENT)
+                        .message("No Content")
+                        .status(HttpStatus.OK)
                         .build();
             }
             return GlobalResponse

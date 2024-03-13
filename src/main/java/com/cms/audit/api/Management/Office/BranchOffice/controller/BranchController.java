@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -61,7 +61,7 @@ public class BranchController {
     }
 
     @PostMapping
-    public ResponseEntity<Object> save(@RequestBody BranchDTO branchDTO) {
+    public ResponseEntity<Object> save(@ModelAttribute BranchDTO branchDTO) {
         GlobalResponse response = branchService.save(branchDTO);
         if (response.getError() != null) {
             return ResponseEntittyHandler.allHandler(null, null, response.getStatus(), response.getError());
@@ -70,7 +70,7 @@ public class BranchController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Object> edit(@RequestBody BranchDTO branchDTO, @PathVariable("id") Long id) {
+    public ResponseEntity<Object> edit(@ModelAttribute BranchDTO branchDTO, @PathVariable("id") Long id) {
         GlobalResponse response = branchService.edit(branchDTO, id);
         if (response.getError() != null) {
             return ResponseEntittyHandler.allHandler(null, null, response.getStatus(), response.getError());

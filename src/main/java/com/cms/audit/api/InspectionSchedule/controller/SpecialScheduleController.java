@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
@@ -73,13 +73,13 @@ public class SpecialScheduleController {
     }
 
     @PostMapping
-    public ResponseEntity<Object> add(@RequestBody ScheduleDTO scheduleDTO) {
+    public ResponseEntity<Object> add(@ModelAttribute ScheduleDTO scheduleDTO) {
         GlobalResponse response = scheduleService.insertSpecialSchedule(scheduleDTO);
         return ResponseEntittyHandler.allHandler(null, response.getMessage(), response.getStatus(), null);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Object> put(@RequestBody EditScheduleDTO scheduleDTO, @PathVariable("id") Long id) {
+    public ResponseEntity<Object> put(@ModelAttribute EditScheduleDTO scheduleDTO, @PathVariable("id") Long id) {
         GlobalResponse response = scheduleService.editSchedule(scheduleDTO, id, ECategory.SPECIAL);
         return ResponseEntittyHandler.allHandler(null, response.getMessage(), response.getStatus(), null);
     }

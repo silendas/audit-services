@@ -63,7 +63,9 @@ public class UserService {
                 try {
                         Page<User> response = pagUser.findAll(PageRequest.of(page, size));
                         if (response.isEmpty()) {
-                                return GlobalResponse.builder().message("No Content").status(HttpStatus.NO_CONTENT)
+                                return GlobalResponse.builder()
+                                .message("No Content")
+                                .status(HttpStatus.OK)
                                                 .build();
                         }
                         return GlobalResponse
@@ -86,7 +88,7 @@ public class UserService {
                 try {
                         Optional<User> response = userRepository.findById(id);
                         if (!response.isPresent()) {
-                                return GlobalResponse.builder().message("No Content").status(HttpStatus.NO_CONTENT)
+                                return GlobalResponse.builder().message("No Content").status(HttpStatus.OK)
                                                 .build();
                         }
                         return GlobalResponse
@@ -111,12 +113,12 @@ public class UserService {
                                 return GlobalResponse
                                 .builder()
                                 .message("No Content")
-                                .status(HttpStatus.NO_CONTENT)
+                                .status(HttpStatus.OK)
                                 .build();
                         }
                         Page<User> response = pagUser.findByMain(setMain.get(), PageRequest.of(page, size));
                         if (response.isEmpty()) {
-                                return GlobalResponse.builder().message("No Content").status(HttpStatus.NO_CONTENT).build();
+                                return GlobalResponse.builder().message("No Content").status(HttpStatus.OK).build();
                         }
                         return GlobalResponse
                                         .builder()
@@ -139,12 +141,12 @@ public class UserService {
                                 return GlobalResponse
                                 .builder()
                                 .message("No Content")
-                                .status(HttpStatus.NO_CONTENT)
+                                .status(HttpStatus.OK)
                                 .build();
                         }
                         Page<User> response = pagUser.findByRegion(set.get(), PageRequest.of(page, size));
                         if (response.isEmpty()) {
-                                return GlobalResponse.builder().message("No Content").status(HttpStatus.NO_CONTENT)
+                                return GlobalResponse.builder().message("No Content").status(HttpStatus.OK)
                                                 .build();
                         }
                         return GlobalResponse
@@ -166,7 +168,7 @@ public class UserService {
                 try {
                         List<DropDownUser> response = userRepository.findDropDownByRegion(id);
                         if (response.isEmpty()) {
-                                return GlobalResponse.builder().message("No Content").status(HttpStatus.NO_CONTENT)
+                                return GlobalResponse.builder().message("No Content").status(HttpStatus.OK)
                                                 .build();
                         }
                         return GlobalResponse
@@ -187,7 +189,7 @@ public class UserService {
                 try {
                         List<DropDownUser> response = userRepository.findDropDownByMain(id);
                         if (response.isEmpty()) {
-                                return GlobalResponse.builder().message("No Content").status(HttpStatus.NO_CONTENT)
+                                return GlobalResponse.builder().message("No Content").status(HttpStatus.OK)
                                                 .build();
                         }
                         return GlobalResponse
@@ -206,10 +208,10 @@ public class UserService {
 
         public GlobalResponse findOneByAreaId(Long id, int page, int size) {
                 try {
-                        Area set = areaRepository.findById(id).orElseThrow(()-> new ResponseStatusException(HttpStatus.NO_CONTENT));
+                        Area set = areaRepository.findById(id).orElseThrow(()-> new ResponseStatusException(HttpStatus.OK));
                         Page<User> response = pagUser.findByArea(set, PageRequest.of(page, size));
                         if (response.isEmpty()) {
-                                return GlobalResponse.builder().message("No Content").status(HttpStatus.NO_CONTENT)
+                                return GlobalResponse.builder().message("No Content").status(HttpStatus.OK)
                                                 .build();
                         }
                         return GlobalResponse
@@ -229,10 +231,10 @@ public class UserService {
 
         public GlobalResponse findOneByBranchId(Long id, int page, int size) {
                 try {
-                        Branch set = branchRepository.findById(id).orElseThrow(()-> new ResponseStatusException(HttpStatus.NO_CONTENT));
+                        Branch set = branchRepository.findById(id).orElseThrow(()-> new ResponseStatusException(HttpStatus.OK));
                         Page<User> response = pagUser.findByBranch(set, PageRequest.of(page, size));
                         if (response.isEmpty()) {
-                                return GlobalResponse.builder().message("No Content").status(HttpStatus.NO_CONTENT)
+                                return GlobalResponse.builder().message("No Content").status(HttpStatus.OK)
                                                 .build();
                         }
                         return GlobalResponse

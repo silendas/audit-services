@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -49,7 +49,7 @@ public class MainController {
     }
 
     @PostMapping
-    public ResponseEntity<Object> save(@RequestBody MainDTO levelDTO) {
+    public ResponseEntity<Object> save(@ModelAttribute MainDTO levelDTO) {
         GlobalResponse response = mainService.save(levelDTO);
         if (response.getError() != null) {
             return ResponseEntittyHandler.allHandler(null, null, response.getStatus(), response.getError());
@@ -58,7 +58,7 @@ public class MainController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Object> edit(@RequestBody MainDTO levelDTO, @PathVariable("id") Long id) {
+    public ResponseEntity<Object> edit(@ModelAttribute MainDTO levelDTO, @PathVariable("id") Long id) {
         GlobalResponse response = mainService.edit(levelDTO, id);
         if (response.getError() != null) {
             return ResponseEntittyHandler.allHandler(null, null, response.getStatus(), response.getError());

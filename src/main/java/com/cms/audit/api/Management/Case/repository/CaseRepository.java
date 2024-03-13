@@ -1,6 +1,7 @@
 package com.cms.audit.api.Management.Case.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -20,6 +21,6 @@ public interface CaseRepository extends JpaRepository<Case,Long>{
     public List<CaseInterface> findSpecificCase();
 
     @Query(value = "SELECT * FROM cases u WHERE u.id = :caseId AND u.is_delete <> 1", nativeQuery = true)
-    public List<Case> findOneCaseById(@Param("caseId") Long id);
+    public Optional<Case> findOneCaseById(@Param("caseId") Long id);
 
 }

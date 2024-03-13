@@ -55,7 +55,8 @@ public class ScheduleService {
                                 return GlobalResponse
                                                 .builder()
                                                 .message("Not Content")
-                                                .status(HttpStatus.NO_CONTENT)
+                                                .data(response)
+                                                .status(HttpStatus.OK)
                                                 .build();
                         }
                         return GlobalResponse
@@ -85,7 +86,8 @@ public class ScheduleService {
                                 return GlobalResponse
                                                 .builder()
                                                 .message("Not Content")
-                                                .status(HttpStatus.NO_CONTENT)
+                                                .data(response)
+                                                .status(HttpStatus.OK)
                                                 .build();
                         }
                         return GlobalResponse
@@ -114,8 +116,9 @@ public class ScheduleService {
                         if (response.isEmpty()) {
                                 return GlobalResponse
                                                 .builder()
-                                                .message("Not Content")
-                                                .status(HttpStatus.NO_CONTENT)
+                                                .message("No Content")
+                                                .data(response)
+                                                .status(HttpStatus.OK)
                                                 .build();
                         }
                         return GlobalResponse
@@ -144,7 +147,8 @@ public class ScheduleService {
                                 return GlobalResponse
                                                 .builder()
                                                 .message("No Content")
-                                                .status(HttpStatus.NO_CONTENT)
+                                                .data(response)
+                                                .status(HttpStatus.OK)
                                                 .build();
                         }
                         return GlobalResponse
@@ -174,7 +178,7 @@ public class ScheduleService {
                                 return GlobalResponse
                                                 .builder()
                                                 .message("Not Content")
-                                                .status(HttpStatus.NO_CONTENT)
+                                                .status(HttpStatus.OK)
                                                 .build();
                         }
                         return GlobalResponse
@@ -203,8 +207,8 @@ public class ScheduleService {
                         if (response.isEmpty()) {
                                 return GlobalResponse
                                                 .builder()
-                                                .message("Not Content")
-                                                .status(HttpStatus.NO_CONTENT)
+                                                .message("No Content")
+                                                .status(HttpStatus.OK)
                                                 .build();
                         }
                         return GlobalResponse
@@ -234,7 +238,7 @@ public class ScheduleService {
                                 return GlobalResponse
                                                 .builder()
                                                 .message("Not Content")
-                                                .status(HttpStatus.NO_CONTENT)
+                                                .status(HttpStatus.OK)
                                                 .build();
                         }
                         return GlobalResponse
@@ -266,7 +270,7 @@ public class ScheduleService {
                                 return GlobalResponse
                                                 .builder()
                                                 .message("No Content")
-                                                .status(HttpStatus.NO_CONTENT)
+                                                .status(HttpStatus.OK)
                                                 .build();
                         }
                         return GlobalResponse
