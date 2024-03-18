@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -102,7 +103,16 @@ public class UserController {
         return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(), null);
     }
 
-    @PostMapping("/change-password/{id}")
+    @PutMapping("/{id}")
+    public ResponseEntity<Object> editProfile(@ModelAttribute UserDTO userDTO, @PathVariable("id") Long id) {
+        GlobalResponse response = userService.edit(userDTO, id);
+        if (response.getError() != null) {
+            return ResponseEntittyHandler.allHandler(null, null, response.getStatus(), response.getError());
+        }
+        return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(), null);
+    }
+
+    @PatchMapping("/change-password/{id}")
     public ResponseEntity<Object> changePassword(@ModelAttribute ChangePasswordDTO changePasswordDTO,
             @PathVariable("id") Long id) {
         GlobalResponse response = userService.changePassword(changePasswordDTO, id);
@@ -112,9 +122,9 @@ public class UserController {
         return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(), null);
     }
 
-    @PutMapping("/{id}")
+    @PatchMapping("/change-profile/{id}")
     public ResponseEntity<Object> edit(@ModelAttribute UserDTO userDTO, @PathVariable("id") Long id) {
-        GlobalResponse response = userService.edit(userDTO, id);
+        GlobalResponse response = userService.changeProfile(userDTO, id);
         if (response.getError() != null) {
             return ResponseEntittyHandler.allHandler(null, null, response.getStatus(), response.getError());
         }

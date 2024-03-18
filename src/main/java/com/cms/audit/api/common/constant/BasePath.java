@@ -36,4 +36,8 @@ public interface BasePath {
 
     String BASE_PATH_BAP = BASE_API+"/bap";
 
+    String BASE_PATH_FOLLOW_UP = BASE_API+"/followup";
+
+    String BASE_PATH_REPORT = BASE_API+"/report";
+
 }

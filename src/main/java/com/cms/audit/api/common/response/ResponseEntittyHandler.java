@@ -7,7 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 public class ResponseEntittyHandler {
-    public static ResponseEntity<Object> authSuccess(String token, HttpStatus status) {
+    public static ResponseEntity<Object> authSuccess(String message,String token, HttpStatus status) {
 
         Map<String, Object> meta = new LinkedHashMap<>();
         meta.put("timestamp", null);
@@ -22,7 +22,7 @@ public class ResponseEntittyHandler {
         Map<String, Object> map = new LinkedHashMap<>();
         map.put("meta", meta);
         map.put("data", data);
-        map.put("message", "Success");
+        map.put("message", message);
         map.put("status", status.value());
 
         return new ResponseEntity<Object>(map, status);

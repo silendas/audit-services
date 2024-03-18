@@ -23,4 +23,6 @@ public interface ReportTypeRepository extends JpaRepository<ReportType,Long>{
     @Query(value = "SELECT * FROM report_type u WHERE u.id = :rtId AND u.is_delete <> 1", nativeQuery = true)
     public Optional<ReportType> findOneReportTypeById(@Param("rtId") Long id);
 
+    Optional<ReportType> findByCode(String code);
+
 }

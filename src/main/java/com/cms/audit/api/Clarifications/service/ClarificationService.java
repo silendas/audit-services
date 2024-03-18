@@ -14,25 +14,29 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.cms.audit.api.Clarifications.dto.InputClarificationDTO;
 import com.cms.audit.api.Clarifications.dto.GenerateCKDTO;
 import com.cms.audit.api.Clarifications.dto.IdentificationDTO;
+import com.cms.audit.api.Clarifications.dto.InputClarificationDTO;
 import com.cms.audit.api.Clarifications.dto.response.NumberClarificationInterface;
 import com.cms.audit.api.Clarifications.models.Clarification;
-import com.cms.audit.api.Clarifications.models.EStatus;
+import com.cms.audit.api.Clarifications.models.EStatusClarification;
 import com.cms.audit.api.Clarifications.repository.ClarificationRepository;
 import com.cms.audit.api.Clarifications.repository.PagClarification;
+import com.cms.audit.api.FollowUp.models.EStatusFollowup;
+import com.cms.audit.api.FollowUp.models.FollowUp;
+import com.cms.audit.api.FollowUp.repository.FollowUpRepository;
 import com.cms.audit.api.Management.Case.models.Case;
 import com.cms.audit.api.Management.Case.repository.CaseRepository;
 import com.cms.audit.api.Management.CaseCategory.models.CaseCategory;
-import com.cms.audit.api.Management.Office.BranchOffice.repository.BranchRepository;
 import com.cms.audit.api.Management.ReportType.models.ReportType;
+import com.cms.audit.api.Management.ReportType.repository.ReportTypeRepository;
 import com.cms.audit.api.Management.User.models.User;
 import com.cms.audit.api.Management.User.repository.UserRepository;
 import com.cms.audit.api.NewsInspection.models.NewsInspection;
 import com.cms.audit.api.NewsInspection.repository.NewsInspectionRepository;
 import com.cms.audit.api.common.constant.FolderPath;
 import com.cms.audit.api.common.constant.convertDateToRoman;
+import com.cms.audit.api.common.exception.ResourceNotFoundException;
 import com.cms.audit.api.common.pdf.GeneratePdf;
 import com.cms.audit.api.common.response.GlobalResponse;
 import com.cms.audit.api.common.response.PDFResponse;
@@ -47,7 +51,7 @@ public class ClarificationService {
         private UserRepository userRepository;
 
         @Autowired
-        private BranchRepository branchRepository;
+        private ReportTypeRepository reportTypeRepository;
 
         @Autowired
         private CaseRepository caseRepository;
@@ -56,13 +60,21 @@ public class ClarificationService {
         private NewsInspectionRepository newsInspectionRepository;
 
         @Autowired
+        private FollowUpRepository followUpRepository;
+
+        @Autowired
         private PagClarification pag;
 
-        private final String FOLDER_PATH = FolderPath.FOLDER_PATH_CLARIFICATION;
+        private final String UPLOAD_FOLDER_PATH = FolderPath.FOLDER_PATH_UPLOAD_CLARIFICATION;
 
-        public GlobalResponse getAll(int page, int size) {
+        public GlobalResponse getAll(int page, int size, Date start_date, Date end_date) {
                 try {
-                        Page<Clarification> response = pag.findAll(PageRequest.of(page, size));
+                        Page<Clarification> response;
+                        if(start_date == null || end_date == null){
+                                response = pag.findAll(PageRequest.of(page, size));
+                        } else {
+                                response = pag.findClarificationInDateRange(start_date, end_date, PageRequest.of(page, size));
+                        }
                         if (response.isEmpty()) {
                                 return GlobalResponse
                                                 .builder()
@@ -173,7 +185,7 @@ public class ClarificationService {
                         Optional<NumberClarificationInterface> checkClBefore = repository
                                         .checkNumberClarification(dto.getUser_id());
                         if (checkClBefore.isPresent()) {
-                                if (checkClBefore.get().getCreated_Year() == Long
+                                if (checkClBefore.get().getCreated_Year().longValue() == Long
                                                 .valueOf(convertDateToRoman.getIntYear())) {
                                         reportNumber = checkClBefore.get().getReport_Number() + 1;
                                         if (reportNumber < 10) {
@@ -199,8 +211,10 @@ public class ClarificationService {
                         String romanMonth = convertDateToRoman.getRomanMonth();
                         Integer thisYear = convertDateToRoman.getIntYear();
 
+                        Optional<ReportType> reportType = reportTypeRepository.findByCode("CK");
+
                         String reportCode = rptNum + lvlCode + "/" + initialName + "-" + caseName
-                                        + "/CK/" + branchName + "/" + romanMonth + "/" + thisYear;
+                                        + "/" + reportType.get().getCode() + "/" +branchName + "/" + romanMonth + "/" + thisYear;
 
                         Clarification clarification = new Clarification(
                                         null,
@@ -222,7 +236,7 @@ public class ClarificationService {
                                         null,
                                         null,
                                         null,
-                                        EStatus.INPUT,
+                                        EStatusClarification.INPUT,
                                         new Date(),
                                         new Date());
 
@@ -293,7 +307,7 @@ public class ClarificationService {
                                         dto.getPriority(),
                                         null,
                                         null,
-                                        EStatus.DOWNLOAD,
+                                        EStatusClarification.DOWNLOAD,
                                         getClarification.get().getCreated_at(),
                                         new Date());
 
@@ -321,7 +335,7 @@ public class ClarificationService {
                                         dto.getPriority(),
                                         null,
                                         null,
-                                        EStatus.DOWNLOAD,
+                                        EStatusClarification.DOWNLOAD,
                                         getClarification.get().getCreated_at(),
                                         new Date());
 
@@ -384,7 +398,7 @@ public class ClarificationService {
                                         getBefore.get().getPriority(),
                                         dto.getEvaluation(),
                                         dto.getIs_followup(),
-                                        EStatus.IK,
+                                        EStatusClarification.IDENTIFICATION,
                                         getBefore.get().getCreated_at(),
                                         new Date());
 
@@ -405,7 +419,8 @@ public class ClarificationService {
                         Optional<NumberClarificationInterface> checkClBefore = newsInspectionRepository
                                         .checkNumberBAP(response.getUser().getId());
                         if (checkClBefore.isPresent()) {
-                                if (checkClBefore.get().getCreated_Year() == Long.valueOf(convertDateToRoman.getIntYear())) {
+                                if (checkClBefore.get().getCreated_Year() == Long
+                                                .valueOf(convertDateToRoman.getIntYear())) {
                                         reportNumber = checkClBefore.get().getReport_Number() + 1;
                                         if (reportNumber < 10) {
                                                 rptNum = "00" + reportNumber;
@@ -430,8 +445,10 @@ public class ClarificationService {
                         String romanMonth = convertDateToRoman.getRomanMonth();
                         Integer thisYear = convertDateToRoman.getIntYear();
 
-                        String reportCode = rptNum + lvlCode + "/" + initialName + "-" + caseName
-                                        + "/BA/" + branchName + "/" + romanMonth + "/" + thisYear;
+                        Optional<ReportType> reportType = reportTypeRepository.findByCode("BA");
+
+                        String reportCode = rptNum + lvlCode + "/" + initialName + "-" + caseName + "/"
+                                        + reportType.get().getCode() + "/" + branchName + "/" + romanMonth + "/" + thisYear;
 
                         User setUserId = User.builder().id(response.getUser().getId()).build();
                         ReportType setReportId = ReportType.builder().id(Long.valueOf(2)).build();
@@ -450,6 +467,28 @@ public class ClarificationService {
                                         new Date());
 
                         newsInspectionRepository.save(newsInspection);
+
+                        if (dto.getIs_followup() == 0 || dto.getIs_followup() == null
+                                        || dto.getIs_followup().toString() == "") {
+                                return GlobalResponse
+                                                .builder()
+                                                .message("Success")
+                                                .status(HttpStatus.OK)
+                                                .build();
+                        }
+
+                        FollowUp followUp = new FollowUp(
+                                null, 
+                                setClarificationId, 
+                                null, 
+                                null, 
+                                null, 
+                                EStatusFollowup.CREATE, 
+                                null, 
+                                new Date()); 
+                        
+                        followUpRepository.save(followUp);
+
                         return GlobalResponse
                                         .builder()
                                         .message("Success")
@@ -475,7 +514,7 @@ public class ClarificationService {
                                                 .build();
                         }
 
-                        String path = FOLDER_PATH + file.getOriginalFilename();
+                        String path = UPLOAD_FOLDER_PATH + file.getOriginalFilename();
 
                         String fileName = file.getOriginalFilename();
                         String filePath = path;
@@ -508,7 +547,7 @@ public class ClarificationService {
                                         getClarification.get().getPriority(),
                                         getClarification.get().getEvaluation(),
                                         getClarification.get().getIs_follow_up(),
-                                        EStatus.UPLOAD,
+                                        EStatusClarification.UPLOAD,
                                         new Date(),
                                         new Date());
                         repository.save(clarification);
@@ -543,10 +582,7 @@ public class ClarificationService {
 
         public Clarification downloadFile(String fileName) throws java.io.IOException, IOFileUploadException {
                 Clarification response = repository.findByFileName(fileName)
-                                .orElseThrow(() -> new ResponseStatusException(HttpStatus.OK,
-                                                "not found"));
-                // String filePath=response.getFile_path();
-                // byte[] file = Files.readAllBytes(new File(filePath).toPath());
+                                .orElseThrow(() -> new ResourceNotFoundException("File not found with name: " + fileName ));
                 return response;
         }
 

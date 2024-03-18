@@ -5,6 +5,7 @@ public enum EStatus {
     PROGRESS,
     PENDING,
     DONE,
-    NA,
+    REQUEST,
+    APPROVE,
     REJECTED
 }

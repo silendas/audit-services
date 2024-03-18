@@ -99,7 +99,7 @@ public class Clarification {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
-    private EStatus status;
+    private EStatusClarification status;
 
     @Column(name = "created_at", columnDefinition = "DATE")
     private Date created_at;

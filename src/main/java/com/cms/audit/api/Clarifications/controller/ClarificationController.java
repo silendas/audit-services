@@ -7,7 +7,6 @@ import java.io.InputStream;
 import java.util.Date;
 import java.util.Optional;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -15,6 +14,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -34,6 +34,7 @@ import com.cms.audit.api.common.response.ResponseEntittyHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 
 @RestController
+@Validated
 @RequestMapping(value = BasePath.BASE_PATH_CLARIFICATION)
 public class ClarificationController {
 
@@ -42,9 +43,11 @@ public class ClarificationController {
 
     @GetMapping
     public ResponseEntity<Object> get(
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Optional<Date> start_date,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Optional<Date> end_date,
             @RequestParam("page") Optional<Integer> page,
             @RequestParam("size") Optional<Integer> size) {
-        GlobalResponse response = service.getAll(page.orElse(0), size.orElse(10));
+        GlobalResponse response = service.getAll(page.orElse(0), size.orElse(10), start_date.orElse(null), end_date.orElse(null));
         return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(),
                 response.getError());
     }
@@ -52,17 +55,6 @@ public class ClarificationController {
     @GetMapping("/{id}")
     public ResponseEntity<Object> get(@PathVariable("id") Long id) {
         GlobalResponse response = service.getOneById(id);
-        return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(),
-                response.getError());
-    }
-
-    @GetMapping("/filter")
-    public ResponseEntity<Object> getByDateRange(
-            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date start_date,
-            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date end_date,
-            @RequestParam("page") Optional<Integer> page,
-            @RequestParam("size") Optional<Integer> size) {
-        GlobalResponse response = service.getByDateRange(start_date, end_date, page.orElse(0),size.orElse(10));
         return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(),
                 response.getError());
     }
@@ -86,18 +78,19 @@ public class ClarificationController {
 
     @PostMapping("/{id}")
     public ResponseEntity<Object> save(@ModelAttribute InputClarificationDTO dto, @PathVariable("id") Long id) {
-        GlobalResponse response = service.inputClarification(dto,id);
+        GlobalResponse response = service.inputClarification(dto, id);
         return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(),
                 response.getError());
     }
 
     @PostMapping("/identification/{id}")
-    public ResponseEntity<Object> saveIdentification(@ModelAttribute IdentificationDTO dto, @PathVariable("id") Long id) {
+    public ResponseEntity<Object> saveIdentification(@ModelAttribute IdentificationDTO dto,
+            @PathVariable("id") Long id) {
         GlobalResponse response = service.identificationClarification(dto, id);
         return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(),
                 response.getError());
     }
-    
+
     @PostMapping("/generate")
     public ResponseEntity<Object> generateNumber(@ModelAttribute GenerateCKDTO dto) {
         GlobalResponse response = service.generateCK(dto);
@@ -105,9 +98,8 @@ public class ClarificationController {
                 response.getError());
     }
 
-    @PostMapping(value = "/file/{id}", consumes = { MediaType.APPLICATION_PDF_VALUE, "application/msword",
-            "application/vnd.openxmlformats-officedocument.wordprocessingml.document" })
-    public ResponseEntity<Object> upload(@RequestParam("file") MultipartFile file,
+    @PostMapping(value = "/file/{id}")
+    public ResponseEntity<Object> upload(@RequestParam(value = "file", required = false) MultipartFile file,
             @PathVariable("id") Long id) {
         GlobalResponse response = service.uploadFile(file, id);
         return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(),

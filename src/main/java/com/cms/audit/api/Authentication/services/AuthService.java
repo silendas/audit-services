@@ -18,6 +18,7 @@ import com.cms.audit.api.Authentication.dto.response.AuthResponse;
 import com.cms.audit.api.Authentication.repository.AuthRepository;
 import com.cms.audit.api.Config.Jwt.JwtService;
 import com.cms.audit.api.Management.User.models.User;
+import com.cms.audit.api.common.response.GlobalResponse;
 
 import io.jsonwebtoken.JwtException;
 import lombok.RequiredArgsConstructor;
@@ -39,16 +40,16 @@ public class AuthService {
                         Optional<User> response = authRepository.findOneUsersByEmailOrUsername(signinDTO.getUsername(),
                                         signinDTO.getUsername());
                         if (!response.isPresent()) {
-                                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Login error");
+                                return AuthResponse.builder().message("Wrong username or password").status(HttpStatus.OK).build();
                         };
 
                         // valdite auth manager user
                         authenticationManager.authenticate(
                                         new UsernamePasswordAuthenticationToken(
-                                                        response.get().getEmail(),
+                                                        response.get().getUsername(),
                                                         signinDTO.getPassword()));
 
-                        User user = authRepository.findByEmail(response.get().getEmail()).orElseThrow();
+                        User user = authRepository.findByUsername(response.get().getUsername()).orElseThrow();
 
                         // generate jwt token
                         var jwtToken = jwtService.generateToken(user);
@@ -59,13 +60,13 @@ public class AuthService {
                                         .status(HttpStatus.OK)
                                         .build();
                 } catch (DataException e) {
-                        throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Data error");
+                        return AuthResponse.builder().error(e).status(HttpStatus.UNPROCESSABLE_ENTITY).build();
                 } catch (AuthenticationException e) {
-                        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Auth error");
+                        return AuthResponse.builder().error(e).status(HttpStatus.UNAUTHORIZED).build();
                 } catch (JwtException e) {
-                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "JWT error");
+                        return AuthResponse.builder().error(e).status(HttpStatus.UNAUTHORIZED).build();
                 } catch (Exception e) {
-                        throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Server error");
+                        return AuthResponse.builder().error(e).status(HttpStatus.INTERNAL_SERVER_ERROR).build();
                 }
 
         }
@@ -79,7 +80,7 @@ public class AuthService {
                                 .status(HttpStatus.OK)
                                 .build();
                 } catch (Exception e) {
-                        throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Server error");
+                        return AuthResponse.builder().error(e).status(HttpStatus.INTERNAL_SERVER_ERROR).build();
                 }
         }
 }

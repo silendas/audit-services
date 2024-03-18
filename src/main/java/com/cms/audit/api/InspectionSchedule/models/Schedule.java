@@ -51,10 +51,10 @@ public class Schedule {
     @Column(name = "end_date")
     private Date end_date;
 
-    @Column(name = "start_date_realization")
+    @Column(name = "start_date_realization", columnDefinition = "DATE")
     private Date start_date_realization;
 
-    @Column(name = "end_date_realization")
+    @Column(name = "end_date_realization", columnDefinition = "DATE")
     private Date end_date_realization;
 
     @Enumerated(EnumType.STRING)

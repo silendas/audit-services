@@ -21,6 +21,7 @@ import com.cms.audit.api.AuditDailyReport.repository.AuditDailyReportRepository;
 import com.cms.audit.api.AuditDailyReport.repository.pagAuditDailyReport;
 import com.cms.audit.api.Clarifications.dto.response.NumberClarificationInterface;
 import com.cms.audit.api.Clarifications.models.Clarification;
+import com.cms.audit.api.Clarifications.models.EStatusClarification;
 import com.cms.audit.api.Clarifications.repository.ClarificationRepository;
 import com.cms.audit.api.InspectionSchedule.models.EStatus;
 import com.cms.audit.api.InspectionSchedule.models.Schedule;
@@ -30,6 +31,7 @@ import com.cms.audit.api.Management.Case.repository.CaseRepository;
 import com.cms.audit.api.Management.CaseCategory.models.CaseCategory;
 import com.cms.audit.api.Management.Office.BranchOffice.models.Branch;
 import com.cms.audit.api.Management.ReportType.models.ReportType;
+import com.cms.audit.api.Management.ReportType.repository.ReportTypeRepository;
 import com.cms.audit.api.Management.User.models.User;
 import com.cms.audit.api.Management.User.repository.UserRepository;
 import com.cms.audit.api.common.constant.convertDateToRoman;
@@ -60,9 +62,12 @@ public class AuditDailyReportService {
         private CaseRepository caseRepository;
 
         @Autowired
+        private ReportTypeRepository reportTypeRepository;
+
+        @Autowired
         private pagAuditDailyReport pagAuditDailyReport;
 
-        public GlobalResponse get(int page,int size) {
+        public GlobalResponse get(int page, int size) {
                 try {
                         Page<AuditDailyReport> response = pagAuditDailyReport.findAllLHA(PageRequest.of(page, size));
                         if (response.isEmpty()) {
@@ -99,9 +104,10 @@ public class AuditDailyReportService {
                 }
         }
 
-        public GlobalResponse getByDateRange(Date start_date, Date end_date, int page,int size) {
+        public GlobalResponse getByDateRange(Date start_date, Date end_date, int page, int size) {
                 try {
-                        Page<AuditDailyReport> response = pagAuditDailyReport.findLHAInDateRange(start_date, end_date, PageRequest.of(page, size));
+                        Page<AuditDailyReport> response = pagAuditDailyReport.findLHAInDateRange(start_date, end_date,
+                                        PageRequest.of(page, size));
                         if (response.isEmpty()) {
                                 return GlobalResponse
                                                 .builder()
@@ -175,13 +181,14 @@ public class AuditDailyReportService {
 
         public GlobalResponse getByScheduleId(Long id, int page, int size) {
                 try {
-                        Page<AuditDailyReport> response = pagAuditDailyReport.findByScheduleId(id, PageRequest.of(page, size));
-                        if(response.isEmpty()){
+                        Page<AuditDailyReport> response = pagAuditDailyReport.findByScheduleId(id,
+                                        PageRequest.of(page, size));
+                        if (response.isEmpty()) {
                                 return GlobalResponse
-                                .builder()
-                                .message("No Content")
-                                .status(HttpStatus.OK)
-                                .build();
+                                                .builder()
+                                                .message("No Content")
+                                                .status(HttpStatus.OK)
+                                                .build();
                         }
                         return GlobalResponse
                                         .builder()
@@ -321,7 +328,7 @@ public class AuditDailyReportService {
                         Optional<NumberClarificationInterface> checkClBefore = clarificationRepository
                                         .checkNumberClarification(dto.getUser_id());
                         if (checkClBefore.isPresent()) {
-                                if (checkClBefore.get().getCreated_Year() == Long
+                                if (checkClBefore.get().getCreated_Year().longValue() == Long
                                                 .valueOf(convertDateToRoman.getIntYear())) {
                                         reportNumber = checkClBefore.get().getReport_Number() + 1;
                                         if (reportNumber < 10) {
@@ -347,8 +354,11 @@ public class AuditDailyReportService {
                         String romanMonth = convertDateToRoman.getRomanMonth();
                         Integer thisYear = convertDateToRoman.getIntYear();
 
+                        Optional<ReportType> reportType = reportTypeRepository.findByCode("CK");
+
                         String reportCode = rptNum + lvlCode + "/" + initialName + "-" + caseName
-                                        + "/CK/" + branchName + "/" + romanMonth + "/" + thisYear;
+                                        + "/" + reportType.get().getCode() + "/" + branchName + "/" + romanMonth + "/"
+                                        + thisYear;
 
                         ReportType setReportId = ReportType.builder().id(Long.valueOf(1)).build();
 
@@ -372,7 +382,7 @@ public class AuditDailyReportService {
                                         null,
                                         null,
                                         null,
-                                        null,
+                                        EStatusClarification.INPUT,
                                         new Date(),
                                         new Date());
 

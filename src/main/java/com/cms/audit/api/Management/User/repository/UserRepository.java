@@ -18,6 +18,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findOneUsersByEmailOrUsername(String email, String username);
 
     Optional<User> findByEmail(String email);
+
+    Optional<User> findByUsername(String username);
     
     @Query(value = "SELECT u.id, u.role_id, u.level_id, u.nip, u.fullname, u.initial_name, u.email, u.username, u.password, u.is_active, u.created_at,u.updated_at FROM users u", nativeQuery = true)
     List<UserProfileInterface> findSpecificUser();

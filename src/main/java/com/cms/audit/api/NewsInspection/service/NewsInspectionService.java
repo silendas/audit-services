@@ -4,9 +4,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.net.MalformedURLException;
 import java.util.Date;
-import java.util.List;
 import java.util.Optional;
 
+import org.apache.tomcat.util.http.fileupload.impl.IOFileUploadException;
 import org.hibernate.exception.DataException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -18,12 +18,15 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.cms.audit.api.Clarifications.models.Clarification;
 import com.cms.audit.api.Clarifications.repository.ClarificationRepository;
+import com.cms.audit.api.FollowUp.models.FollowUp;
 import com.cms.audit.api.Management.ReportType.models.ReportType;
 import com.cms.audit.api.Management.User.models.User;
 import com.cms.audit.api.NewsInspection.models.NewsInspection;
 import com.cms.audit.api.NewsInspection.repository.NewsInspectionRepository;
 import com.cms.audit.api.NewsInspection.repository.PagNewsInspection;
 import com.cms.audit.api.common.constant.FolderPath;
+import com.cms.audit.api.common.constant.randomValueNumber;
+import com.cms.audit.api.common.exception.ResourceNotFoundException;
 import com.cms.audit.api.common.pdf.GeneratePdf;
 import com.cms.audit.api.common.response.GlobalResponse;
 
@@ -42,17 +45,22 @@ public class NewsInspectionService {
     @Autowired
     private PagNewsInspection pag;
 
-    private final String FOLDER_PATH = FolderPath.FOLDER_PATH_BAP;
+    private final String FOLDER_PATH = FolderPath.FOLDER_PATH_UPLOAD_BAP;
 
-    public GlobalResponse getAll(int page, int size) {
+    public GlobalResponse getAll(int page, int size, Date start_date, Date end_date) {
         try {
-            Page<NewsInspection> response = pag.findAll(PageRequest.of(page, size));
-            if(response.isEmpty()){
+            Page<NewsInspection> response;
+            if (start_date == null || end_date == null) {
+                response = pag.findAll(PageRequest.of(page, size));
+            } else {
+                response = pag.findBAPInDateRange(start_date, end_date, PageRequest.of(page, size));
+            }
+            if (response.isEmpty()) {
                 return GlobalResponse
-                .builder()
-                .message("NoContent")
-                .status(HttpStatus.OK)
-                .build();
+                        .builder()
+                        .message("No_Content")
+                        .status(HttpStatus.OK)
+                        .build();
             }
             return GlobalResponse
                     .builder()
@@ -84,12 +92,12 @@ public class NewsInspectionService {
     public GlobalResponse getOneById(Long id) {
         try {
             Optional<NewsInspection> response = repository.findById(id);
-            if(!response.isPresent()){
+            if (!response.isPresent()) {
                 return GlobalResponse
-                .builder()
-                .message("NoContent")
-                .status(HttpStatus.OK)
-                .build();
+                        .builder()
+                        .message("No_Content")
+                        .status(HttpStatus.OK)
+                        .build();
             }
             return GlobalResponse
                     .builder()
@@ -116,75 +124,22 @@ public class NewsInspectionService {
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .build();
         }
-    }
-
-    public GlobalResponse getByDateRange(Date start_date, Date end_date,int page,int size) {
-        try {
-            Page<NewsInspection> response = pag.findBAPInDateRange(start_date, end_date, PageRequest.of(page, size));
-            if(response.isEmpty()){
-                return GlobalResponse
-                .builder()
-                .message("NoContent")
-                .status(HttpStatus.OK)
-                .build();
-            }
-            return GlobalResponse
-                    .builder()
-                    .message("Success")
-                    .data(response)
-                    .status(HttpStatus.OK)
-                    .build();
-        } catch (ResponseStatusException e) {
-            return GlobalResponse
-                    .builder()
-                    .error(e)
-                    .status(HttpStatus.BAD_REQUEST)
-                    .build();
-        } catch (DataException e) {
-            return GlobalResponse
-                    .builder()
-                    .error(e)
-                    .status(HttpStatus.UNPROCESSABLE_ENTITY)
-                    .build();
-        } catch (Exception e) {
-            return GlobalResponse
-                    .builder()
-                    .error(e)
-                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .build();
-        }
-    }
-
-    public void generatePdf() throws FileNotFoundException, MalformedURLException{
-        GeneratePdf.generateFollowUpPDF(null);
     }
 
     public GlobalResponse uploadFile(MultipartFile file, Long id) {
         try {
-            NewsInspection getBAP = repository.findById(id)
-                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.OK, "No Content"));
+            NewsInspection getBAP = repository.findById(id).orElseThrow(()-> new ResourceNotFoundException("BAP with id: " + id + " is undefined"));
 
-            String path = FOLDER_PATH + file.getOriginalFilename();
+            String fileName = randomValueNumber.randomNumberGenerator() + "-" + file.getOriginalFilename();
 
-            String fileName = file.getOriginalFilename();
+            String path = FOLDER_PATH + fileName;
             String filePath = path;
 
-            User setUserId = User.builder().id(getBAP.getUser().getId()).build();
-            ReportType setRTId = ReportType.builder().id(getBAP.getReportType().getId()).build();
-            Clarification setClarificationId = Clarification.builder().id(getBAP.getClarification().getId()).build();
+            NewsInspection bap = getBAP;
+            bap.setFileName(fileName);
+            bap.setFile_path(filePath);
 
-            NewsInspection clarification = new NewsInspection(
-                    id,
-                    setUserId,
-                    setClarificationId,
-                    setRTId,
-                    fileName,
-                    filePath,
-                    getBAP.getReport_number(),
-                    getBAP.getCode(),
-                    getBAP.getCreated_at(),
-                    new Date());
-            repository.save(clarification);
+            repository.save(bap);
 
             file.transferTo(new File(filePath));
 
@@ -213,5 +168,10 @@ public class NewsInspectionService {
                     .build();
         }
     }
+
+      public NewsInspection downloadFile(String fileName) throws java.io.IOException, IOFileUploadException {
+                NewsInspection response = repository.findByFileName(fileName).orElseThrow(() -> new ResourceNotFoundException("File not found with name: " + fileName ));
+                return response;
+        }
 
 }

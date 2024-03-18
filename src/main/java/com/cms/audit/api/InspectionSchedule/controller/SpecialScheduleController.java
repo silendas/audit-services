@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -26,6 +27,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
+@Validated
 @RequestMapping(value = BasePath.BASE_PATH_SPECIAL_SCHEDULE)
 public class SpecialScheduleController {
 
@@ -34,9 +36,13 @@ public class SpecialScheduleController {
 
     @GetMapping
     public ResponseEntity<Object> getAll(
+            @RequestParam(required = false) Optional<Long> user_id,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Optional<Date> start_date,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Optional<Date> end_date,
             @RequestParam("page") Optional<Integer> page,
             @RequestParam("size") Optional<Integer> size) {
-        GlobalResponse response = scheduleService.getSpecialSchedule(page.orElse(0), size.orElse(10));
+        GlobalResponse response = scheduleService.getSpecialSchedule(user_id.orElse(null), page.orElse(0),
+                size.orElse(10), start_date.orElse(null), end_date.orElse(null));
         return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(), null);
     }
 
@@ -46,29 +52,27 @@ public class SpecialScheduleController {
         return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(), null);
     }
 
-
-    @GetMapping("/filter")
-    public ResponseEntity<Object> filterByDateRange(
-            @RequestParam Long userId,
-            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date start_date,
-            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date end_date,
+    @GetMapping("/{id}/user")
+    public ResponseEntity<Object> getByUserId(
+            @PathVariable("id") Long id,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Optional<Date> start_date,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Optional<Date> end_date,
             @RequestParam("page") Optional<Integer> page,
             @RequestParam("size") Optional<Integer> size) {
-        GlobalResponse response = scheduleService.getByRangeDateAndUserId(userId, "SPECIAL", start_date, end_date,page.orElse(0), size.orElse(10));
-        return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(), null);
-    }
-
-    @GetMapping("/{id}/user")
-    public ResponseEntity<Object> getByUserId(@PathVariable("id") Long id, @RequestParam("page") Optional<Integer> page,
-    @RequestParam("size") Optional<Integer> size) {
-        GlobalResponse response = scheduleService.getByUserId(id,"SPECIAL",page.orElse(0), size.orElse(10));
+        GlobalResponse response = scheduleService.getByUserId(id, "SPECIAL", page.orElse(0), size.orElse(10),
+                start_date.orElse(null), end_date.orElse(null));
         return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(), null);
     }
 
     @GetMapping("/{id}/region")
-    public ResponseEntity<Object> getByRegionId(@PathVariable("id") Long id, @RequestParam("page") Optional<Integer> page,
-    @RequestParam("size") Optional<Integer> size) {
-        GlobalResponse response = scheduleService.getByRegionId(id,"SPECIAL",page.orElse(0),size.orElse(10));
+    public ResponseEntity<Object> getByRegionId(
+            @PathVariable("id") Long id,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Optional<Date> start_date,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Optional<Date> end_date,
+            @RequestParam("page") Optional<Integer> page,
+            @RequestParam("size") Optional<Integer> size) {
+        GlobalResponse response = scheduleService.getByRegionId(id, "SPECIAL", page.orElse(0), size.orElse(10),
+                start_date.orElse(null), end_date.orElse(null));
         return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(), null);
     }
 

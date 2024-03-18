@@ -26,23 +26,17 @@ public class NeedApproveController {
     private ScheduleService service;
 
     @GetMapping
-    public ResponseEntity<Object> get(@RequestParam("page") Optional<Integer> page,
+    public ResponseEntity<Object> get(
+            @RequestParam("page") Optional<Integer> page,
             @RequestParam("size") Optional<Integer> size) {
-        GlobalResponse response = service.getByStatus("NA", page.orElse(0), size.orElse(10));
-        return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(),
-                response.getError());
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<Object> getById(@PathVariable("id") Long id) {
-        GlobalResponse response = service.getById(id);
+        GlobalResponse response = service.getByStatus("REQUEST", page.orElse(0), size.orElse(10));
         return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(),
                 response.getError());
     }
 
     @PutMapping("/approve/{id}")
     public ResponseEntity<Object> rescheduleApprove(@PathVariable("id") Long id, EditStatusDTO dto) {
-        GlobalResponse response = service.editStatus(id, EStatus.TODO, dto.getUpdate_by());
+        GlobalResponse response = service.editStatus(id, EStatus.APPROVE, dto.getUpdate_by());
         return ResponseEntittyHandler.allHandler(null, response.getMessage(), response.getStatus(), null);
     }
 

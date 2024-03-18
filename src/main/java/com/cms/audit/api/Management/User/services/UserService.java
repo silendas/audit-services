@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -440,6 +439,43 @@ public class UserService {
                                         getUser.get().getNip(),
                                         getUser.get().getUsername(),
                                         passwordEncoder.encode(changePasswordDTO.getPassword()),
+                                        getUser.get().getFullname(),
+                                        getUser.get().getInitial_name(),
+                                        1,
+                                        0,
+                                        getUser.get().getCreated_at(),
+                                        new Date());
+
+                        User response = userRepository.save(user);
+                        return GlobalResponse
+                                        .builder()
+                                        .message("Success")
+                                        .status(HttpStatus.OK)
+                                        .build();
+                } catch (DataException e) {
+                        throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Data error");
+                } catch (Exception e) {
+                        throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Server error");
+                }
+        }
+
+        public GlobalResponse changeProfile(UserDTO dto, Long id) {
+                try {
+
+                        Optional<User> getUser = userRepository.findById(id);
+
+                        User user = new User(
+                                        id,
+                                        getUser.get().getRole(),
+                                        getUser.get().getLevel(),
+                                        getUser.get().getMain(),
+                                        getUser.get().getRegion(),
+                                        getUser.get().getArea(),
+                                        getUser.get().getBranch(),
+                                        dto.getEmail(),
+                                        getUser.get().getNip(),
+                                        dto.getUsername(),
+                                        getUser.get().getPassword(),
                                         getUser.get().getFullname(),
                                         getUser.get().getInitial_name(),
                                         1,

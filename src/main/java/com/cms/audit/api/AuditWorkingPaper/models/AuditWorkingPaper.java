@@ -5,7 +5,6 @@ import java.util.Date;
 import com.cms.audit.api.Management.User.models.User;
 import com.cms.audit.api.Management.Office.BranchOffice.models.Branch;
 import com.cms.audit.api.InspectionSchedule.models.Schedule;
-import com.cms.audit.api.Management.Office.AreaOffice.models.Area;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -43,10 +42,6 @@ public class AuditWorkingPaper {
     private Branch branch;
 
     @ManyToOne
-    @JoinColumn(name = "area_id")
-    private Area area;
-
-    @ManyToOne
     @JoinColumn(name = "schedule_id")
     private Schedule schedule;
 
@@ -70,8 +65,5 @@ public class AuditWorkingPaper {
 
     @Column(name = "created_at", columnDefinition = "DATE")
     private Date created_at;
-
-    @Column(name = "updated_at", columnDefinition = "DATE")
-    private Date updated_at;
 
 }

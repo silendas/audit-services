@@ -3,7 +3,6 @@ package com.cms.audit.api.Clarifications.dto;
 import java.util.Date;
 
 import com.cms.audit.api.Clarifications.models.EPriority;
-import com.cms.audit.api.Clarifications.models.EStatus;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 

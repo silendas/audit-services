@@ -13,15 +13,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cms.audit.api.InspectionSchedule.dto.EditStatusDTO;
+import com.cms.audit.api.InspectionSchedule.dto.RequestReschedule;
 import com.cms.audit.api.InspectionSchedule.dto.RescheduleDTO;
-import com.cms.audit.api.InspectionSchedule.dto.ScheduleDTO;
 import com.cms.audit.api.InspectionSchedule.models.EStatus;
 import com.cms.audit.api.InspectionSchedule.service.ScheduleService;
 import com.cms.audit.api.common.constant.BasePath;
 import com.cms.audit.api.common.response.GlobalResponse;
 import com.cms.audit.api.common.response.ResponseEntittyHandler;
 import org.springframework.web.bind.annotation.GetMapping;
-
 
 @RestController
 @RequestMapping(value = BasePath.BASE_PATH_RESCHEDULE)
@@ -31,16 +30,33 @@ public class RescheduleController {
     private ScheduleService scheduleService;
 
     @GetMapping
-    public ResponseEntity<Object> get( @RequestParam("page") Optional<Integer> page,
+    public ResponseEntity<Object> get(
+            @RequestParam("page") Optional<Integer> page,
             @RequestParam("size") Optional<Integer> size) {
-        GlobalResponse response = scheduleService.getByStatus("PENDING",page.orElse(0), size.orElse(10));
-        return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(),response.getError());
+        GlobalResponse response = scheduleService.getByStatus("PENDING", page.orElse(0), size.orElse(10));
+        return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(),
+                response.getError());
     }
-    
+
     @PostMapping
     public ResponseEntity<Object> reschedule(@ModelAttribute RescheduleDTO dto) {
-        GlobalResponse response = scheduleService.reSchedule(dto);
+        GlobalResponse response = scheduleService.reschedule(dto);
         return ResponseEntittyHandler.allHandler(null, response.getMessage(), response.getStatus(), null);
     }
+
+    @PostMapping("/request")
+    public ResponseEntity<Object> requestReschedule(@ModelAttribute RequestReschedule dto) {
+        GlobalResponse response = scheduleService.requestSchedule(dto);
+        return ResponseEntittyHandler.allHandler(null, response.getMessage(), response.getStatus(), null);
+    }
+
+    // @PutMapping("/approve/{id}")
+    // public ResponseEntity<Object> rescheduleApprove(@PathVariable("id") Long id,
+    // EditStatusDTO dto) {
+    // GlobalResponse response = scheduleService.editStatus(id, EStatus.TODO,
+    // dto.getUpdate_by());
+    // return ResponseEntittyHandler.allHandler(null, response.getMessage(),
+    // response.getStatus(), null);
+    // }
 
 }

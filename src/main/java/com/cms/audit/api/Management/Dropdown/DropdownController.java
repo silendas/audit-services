@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cms.audit.api.Clarifications.models.EPriority;
+import com.cms.audit.api.Clarifications.models.EStatusClarification;
 import com.cms.audit.api.InspectionSchedule.models.ECategory;
 import com.cms.audit.api.InspectionSchedule.models.EStatus;
 import com.cms.audit.api.Management.Case.services.CaseService;
@@ -223,6 +225,16 @@ public class DropdownController {
             return ResponseEntittyHandler.allHandler(null, null, response.getStatus(), response.getError());
         }
         return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(), null);
+    }
+
+    @GetMapping("/priority")
+    public ResponseEntity<Object> getPriority() {
+        return ResponseEntittyHandler.allHandler(EPriority.values(), "Success", HttpStatus.OK, null);
+    }
+
+    @GetMapping("/clarification-status")
+    public ResponseEntity<Object> getStatusClarification() {
+        return ResponseEntittyHandler.allHandler(EStatusClarification.values(), "Success", HttpStatus.OK, null);
     }
 
 }

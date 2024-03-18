@@ -6,6 +6,7 @@ import java.util.Date;
 
 import com.cms.audit.api.Clarifications.models.Clarification;
 import com.cms.audit.api.Clarifications.models.EPriority;
+import com.cms.audit.api.FollowUp.models.FollowUp;
 import com.cms.audit.api.common.constant.FolderPath;
 import com.cms.audit.api.common.constant.convertDateToRoman;
 import com.cms.audit.api.common.constant.randomValueNumber;
@@ -350,8 +351,10 @@ public class GeneratePdf {
                                 .build();
         }
 
-        public static void generateFollowUpPDF(String[] args) throws FileNotFoundException, MalformedURLException {
-                String path = FolderPath.FOLDER_PATH_FOLLOW_UP + "follow_up.pdf";
+        public static PDFResponse generateFollowUpPDF(FollowUp response) throws FileNotFoundException, MalformedURLException {
+                String fileName = randomValueNumber.randomNumberGenerator() + response.getClarification().getUser().getInitial_name()
+                + "-followup.pdf";
+                String path = FolderPath.FOLDER_PATH_UPLOAD_FOLLOW_UP + fileName;
                 PdfWriter pdfWriter = new PdfWriter(path);
                 PdfDocument pdfDocument = new PdfDocument(pdfWriter);
                 pdfDocument.setDefaultPageSize(PageSize.A4);
@@ -390,8 +393,8 @@ public class GeneratePdf {
                 Table body1 = new Table(body1Lenght).setHorizontalAlignment(HorizontalAlignment.LEFT);
                 body1.addCell(new Cell().add(
                                 "Menindaklanjuti dari hasil Hasil temuan Auditor Internal, sesuai dengan klarifikasi Nomor : "
-                                                + "05C/RR-AI/WIL/PJ/I/2020" + " tanggal " + "28 Januari 2020"
-                                                + " PT Cinortha MS Wilayah JAMBI cabang Jambi" + " perihal : ")
+                                                + response.getClarification().getCode() + " tanggal " + "28 Januari 2020"
+                                                + response.getClarification().getLocation() + " perihal : ")
                                 .setFontSize(8).setBorder(Border.NO_BORDER));
                 body.addCell(new Cell().add(body1).setBorder(Border.NO_BORDER));
 
@@ -401,8 +404,8 @@ public class GeneratePdf {
                 float body2Lenght[] = { 540f };
                 Table body2 = new Table(body2Lenght).setHorizontalAlignment(HorizontalAlignment.LEFT);
                 body2.addCell(new Cell().add(
-                                "1. Berdasarkan temuan auditor dan permintaan klarifikasi Nomor 02.03.04C/RR-AI/WIL/PJ/I/2020, terkait tindakan asusila/pelecehan kepada promotor cabang jambi a.n Najmi rahayu yang dilakukan oleh kepala wilayah a.n Memet Riyadi pada tgl 19 januari 2020. ")
-                                .setFontSize(8).setBorder(Border.NO_BORDER).setBold().setPaddingLeft(10));
+                                response.getDescription())
+                                .setFontSize(8).setBorder(Border.NO_BORDER).setBold().setPaddingLeft(10).setHeight(160));
                 body.addCell(new Cell().add(body2).setBorder(Border.NO_BORDER));
                 // section 4
 
@@ -482,6 +485,8 @@ public class GeneratePdf {
                 document.add(parent);
 
                 document.close();
+
+                return PDFResponse.builder().fileName(fileName).filePath(path).build();
         }
 
 }

@@ -28,7 +28,7 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<Object> login(@ModelAttribute SigninDTO signinDTO) {
         AuthResponse response = authService.login(signinDTO);
-        return ResponseEntittyHandler.authSuccess(response.getToken(), response.getStatus());
+        return ResponseEntittyHandler.authSuccess(response.getMessage(),response.getToken(), response.getStatus());
     }
 
     @PostMapping("/logout")
@@ -39,6 +39,6 @@ public class AuthController {
         }
         String jwtToken = tokenHeader.substring(7);
         authService.logout(jwtToken);
-        return ResponseEntittyHandler.authSuccess(null, HttpStatus.OK);
+        return ResponseEntittyHandler.authSuccess("Success",null, HttpStatus.OK);
     }
 }
