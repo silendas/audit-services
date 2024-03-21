@@ -2,10 +2,9 @@ package com.cms.audit.api.AuditWorkingPaper.controller;
 
 import com.cms.audit.api.AuditWorkingPaper.models.AuditWorkingPaper;
 import com.cms.audit.api.AuditWorkingPaper.service.AuditWorkingPaperService;
-import com.cms.audit.api.NewsInspection.models.NewsInspection;
-import com.cms.audit.api.common.constant.BasePath;
-import com.cms.audit.api.common.response.GlobalResponse;
-import com.cms.audit.api.common.response.ResponseEntittyHandler;
+import com.cms.audit.api.Common.constant.BasePath;
+import com.cms.audit.api.Common.response.GlobalResponse;
+import com.cms.audit.api.Common.response.ResponseEntittyHandler;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -23,7 +22,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -70,14 +68,14 @@ public class AuditWorkingPaperController {
 
         HttpHeaders httpHeaders = new HttpHeaders();
 
-        httpHeaders.setContentType(MediaType.valueOf("application/pdf"));
-        httpHeaders.set("Content-Disposition", "inline; filename=" + response.getFileName());
+        httpHeaders.setContentType(MediaType.valueOf("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
+        httpHeaders.set("Content-Disposition", "attachment; filename=" + response.getFileName());
 
         return new ResponseEntity<InputStreamResource>(isr, httpHeaders, HttpStatus.ACCEPTED);
     }
 
     @PostMapping("/upload/{id}")
-    public ResponseEntity<Object> upload(@RequestParam(value = "file", required = false) MultipartFile file,
+    public ResponseEntity<Object> upload(@RequestParam(value = "file", required = true) MultipartFile file,
             @PathVariable("id") Long id) {
         GlobalResponse response = service.uploadFile(file, id);
         return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(),

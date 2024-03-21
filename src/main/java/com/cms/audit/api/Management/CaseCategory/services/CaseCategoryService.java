@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.cms.audit.api.Common.response.GlobalResponse;
 import com.cms.audit.api.Management.Case.models.Case;
 import com.cms.audit.api.Management.Case.repository.CaseRepository;
 import com.cms.audit.api.Management.CaseCategory.dto.CaseCategoryDTO;
@@ -21,7 +22,6 @@ import com.cms.audit.api.Management.CaseCategory.repository.CaseCategoryReposito
 import com.cms.audit.api.Management.CaseCategory.repository.PagCaseCategory;
 import com.cms.audit.api.Management.Office.AreaOffice.models.Area;
 import com.cms.audit.api.Management.Office.BranchOffice.models.Branch;
-import com.cms.audit.api.common.response.GlobalResponse;
 
 import jakarta.transaction.Transactional;
 

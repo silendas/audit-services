@@ -9,16 +9,16 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cms.audit.api.Common.constant.BasePath;
+import com.cms.audit.api.Common.response.GlobalResponse;
+import com.cms.audit.api.Common.response.ResponseEntittyHandler;
 import com.cms.audit.api.Management.Case.dto.CaseDTO;
 import com.cms.audit.api.Management.Case.services.CaseService;
-import com.cms.audit.api.common.constant.BasePath;
-import com.cms.audit.api.common.response.GlobalResponse;
-import com.cms.audit.api.common.response.ResponseEntittyHandler;
 
 @RestController
 @RequestMapping(value = BasePath.BASE_PATH_CASE)
@@ -49,7 +49,7 @@ public class CaseController {
     }
 
     @PostMapping
-    public ResponseEntity<Object> save(@ModelAttribute CaseDTO caseDTO) {
+    public ResponseEntity<Object> save(@RequestBody CaseDTO caseDTO) {
         GlobalResponse response = caseService.save(caseDTO);
         if (response.getError() != null) {
             return ResponseEntittyHandler.allHandler(null, null, response.getStatus(), response.getError());
@@ -58,7 +58,7 @@ public class CaseController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Object> edit(@ModelAttribute CaseDTO caseDTO, @PathVariable("id") Long id) {
+    public ResponseEntity<Object> edit(@RequestBody CaseDTO caseDTO, @PathVariable("id") Long id) {
         GlobalResponse response = caseService.edit(caseDTO, id);
         if (response.getError() != null) {
             return ResponseEntittyHandler.allHandler(null, null, response.getStatus(), response.getError());

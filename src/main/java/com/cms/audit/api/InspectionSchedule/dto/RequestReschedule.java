@@ -1,5 +1,7 @@
 package com.cms.audit.api.InspectionSchedule.dto;
 
+import java.util.Date;
+
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,6 +15,9 @@ import lombok.ToString;
 @NoArgsConstructor
 public class RequestReschedule {
     private Long schedule_id;
-    private String update_by;
-
+    private Long user_id;
+    private Long branch_id;
+    private Date start_date;
+    private Date end_date;
+    private String description;
 }

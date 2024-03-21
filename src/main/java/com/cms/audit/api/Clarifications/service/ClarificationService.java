@@ -22,24 +22,26 @@ import com.cms.audit.api.Clarifications.models.Clarification;
 import com.cms.audit.api.Clarifications.models.EStatusClarification;
 import com.cms.audit.api.Clarifications.repository.ClarificationRepository;
 import com.cms.audit.api.Clarifications.repository.PagClarification;
+import com.cms.audit.api.Common.constant.FolderPath;
+import com.cms.audit.api.Common.constant.convertDateToRoman;
+import com.cms.audit.api.Common.exception.ResourceNotFoundException;
+import com.cms.audit.api.Common.pdf.GeneratePdf;
+import com.cms.audit.api.Common.response.GlobalResponse;
+import com.cms.audit.api.Common.response.PDFResponse;
 import com.cms.audit.api.FollowUp.models.EStatusFollowup;
 import com.cms.audit.api.FollowUp.models.FollowUp;
 import com.cms.audit.api.FollowUp.repository.FollowUpRepository;
 import com.cms.audit.api.Management.Case.models.Case;
 import com.cms.audit.api.Management.Case.repository.CaseRepository;
 import com.cms.audit.api.Management.CaseCategory.models.CaseCategory;
+import com.cms.audit.api.Management.Office.BranchOffice.models.Branch;
+import com.cms.audit.api.Management.Office.BranchOffice.repository.BranchRepository;
 import com.cms.audit.api.Management.ReportType.models.ReportType;
 import com.cms.audit.api.Management.ReportType.repository.ReportTypeRepository;
 import com.cms.audit.api.Management.User.models.User;
 import com.cms.audit.api.Management.User.repository.UserRepository;
 import com.cms.audit.api.NewsInspection.models.NewsInspection;
 import com.cms.audit.api.NewsInspection.repository.NewsInspectionRepository;
-import com.cms.audit.api.common.constant.FolderPath;
-import com.cms.audit.api.common.constant.convertDateToRoman;
-import com.cms.audit.api.common.exception.ResourceNotFoundException;
-import com.cms.audit.api.common.pdf.GeneratePdf;
-import com.cms.audit.api.common.response.GlobalResponse;
-import com.cms.audit.api.common.response.PDFResponse;
 
 @Service
 public class ClarificationService {
@@ -55,6 +57,9 @@ public class ClarificationService {
 
         @Autowired
         private CaseRepository caseRepository;
+
+        @Autowired
+        private BranchRepository branchRepository;
 
         @Autowired
         private NewsInspectionRepository newsInspectionRepository;
@@ -204,7 +209,9 @@ public class ClarificationService {
                                 reportNumber = Long.valueOf(1);
                         }
 
-                        String branchName = getUser.getBranch().getName();
+                        Branch branch = branchRepository.findById(dto.getBranch_id()).orElseThrow(()-> new ResourceNotFoundException("Branch with id:"+ dto.getBranch_id()+" is undefined"));
+
+                        String branchName = branch.getName();
                         String initialName = getUser.getInitial_name();
                         String caseName = getCase.getCode();
                         String lvlCode = getUser.getLevel().getCode();
@@ -219,6 +226,7 @@ public class ClarificationService {
                         Clarification clarification = new Clarification(
                                         null,
                                         setUserId,
+                                        branch,
                                         setCaseId,
                                         setCaseCaegoryId,
                                         setReportTypeId,
@@ -290,6 +298,7 @@ public class ClarificationService {
                         Clarification clarification = new Clarification(
                                         id,
                                         setUserId,
+                                        getClarification.get().getBranch(),
                                         setCaseId,
                                         setCaseCaegoryId,
                                         setReportTypeId,
@@ -315,29 +324,9 @@ public class ClarificationService {
 
                         PDFResponse generatePDF = GeneratePdf.generateClarificationPDF(response);
 
-                        Clarification clarification2 = new Clarification(
-                                        id,
-                                        setUserId,
-                                        setCaseId,
-                                        setCaseCaegoryId,
-                                        setReportTypeId,
-                                        getClarification.get().getReport_number(),
-                                        getClarification.get().getCode(),
-                                        null,
-                                        dto.getEvaluation_limitation(),
-                                        dto.getLocation(),
-                                        dto.getAuditee(),
-                                        dto.getAuditee_leader(),
-                                        generatePDF.fileName,
-                                        generatePDF.filePath,
-                                        dto.getDescription(),
-                                        null,
-                                        dto.getPriority(),
-                                        null,
-                                        null,
-                                        EStatusClarification.DOWNLOAD,
-                                        getClarification.get().getCreated_at(),
-                                        new Date());
+                        Clarification clarification2 = response;
+                        clarification2.setFile_name(generatePDF.fileName);
+                        clarification2.setFile_path(generatePDF.filePath);
 
                         repository.save(clarification2);
 
@@ -381,6 +370,7 @@ public class ClarificationService {
                         Clarification clarification = new Clarification(
                                         id,
                                         getBefore.get().getUser(),
+                                        getBefore.get().getBranch(),
                                         getBefore.get().getCases(),
                                         getBefore.get().getCaseCategory(),
                                         getBefore.get().getReportType(),
@@ -391,7 +381,7 @@ public class ClarificationService {
                                         getBefore.get().getLocation(),
                                         getBefore.get().getAuditee(),
                                         getBefore.get().getAuditee_leader(),
-                                        getBefore.get().getFileName(),
+                                        getBefore.get().getFile_name(),
                                         getBefore.get().getFile_path(),
                                         getBefore.get().getDescription(),
                                         dto.getRecommendation(),
@@ -438,7 +428,7 @@ public class ClarificationService {
                                 reportNumber = Long.valueOf(1);
                         }
 
-                        String branchName = response.getUser().getBranch().getName();
+                        String branchName = response.getBranch().getName();
                         String initialName = response.getUser().getInitial_name();
                         String caseName = response.getCases().getCode();
                         String lvlCode = response.getUser().getLevel().getCode();
@@ -477,15 +467,49 @@ public class ClarificationService {
                                                 .build();
                         }
 
-                        FollowUp followUp = new FollowUp(
-                                null, 
-                                setClarificationId, 
-                                null, 
-                                null, 
-                                null, 
-                                EStatusFollowup.CREATE, 
-                                null, 
-                                new Date()); 
+                        Optional<NumberClarificationInterface> checkTLBefore = followUpRepository.checkNumberFollowUp(response.getUser().getId());
+                        if (checkTLBefore.isPresent()) {
+                                if (checkTLBefore.get().getCreated_Year() == Long
+                                                .valueOf(convertDateToRoman.getIntYear())) {
+                                        reportNumber = checkTLBefore.get().getReport_Number() + 1;
+                                        if (reportNumber < 10) {
+                                                rptNum = "00" + reportNumber;
+                                        } else if (reportNumber < 100) {
+                                                rptNum = "0" + reportNumber;
+                                        } else {
+                                                rptNum = reportNumber.toString();
+                                        }
+                                } else {
+                                        rptNum = "001";
+                                        reportNumber = Long.valueOf(1);
+                                }
+                        } else {
+                                rptNum = "001";
+                                reportNumber = Long.valueOf(1);
+                        }
+
+                        String branchName2 = response.getBranch().getName();
+                        String initialName2 = response.getUser().getInitial_name();
+                        String caseName2 = response.getCases().getCode();
+                        String lvlCode2 = response.getUser().getLevel().getCode();
+                        String romanMonth2 = convertDateToRoman.getRomanMonth();
+                        Integer thisYear2 = convertDateToRoman.getIntYear();
+
+                        ReportType setReportId2 = ReportType.builder().id(Long.valueOf(3)).build();
+
+                        Optional<ReportType> reportType2 = reportTypeRepository.findByCode("TL");
+
+                        String reportCode2 = rptNum + lvlCode2 + "/" + initialName2 + "-" + caseName2 + "/"
+                                        + reportType2.get().getCode() + "/" + branchName2 + "/" + romanMonth2 + "/" + thisYear2;
+
+                        FollowUp followUp = new FollowUp();
+                        followUp.setClarification(setClarificationId);
+                        followUp.setUser(setUserId);
+                        followUp.setReportType(setReportId2);
+                        followUp.setReport_number(reportNumber);
+                        followUp.setCode(reportCode2);
+                        followUp.setStatus(EStatusFollowup.CREATE);
+                        followUp.setCreatedAt(new Date());
                         
                         followUpRepository.save(followUp);
 
@@ -530,6 +554,7 @@ public class ClarificationService {
                         Clarification clarification = new Clarification(
                                         id,
                                         setUserId,
+                                        getClarification.get().getBranch(),
                                         setCaseId,
                                         setCaseCaegoryId,
                                         setReportTypeId,

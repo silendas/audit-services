@@ -1,5 +1,4 @@
-package com.cms.audit.api.InspectionSchedule.dto;
-
+package com.cms.audit.api.Management.User.dto;
 
 import lombok.Data;
 import lombok.Getter;
@@ -12,6 +11,7 @@ import lombok.ToString;
 @Setter
 @Getter
 @NoArgsConstructor
-public class EditStatusDTO {
-    private String update_by;
+public class ChangeProfileDTO {
+    private String username;
+    private String email;
 }

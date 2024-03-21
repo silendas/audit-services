@@ -4,6 +4,7 @@ import java.util.Date;
 
 import com.cms.audit.api.Management.Case.models.Case;
 import com.cms.audit.api.Management.CaseCategory.models.CaseCategory;
+import com.cms.audit.api.Management.Office.BranchOffice.models.Branch;
 import com.cms.audit.api.Management.ReportType.models.ReportType;
 import com.cms.audit.api.Management.User.models.User;
 
@@ -38,6 +39,10 @@ public class Clarification {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
+
+    @ManyToOne
+    @JoinColumn(name = "branch_id")
+    private Branch branch;
 
     @ManyToOne
     @JoinColumn(name = "case_id")
@@ -76,7 +81,7 @@ public class Clarification {
     private String auditee_leader;
 
     @Column(name = "file_name")
-    private String fileName;
+    private String file_name;
 
     @Column(name = "file_path")
     private String file_path;

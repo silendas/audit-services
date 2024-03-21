@@ -9,12 +9,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import com.cms.audit.api.Common.response.GlobalResponse;
 import com.cms.audit.api.InspectionSchedule.models.ECategory;
 import com.cms.audit.api.InspectionSchedule.models.EStatus;
 import com.cms.audit.api.InspectionSchedule.models.LogSchedule;
 import com.cms.audit.api.InspectionSchedule.models.Schedule;
 import com.cms.audit.api.InspectionSchedule.repository.LogScheduleRepository;
-import com.cms.audit.api.common.response.GlobalResponse;
 
 @Service
 public class LogScheduleService {
@@ -82,7 +82,7 @@ public class LogScheduleService {
 
         }
 
-        public void save(String created_by, String desc, Long id, ECategory category, EStatus status){
+        public void save(Long created_by, String desc, Long id, ECategory category, EStatus status){
                 Schedule setScheduleId = Schedule.builder().id(id).build();
                 LogSchedule log = new LogSchedule(
                         null, 
@@ -96,7 +96,7 @@ public class LogScheduleService {
                 repository.save(log);
         }
 
-        public void edit(String created_by, String desc, Long id, ECategory category, EStatus status){
+        public void edit(Long created_by, String desc, Long id, ECategory category, EStatus status){
                 Schedule setScheduleId = Schedule.builder().id(id).build();
                 LogSchedule log = new LogSchedule(
                 null, 
@@ -111,7 +111,7 @@ public class LogScheduleService {
                 repository.save(log);
         }
 
-        public void delete(String created_by, String desc, Long id, ECategory category, EStatus status){
+        public void delete(Long created_by, String desc, Long id, ECategory category, EStatus status){
                 Schedule setScheduleId = Schedule.builder().id(id).build();
                 LogSchedule log = new LogSchedule(
                 null, 

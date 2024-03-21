@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.cms.audit.api.Common.response.GlobalResponse;
 import com.cms.audit.api.Management.Office.AreaOffice.models.Area;
 import com.cms.audit.api.Management.Office.BranchOffice.models.Branch;
 import com.cms.audit.api.Management.Office.MainOffice.models.Main;
@@ -21,7 +22,6 @@ import com.cms.audit.api.Management.Office.RegionOffice.dto.response.RegionInter
 import com.cms.audit.api.Management.Office.RegionOffice.models.Region;
 import com.cms.audit.api.Management.Office.RegionOffice.repository.PagRegion;
 import com.cms.audit.api.Management.Office.RegionOffice.repository.RegionRepository;
-import com.cms.audit.api.common.response.GlobalResponse;
 
 import jakarta.transaction.Transactional;
 
@@ -38,9 +38,14 @@ public class RegionService {
     @Autowired
     private PagRegion pagRegion;
 
-    public GlobalResponse findAll(String name, int page, int size) {
+    public GlobalResponse findAll(String name, int page, int size, Long mainId) {
         try {
-            Page<Region> response = pagRegion.findByNameContaining(name, PageRequest.of(page, size));
+            Page<Region> response;
+            if (mainId == null) {
+                response = pagRegion.findByNameContaining(name, PageRequest.of(page, size));
+            } else {
+                response = pagRegion.findRegionByMainId(mainId, PageRequest.of(page, size));
+            }
             if (response.isEmpty()) {
                 return GlobalResponse
                         .builder()
@@ -134,46 +139,6 @@ public class RegionService {
 
     }
 
-    public GlobalResponse findOneByMainId(Long id, int page, int size) {
-        try {
-            Optional<Main> setMain = mainRepository.findById(id);
-            if(!setMain.isPresent()){
-                return GlobalResponse
-                .builder()
-                .message("No Content")
-                .status(HttpStatus.OK)
-                .build();
-        }
-            Page<Region> response = pagRegion.findByMain(setMain.get(), PageRequest.of(page, size));
-            if (response.isEmpty()) {
-                return GlobalResponse
-                        .builder()
-                        .message("No Content")
-                        .status(HttpStatus.OK)
-                        .build();
-            }
-            return GlobalResponse
-                    .builder()
-                    .message("Success")
-                    .data(response)
-                    .status(HttpStatus.OK)
-                    .build();
-        } catch (DataException e) {
-            return GlobalResponse
-                    .builder()
-                    .message("Exception :" + e.getMessage())
-                    .status(HttpStatus.UNPROCESSABLE_ENTITY)
-                    .build();
-        } catch (Exception e) {
-            return GlobalResponse
-                    .builder()
-                    .message("Exception :" + e.getMessage())
-                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .build();
-        }
-
-    }
-
     public GlobalResponse findSpecificByMainId(Long id) {
         try {
             List<RegionInterface> response = regionRepository.findSpecificRegionByMainId(id);
@@ -205,7 +170,6 @@ public class RegionService {
         }
 
     }
-
 
     public GlobalResponse save(RegionDTO dto) {
         try {
@@ -338,6 +302,5 @@ public class RegionService {
                     .build();
         }
     }
-
 
 }

@@ -9,11 +9,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import com.cms.audit.api.Common.response.GlobalResponse;
 import com.cms.audit.api.Management.Penalty.dto.PenaltyDTO;
 import com.cms.audit.api.Management.Penalty.dto.response.PenaltyInterface;
 import com.cms.audit.api.Management.Penalty.models.Penalty;
 import com.cms.audit.api.Management.Penalty.repository.PenaltyRepository;
-import com.cms.audit.api.common.response.GlobalResponse;
 
 import jakarta.transaction.Transactional;
 

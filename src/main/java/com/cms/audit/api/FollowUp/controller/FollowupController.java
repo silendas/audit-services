@@ -24,11 +24,11 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.cms.audit.api.Clarifications.models.Clarification;
+import com.cms.audit.api.Common.constant.BasePath;
+import com.cms.audit.api.Common.response.GlobalResponse;
+import com.cms.audit.api.Common.response.ResponseEntittyHandler;
 import com.cms.audit.api.FollowUp.models.FollowUp;
 import com.cms.audit.api.FollowUp.service.FollowupService;
-import com.cms.audit.api.common.constant.BasePath;
-import com.cms.audit.api.common.response.GlobalResponse;
-import com.cms.audit.api.common.response.ResponseEntittyHandler;
 
 @RestController
 @Validated

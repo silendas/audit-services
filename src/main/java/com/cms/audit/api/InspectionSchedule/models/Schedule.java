@@ -35,6 +35,10 @@ public class Schedule {
     private Long id;
 
     @ManyToOne
+    @JoinColumn(name = "schdule_trx_id", referencedColumnName = "id")
+    private ScheduleTrx scheduleTrx;
+
+    @ManyToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
 
@@ -45,10 +49,10 @@ public class Schedule {
     @Column(name = "description")
     private String description;
 
-    @Column(name = "start_date")
+    @Column(name = "start_date",columnDefinition = "DATE")
     private Date start_date;
 
-    @Column(name = "end_date")
+    @Column(name = "end_date",columnDefinition = "DATE")
     private Date end_date;
 
     @Column(name = "start_date_realization", columnDefinition = "DATE")
@@ -69,10 +73,10 @@ public class Schedule {
     private Integer is_delete;
 
     @Column(name = "updated_by")
-    private String updatedBy;
+    private Long updatedBy;
 
     @Column(name = "created_by")
-    private String createdBy;   
+    private Long createdBy;   
 
     @Column(name = "created_at")
     private Date created_at;

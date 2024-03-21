@@ -61,7 +61,7 @@ public class AuditWorkingPaper {
     private Integer isDelete;
 
     @Column(name = "created_by")
-    private String created_by;    
+    private Long created_by;    
 
     @Column(name = "created_at", columnDefinition = "DATE")
     private Date created_at;

@@ -9,11 +9,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import com.cms.audit.api.Common.response.GlobalResponse;
 import com.cms.audit.api.Management.ReportType.dto.ReportTypeDTO;
 import com.cms.audit.api.Management.ReportType.dto.response.ReportTypeInterface;
 import com.cms.audit.api.Management.ReportType.models.ReportType;
 import com.cms.audit.api.Management.ReportType.repository.ReportTypeRepository;
-import com.cms.audit.api.common.response.GlobalResponse;
 
 import jakarta.transaction.Transactional;
 

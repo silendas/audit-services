@@ -17,14 +17,14 @@ import org.springframework.web.server.ResponseStatusException;
 import com.cms.audit.api.AuditWorkingPaper.models.AuditWorkingPaper;
 import com.cms.audit.api.AuditWorkingPaper.repository.AuditWorkingPaperRepository;
 import com.cms.audit.api.AuditWorkingPaper.repository.PagAuditWorkingPaper;
+import com.cms.audit.api.Common.constant.FolderPath;
+import com.cms.audit.api.Common.constant.randomValueNumber;
+import com.cms.audit.api.Common.exception.ResourceNotFoundException;
+import com.cms.audit.api.Common.response.GlobalResponse;
 import com.cms.audit.api.InspectionSchedule.models.EStatus;
 import com.cms.audit.api.InspectionSchedule.models.Schedule;
 import com.cms.audit.api.InspectionSchedule.repository.ScheduleRepository;
 import com.cms.audit.api.NewsInspection.models.NewsInspection;
-import com.cms.audit.api.common.constant.FolderPath;
-import com.cms.audit.api.common.constant.randomValueNumber;
-import com.cms.audit.api.common.exception.ResourceNotFoundException;
-import com.cms.audit.api.common.response.GlobalResponse;
 
 import jakarta.transaction.Transactional;
 
@@ -81,14 +81,7 @@ public class AuditWorkingPaperService {
 
     public GlobalResponse getOneById(Long id) {
         try {
-            Optional<AuditWorkingPaper> response = repository.findById(id);
-            if (!response.isPresent()) {
-                return GlobalResponse
-                        .builder()
-                        .message("No Content")
-                        .status(HttpStatus.NO_CONTENT)
-                        .build();
-            }
+            AuditWorkingPaper response = repository.findById(id).orElseThrow(()-> new ResourceNotFoundException("LHA with id: "+id+" is undefined"));
             return GlobalResponse
                     .builder()
                     .message("Success")

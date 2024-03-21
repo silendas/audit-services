@@ -51,7 +51,7 @@ public class LogSchedule {
     private String action;
 
     @Column(name = "created_by")
-    private String createdBy;
+    private Long createdBy;
 
     @Column(name = "created_at")
     private Date created_at;

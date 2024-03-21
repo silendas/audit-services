@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.cms.audit.api.Common.response.GlobalResponse;
 import com.cms.audit.api.Management.Office.AreaOffice.dto.AreaDTO;
 import com.cms.audit.api.Management.Office.AreaOffice.dto.response.AreaInterface;
 import com.cms.audit.api.Management.Office.AreaOffice.models.Area;
@@ -20,7 +21,6 @@ import com.cms.audit.api.Management.Office.AreaOffice.repository.AreaRepository;
 import com.cms.audit.api.Management.Office.AreaOffice.repository.PagArea;
 import com.cms.audit.api.Management.Office.RegionOffice.models.Region;
 import com.cms.audit.api.Management.Office.RegionOffice.repository.RegionRepository;
-import com.cms.audit.api.common.response.GlobalResponse;
 
 import jakarta.transaction.Transactional;
 
@@ -37,9 +37,15 @@ public class AreaService {
     @Autowired
     private RegionRepository regionRepository;
 
-    public GlobalResponse findAll(String name, int page, int size) {
+    public GlobalResponse findAll(String name, int page, int size, Long regionId) {
         try {
-            Page<Area> response = pagArea.findByNameContaining(name, PageRequest.of(page, size));
+            Page<Area> response;
+            if (regionId == null) {
+                response = pagArea.findByNameContaining(name, PageRequest.of(page, size));
+            } else {
+                response = pagArea.findAreaByRegionId(regionId, PageRequest.of(page, size));
+
+            }
             if (response.isEmpty()) {
                 return GlobalResponse
                         .builder()
@@ -133,16 +139,16 @@ public class AreaService {
 
     }
 
-    public GlobalResponse findOneByRegionId(Long id, int page,int size) {
+    public GlobalResponse findOneByRegionId(Long id, int page, int size) {
         try {
             Optional<Region> setRegion = regionRepository.findById(id);
-            if(!setRegion.isPresent()){
+            if (!setRegion.isPresent()) {
                 return GlobalResponse
-                .builder()
-                .message("No Content")
-                .status(HttpStatus.OK)
-                .build();
-        }
+                        .builder()
+                        .message("No Content")
+                        .status(HttpStatus.OK)
+                        .build();
+            }
             Page<Area> response = pagArea.findByRegion(setRegion.get(), PageRequest.of(page, size));
             if (response.isEmpty()) {
                 return GlobalResponse

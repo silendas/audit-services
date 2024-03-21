@@ -1,19 +1,25 @@
 package com.cms.audit.api.Management.User.services;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
 import org.hibernate.exception.DataException;
+import org.hibernate.mapping.Array;
 import org.hibernate.tool.schema.spi.SqlScriptException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.cms.audit.api.Common.exception.ResourceNotFoundException;
+import com.cms.audit.api.Common.response.GlobalResponse;
 import com.cms.audit.api.Management.Level.models.Level;
 import com.cms.audit.api.Management.Office.AreaOffice.models.Area;
 import com.cms.audit.api.Management.Office.AreaOffice.repository.AreaRepository;
@@ -25,14 +31,16 @@ import com.cms.audit.api.Management.Office.RegionOffice.models.Region;
 import com.cms.audit.api.Management.Office.RegionOffice.repository.RegionRepository;
 import com.cms.audit.api.Management.Role.models.Role;
 import com.cms.audit.api.Management.User.dto.ChangePasswordDTO;
+import com.cms.audit.api.Management.User.dto.ChangeProfileDTO;
 import com.cms.audit.api.Management.User.dto.UserDTO;
 import com.cms.audit.api.Management.User.dto.response.DropDownUser;
+import com.cms.audit.api.Management.User.dto.response.UserResponse;
 import com.cms.audit.api.Management.User.models.User;
 import com.cms.audit.api.Management.User.repository.PagUser;
 import com.cms.audit.api.Management.User.repository.UserRepository;
-import com.cms.audit.api.common.response.GlobalResponse;
 
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 
 @Service
 @Transactional
@@ -58,29 +66,90 @@ public class UserService {
         @Autowired
         private PasswordEncoder passwordEncoder;
 
-        public GlobalResponse findAll(int page, int size) {
-                try {
-                        Page<User> response = pagUser.findAll(PageRequest.of(page, size));
-                        if (response.isEmpty()) {
-                                return GlobalResponse.builder()
-                                .message("No Content")
-                                .status(HttpStatus.OK)
-                                                .build();
+        public GlobalResponse findAll(int page, int size, String username) {
+                User getUser = userRepository.findByUsername(username)
+                                .orElseThrow(() -> new ResourceNotFoundException(
+                                                "user with username " + username + " is undefined"));
+                Pageable pageable = PageRequest.of(page, size);
+                List<User> user = new ArrayList<>();
+                if (getUser.getLevel().getId() == 1) {
+                        user = userRepository.findAll();
+                } else if (getUser.getLevel().getId() == 2) {
+                        if (!getUser.getRegionId().isEmpty()) {
+                                List<User> userAgain = userRepository.findAll();
+                                for (int i = 0; i < getUser.getRegionId().size(); i++) {
+                                        Long regionId = getUser.getRegionId().get(i);
+                                        for (int u = 0; u < userAgain.size(); u++) {
+                                                for (int o = 0; o < userAgain.get(u).getRegionId()
+                                                                .size(); o++) {
+                                                        if (regionId == userAgain.get(u).getRegionId().get(o)) {
+                                                                user.add(userAgain.get(u));
+                                                        }
+                                                }
+                                        }
+                                }
+                        } else {
+                                List<User> userAgain = userRepository.findAll();
+                                Long lastId = null;
+                                for (int i = 0; i < getUser.getBranchId().size(); i++) {
+                                        Branch getBranch = branchRepository
+                                                        .findById(getUser.getBranchId().get(i)).orElseThrow();
+                                        Long regionId = getBranch.getArea().getRegion().getId();
+                                        if (lastId != regionId) {
+                                                for (int u = 0; u < userAgain.size(); u++) {
+                                                        if (userAgain.get(u).getRegionId().isEmpty()) {
+                                                                if (!userAgain.get(u).getBranchId().isEmpty()) {
+                                                                        Long lastAgain = null;
+                                                                        for (int e = 0; e < userAgain.get(u)
+                                                                                        .getBranchId().size(); e++) {
+                                                                                Branch branchAgain = branchRepository
+                                                                                                .findById(userAgain
+                                                                                                                .get(u)
+                                                                                                                .getBranchId()
+                                                                                                                .get(e))
+                                                                                                .orElseThrow();
+                                                                                if (regionId == branchAgain.getArea()
+                                                                                                .getRegion().getId()) {
+                                                                                        user.add(userAgain.get(u));
+                                                                                        break;
+                                                                                }
+                                                                        }
+                                                                }
+                                                        } else {
+                                                                for (int o = 0; o < userAgain.get(u).getRegionId()
+                                                                                .size(); o++) {
+                                                                        if (regionId == userAgain.get(u).getRegionId()
+                                                                                        .get(o)) {
+                                                                                user.add(userAgain.get(u));
+                                                                        }
+                                                                }
+                                                        }
+                                                }
+                                        }
+                                        lastId = regionId;
+                                }
                         }
+                        // user = pagUser.findByRegionId(user.getRegionId(), PageRequest.of(page,
+                        // size));
+                }
+                try {
+                        int start = (int) pageable.getOffset();
+                        int end = Math.min((start + pageable.getPageSize()), user.size());
+                        List<User> pageContent = user.subList(start, end);
+                        Page<User> response = new PageImpl<>(pageContent, pageable, user.size());
                         return GlobalResponse
                                         .builder()
                                         .message("Success")
                                         .data(response)
                                         .status(HttpStatus.OK)
                                         .build();
-                } catch (DataException e) {
-                        throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Data error");
-
                 } catch (Exception e) {
-                        throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Server error");
-
+                        return GlobalResponse
+                        .builder()
+                        .error(e)
+                        .status(HttpStatus.BAD_REQUEST)
+                        .build();
                 }
-
         }
 
         public GlobalResponse findOne(Long id) {
@@ -90,10 +159,113 @@ public class UserService {
                                 return GlobalResponse.builder().message("No Content").status(HttpStatus.OK)
                                                 .build();
                         }
+                        List<Region> region = new ArrayList<>();
+                        if (!response.get().getRegionId().isEmpty()) {
+                                for (int i = 0; i < response.get().getRegionId().size(); i++) {
+                                        region.add(regionRepository.findById(response.get().getRegionId().get(i))
+                                                        .orElse(null));
+                                }
+                        }
+                        List<Area> area = new ArrayList<>();
+                        if (!response.get().getAreaId().isEmpty()) {
+                                for (int i = 0; i < response.get().getAreaId().size(); i++) {
+                                        area.add(areaRepository.findById(response.get().getAreaId().get(i))
+                                                        .orElse(null));
+                                }
+                        }
+                        List<Branch> branch = new ArrayList<>();
+                        if (!response.get().getBranchId().isEmpty()) {
+                                for (int i = 0; i < response.get().getBranchId().size(); i++) {
+                                        branch.add(branchRepository.findById(response.get().getBranchId().get(i))
+                                                        .orElse(null));
+                                }
+                        }
+
+                        UserResponse user = new UserResponse();
+                        user.setId(response.get().getId());
+                        user.setRole(response.get().getRole());
+                        user.setLevel(response.get().getLevel());
+                        user.setMain(response.get().getMain());
+                        user.setRegion(region);
+                        user.setArea(area);
+                        user.setBranch(branch);
+                        user.setEmail(response.get().getEmail());
+                        user.setUsername(response.get().getUsername());
+                        user.setPassword(response.get().getPassword());
+                        user.setFullname(response.get().getFullname());
+                        user.setInitial_name(response.get().getInitial_name());
+                        user.setNip(response.get().getNip());
+                        user.setIs_active(response.get().getIs_active());
+                        user.setIs_delete(response.get().getIs_delete());
+                        user.setCreated_at(response.get().getCreated_at());
+                        user.setUpdated_at(response.get().getUpdated_at());
+
                         return GlobalResponse
                                         .builder()
                                         .message("Success")
-                                        .data(response)
+                                        .data(user)
+                                        .status(HttpStatus.OK)
+                                        .build();
+                } catch (DataException e) {
+                        throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Data error");
+
+                } catch (Exception e) {
+                        throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Server error");
+                }
+
+        }
+
+        public GlobalResponse findOneByUsername(String username) {
+                try {
+                        Optional<User> response = userRepository.findByUsername(username);
+                        if (!response.isPresent()) {
+                                return GlobalResponse.builder().message("No Content").status(HttpStatus.OK)
+                                                .build();
+                        }
+                        List<Region> region = new ArrayList<>();
+                        if (!response.get().getRegionId().isEmpty()) {
+                                for (int i = 0; i < response.get().getRegionId().size(); i++) {
+                                        region.add(regionRepository.findById(response.get().getRegionId().get(i))
+                                                        .orElse(null));
+                                }
+                        }
+                        List<Area> area = new ArrayList<>();
+                        if (!response.get().getAreaId().isEmpty()) {
+                                for (int i = 0; i < response.get().getAreaId().size(); i++) {
+                                        area.add(areaRepository.findById(response.get().getAreaId().get(i))
+                                                        .orElse(null));
+                                }
+                        }
+                        List<Branch> branch = new ArrayList<>();
+                        if (!response.get().getBranchId().isEmpty()) {
+                                for (int i = 0; i < response.get().getBranchId().size(); i++) {
+                                        branch.add(branchRepository.findById(response.get().getBranchId().get(i))
+                                                        .orElse(null));
+                                }
+                        }
+
+                        UserResponse user = new UserResponse();
+                        user.setId(response.get().getId());
+                        user.setRole(response.get().getRole());
+                        user.setLevel(response.get().getLevel());
+                        user.setMain(response.get().getMain());
+                        user.setRegion(region);
+                        user.setArea(area);
+                        user.setBranch(branch);
+                        user.setEmail(response.get().getEmail());
+                        user.setUsername(response.get().getUsername());
+                        user.setPassword(response.get().getPassword());
+                        user.setFullname(response.get().getFullname());
+                        user.setInitial_name(response.get().getInitial_name());
+                        user.setNip(response.get().getNip());
+                        user.setIs_active(response.get().getIs_active());
+                        user.setIs_delete(response.get().getIs_delete());
+                        user.setCreated_at(response.get().getCreated_at());
+                        user.setUpdated_at(response.get().getUpdated_at());
+                        return GlobalResponse
+                                        .builder()
+                                        .message("Success")
+                                        .data(user)
                                         .status(HttpStatus.OK)
                                         .build();
                 } catch (DataException e) {
@@ -108,12 +280,12 @@ public class UserService {
         public GlobalResponse findOneByMainId(Long id, int page, int size) {
                 try {
                         Optional<Main> setMain = mainRepository.findById(id);
-                        if(!setMain.isPresent()){
+                        if (!setMain.isPresent()) {
                                 return GlobalResponse
-                                .builder()
-                                .message("No Content")
-                                .status(HttpStatus.OK)
-                                .build();
+                                                .builder()
+                                                .message("No Content")
+                                                .status(HttpStatus.OK)
+                                                .build();
                         }
                         Page<User> response = pagUser.findByMain(setMain.get(), PageRequest.of(page, size));
                         if (response.isEmpty()) {
@@ -133,17 +305,42 @@ public class UserService {
                 }
         }
 
-        public GlobalResponse findOneByRegionId(Long id, int page, int size) {
+        // public GlobalResponse findOneByRegionId(Long id, int page, int size) {
+        // try {
+        // Optional<Region> set = regionRepository.findById(id);
+        // if (!set.isPresent()) {
+        // return GlobalResponse
+        // .builder()
+        // .message("No Content")
+        // .status(HttpStatus.OK)
+        // .build();
+        // }
+        // Page<User> response = pagUser.findByRegion(set.get(), PageRequest.of(page,
+        // size));
+        // if (response.isEmpty()) {
+        // return GlobalResponse.builder().message("No Content").status(HttpStatus.OK)
+        // .build();
+        // }
+        // return GlobalResponse
+        // .builder()
+        // .message("Success")
+        // .data(response)
+        // .status(HttpStatus.OK)
+        // .build();
+        // } catch (DataException e) {
+        // throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Data
+        // error");
+
+        // } catch (Exception e) {
+        // throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Server
+        // error");
+        // }
+
+        // }
+
+        public GlobalResponse dropDown() {
                 try {
-                        Optional<Region> set = regionRepository.findById(id);
-                        if(!set.isPresent()){
-                                return GlobalResponse
-                                .builder()
-                                .message("No Content")
-                                .status(HttpStatus.OK)
-                                .build();
-                        }
-                        Page<User> response = pagUser.findByRegion(set.get(), PageRequest.of(page, size));
+                        List<DropDownUser> response = userRepository.findDropDown();
                         if (response.isEmpty()) {
                                 return GlobalResponse.builder().message("No Content").status(HttpStatus.OK)
                                                 .build();
@@ -160,7 +357,6 @@ public class UserService {
                 } catch (Exception e) {
                         throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Server error");
                 }
-
         }
 
         public GlobalResponse dropDownByRegionId(Long id) {
@@ -205,52 +401,58 @@ public class UserService {
                 }
         }
 
-        public GlobalResponse findOneByAreaId(Long id, int page, int size) {
-                try {
-                        Area set = areaRepository.findById(id).orElseThrow(()-> new ResponseStatusException(HttpStatus.OK));
-                        Page<User> response = pagUser.findByArea(set, PageRequest.of(page, size));
-                        if (response.isEmpty()) {
-                                return GlobalResponse.builder().message("No Content").status(HttpStatus.OK)
-                                                .build();
-                        }
-                        return GlobalResponse
-                                        .builder()
-                                        .message("Success")
-                                        .data(response)
-                                        .status(HttpStatus.OK)
-                                        .build();
-                } catch (DataException e) {
-                        throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Data error");
+        // public GlobalResponse findOneByAreaId(Long id, int page, int size) {
+        // try {
+        // Area set = areaRepository.findById(id)
+        // .orElseThrow(() -> new ResponseStatusException(HttpStatus.OK));
+        // Page<User> response = pagUser.findByArea(set, PageRequest.of(page, size));
+        // if (response.isEmpty()) {
+        // return GlobalResponse.builder().message("No Content").status(HttpStatus.OK)
+        // .build();
+        // }
+        // return GlobalResponse
+        // .builder()
+        // .message("Success")
+        // .data(response)
+        // .status(HttpStatus.OK)
+        // .build();
+        // } catch (DataException e) {
+        // throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Data
+        // error");
 
-                } catch (Exception e) {
-                        throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Server error");
-                }
+        // } catch (Exception e) {
+        // throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Server
+        // error");
+        // }
 
-        }
+        // }
 
-        public GlobalResponse findOneByBranchId(Long id, int page, int size) {
-                try {
-                        Branch set = branchRepository.findById(id).orElseThrow(()-> new ResponseStatusException(HttpStatus.OK));
-                        Page<User> response = pagUser.findByBranch(set, PageRequest.of(page, size));
-                        if (response.isEmpty()) {
-                                return GlobalResponse.builder().message("No Content").status(HttpStatus.OK)
-                                                .build();
-                        }
-                        return GlobalResponse
-                                        .builder()
-                                        .message("Success")
-                                        .data(response)
-                                        .status(HttpStatus.OK)
-                                        .build();
-                } catch (DataException e) {
-                        throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Data error");
+        // public GlobalResponse findOneByBranchId(Long id, int page, int size) {
+        // try {
+        // Branch set = branchRepository.findById(id)
+        // .orElseThrow(() -> new ResponseStatusException(HttpStatus.OK));
+        // Page<User> response = pagUser.findByBranch(set, PageRequest.of(page, size));
+        // if (response.isEmpty()) {
+        // return GlobalResponse.builder().message("No Content").status(HttpStatus.OK)
+        // .build();
+        // }
+        // return GlobalResponse
+        // .builder()
+        // .message("Success")
+        // .data(response)
+        // .status(HttpStatus.OK)
+        // .build();
+        // } catch (DataException e) {
+        // throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Data
+        // error");
 
-                } catch (Exception e) {
-                        throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Server error");
-                }
-        }
+        // } catch (Exception e) {
+        // throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Server
+        // error");
+        // }
+        // }
 
-        public GlobalResponse save(UserDTO userDTO) {
+        public GlobalResponse save(@Valid UserDTO userDTO) {
                 try {
                         Level levelId = Level.builder()
                                         .id(userDTO.getLevel_id())
@@ -264,26 +466,49 @@ public class UserService {
                                         .id(userDTO.getMain_id())
                                         .build();
 
-                        Region regionId = Region.builder()
-                                        .id(userDTO.getRegion_id())
-                                        .build();
+                        List<Long> region = new ArrayList<>();
+                        if (!userDTO.getRegion_id().isEmpty() || userDTO.getRegion_id() != null) {
+                                for (int i = 0; i < userDTO.getRegion_id().size(); i++) {
+                                        Region getRegion = regionRepository.findById(userDTO.getRegion_id().get(i))
+                                                        .orElseThrow(() -> new ResourceNotFoundException(
+                                                                        "Region not found"));
+                                        region.add(getRegion.getId());
+                                }
+                        } else {
+                                region = null;
+                        }
 
-                        Area areaId = Area.builder()
-                                        .id(userDTO.getArea_id())
-                                        .build();
+                        List<Long> area = new ArrayList<>();
+                        if (!userDTO.getArea_id().isEmpty() || userDTO.getArea_id() != null) {
+                                for (int i = 0; i < userDTO.getArea_id().size(); i++) {
+                                        Area getArea = areaRepository.findById(userDTO.getArea_id().get(i)).orElseThrow(
+                                                        () -> new ResourceNotFoundException("Area not found"));
+                                        area.add(getArea.getId());
+                                }
+                        } else {
+                                area = null;
+                        }
 
-                        Branch branchId = Branch.builder()
-                                        .id(userDTO.getBranch_id())
-                                        .build();
+                        List<Long> branch = new ArrayList<>();
+                        if (!userDTO.getBranch_id().isEmpty() || userDTO.getBranch_id() != null) {
+                                for (int i = 0; i < userDTO.getBranch_id().size(); i++) {
+                                        Branch getBranch = branchRepository.findById(userDTO.getBranch_id().get(i))
+                                                        .orElseThrow(() -> new ResourceNotFoundException(
+                                                                        "Branch not found"));
+                                        branch.add(getBranch.getId());
+                                }
+                        } else {
+                                branch = null;
+                        }
 
                         User user = new User(
                                         null,
                                         roleId,
                                         levelId,
                                         mainId,
-                                        regionId,
-                                        areaId,
-                                        branchId,
+                                        region,
+                                        area,
+                                        branch,
                                         userDTO.getEmail(),
                                         userDTO.getNip(),
                                         userDTO.getUsername(),
@@ -318,9 +543,6 @@ public class UserService {
                 try {
 
                         User userGet = userRepository.findById(id).get();
-                        if (userGet == null) {
-                                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Not Found User");
-                        }
 
                         Level levelId = Level.builder()
                                         .id(userDTO.getLevel_id())
@@ -334,26 +556,49 @@ public class UserService {
                                         .id(userDTO.getMain_id())
                                         .build();
 
-                        Region regionId = Region.builder()
-                                        .id(userDTO.getRegion_id())
-                                        .build();
+                        List<Long> region = new ArrayList<>();
+                        if (!userDTO.getRegion_id().isEmpty() || userDTO.getRegion_id() != null) {
+                                for (int i = 0; i < userDTO.getRegion_id().size(); i++) {
+                                        Region getRegion = regionRepository.findById(userDTO.getRegion_id().get(i))
+                                                        .orElseThrow(() -> new ResourceNotFoundException(
+                                                                        "Region not found"));
+                                        region.add(getRegion.getId());
+                                }
+                        } else {
+                                region = null;
+                        }
 
-                        Area areaId = Area.builder()
-                                        .id(userDTO.getArea_id())
-                                        .build();
+                        List<Long> area = new ArrayList<>();
+                        if (!userDTO.getArea_id().isEmpty() || userDTO.getArea_id() != null) {
+                                for (int i = 0; i < userDTO.getArea_id().size(); i++) {
+                                        Area getArea = areaRepository.findById(userDTO.getArea_id().get(i)).orElseThrow(
+                                                        () -> new ResourceNotFoundException("Area not found"));
+                                        area.add(getArea.getId());
+                                }
+                        } else {
+                                area = null;
+                        }
 
-                        Branch branchId = Branch.builder()
-                                        .id(userDTO.getBranch_id())
-                                        .build();
+                        List<Long> branch = new ArrayList<>();
+                        if (!userDTO.getBranch_id().isEmpty() || userDTO.getBranch_id() != null) {
+                                for (int i = 0; i < userDTO.getBranch_id().size(); i++) {
+                                        Branch getBranch = branchRepository.findById(userDTO.getBranch_id().get(i))
+                                                        .orElseThrow(() -> new ResourceNotFoundException(
+                                                                        "Branch not found"));
+                                        branch.add(getBranch.getId());
+                                }
+                        } else {
+                                branch = null;
+                        }
 
                         User user = new User(
                                         id,
                                         roleId,
                                         levelId,
                                         mainId,
-                                        regionId,
-                                        areaId,
-                                        branchId,
+                                        region,
+                                        area,
+                                        branch,
                                         userDTO.getEmail(),
                                         userDTO.getNip(),
                                         userDTO.getUsername(),
@@ -387,25 +632,10 @@ public class UserService {
                 try {
                         Optional<User> getUser = userRepository.findById(id);
 
-                        User user = new User(
-                                        id,
-                                        getUser.get().getRole(),
-                                        getUser.get().getLevel(),
-                                        getUser.get().getMain(),
-                                        getUser.get().getRegion(),
-                                        getUser.get().getArea(),
-                                        getUser.get().getBranch(),
-                                        getUser.get().getEmail(),
-                                        getUser.get().getNip(),
-                                        getUser.get().getUsername(),
-                                        getUser.get().getPassword(),
-                                        getUser.get().getFullname(),
-                                        getUser.get().getInitial_name(),
-                                        0,
-                                        1,
-                                        getUser.get().getCreated_at(),
-                                        new Date());
-
+                        User user = getUser.orElseThrow(() -> new ResourceNotFoundException("User not found"));
+                        user.setIs_delete(1);
+                        user.setIs_active(0);
+                        user.setUpdated_at(new Date());
                         User response = userRepository.save(user);
                         if (response == null) {
                                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Bad Request");
@@ -422,31 +652,17 @@ public class UserService {
                 }
         }
 
-        public GlobalResponse changePassword(ChangePasswordDTO changePasswordDTO, Long id) {
+        public GlobalResponse changePassword(ChangePasswordDTO changePasswordDTO, String username) {
                 try {
 
-                        Optional<User> getUser = userRepository.findById(id);
+                        User getUser = userRepository.findByUsername(username)
+                                        .orElseThrow(() -> new ResourceNotFoundException("User is not found"));
 
-                        User user = new User(
-                                        id,
-                                        getUser.get().getRole(),
-                                        getUser.get().getLevel(),
-                                        getUser.get().getMain(),
-                                        getUser.get().getRegion(),
-                                        getUser.get().getArea(),
-                                        getUser.get().getBranch(),
-                                        getUser.get().getEmail(),
-                                        getUser.get().getNip(),
-                                        getUser.get().getUsername(),
-                                        passwordEncoder.encode(changePasswordDTO.getPassword()),
-                                        getUser.get().getFullname(),
-                                        getUser.get().getInitial_name(),
-                                        1,
-                                        0,
-                                        getUser.get().getCreated_at(),
-                                        new Date());
+                        User user = getUser;
+                        user.setPassword(changePasswordDTO.getPassword());
+                        user.setUpdated_at(new Date());
 
-                        User response = userRepository.save(user);
+                        userRepository.save(user);
                         return GlobalResponse
                                         .builder()
                                         .message("Success")
@@ -459,31 +675,28 @@ public class UserService {
                 }
         }
 
-        public GlobalResponse changeProfile(UserDTO dto, Long id) {
+        public GlobalResponse changeProfile(ChangeProfileDTO dto, String username) {
                 try {
+                        User getUser = userRepository.findByUsername(username)
+                                        .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
-                        Optional<User> getUser = userRepository.findById(id);
+                        if(dto.getUsername() == getUser.getUsername() || dto.getEmail() == getUser.getEmail()){
+                                return GlobalResponse
+                                        .builder()
+                                        .message("User already exist")
+                                        .status(HttpStatus.BAD_REQUEST)
+                                        .build();
+                        }
 
-                        User user = new User(
-                                        id,
-                                        getUser.get().getRole(),
-                                        getUser.get().getLevel(),
-                                        getUser.get().getMain(),
-                                        getUser.get().getRegion(),
-                                        getUser.get().getArea(),
-                                        getUser.get().getBranch(),
-                                        dto.getEmail(),
-                                        getUser.get().getNip(),
-                                        dto.getUsername(),
-                                        getUser.get().getPassword(),
-                                        getUser.get().getFullname(),
-                                        getUser.get().getInitial_name(),
-                                        1,
-                                        0,
-                                        getUser.get().getCreated_at(),
-                                        new Date());
+                        User user = getUser;
+                        user.setUsername(dto.getUsername());
+                        user.setEmail(dto.getEmail());
 
-                        User response = userRepository.save(user);
+                        try {
+                                userRepository.save(user);
+                        } catch (Exception e) {
+                                return GlobalResponse.builder().error(e).status(HttpStatus.BAD_REQUEST).build();
+                        }
                         return GlobalResponse
                                         .builder()
                                         .message("Success")

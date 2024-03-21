@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,9 +17,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.cms.audit.api.AuditDailyReport.dto.AuditDailyReportDetailDTO;
 import com.cms.audit.api.AuditDailyReport.dto.EditAuditDailyReportDetailDTO;
 import com.cms.audit.api.AuditDailyReport.service.AuditDailyReportDetailService;
-import com.cms.audit.api.common.constant.BasePath;
-import com.cms.audit.api.common.response.GlobalResponse;
-import com.cms.audit.api.common.response.ResponseEntittyHandler;
+import com.cms.audit.api.Common.constant.BasePath;
+import com.cms.audit.api.Common.response.GlobalResponse;
+import com.cms.audit.api.Common.response.ResponseEntittyHandler;
 
 @RestController
 @RequestMapping(value = BasePath.BASE_PATH_LHA_DETAIL)
@@ -62,14 +62,14 @@ public class AuditDailyReportDetailController {
     }
 
     @PostMapping
-    public ResponseEntity<Object> post(@ModelAttribute AuditDailyReportDetailDTO dto) {
+    public ResponseEntity<Object> post(@RequestBody AuditDailyReportDetailDTO dto) {
         GlobalResponse response = service.save(dto);
         return ResponseEntittyHandler.allHandler(null, response.getMessage(), response.getStatus(),
                 response.getError());
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Object> put(@ModelAttribute EditAuditDailyReportDetailDTO dto, @PathVariable("id") Long id) {
+    public ResponseEntity<Object> put(@RequestBody EditAuditDailyReportDetailDTO dto, @PathVariable("id") Long id) {
         GlobalResponse response = service.edit(dto, id);
         return ResponseEntittyHandler.allHandler(null, response.getMessage(), response.getStatus(),
                 response.getError());

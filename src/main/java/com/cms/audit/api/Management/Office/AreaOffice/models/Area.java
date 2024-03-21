@@ -44,7 +44,4 @@ public class Area {
     @ManyToOne
     @JoinColumn(name = "region_id")
     private Region region;
-
-    // @OneToOne(mappedBy = "area")
-    // private User user;
 }

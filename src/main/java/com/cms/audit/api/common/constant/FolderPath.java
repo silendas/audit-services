@@ -1,4 +1,4 @@
-package com.cms.audit.api.common.constant;
+package com.cms.audit.api.Common.constant;
 
 public interface FolderPath {
     String FOLDER_PATH_CLARIFICATION = "uploaded\\clarification\\";

@@ -1,4 +1,4 @@
-package com.cms.audit.api.Report.util;
+package com.cms.audit.api.Common.util;
 
 import java.util.*;
 
@@ -7,7 +7,6 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.springframework.security.web.header.Header;
 
 import com.cms.audit.api.Clarifications.models.Clarification;
 import com.itextpdf.io.source.ByteArrayOutputStream;
@@ -47,7 +46,7 @@ public class ExcelUtil {
                 row1.createCell(6).setCellValue(c.getLocation());
                 row1.createCell(7).setCellValue(c.getAuditee());
                 row1.createCell(8).setCellValue(c.getAuditee_leader());
-                row1.createCell(9).setCellValue(c.getFileName());
+                row1.createCell(9).setCellValue(c.getFile_name());
                 row1.createCell(10).setCellValue(c.getDescription());
                 row1.createCell(11).setCellValue(c.getPriority().name());
                 row1.createCell(12).setCellValue(c.getStatus().name());

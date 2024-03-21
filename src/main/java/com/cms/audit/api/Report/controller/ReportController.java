@@ -20,10 +20,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cms.audit.api.Common.constant.BasePath;
+import com.cms.audit.api.Common.response.GlobalResponse;
+import com.cms.audit.api.Common.response.ResponseEntittyHandler;
 import com.cms.audit.api.Report.service.ReportService;
-import com.cms.audit.api.common.constant.BasePath;
-import com.cms.audit.api.common.response.GlobalResponse;
-import com.cms.audit.api.common.response.ResponseEntittyHandler;
 
 @RestController
 @Validated

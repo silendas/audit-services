@@ -24,5 +24,4 @@ public class EditScheduleDTO {
     private Date end_date_realization;
     private String description;
     private EStatus status;
-    private String update_by;
 }

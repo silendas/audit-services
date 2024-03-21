@@ -3,13 +3,17 @@ package com.cms.audit.api.Management.Dropdown;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cms.audit.api.Clarifications.models.EPriority;
 import com.cms.audit.api.Clarifications.models.EStatusClarification;
+import com.cms.audit.api.Common.constant.BasePath;
+import com.cms.audit.api.Common.response.GlobalResponse;
+import com.cms.audit.api.Common.response.ResponseEntittyHandler;
 import com.cms.audit.api.InspectionSchedule.models.ECategory;
 import com.cms.audit.api.InspectionSchedule.models.EStatus;
 import com.cms.audit.api.Management.Case.services.CaseService;
@@ -23,11 +27,11 @@ import com.cms.audit.api.Management.Penalty.services.PenaltyService;
 import com.cms.audit.api.Management.ReportType.services.ReportTypeService;
 import com.cms.audit.api.Management.Role.services.RoleService;
 import com.cms.audit.api.Management.User.services.UserService;
-import com.cms.audit.api.common.constant.BasePath;
-import com.cms.audit.api.common.response.GlobalResponse;
-import com.cms.audit.api.common.response.ResponseEntittyHandler;
+
+import jakarta.annotation.Nullable;
 
 @RestController
+@Validated
 @RequestMapping(value = BasePath.BASE_PATH_DROP_DOWN)
 public class DropdownController {
 
@@ -64,22 +68,20 @@ public class DropdownController {
     @Autowired
     private RoleService roleService;
 
-    @GetMapping("/users/{id}/region")
-    public ResponseEntity<Object> getUserByRegion(@PathVariable("id") Long id) {
-        GlobalResponse response = userService.dropDownByRegionId(id);
-        if (response.getError() != null) {
-            return ResponseEntittyHandler.allHandler(null, null, response.getStatus(), response.getError());
+    @GetMapping("/users")
+    public ResponseEntity<Object> getUserByRegion(
+            @Nullable @RequestParam("regionId") Long regionId,
+            @Nullable @RequestParam("mainId") Long mainId) {
+        GlobalResponse response;
+        if (regionId != null) {
+            response = userService.dropDownByRegionId(regionId);
+        } else if (mainId != null) {
+            response = userService.dropDownByMainId(mainId);
+        } else {
+            response = userService.dropDown();
         }
-        return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(), null);
-    }
-
-    @GetMapping("/users/{id}/main")
-    public ResponseEntity<Object> getUserByMain(@PathVariable("id") Long id) {
-        GlobalResponse response = userService.dropDownByMainId(id);
-        if (response.getError() != null) {
-            return ResponseEntittyHandler.allHandler(null, null, response.getStatus(), response.getError());
-        }
-        return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(), null);
+        return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(),
+                response.getError());
     }
 
     @GetMapping("/schedule-status")
@@ -102,21 +104,15 @@ public class DropdownController {
     }
 
     @GetMapping("/case-category")
-    public ResponseEntity<Object> getCaseCategory() {
-        GlobalResponse response = ccService.findSpecific();
-        if (response.getError() != null) {
-            return ResponseEntittyHandler.allHandler(null, null, response.getStatus(), response.getError());
+    public ResponseEntity<Object> getCaseCategory(@Nullable @RequestParam("caseId") Long id) {
+        GlobalResponse response;
+        if (id != null) {
+            response = ccService.findSpecific();
+        } else {
+            response = ccService.findSpecificByCasesId(id);
         }
-        return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(), null);
-    }
-
-    @GetMapping("/case-category/{id}/case")
-    public ResponseEntity<Object> getCaseCategoryByCase(@PathVariable("id") Long id) {
-        GlobalResponse response = ccService.findSpecificByCasesId(id);
-        if (response.getError() != null) {
-            return ResponseEntittyHandler.allHandler(null, null, response.getStatus(), response.getError());
-        }
-        return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(), null);
+        return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(),
+                response.getError());
     }
 
     @GetMapping("/level")
@@ -165,66 +161,44 @@ public class DropdownController {
     }
 
     @GetMapping("/region")
-    public ResponseEntity<Object> getRegion() {
-        GlobalResponse response = regionService.findSpecific();
-        if (response.getError() != null) {
-            return ResponseEntittyHandler.allHandler(null, null, response.getStatus(), response.getError());
+    public ResponseEntity<Object> getRegion(
+            @Nullable @RequestParam("mainId") Long id) {
+        GlobalResponse response;
+        if (id == null) {
+            response = regionService.findSpecific();
+        } else {
+            response = regionService.findSpecificByMainId(id);
         }
-        return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(), null);
-    }
-
-    @GetMapping("/region/{id}/main")
-    public ResponseEntity<Object> getRegionByMain(@PathVariable("id") Long id) {
-        GlobalResponse response = regionService.findSpecificByMainId(id);
-        if (response.getError() != null) {
-            return ResponseEntittyHandler.allHandler(null, null, response.getStatus(), response.getError());
-        }
-        return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(), null);
+        return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(),
+                response.getError());
     }
 
     @GetMapping("/area")
-    public ResponseEntity<Object> getArea() {
-        GlobalResponse response = areaService.findSpecific();
-        if (response.getError() != null) {
-            return ResponseEntittyHandler.allHandler(null, null, response.getStatus(), response.getError());
+    public ResponseEntity<Object> getArea(
+            @Nullable @RequestParam("regionId") Long id) {
+        GlobalResponse response;
+        if (id == null) {
+            response = areaService.findSpecific();
+        } else {
+            response = areaService.findSpecificByRegionId(id);
         }
-        return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(), null);
-    }
-
-    @GetMapping("/area/{id}/region")
-    public ResponseEntity<Object> getAreaByRegion(@PathVariable("id") Long id) {
-        GlobalResponse response = areaService.findSpecificByRegionId(id);
-        if (response.getError() != null) {
-            return ResponseEntittyHandler.allHandler(null, null, response.getStatus(), response.getError());
-        }
-        return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(), null);
+        return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(), response.getError());
     }
 
     @GetMapping("/branch")
-    public ResponseEntity<Object> getBranch() {
-        GlobalResponse response = branchService.findSpecific();
-        if (response.getError() != null) {
-            return ResponseEntittyHandler.allHandler(null, null, response.getStatus(), response.getError());
+    public ResponseEntity<Object> getBranch(
+        @Nullable @RequestParam("areaId") Long areaId,
+        @Nullable @RequestParam("regionId") Long regionId
+    ) {
+        GlobalResponse response;
+        if(areaId != null){
+            response = branchService.findSpecificByAreaId(areaId);
+        }else if(regionId != null){
+            response = branchService.findSpecificByRegionId(regionId);
+        }else{
+            response = branchService.findSpecific();
         }
-        return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(), null);
-    }
-
-    @GetMapping("/branch/{id}/region")
-    public ResponseEntity<Object> getBranchByRegion(@PathVariable("id") Long id) {
-        GlobalResponse response = branchService.findSpecificByRegionId(id);
-        if (response.getError() != null) {
-            return ResponseEntittyHandler.allHandler(null, null, response.getStatus(), response.getError());
-        }
-        return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(), null);
-    }
-
-    @GetMapping("/branch/{id}/area")
-    public ResponseEntity<Object> getBranchByArea(@PathVariable("id") Long id) {
-        GlobalResponse response = branchService.findSpecificByAreaId(id);
-        if (response.getError() != null) {
-            return ResponseEntittyHandler.allHandler(null, null, response.getStatus(), response.getError());
-        }
-        return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(), null);
+        return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(), response.getError());
     }
 
     @GetMapping("/priority")

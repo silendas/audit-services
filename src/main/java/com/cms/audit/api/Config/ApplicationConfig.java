@@ -10,6 +10,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.multipart.MultipartResolver;
 
 import com.cms.audit.api.Management.User.repository.UserRepository;
 
@@ -24,32 +25,32 @@ public class ApplicationConfig {
     private final UserRepository userRepository;
 
     @Bean
-    public UserDetailsService userDetailsService(){
+    public UserDetailsService userDetailsService() {
         return username -> userRepository.findByUsername(username)
-        .orElseThrow(()-> new UsernameNotFoundException("User not found"));
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }
 
     @Bean
-    public AuthenticationProvider authenticationProvider(){
+    public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
         authProvider.setUserDetailsService(userDetailsService());
         authProvider.setPasswordEncoder(passwordEncoder());
         return authProvider;
     }
 
-    @Bean 
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception{
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-    return new BCryptPasswordEncoder(); 
+        return new BCryptPasswordEncoder();
     }
 
     // @Bean
     // public JwtBlacklist jwtBlacklist(){
-    //     return new JwtBlacklist();
+    // return new JwtBlacklist();
     // }
-    
+
 }

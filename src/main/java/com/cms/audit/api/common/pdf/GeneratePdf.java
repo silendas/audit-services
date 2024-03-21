@@ -1,4 +1,4 @@
-package com.cms.audit.api.common.pdf;
+package com.cms.audit.api.Common.pdf;
 
 import java.io.FileNotFoundException;
 import java.net.MalformedURLException;
@@ -6,11 +6,11 @@ import java.util.Date;
 
 import com.cms.audit.api.Clarifications.models.Clarification;
 import com.cms.audit.api.Clarifications.models.EPriority;
+import com.cms.audit.api.Common.constant.FolderPath;
+import com.cms.audit.api.Common.constant.convertDateToRoman;
+import com.cms.audit.api.Common.constant.randomValueNumber;
+import com.cms.audit.api.Common.response.PDFResponse;
 import com.cms.audit.api.FollowUp.models.FollowUp;
-import com.cms.audit.api.common.constant.FolderPath;
-import com.cms.audit.api.common.constant.convertDateToRoman;
-import com.cms.audit.api.common.constant.randomValueNumber;
-import com.cms.audit.api.common.response.PDFResponse;
 import com.itextpdf.io.image.ImageData;
 import com.itextpdf.io.image.ImageDataFactory;
 import com.itextpdf.kernel.color.Color;

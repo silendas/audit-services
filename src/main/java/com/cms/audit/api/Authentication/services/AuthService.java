@@ -4,9 +4,12 @@ import java.util.Optional;
 
 import org.hibernate.exception.DataException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UserDetails;
 //import org.springframework.security.crypto.password.PasswordEncoder;
 //import org.springframework.security.web.firewall.RequestRejectedException;
 import org.springframework.stereotype.Service;
@@ -16,9 +19,9 @@ import com.cms.audit.api.Authentication.dto.SigninDTO;
 import com.cms.audit.api.Authentication.dto.response.AuthResponse;
 //import com.cms.audit.api.Authentication.dto.SignupDTO;
 import com.cms.audit.api.Authentication.repository.AuthRepository;
+import com.cms.audit.api.Common.response.GlobalResponse;
 import com.cms.audit.api.Config.Jwt.JwtService;
 import com.cms.audit.api.Management.User.models.User;
-import com.cms.audit.api.common.response.GlobalResponse;
 
 import io.jsonwebtoken.JwtException;
 import lombok.RequiredArgsConstructor;
@@ -35,39 +38,36 @@ public class AuthService {
         private final AuthenticationManager authenticationManager;
 
         public AuthResponse login(SigninDTO signinDTO) {
-                try {
-                        // validate username or email
-                        Optional<User> response = authRepository.findOneUsersByEmailOrUsername(signinDTO.getUsername(),
-                                        signinDTO.getUsername());
-                        if (!response.isPresent()) {
-                                return AuthResponse.builder().message("Wrong username or password").status(HttpStatus.OK).build();
-                        };
+                // validate username or email
+                Optional<User> response = authRepository.findOneUsersByEmailOrUsername(signinDTO.getUsername(),
+                                signinDTO.getUsername());
+                if (!response.isPresent()) {
+                        return AuthResponse.builder().message("Wrong username or password")
+                                        .status(HttpStatus.OK).build();
+                };
 
-                        // valdite auth manager user
+                // valdite auth manager user
+                try {
                         authenticationManager.authenticate(
                                         new UsernamePasswordAuthenticationToken(
                                                         response.get().getUsername(),
                                                         signinDTO.getPassword()));
-
-                        User user = authRepository.findByUsername(response.get().getUsername()).orElseThrow();
-
-                        // generate jwt token
-                        var jwtToken = jwtService.generateToken(user);
-
-                        return AuthResponse.builder()
-                                        .message("Success")
-                                        .token(jwtToken)
-                                        .status(HttpStatus.OK)
-                                        .build();
-                } catch (DataException e) {
-                        return AuthResponse.builder().error(e).status(HttpStatus.UNPROCESSABLE_ENTITY).build();
-                } catch (AuthenticationException e) {
-                        return AuthResponse.builder().error(e).status(HttpStatus.UNAUTHORIZED).build();
-                } catch (JwtException e) {
-                        return AuthResponse.builder().error(e).status(HttpStatus.UNAUTHORIZED).build();
-                } catch (Exception e) {
-                        return AuthResponse.builder().error(e).status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+                } catch (BadCredentialsException e) {
+                        return AuthResponse.builder().message("Invalid username or password")
+                                        .status(HttpStatus.UNAUTHORIZED).build();
                 }
+
+                //User user = authRepository.findByUsername(response.get().getUsername()).orElseThrow();
+                UserDetails userDetails = authRepository.findByUsername(response.get().getUsername()).orElseThrow();
+
+                // generate jwt token
+                var jwtToken = jwtService.generateToken(userDetails, response.orElseThrow());
+
+                return AuthResponse.builder()
+                                .message("Success")
+                                .token(jwtToken)
+                                .status(HttpStatus.OK)
+                                .build();
 
         }
 
@@ -75,10 +75,10 @@ public class AuthService {
                 try {
                         jwtService.blacklistToken(token);
                         return AuthResponse
-                                .builder()
-                                .message("Success")
-                                .status(HttpStatus.OK)
-                                .build();
+                                        .builder()
+                                        .message("Success")
+                                        .status(HttpStatus.OK)
+                                        .build();
                 } catch (Exception e) {
                         return AuthResponse.builder().error(e).status(HttpStatus.INTERNAL_SERVER_ERROR).build();
                 }

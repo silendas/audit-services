@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.cms.audit.api.Common.response.GlobalResponse;
 import com.cms.audit.api.Management.Office.AreaOffice.models.Area;
 import com.cms.audit.api.Management.Office.AreaOffice.repository.AreaRepository;
 import com.cms.audit.api.Management.Office.BranchOffice.dto.BranchDTO;
@@ -21,7 +22,6 @@ import com.cms.audit.api.Management.Office.BranchOffice.dto.response.BranchInter
 import com.cms.audit.api.Management.Office.BranchOffice.models.Branch;
 import com.cms.audit.api.Management.Office.BranchOffice.repository.BranchRepository;
 import com.cms.audit.api.Management.Office.BranchOffice.repository.PagBranch;
-import com.cms.audit.api.common.response.GlobalResponse;
 
 import jakarta.transaction.Transactional;
 
@@ -38,9 +38,15 @@ public class BranchService {
     @Autowired
     private PagBranch pagBranch;
 
-    public GlobalResponse findAll(String name, int page, int size) {
+    public GlobalResponse findAll(String name, int page, int size, Long areaId) {
         try {
-            Page<Branch> response = pagBranch.findByNameContaining(name, PageRequest.of(page, size));
+            Page<Branch> response;
+            if (areaId == null) {
+                response = pagBranch.findByNameContaining(name, PageRequest.of(page, size));
+            } else {
+                response = pagBranch.findBranchByAreaId(areaId, PageRequest.of(page, size));
+
+            }
             if (response.isEmpty()) {
                 return GlobalResponse
                         .builder()
@@ -252,7 +258,7 @@ public class BranchService {
                     .id(branchDTO.getArea_id())
                     .build();
 
-            Branch level = new Branch(
+            Branch branch = new Branch(
                     null,
                     branchDTO.getName(),
                     new Date(),
@@ -260,7 +266,7 @@ public class BranchService {
                     0,
                     areaId);
 
-            Branch response = branchRepository.save(level);
+            Branch response = branchRepository.save(branch);
             if (response == null) {
                 return GlobalResponse
                         .builder()

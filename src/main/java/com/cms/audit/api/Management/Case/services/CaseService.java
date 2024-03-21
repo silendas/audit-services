@@ -11,12 +11,12 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import com.cms.audit.api.Common.response.GlobalResponse;
 import com.cms.audit.api.Management.Case.dto.CaseDTO;
 import com.cms.audit.api.Management.Case.dto.response.CaseInterface;
 import com.cms.audit.api.Management.Case.models.Case;
 import com.cms.audit.api.Management.Case.repository.CaseRepository;
 import com.cms.audit.api.Management.Case.repository.PagCase;
-import com.cms.audit.api.common.response.GlobalResponse;
 
 import jakarta.transaction.Transactional;
 

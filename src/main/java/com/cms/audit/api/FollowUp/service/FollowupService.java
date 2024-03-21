@@ -14,18 +14,18 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.cms.audit.api.Clarifications.models.Clarification;
+import com.cms.audit.api.Common.constant.FolderPath;
+import com.cms.audit.api.Common.constant.randomValueNumber;
+import com.cms.audit.api.Common.exception.ResourceNotFoundException;
+import com.cms.audit.api.Common.pdf.GeneratePdf;
+import com.cms.audit.api.Common.response.GlobalResponse;
+import com.cms.audit.api.Common.response.PDFResponse;
 import com.cms.audit.api.FollowUp.dto.FollowUpDTO;
 import com.cms.audit.api.FollowUp.models.EStatusFollowup;
 import com.cms.audit.api.FollowUp.models.FollowUp;
 import com.cms.audit.api.FollowUp.repository.FollowUpRepository;
 import com.cms.audit.api.FollowUp.repository.PagFollowup;
 import com.cms.audit.api.FollowUp.models.FollowUp;
-import com.cms.audit.api.common.constant.FolderPath;
-import com.cms.audit.api.common.constant.randomValueNumber;
-import com.cms.audit.api.common.exception.ResourceNotFoundException;
-import com.cms.audit.api.common.pdf.GeneratePdf;
-import com.cms.audit.api.common.response.GlobalResponse;
-import com.cms.audit.api.common.response.PDFResponse;
 
 import jakarta.transaction.Transactional;
 

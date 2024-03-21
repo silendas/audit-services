@@ -18,17 +18,17 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.cms.audit.api.Clarifications.models.Clarification;
 import com.cms.audit.api.Clarifications.repository.ClarificationRepository;
+import com.cms.audit.api.Common.constant.FolderPath;
+import com.cms.audit.api.Common.constant.randomValueNumber;
+import com.cms.audit.api.Common.exception.ResourceNotFoundException;
+import com.cms.audit.api.Common.pdf.GeneratePdf;
+import com.cms.audit.api.Common.response.GlobalResponse;
 import com.cms.audit.api.FollowUp.models.FollowUp;
 import com.cms.audit.api.Management.ReportType.models.ReportType;
 import com.cms.audit.api.Management.User.models.User;
 import com.cms.audit.api.NewsInspection.models.NewsInspection;
 import com.cms.audit.api.NewsInspection.repository.NewsInspectionRepository;
 import com.cms.audit.api.NewsInspection.repository.PagNewsInspection;
-import com.cms.audit.api.common.constant.FolderPath;
-import com.cms.audit.api.common.constant.randomValueNumber;
-import com.cms.audit.api.common.exception.ResourceNotFoundException;
-import com.cms.audit.api.common.pdf.GeneratePdf;
-import com.cms.audit.api.common.response.GlobalResponse;
 
 import jakarta.transaction.Transactional;
 

@@ -1,4 +1,4 @@
-package com.cms.audit.api.common.dto;
+package com.cms.audit.api.Common.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

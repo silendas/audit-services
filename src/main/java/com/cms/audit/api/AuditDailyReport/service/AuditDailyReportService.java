@@ -23,6 +23,9 @@ import com.cms.audit.api.Clarifications.dto.response.NumberClarificationInterfac
 import com.cms.audit.api.Clarifications.models.Clarification;
 import com.cms.audit.api.Clarifications.models.EStatusClarification;
 import com.cms.audit.api.Clarifications.repository.ClarificationRepository;
+import com.cms.audit.api.Common.constant.convertDateToRoman;
+import com.cms.audit.api.Common.exception.ResourceNotFoundException;
+import com.cms.audit.api.Common.response.GlobalResponse;
 import com.cms.audit.api.InspectionSchedule.models.EStatus;
 import com.cms.audit.api.InspectionSchedule.models.Schedule;
 import com.cms.audit.api.InspectionSchedule.repository.ScheduleRepository;
@@ -34,8 +37,6 @@ import com.cms.audit.api.Management.ReportType.models.ReportType;
 import com.cms.audit.api.Management.ReportType.repository.ReportTypeRepository;
 import com.cms.audit.api.Management.User.models.User;
 import com.cms.audit.api.Management.User.repository.UserRepository;
-import com.cms.audit.api.common.constant.convertDateToRoman;
-import com.cms.audit.api.common.response.GlobalResponse;
 
 import jakarta.transaction.Transactional;
 
@@ -67,47 +68,14 @@ public class AuditDailyReportService {
         @Autowired
         private pagAuditDailyReport pagAuditDailyReport;
 
-        public GlobalResponse get(int page, int size) {
+        public GlobalResponse get(int page, int size, Date startDate, Date endDate) {
                 try {
-                        Page<AuditDailyReport> response = pagAuditDailyReport.findAllLHA(PageRequest.of(page, size));
-                        if (response.isEmpty()) {
-                                return GlobalResponse
-                                                .builder()
-                                                .message("No Content")
-                                                .status(HttpStatus.OK)
-                                                .build();
+                        Page<AuditDailyReport> response;
+                        if(startDate == null || endDate == null){
+                                response = pagAuditDailyReport.findAllLHA(PageRequest.of(page, size));
+                        }else{
+                                response = pagAuditDailyReport.findLHAInDateRange(startDate, endDate, PageRequest.of(page, size));
                         }
-                        return GlobalResponse
-                                        .builder()
-                                        .message("Success")
-                                        .data(response)
-                                        .status(HttpStatus.OK)
-                                        .build();
-                } catch (ResponseStatusException e) {
-                        return GlobalResponse
-                                        .builder()
-                                        .error(e)
-                                        .status(HttpStatus.BAD_REQUEST)
-                                        .build();
-                } catch (DataException e) {
-                        return GlobalResponse
-                                        .builder()
-                                        .error(e)
-                                        .status(HttpStatus.UNPROCESSABLE_ENTITY)
-                                        .build();
-                } catch (Exception e) {
-                        return GlobalResponse
-                                        .builder()
-                                        .error(e)
-                                        .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                                        .build();
-                }
-        }
-
-        public GlobalResponse getByDateRange(Date start_date, Date end_date, int page, int size) {
-                try {
-                        Page<AuditDailyReport> response = pagAuditDailyReport.findLHAInDateRange(start_date, end_date,
-                                        PageRequest.of(page, size));
                         if (response.isEmpty()) {
                                 return GlobalResponse
                                                 .builder()
@@ -145,7 +113,7 @@ public class AuditDailyReportService {
         public GlobalResponse getById(Long id) {
                 try {
                         Optional<AuditDailyReport> response = auditDailyReportRepository.findOneByLHAId(id);
-                        if (response.isPresent()) {
+                        if (!response.isPresent()) {
                                 return GlobalResponse
                                                 .builder()
                                                 .message("No Content")
@@ -255,32 +223,12 @@ public class AuditDailyReportService {
                                                 .build();
                         }
                         if (getSchedule.get().getStart_date_realization() == null) {
-                                Branch branchIdSchedule = Branch.builder()
-                                                .id(getSchedule.get().getBranch().getId())
-                                                .build();
 
-                                User userIdSchedule = User.builder()
-                                                .id(getSchedule.get().getUser().getId())
-                                                .build();
+                                Schedule schedule = getSchedule.orElseThrow(()->new ResourceNotFoundException("Schedule not found"));
+                                schedule.setStart_date_realization(new Date());
+                                schedule.setStatus(EStatus.PROGRESS);
 
-                                Schedule schedule = new Schedule(
-                                                dto.getSchedule_id(),
-                                                userIdSchedule,
-                                                branchIdSchedule,
-                                                getSchedule.get().getDescription(),
-                                                getSchedule.get().getStart_date(),
-                                                getSchedule.get().getEnd_date(),
-                                                new Date(),
-                                                null,
-                                                EStatus.PROGRESS,
-                                                getSchedule.get().getCategory(),
-                                                0,
-                                                dto.getCreate_by(),
-                                                getSchedule.get().getCreatedBy(),
-                                                getSchedule.get().getCreated_at(),
-                                                new Date());
-
-                                Schedule responseSchedule = scheduleRepository.save(schedule);
+                                scheduleRepository.save(schedule);
 
                         }
 
@@ -347,7 +295,7 @@ public class AuditDailyReportService {
                                 reportNumber = Long.valueOf(1);
                         }
 
-                        String branchName = getUser.getBranch().getName();
+                        String branchName = getSchedule.get().getBranch().getName();
                         String initialName = getUser.getInitial_name();
                         String caseName = getCase.getCode();
                         String lvlCode = getUser.getLevel().getCode();
@@ -365,6 +313,7 @@ public class AuditDailyReportService {
                         Clarification clarification = new Clarification(
                                         null,
                                         userId,
+                                        getSchedule.get().getBranch(),
                                         setCaseId,
                                         setCaseCategoryId,
                                         setReportId,

@@ -17,7 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -28,9 +28,10 @@ import com.cms.audit.api.Clarifications.dto.GenerateCKDTO;
 import com.cms.audit.api.Clarifications.dto.IdentificationDTO;
 import com.cms.audit.api.Clarifications.models.Clarification;
 import com.cms.audit.api.Clarifications.service.ClarificationService;
-import com.cms.audit.api.common.constant.BasePath;
-import com.cms.audit.api.common.response.GlobalResponse;
-import com.cms.audit.api.common.response.ResponseEntittyHandler;
+import com.cms.audit.api.Common.constant.BasePath;
+import com.cms.audit.api.Common.response.GlobalResponse;
+import com.cms.audit.api.Common.response.ResponseEntittyHandler;
+
 import org.springframework.web.bind.annotation.GetMapping;
 
 @RestController
@@ -71,20 +72,20 @@ public class ClarificationController {
         HttpHeaders httpHeaders = new HttpHeaders();
 
         httpHeaders.setContentType(MediaType.valueOf("application/pdf"));
-        httpHeaders.set("Content-Disposition", "inline; filename=" + response.getFileName());
+        httpHeaders.set("Content-Disposition", "inline; filename=" + response.getFile_name());
 
         return new ResponseEntity<InputStreamResource>(isr, httpHeaders, HttpStatus.ACCEPTED);
     }
 
     @PostMapping("/{id}")
-    public ResponseEntity<Object> save(@ModelAttribute InputClarificationDTO dto, @PathVariable("id") Long id) {
+    public ResponseEntity<Object> save(@RequestBody InputClarificationDTO dto, @PathVariable("id") Long id) {
         GlobalResponse response = service.inputClarification(dto, id);
         return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(),
                 response.getError());
     }
 
     @PostMapping("/identification/{id}")
-    public ResponseEntity<Object> saveIdentification(@ModelAttribute IdentificationDTO dto,
+    public ResponseEntity<Object> saveIdentification(@RequestBody IdentificationDTO dto,
             @PathVariable("id") Long id) {
         GlobalResponse response = service.identificationClarification(dto, id);
         return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(),
@@ -92,7 +93,7 @@ public class ClarificationController {
     }
 
     @PostMapping("/generate")
-    public ResponseEntity<Object> generateNumber(@ModelAttribute GenerateCKDTO dto) {
+    public ResponseEntity<Object> generateNumber(@RequestBody GenerateCKDTO dto) {
         GlobalResponse response = service.generateCK(dto);
         return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(),
                 response.getError());

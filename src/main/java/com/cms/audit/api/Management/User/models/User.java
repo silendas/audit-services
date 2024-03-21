@@ -1,12 +1,15 @@
 package com.cms.audit.api.Management.User.models;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+import org.hibernate.annotations.Type;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.validation.annotation.Validated;
 
 import com.cms.audit.api.Management.Level.models.Level;
 import com.cms.audit.api.Management.Office.AreaOffice.models.Area;
@@ -15,13 +18,20 @@ import com.cms.audit.api.Management.Office.MainOffice.models.Main;
 import com.cms.audit.api.Management.Office.RegionOffice.models.Region;
 import com.cms.audit.api.Management.Role.models.Role;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderColumn;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import lombok.AllArgsConstructor;
@@ -33,6 +43,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Validated
 @Entity
 @Table(name = "users", uniqueConstraints = {
         @UniqueConstraint(columnNames = "email"),
@@ -48,7 +59,7 @@ public class User implements UserDetails {
     @ManyToOne
     @JoinColumn(name = "role_id")
     private Role role;
-    
+
     @ManyToOne
     @JoinColumn(name = "level_id")
     private Level level;
@@ -57,17 +68,41 @@ public class User implements UserDetails {
     @JoinColumn(name = "main_id", nullable = true)
     private Main main;
 
-    @ManyToOne
-    @JoinColumn(name = "region_id", nullable = true)
-    private Region region;
+    // @ManyToOne
+    // @JoinColumn(name = "region_id", nullable = true)
+    // private Region region;
 
-    @ManyToOne
-    @JoinColumn(name = "area_id", nullable = true)
-    private Area area;
+    @Column(name = "region_id",nullable = true)
+    private List<Long> regionId;
 
-    @ManyToOne
-    @JoinColumn(name = "branch_id", nullable = true)
-    private Branch branch;
+    // @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    // @JoinTable(name = "user_region",joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),inverseJoinColumns = @JoinColumn(name = "region_id",referencedColumnName = "id"))
+    // private List<Region> region = new ArrayList<>();
+
+    // @ManyToOne
+    // @JoinColumn(name = "area_id", nullable = true)
+    // private Area area;
+
+    // @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    // @JoinTable(name = "user_area",joinColumns = @JoinColumn(name = "user_id",referencedColumnName = "id"),inverseJoinColumns = @JoinColumn(name = "area_id",referencedColumnName = "id"))
+    // private List<Area> area = new ArrayList<>();
+
+    @Column(name = "area_id",nullable = true)
+    private List<Long> areaId;
+
+    // @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+    // private List<Branch> branch;
+
+    // @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    // @JoinTable(name = "user_branch",joinColumns = @JoinColumn(name = "user_id",referencedColumnName = "id"),inverseJoinColumns = @JoinColumn(name = "branch_id",referencedColumnName = "id"))
+    // private List<Branch> branch = new ArrayList<>();
+
+    @Column(name = "branch_id",nullable = true)
+    private List<Long> branchId;
+
+    // @ManyToOne
+    // @JoinColumn(name = "branch_id", nullable = true)
+    // private Branch branch;
 
     @Column(name = "email")
     private String email;
@@ -87,10 +122,10 @@ public class User implements UserDetails {
     @Column(name = "initial_name")
     private String initial_name;
 
-    @Column(name = "is_active",length = 2, nullable = true)
+    @Column(name = "is_active", length = 2, nullable = true)
     private Integer is_active;
 
-    @Column(name = "is_delete",length = 2, nullable = true)
+    @Column(name = "is_delete", length = 2, nullable = true)
     private Integer is_delete;
 
     @Column(name = "created_at")

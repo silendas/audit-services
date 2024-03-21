@@ -4,127 +4,103 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cms.audit.api.Common.constant.BasePath;
+import com.cms.audit.api.Common.response.GlobalResponse;
+import com.cms.audit.api.Common.response.ResponseEntittyHandler;
+import com.cms.audit.api.Config.Jwt.JwtService;
 import com.cms.audit.api.Management.User.dto.ChangePasswordDTO;
+import com.cms.audit.api.Management.User.dto.ChangeProfileDTO;
 import com.cms.audit.api.Management.User.dto.UserDTO;
+import com.cms.audit.api.Management.User.models.User;
 import com.cms.audit.api.Management.User.services.UserService;
-import com.cms.audit.api.common.constant.BasePath;
-import com.cms.audit.api.common.response.GlobalResponse;
-import com.cms.audit.api.common.response.ResponseEntittyHandler;
+
+import io.micrometer.common.lang.NonNull;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
+import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
+@Validated
 @RequestMapping(value = BasePath.BASE_PATH_USER)
 public class UserController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private JwtService jwtService;
+
     @GetMapping
     public ResponseEntity<Object> findAll(
+            @NonNull HttpServletRequest request,
             @RequestParam("page") Optional<Integer> page,
             @RequestParam("size") Optional<Integer> size) {
-        GlobalResponse response = userService.findAll(page.orElse(0), size.orElse(10));
-        if (response.getError() != null) {
-            return ResponseEntittyHandler.allHandler(null, null, response.getStatus(), response.getError());
-        }
-        return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(), null);
+        final String tokenHeader = request.getHeader("Authorization");
+        String jwtToken = tokenHeader.substring(7);
+        String username = jwtService.extractUsername(jwtToken);
+        GlobalResponse response = userService.findAll(page.orElse(0), size.orElse(10), username);
+        return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(),
+                response.getError());
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Object> findOne(@PathVariable("id") Long id) {
         GlobalResponse response = userService.findOne(id);
-        if (response.getError() != null) {
-            return ResponseEntittyHandler.allHandler(null, null, response.getStatus(), response.getError());
-        }
-        return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(), null);
+        return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(),
+                response.getError());
     }
 
-    @GetMapping("/{id}/main")
-    public ResponseEntity<Object> findOneByMainId(
-            @PathVariable("id") Long id,
-            @RequestParam("page") Optional<Integer> page,
-            @RequestParam("size") Optional<Integer> size) {
-        GlobalResponse response = userService.findOneByMainId(id, page.orElse(0), size.orElse(10));
-        if (response.getError() != null) {
-            return ResponseEntittyHandler.allHandler(null, null, response.getStatus(), response.getError());
-        }
-        return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(), null);
-    }
-
-    @GetMapping("/{id}/region")
-    public ResponseEntity<Object> findOneByRegionId(
-            @PathVariable("id") Long id,
-            @RequestParam("page") Optional<Integer> page,
-            @RequestParam("size") Optional<Integer> size) {
-        GlobalResponse response = userService.findOneByRegionId(id, page.orElse(0), size.orElse(10));
-        if (response.getError() != null) {
-            return ResponseEntittyHandler.allHandler(null, null, response.getStatus(), response.getError());
-        }
-        return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(), null);
-    }
-
-    @GetMapping("/{id}/area")
-    public ResponseEntity<Object> findOneByAreaId(@PathVariable("id") Long id,
-            @RequestParam("page") Optional<Integer> page,
-            @RequestParam("size") Optional<Integer> size) {
-        GlobalResponse response = userService.findOneByAreaId(id, page.orElse(0), size.orElse(10));
-        if (response.getError() != null) {
-            return ResponseEntittyHandler.allHandler(null, null, response.getStatus(), response.getError());
-        }
-        return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(), null);
-    }
-
-    @GetMapping("/{id}/branch")
-    public ResponseEntity<Object> findOneByBranchId(@PathVariable("id") Long id,
-            @RequestParam("page") Optional<Integer> page,
-            @RequestParam("size") Optional<Integer> size) {
-        GlobalResponse response = userService.findOneByBranchId(id, page.orElse(0), size.orElse(10));
-        if (response.getError() != null) {
-            return ResponseEntittyHandler.allHandler(null, null, response.getStatus(), response.getError());
-        }
-        return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(), null);
+    @GetMapping("/profile")
+    public ResponseEntity<Object> profile() {
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        GlobalResponse response = userService.findOne(user.getId());
+        return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(),
+                response.getError());
     }
 
     @PostMapping
-    public ResponseEntity<Object> save(@ModelAttribute UserDTO userDTO) {
+    public ResponseEntity<Object> save(@RequestBody UserDTO userDTO) {
         GlobalResponse response = userService.save(userDTO);
-        if (response.getError() != null) {
-            return ResponseEntittyHandler.allHandler(null, null, response.getStatus(), response.getError());
-        }
-        return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(), null);
+        return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(), response.getError());
+    }
+
+    @PatchMapping("/change-profile")
+    public ResponseEntity<Object> edit(
+            @NonNull HttpServletRequest request,
+            @Nullable @RequestBody ChangeProfileDTO userDTO) {
+        final String tokenHeader = request.getHeader("Authorization");
+        String jwtToken = tokenHeader.substring(7);
+        String username = jwtService.extractUsername(jwtToken);
+        GlobalResponse response = userService.changeProfile(userDTO, username);
+        return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(), response.getError());
+    }
+
+        @PatchMapping("/change-password")
+    public ResponseEntity<Object> changePassword(
+            @Nonnull HttpServletRequest request,
+            @RequestBody ChangePasswordDTO changePasswordDTO) {
+        final String tokenHeader = request.getHeader("Authorization");
+        String jwtToken = tokenHeader.substring(7);
+        String username = jwtService.extractUsername(jwtToken);
+        GlobalResponse response = userService.changePassword(changePasswordDTO, username);
+        return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(), response.getError());
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Object> editProfile(@ModelAttribute UserDTO userDTO, @PathVariable("id") Long id) {
+    public ResponseEntity<Object> editProfile(@RequestBody UserDTO userDTO, @PathVariable("id") Long id) {
         GlobalResponse response = userService.edit(userDTO, id);
-        if (response.getError() != null) {
-            return ResponseEntittyHandler.allHandler(null, null, response.getStatus(), response.getError());
-        }
-        return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(), null);
-    }
-
-    @PatchMapping("/change-password/{id}")
-    public ResponseEntity<Object> changePassword(@ModelAttribute ChangePasswordDTO changePasswordDTO,
-            @PathVariable("id") Long id) {
-        GlobalResponse response = userService.changePassword(changePasswordDTO, id);
-        if (response.getError() != null) {
-            return ResponseEntittyHandler.allHandler(null, null, response.getStatus(), response.getError());
-        }
-        return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(), null);
-    }
-
-    @PatchMapping("/change-profile/{id}")
-    public ResponseEntity<Object> edit(@ModelAttribute UserDTO userDTO, @PathVariable("id") Long id) {
-        GlobalResponse response = userService.changeProfile(userDTO, id);
         if (response.getError() != null) {
             return ResponseEntittyHandler.allHandler(null, null, response.getStatus(), response.getError());
         }

@@ -4,6 +4,7 @@ import java.util.Date;
 
 import com.cms.audit.api.Clarifications.models.Clarification;
 import com.cms.audit.api.Management.ReportType.models.ReportType;
+import com.cms.audit.api.Management.User.models.User;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -32,6 +33,20 @@ public class FollowUp {
     @ManyToOne
     @JoinColumn(name = "clarification_id")
     private Clarification clarification;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    @ManyToOne
+    @JoinColumn(name = "report_type_id")
+    private ReportType reportType;
+
+    @Column(name = "report_number")
+    private Long report_number;
+
+    @Column(name = "code")
+    private String code;
 
     @Column(name = "description")
     private String description;

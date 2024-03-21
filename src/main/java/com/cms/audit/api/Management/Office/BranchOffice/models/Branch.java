@@ -3,7 +3,6 @@ package com.cms.audit.api.Management.Office.BranchOffice.models;
 import java.util.Date;
 
 import com.cms.audit.api.Management.Office.AreaOffice.models.Area;
-import com.cms.audit.api.Management.User.models.User;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -39,7 +38,7 @@ public class Branch {
     @Column(name = "updated_at")
     private Date updated_at;
 
-    @Column(name = "is_delete",length = 2, nullable = true)
+    @Column(name = "is_delete", length = 2, nullable = true)
     private Integer is_delete;
 
     @ManyToOne

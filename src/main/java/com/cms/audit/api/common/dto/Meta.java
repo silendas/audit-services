@@ -1,4 +1,4 @@
-package com.cms.audit.api.common.dto;
+package com.cms.audit.api.Common.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
