@@ -1,10 +1,11 @@
 package com.cms.audit.api.Management.User.controller;
 
-import java.util.Optional;
+import java.util.*;
+
+import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,7 +13,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -21,15 +21,11 @@ import com.cms.audit.api.Common.constant.BasePath;
 import com.cms.audit.api.Common.response.GlobalResponse;
 import com.cms.audit.api.Common.response.ResponseEntittyHandler;
 import com.cms.audit.api.Config.Jwt.JwtService;
-import com.cms.audit.api.Management.User.dto.ChangePasswordDTO;
-import com.cms.audit.api.Management.User.dto.ChangeProfileDTO;
 import com.cms.audit.api.Management.User.dto.UserDTO;
-import com.cms.audit.api.Management.User.models.User;
 import com.cms.audit.api.Management.User.services.UserService;
 
 import io.micrometer.common.lang.NonNull;
 import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
@@ -62,44 +58,20 @@ public class UserController {
                 response.getError());
     }
 
-    @GetMapping("/profile")
-    public ResponseEntity<Object> profile() {
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        GlobalResponse response = userService.findOne(user.getId());
+    @PostMapping
+    public ResponseEntity<Object> save(
+            @RequestBody UserDTO userDTO) {
+        GlobalResponse response = userService.save(
+                userDTO
+        );
         return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(),
                 response.getError());
     }
 
-    @PostMapping
-    public ResponseEntity<Object> save(@RequestBody UserDTO userDTO) {
-        GlobalResponse response = userService.save(userDTO);
-        return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(), response.getError());
-    }
-
-    @PatchMapping("/change-profile")
-    public ResponseEntity<Object> edit(
-            @NonNull HttpServletRequest request,
-            @Nullable @RequestBody ChangeProfileDTO userDTO) {
-        final String tokenHeader = request.getHeader("Authorization");
-        String jwtToken = tokenHeader.substring(7);
-        String username = jwtService.extractUsername(jwtToken);
-        GlobalResponse response = userService.changeProfile(userDTO, username);
-        return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(), response.getError());
-    }
-
-        @PatchMapping("/change-password")
-    public ResponseEntity<Object> changePassword(
-            @Nonnull HttpServletRequest request,
-            @RequestBody ChangePasswordDTO changePasswordDTO) {
-        final String tokenHeader = request.getHeader("Authorization");
-        String jwtToken = tokenHeader.substring(7);
-        String username = jwtService.extractUsername(jwtToken);
-        GlobalResponse response = userService.changePassword(changePasswordDTO, username);
-        return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(), response.getError());
-    }
-
     @PutMapping("/{id}")
-    public ResponseEntity<Object> editProfile(@RequestBody UserDTO userDTO, @PathVariable("id") Long id) {
+    public ResponseEntity<Object> editProfile(
+            @RequestBody UserDTO userDTO,
+            @PathVariable("id") Long id) {
         GlobalResponse response = userService.edit(userDTO, id);
         if (response.getError() != null) {
             return ResponseEntittyHandler.allHandler(null, null, response.getStatus(), response.getError());

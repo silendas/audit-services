@@ -52,7 +52,7 @@ public class FollowUp {
     private String description;
 
     @Column(name = "file_name")
-    private String fileName;
+    private String filename;
 
     @Column(name = "file_path")
     private String filePath;

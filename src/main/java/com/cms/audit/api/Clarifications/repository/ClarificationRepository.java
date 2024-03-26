@@ -24,6 +24,6 @@ public interface ClarificationRepository extends JpaRepository<Clarification, Lo
     public List<Clarification> findClarificationInDateRange(@Param("start_date") Date start_date,
             @Param("end_date") Date end_date);
 
-    Optional<Clarification> findByFileName(String fileName);
+    Optional<Clarification> findByFilename(String filename);
 
 }

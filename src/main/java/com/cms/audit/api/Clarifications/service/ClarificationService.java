@@ -322,10 +322,12 @@ public class ClarificationService {
 
                         Clarification response = repository.save(clarification);
 
-                        PDFResponse generatePDF = GeneratePdf.generateClarificationPDF(response);
+                        String formulir = "FM/"+ response.getCases().getCode() + "-" + response.getReport_number();
+
+                        PDFResponse generatePDF = GeneratePdf.generateClarificationPDF(response, formulir);
 
                         Clarification clarification2 = response;
-                        clarification2.setFile_name(generatePDF.fileName);
+                        clarification2.setFilename(generatePDF.fileName);
                         clarification2.setFile_path(generatePDF.filePath);
 
                         repository.save(clarification2);
@@ -381,14 +383,14 @@ public class ClarificationService {
                                         getBefore.get().getLocation(),
                                         getBefore.get().getAuditee(),
                                         getBefore.get().getAuditee_leader(),
-                                        getBefore.get().getFile_name(),
+                                        getBefore.get().getFilename(),
                                         getBefore.get().getFile_path(),
                                         getBefore.get().getDescription(),
                                         dto.getRecommendation(),
                                         getBefore.get().getPriority(),
                                         dto.getEvaluation(),
                                         dto.getIs_followup(),
-                                        EStatusClarification.IDENTIFICATION,
+                                        EStatusClarification.DONE,
                                         getBefore.get().getCreated_at(),
                                         new Date());
 
@@ -572,7 +574,7 @@ public class ClarificationService {
                                         getClarification.get().getPriority(),
                                         getClarification.get().getEvaluation(),
                                         getClarification.get().getIs_follow_up(),
-                                        EStatusClarification.UPLOAD,
+                                        EStatusClarification.IDENTIFICATION,
                                         new Date(),
                                         new Date());
                         repository.save(clarification);
@@ -606,7 +608,7 @@ public class ClarificationService {
         }
 
         public Clarification downloadFile(String fileName) throws java.io.IOException, IOFileUploadException {
-                Clarification response = repository.findByFileName(fileName)
+                Clarification response = repository.findByFilename(fileName)
                                 .orElseThrow(() -> new ResourceNotFoundException("File not found with name: " + fileName ));
                 return response;
         }

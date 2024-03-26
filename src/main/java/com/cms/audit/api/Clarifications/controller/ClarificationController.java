@@ -49,8 +49,7 @@ public class ClarificationController {
             @RequestParam("page") Optional<Integer> page,
             @RequestParam("size") Optional<Integer> size) {
         GlobalResponse response = service.getAll(page.orElse(0), size.orElse(10), start_date.orElse(null), end_date.orElse(null));
-        return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(),
-                response.getError());
+        return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(), response.getError());
     }
 
     @GetMapping("/{id}")
@@ -72,7 +71,24 @@ public class ClarificationController {
         HttpHeaders httpHeaders = new HttpHeaders();
 
         httpHeaders.setContentType(MediaType.valueOf("application/pdf"));
-        httpHeaders.set("Content-Disposition", "inline; filename=" + response.getFile_name());
+        httpHeaders.set("Content-Disposition", "inline; filename=" + response.getFilename());
+
+        return new ResponseEntity<InputStreamResource>(isr, httpHeaders, HttpStatus.ACCEPTED);
+    }
+
+    @GetMapping("/download/{fileName}")
+    public ResponseEntity<InputStreamResource> download(@PathVariable("fileName") String fileName)
+            throws IOException {
+        Clarification response = service.downloadFile(fileName);
+        String path = response.getFile_path();
+        File file = new File(path);
+        InputStream inputStream = new FileInputStream(file);
+        InputStreamResource isr = new InputStreamResource(inputStream);
+
+        HttpHeaders httpHeaders = new HttpHeaders();
+
+        httpHeaders.setContentType(MediaType.valueOf("application/pdf"));
+        httpHeaders.set("Content-Disposition", "attachment; filename=" + response.getFilename());
 
         return new ResponseEntity<InputStreamResource>(isr, httpHeaders, HttpStatus.ACCEPTED);
     }
@@ -99,7 +115,7 @@ public class ClarificationController {
                 response.getError());
     }
 
-    @PostMapping(value = "/file/{id}")
+    @PostMapping(value = "/upload/{id}")
     public ResponseEntity<Object> upload(@RequestParam(value = "file", required = false) MultipartFile file,
             @PathVariable("id") Long id) {
         GlobalResponse response = service.uploadFile(file, id);

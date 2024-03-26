@@ -1,28 +1,14 @@
 package com.cms.audit.api.Management.User.dto;
 
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
 
-import org.springframework.validation.annotation.Validated;
+import javax.validation.constraints.Size;
 
-import com.cms.audit.api.Management.Office.RegionOffice.models.Region;
-
-import jakarta.annotation.Nullable;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.Null;
-import jakarta.validation.constraints.Size;
 import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
 
+//@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 @Data
-@ToString
-@Setter
-@Getter
-@Valid
-@Validated
-@NoArgsConstructor
 public class UserDTO {
     private String email;
     private String nip;
@@ -33,11 +19,9 @@ public class UserDTO {
     private String initial_name;
     private Long role_id;
     private Long level_id;
-    private Long main_id;
-    @Nullable
-    private List<Long> region_id;
-    @Nullable
-    private List<Long> area_id;
-    @Nullable
-    private List<Long> branch_id;
+    private Optional<Long> main_id = null;
+    private Optional<List<Long>> region_id = null;
+    private Optional<List<Long>> area_id = null;
+    private Optional<List<Long>> branch_id = null;
+    
 }

@@ -10,7 +10,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import com.cms.audit.api.Common.response.GlobalResponse;
 import com.cms.audit.api.Management.Case.models.Case;
@@ -20,8 +19,6 @@ import com.cms.audit.api.Management.CaseCategory.dto.response.CaseCategoryInterf
 import com.cms.audit.api.Management.CaseCategory.models.CaseCategory;
 import com.cms.audit.api.Management.CaseCategory.repository.CaseCategoryRepository;
 import com.cms.audit.api.Management.CaseCategory.repository.PagCaseCategory;
-import com.cms.audit.api.Management.Office.AreaOffice.models.Area;
-import com.cms.audit.api.Management.Office.BranchOffice.models.Branch;
 
 import jakarta.transaction.Transactional;
 
@@ -38,13 +35,21 @@ public class CaseCategoryService {
     @Autowired
     private CaseRepository caseRepository;
 
-    public GlobalResponse findAll(String name, int page, int size) {
+    public GlobalResponse findAll(Long caseId,String name, int page, int size) {
         try {
-            Page<CaseCategory> response = pagCaseCategory.findByNameContaining(name, PageRequest.of(page, size));
+            if(caseId != null){
+                return findOneByCasesId(caseId, page, size);
+            }
+            Page<CaseCategory> response = null;
+            if(name!=null){
+                response = pagCaseCategory.findByNameContaining(name, PageRequest.of(page, size));
+            }else{
+                response = pagCaseCategory.findAllCC(PageRequest.of(page, size));
+            }
             if (response.isEmpty()) {
                 return GlobalResponse
                         .builder()
-                        .message("Not Content")
+                        .message("No Content")
                         .status(HttpStatus.OK)
                         .build();
             }
@@ -144,7 +149,7 @@ public class CaseCategoryService {
                 .status(HttpStatus.OK)
                 .build();
         }
-            Page<CaseCategory> response = pagCaseCategory.findByCases(set.get(), PageRequest.of(page, size));
+            Page<CaseCategory> response = pagCaseCategory.findByCases(set.get().getId(), PageRequest.of(page, size));
             if (response.isEmpty()) {
                 return GlobalResponse
                         .builder()
@@ -256,7 +261,7 @@ public class CaseCategoryService {
 
             Case caseId = Case
                     .builder()
-                    .id(caseCategoryDTO.getCase_id())
+                    .id(caseCategoryGet.getCases().getId())
                     .build();
 
             CaseCategory caseCategoryEntity = new CaseCategory(

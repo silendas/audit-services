@@ -26,6 +26,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByEmail(String email);
 
     Optional<User> findByUsername(String username);
+
+    List<User> findByFullnameLike(String fullname);
     
     @Query(value = "SELECT u.id, u.role_id, u.level_id, u.nip, u.fullname, u.initial_name, u.email, u.username, u.password, u.is_active, u.created_at,u.updated_at FROM users u", nativeQuery = true)
     List<UserProfileInterface> findSpecificUser();

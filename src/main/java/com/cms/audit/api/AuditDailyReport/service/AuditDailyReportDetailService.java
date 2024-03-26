@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -20,6 +21,7 @@ import com.cms.audit.api.AuditDailyReport.repository.PagAuditDailyReportDetail;
 import com.cms.audit.api.Common.response.GlobalResponse;
 import com.cms.audit.api.Management.Case.models.Case;
 import com.cms.audit.api.Management.CaseCategory.models.CaseCategory;
+import com.cms.audit.api.Management.User.models.User;
 
 import jakarta.transaction.Transactional;
 
@@ -32,9 +34,14 @@ public class AuditDailyReportDetailService {
     @Autowired
     private PagAuditDailyReportDetail pag;
 
-    public GlobalResponse get(int page, int size) {
+    public GlobalResponse get(int page, int size, Long lhaId) {
         try {
-            Page<AuditDailyReportDetail> response = pag.findAllLHADetail(PageRequest.of(page, size));
+            Page<AuditDailyReportDetail> response;
+            if (lhaId == null) {
+                response = pag.findAllLHADetail(PageRequest.of(page, size));
+            } else {
+                response = pag.findByLHAId(lhaId, PageRequest.of(page, size));
+            }
             if (response.isEmpty()) {
                 return GlobalResponse
                         .builder()
@@ -177,8 +184,9 @@ public class AuditDailyReportDetailService {
 
     public GlobalResponse save(AuditDailyReportDetailDTO dto) {
         try {
+            User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-            AuditDailyReport setId = AuditDailyReport.builder().id(dto.getAudit_daily_report_Id()).build();
+            AuditDailyReport setId = AuditDailyReport.builder().id(dto.getAudit_daily_report_id()).build();
             Case setCaseId = Case.builder().id(dto.getCase_id()).build();
             CaseCategory setCCId = CaseCategory.builder().id(dto.getCase_category_id()).build();
 
@@ -191,9 +199,10 @@ public class AuditDailyReportDetailService {
                     dto.getSuggestion(),
                     dto.getTemporary_recommendations(),
                     dto.getPermanent_recommendations(),
+                    dto.getIs_research(),
                     0,
-                    dto.getCreate_by(),
-                    dto.getCreate_by(),
+                    user.getId(),
+                    user.getId(),
                     new Date(),
                     new Date());
 
@@ -226,6 +235,8 @@ public class AuditDailyReportDetailService {
 
     public GlobalResponse edit(EditAuditDailyReportDetailDTO dto, Long id) {
         try {
+            User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
             Optional<AuditDailyReportDetail> getBefore = repository.findById(id);
             if (!getBefore.isPresent()) {
                 return GlobalResponse
@@ -247,9 +258,10 @@ public class AuditDailyReportDetailService {
                     dto.getSuggestion(),
                     dto.getTemporary_recommendations(),
                     dto.getPermanent_recommendations(),
+                    dto.getIs_research(),
                     0,
                     getBefore.get().getCreated_by(),
-                    dto.getUpdate_by(),
+                    user.getId(),
                     getBefore.get().getCreated_at(),
                     new Date());
 
@@ -282,6 +294,8 @@ public class AuditDailyReportDetailService {
 
     public GlobalResponse delete(Long id) {
         try {
+            User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
             Optional<AuditDailyReportDetail> getBefore = repository.findById(id);
             if (!getBefore.isPresent()) {
                 return GlobalResponse
@@ -291,23 +305,10 @@ public class AuditDailyReportDetailService {
                         .build();
             }
 
-            Case setCaseId = Case.builder().id(getBefore.get().getCases().getId()).build();
-            CaseCategory setCCId = CaseCategory.builder().id(getBefore.get().getCaseCategory().getId()).build();
-
-            AuditDailyReportDetail auditDailyReport = new AuditDailyReportDetail(
-                    id,
-                    getBefore.get().getAuditDailyReport(),
-                    setCaseId,
-                    setCCId,
-                    getBefore.get().getDescription(),
-                    getBefore.get().getSuggestion(),
-                    getBefore.get().getTemporary_recommendations(),
-                    getBefore.get().getPermanent_recommendations(),
-                    1,
-                    getBefore.get().getCreated_by(),
-                    getBefore.get().getUpdated_by(),
-                    getBefore.get().getCreated_at(),
-                    new Date());
+            AuditDailyReportDetail auditDailyReport = getBefore.orElse(null);
+            auditDailyReport.setIs_delete(1);
+            auditDailyReport.setUpdated_by(user.getId());
+            auditDailyReport.setUpdate_at(new Date());
 
             AuditDailyReportDetail response = repository.save(auditDailyReport);
 

@@ -16,10 +16,10 @@ public interface AuditDailyReportRepository extends JpaRepository<AuditDailyRepo
     @Query(value = "SELECT * FROM audit_daily_report u WHERE u.created_at BETWEEN CURRENT_DATE AND CURRENT_TIMESTAMP AND u.schedule_id = :scheduleId AND u.is_delete <> 1;", nativeQuery = true)
     List<AuditDailyReport> findByCurrentDay(@Param("scheduleId") Long id);
 
-    @Query(value = "SELECT * FROM audit_daily_report u WHERE u.schedule_id = :id AND u.is_delete <> 1", nativeQuery = true)
+    @Query(value = "SELECT * FROM audit_daily_report u WHERE u.schedule_id = :id AND u.is_delete <> 1;", nativeQuery = true)
     List<AuditDailyReport> findByScheduleId(@Param("id") Long id);
 
-    @Query(value = "SELECT * FROM audit_daily_report u WHERE u.created_at BETWEEN :start_date AND :end_date ", nativeQuery = true)
+    @Query(value = "SELECT * FROM audit_daily_report u WHERE u.created_at BETWEEN :start_date AND :end_date;", nativeQuery = true)
     public List<AuditDailyReport> findLHAInDateRange(@Param("start_date") Date start_date,
             @Param("end_date") Date end_date);
 

@@ -21,6 +21,8 @@ import com.cms.audit.api.Common.constant.FolderPath;
 import com.cms.audit.api.Common.constant.randomValueNumber;
 import com.cms.audit.api.Common.exception.ResourceNotFoundException;
 import com.cms.audit.api.Common.response.GlobalResponse;
+import com.cms.audit.api.Flag.model.Flag;
+import com.cms.audit.api.Flag.repository.FlagRepo;
 import com.cms.audit.api.InspectionSchedule.models.EStatus;
 import com.cms.audit.api.InspectionSchedule.models.Schedule;
 import com.cms.audit.api.InspectionSchedule.repository.ScheduleRepository;
@@ -43,9 +45,12 @@ public class AuditWorkingPaperService {
 
     private final String FOLDER_PATH = FolderPath.FOLDER_PATH_UPLOAD_WORKING_PAPER;
 
-    public GlobalResponse getAll(int page, int size, Date start_date, Date end_date) {
+    public GlobalResponse getAll(Long schedule_id, int page, int size, Date start_date, Date end_date) {
         try {
             Page<AuditWorkingPaper> response;
+            if (schedule_id != null) {
+                return GlobalResponse.builder().data(repository.findByScheduleId(schedule_id)).message("Success").status(HttpStatus.OK).build();
+            }
             if (start_date == null || end_date == null) {
                 response = pag.findAll(PageRequest.of(page, size));
             } else {
@@ -81,7 +86,8 @@ public class AuditWorkingPaperService {
 
     public GlobalResponse getOneById(Long id) {
         try {
-            AuditWorkingPaper response = repository.findById(id).orElseThrow(()-> new ResourceNotFoundException("LHA with id: "+id+" is undefined"));
+            AuditWorkingPaper response = repository.findById(id)
+                    .orElseThrow(() -> new ResourceNotFoundException("LHA with id: " + id + " is undefined"));
             return GlobalResponse
                     .builder()
                     .message("Success")
@@ -118,9 +124,9 @@ public class AuditWorkingPaperService {
             kka.setSchedule(getSchedule);
             kka.setStart_date(getSchedule.getStart_date());
             kka.setEnd_date(new Date());
-            kka.setFileName(fileName);
+            kka.setFilename(fileName);
             kka.setFile_path(path);
-            kka.setIsDelete(0);
+            kka.setIs_delete(0);
             kka.setCreated_by(getSchedule.getCreatedBy());
             kka.setCreated_at(new Date());
 
@@ -161,7 +167,7 @@ public class AuditWorkingPaperService {
     }
 
     public AuditWorkingPaper downloadFile(String fileName) throws java.io.IOException, IOFileUploadException {
-        AuditWorkingPaper response = repository.findByFileName(fileName)
+        AuditWorkingPaper response = repository.findByFilename(fileName)
                 .orElseThrow(() -> new ResourceNotFoundException("File not found with name: " + fileName));
         return response;
     }

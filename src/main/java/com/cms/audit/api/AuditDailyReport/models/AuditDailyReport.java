@@ -46,16 +46,16 @@ public class AuditDailyReport {
     private User user;
 
     @Column(name = "is_research",length = 2)
-    private Long isResearch;
+    private Integer is_research;
 
     @Column(name = "is_delete", length = 2)
-    private Integer isDelete;
+    private Integer is_delete;
 
     @Column(name = "created_by")
-    private String created_by;
+    private Long created_by;
 
     @Column(name = "updated_by")
-    private String updated_by;
+    private Long updated_by;
     
     @Column(name = "created_at")
     private Date created_at;

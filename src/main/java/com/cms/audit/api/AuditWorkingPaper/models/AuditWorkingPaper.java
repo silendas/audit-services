@@ -52,13 +52,13 @@ public class AuditWorkingPaper {
     private Date end_date;
 
     @Column(name = "file_name")
-    private String fileName;
+    private String filename;
 
     @Column(name = "file_path")
     private String file_path;
 
     @Column(name = "is_delete", length = 2)
-    private Integer isDelete;
+    private Integer is_delete;
 
     @Column(name = "created_by")
     private Long created_by;    

@@ -97,7 +97,7 @@ public class FollowupService {
 
             FollowUp followUp = get;
             followUp.setDescription(dto.getDescription());
-            followUp.setFileName(null);
+            followUp.setFilename(null);
             followUp.setFilePath(null);
             followUp.setIsPenalty(dto.getIs_penalty());
             followUp.setStatus(EStatusFollowup.PROGRESS);
@@ -107,7 +107,7 @@ public class FollowupService {
             PDFResponse generate = GeneratePdf.generateFollowUpPDF(response1);
 
             FollowUp edit = response1;
-            edit.setFileName(generate.getFileName());
+            edit.setFilename(generate.getFileName());
             edit.setFilePath(generate.getFilePath());
 
             FollowUp resFollowUp = repository.save(edit);
@@ -134,7 +134,7 @@ public class FollowupService {
             String filePath = path;
 
             FollowUp followUp = getFollowUp;
-            followUp.setFileName(fileName);
+            followUp.setFilename(fileName);
             followUp.setFilePath(filePath);
 
             repository.save(followUp);
@@ -168,7 +168,7 @@ public class FollowupService {
     }
 
     public FollowUp downloadFile(String fileName) throws java.io.IOException, IOFileUploadException {
-        FollowUp response = repository.findByFileName(fileName).orElseThrow(() -> new ResourceNotFoundException("File not found with name: " + fileName));
+        FollowUp response = repository.findByFilename(fileName).orElseThrow(() -> new ResourceNotFoundException("File not found with name: " + fileName));
         return response;
     }
 }

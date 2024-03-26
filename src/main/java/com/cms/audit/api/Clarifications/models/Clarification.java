@@ -81,7 +81,7 @@ public class Clarification {
     private String auditee_leader;
 
     @Column(name = "file_name")
-    private String file_name;
+    private String filename;
 
     @Column(name = "file_path")
     private String file_path;

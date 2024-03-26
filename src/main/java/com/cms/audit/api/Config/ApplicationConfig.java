@@ -2,6 +2,7 @@ package com.cms.audit.api.Config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -10,9 +11,9 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.multipart.MultipartResolver;
 
 import com.cms.audit.api.Management.User.repository.UserRepository;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 //import com.cms.audit.config.jwt.JwtBlacklist;
 
@@ -47,6 +48,13 @@ public class ApplicationConfig {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
+    // @Bean
+    // public Jackson2ObjectMapperBuilder jacksonBuilder() {
+    //     Jackson2ObjectMapperBuilder builder = new Jackson2ObjectMapperBuilder();
+    //     builder.serializationInclusion(JsonInclude.Include.NON_NULL);
+    //     return builder;
+    // }
 
     // @Bean
     // public JwtBlacklist jwtBlacklist(){

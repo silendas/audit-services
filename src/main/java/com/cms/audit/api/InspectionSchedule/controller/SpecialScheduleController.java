@@ -1,7 +1,6 @@
 package com.cms.audit.api.InspectionSchedule.controller;
 
-import java.util.Date;
-import java.util.Optional;
+import java.util.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -15,7 +14,7 @@ import com.cms.audit.api.Common.response.GlobalResponse;
 import com.cms.audit.api.Common.response.ResponseEntittyHandler;
 import com.cms.audit.api.Config.Jwt.JwtService;
 import com.cms.audit.api.InspectionSchedule.dto.EditScheduleDTO;
-import com.cms.audit.api.InspectionSchedule.dto.ScheduleDTO;
+import com.cms.audit.api.InspectionSchedule.dto.ScheduleRequest;
 import com.cms.audit.api.InspectionSchedule.models.ECategory;
 import com.cms.audit.api.InspectionSchedule.service.ScheduleService;
 
@@ -43,13 +42,14 @@ public class SpecialScheduleController {
 
     @GetMapping
     public ResponseEntity<Object> getAll(
-            @RequestParam(required = false) Optional<Long> user_id,
+            @RequestParam("branch_id") Optional<Long> branch_id,
+            @RequestParam("name") Optional<String> name,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Optional<Date> start_date,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Optional<Date> end_date,
             @RequestParam("page") Optional<Integer> page,
             @RequestParam("size") Optional<Integer> size) {
-        GlobalResponse response = scheduleService.getSpecialSchedule(user_id.orElse(null), page.orElse(0),
-                size.orElse(10), start_date.orElse(null), end_date.orElse(null));
+        GlobalResponse response = scheduleService.getSpecialSchedule(branch_id.orElse(null),name.orElse(null),page.orElse(0), size.orElse(10),
+                start_date.orElse(null), end_date.orElse(null));
         return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(), null);
     }
 
@@ -59,32 +59,8 @@ public class SpecialScheduleController {
         return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(), null);
     }
 
-    @GetMapping("/{id}/user")
-    public ResponseEntity<Object> getByUserId(
-            @PathVariable("id") Long id,
-            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Optional<Date> start_date,
-            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Optional<Date> end_date,
-            @RequestParam("page") Optional<Integer> page,
-            @RequestParam("size") Optional<Integer> size) {
-        GlobalResponse response = scheduleService.getByUserId(id, "SPECIAL", page.orElse(0), size.orElse(10),
-                start_date.orElse(null), end_date.orElse(null));
-        return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(), null);
-    }
-
-    @GetMapping("/{id}/region")
-    public ResponseEntity<Object> getByRegionId(
-            @PathVariable("id") Long id,
-            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Optional<Date> start_date,
-            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Optional<Date> end_date,
-            @RequestParam("page") Optional<Integer> page,
-            @RequestParam("size") Optional<Integer> size) {
-        GlobalResponse response = scheduleService.getByRegionId(id, "SPECIAL", page.orElse(0), size.orElse(10),
-                start_date.orElse(null), end_date.orElse(null));
-        return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(), null);
-    }
-
     @PostMapping
-    public ResponseEntity<Object> add(@RequestBody ScheduleDTO scheduleDTO,@Nonnull HttpServletRequest request) {
+    public ResponseEntity<Object> add(@RequestBody ScheduleRequest scheduleDTO, @Nonnull HttpServletRequest request) {
         final String tokenHeader = request.getHeader("Authorization");
         String jwtToken = tokenHeader.substring(7);
         String username = jwtService.extractUsername(jwtToken);
@@ -93,20 +69,21 @@ public class SpecialScheduleController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Object> put(@RequestBody EditScheduleDTO scheduleDTO, @PathVariable("id") Long id,@Nonnull HttpServletRequest request) {
+    public ResponseEntity<Object> put(@RequestBody EditScheduleDTO scheduleDTO, @PathVariable("id") Long id,
+            @Nonnull HttpServletRequest request) {
         final String tokenHeader = request.getHeader("Authorization");
         String jwtToken = tokenHeader.substring(7);
         String username = jwtService.extractUsername(jwtToken);
-        GlobalResponse response = scheduleService.editSchedule(scheduleDTO, id, ECategory.SPECIAL,username);
+        GlobalResponse response = scheduleService.editSchedule(scheduleDTO, id, ECategory.SPECIAL, username);
         return ResponseEntittyHandler.allHandler(null, response.getMessage(), response.getStatus(), null);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Object> delete(@PathVariable("id") Long id,@Nonnull HttpServletRequest request) {
+    public ResponseEntity<Object> delete(@PathVariable("id") Long id, @Nonnull HttpServletRequest request) {
         final String tokenHeader = request.getHeader("Authorization");
         String jwtToken = tokenHeader.substring(7);
         String username = jwtService.extractUsername(jwtToken);
-        GlobalResponse response = scheduleService.delete(id,username);
+        GlobalResponse response = scheduleService.delete(id, username);
         return ResponseEntittyHandler.allHandler(null, response.getMessage(), response.getStatus(), null);
     }
 

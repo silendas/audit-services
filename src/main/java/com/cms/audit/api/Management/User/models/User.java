@@ -45,10 +45,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Validated
 @Entity
-@Table(name = "users", uniqueConstraints = {
-        @UniqueConstraint(columnNames = "email"),
-        @UniqueConstraint(columnNames = "username")
-})
+@Table(name = "users")
 public class User implements UserDetails {
 
     @Id

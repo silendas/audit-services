@@ -6,13 +6,14 @@ import java.util.List;
 import java.util.Optional;
 
 import org.hibernate.exception.DataException;
-import org.hibernate.mapping.Array;
 import org.hibernate.tool.schema.spi.SqlScriptException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -38,6 +39,7 @@ import com.cms.audit.api.Management.User.dto.response.UserResponse;
 import com.cms.audit.api.Management.User.models.User;
 import com.cms.audit.api.Management.User.repository.PagUser;
 import com.cms.audit.api.Management.User.repository.UserRepository;
+import com.itextpdf.io.IOException;
 
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
@@ -99,7 +101,6 @@ public class UserService {
                                                 for (int u = 0; u < userAgain.size(); u++) {
                                                         if (userAgain.get(u).getRegionId().isEmpty()) {
                                                                 if (!userAgain.get(u).getBranchId().isEmpty()) {
-                                                                        Long lastAgain = null;
                                                                         for (int e = 0; e < userAgain.get(u)
                                                                                         .getBranchId().size(); e++) {
                                                                                 Branch branchAgain = branchRepository
@@ -143,12 +144,24 @@ public class UserService {
                                         .data(response)
                                         .status(HttpStatus.OK)
                                         .build();
+                } catch (DataException e) {
+                        return GlobalResponse
+                                        .builder()
+                                        .error(e)
+                                        .status(HttpStatus.BAD_REQUEST)
+                                        .build();
+                } catch (IOException e) {
+                        return GlobalResponse
+                                        .builder()
+                                        .error(e)
+                                        .status(HttpStatus.BAD_REQUEST)
+                                        .build();
                 } catch (Exception e) {
                         return GlobalResponse
-                        .builder()
-                        .error(e)
-                        .status(HttpStatus.BAD_REQUEST)
-                        .build();
+                                        .builder()
+                                        .error(e)
+                                        .status(HttpStatus.BAD_REQUEST)
+                                        .build();
                 }
         }
 
@@ -191,7 +204,6 @@ public class UserService {
                         user.setBranch(branch);
                         user.setEmail(response.get().getEmail());
                         user.setUsername(response.get().getUsername());
-                        user.setPassword(response.get().getPassword());
                         user.setFullname(response.get().getFullname());
                         user.setInitial_name(response.get().getInitial_name());
                         user.setNip(response.get().getNip());
@@ -452,7 +464,12 @@ public class UserService {
         // }
         // }
 
-        public GlobalResponse save(@Valid UserDTO userDTO) {
+        public GlobalResponse save(
+                        @Valid UserDTO userDTO
+        // List<Long> regionId,
+        // List<Long> areaId,
+        // List<Long> branchId
+        ) {
                 try {
                         Level levelId = Level.builder()
                                         .id(userDTO.getLevel_id())
@@ -462,44 +479,56 @@ public class UserService {
                                         .id(userDTO.getRole_id())
                                         .build();
 
-                        Main mainId = Main.builder()
-                                        .id(userDTO.getMain_id())
-                                        .build();
+                        Main mainId = new Main();
+                        if (userDTO.getMain_id() != null) {
+                                mainId = Main.builder()
+                                                .id(userDTO.getMain_id().get())
+                                                .build();
+                        } else {
+                                mainId = null;
+                        }
 
+                        System.out.println("Sampe sini 1");
                         List<Long> region = new ArrayList<>();
-                        if (!userDTO.getRegion_id().isEmpty() || userDTO.getRegion_id() != null) {
-                                for (int i = 0; i < userDTO.getRegion_id().size(); i++) {
-                                        Region getRegion = regionRepository.findById(userDTO.getRegion_id().get(i))
+                        if (userDTO.getRegion_id() != null) {
+                                for (int i = 0; i < userDTO.getRegion_id().get().size(); i++) {
+                                        Region getRegion = regionRepository
+                                                        .findById(userDTO.getRegion_id().get().get(i))
                                                         .orElseThrow(() -> new ResourceNotFoundException(
                                                                         "Region not found"));
-                                        region.add(getRegion.getId());
+                                        if (getRegion != null) {
+                                                region.add(getRegion.getId());
+                                        }
                                 }
-                        } else {
-                                region = null;
                         }
-
+                        System.out.println("Sampe sini 2");
                         List<Long> area = new ArrayList<>();
-                        if (!userDTO.getArea_id().isEmpty() || userDTO.getArea_id() != null) {
-                                for (int i = 0; i < userDTO.getArea_id().size(); i++) {
-                                        Area getArea = areaRepository.findById(userDTO.getArea_id().get(i)).orElseThrow(
-                                                        () -> new ResourceNotFoundException("Area not found"));
-                                        area.add(getArea.getId());
+                        if (userDTO.getArea_id() != null) {
+                                for (int i = 0; i < userDTO.getArea_id().get().size(); i++) {
+                                        Area getArea = areaRepository
+                                                        .findById(userDTO.getArea_id().get().get(i))
+                                                        .orElseThrow(
+                                                                        () -> new ResourceNotFoundException(
+                                                                                        "Area not found"));
+                                        if (getArea != null) {
+                                                area.add(getArea.getId());
+                                        }
                                 }
-                        } else {
-                                area = null;
                         }
-
+                        System.out.println("Sampe sini 3");
                         List<Long> branch = new ArrayList<>();
-                        if (!userDTO.getBranch_id().isEmpty() || userDTO.getBranch_id() != null) {
-                                for (int i = 0; i < userDTO.getBranch_id().size(); i++) {
-                                        Branch getBranch = branchRepository.findById(userDTO.getBranch_id().get(i))
+                        if (userDTO.getBranch_id() != null) {
+                                for (int i = 0; i < userDTO.getBranch_id().get().size(); i++) {
+                                        Branch getBranch = branchRepository
+                                                        .findById(userDTO.getBranch_id().get().get(i))
                                                         .orElseThrow(() -> new ResourceNotFoundException(
                                                                         "Branch not found"));
-                                        branch.add(getBranch.getId());
+                                        if (getBranch != null) {
+                                                branch.add(getBranch.getId());
+                                        }
                                 }
-                        } else {
-                                branch = null;
                         }
+                        System.out.println("Sampe sini 4");
 
                         User user = new User(
                                         null,
@@ -520,9 +549,26 @@ public class UserService {
                                         new Date(),
                                         new Date());
 
-                        User response = userRepository.save(user);
-                        if (response == null) {
-                                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Bad Request");
+                        try {
+                                Optional<User> checkEmail = userRepository.findByEmail(userDTO.getEmail());
+                                Optional<User> checkUsername = userRepository.findByUsername(userDTO.getUsername());
+                                if (checkEmail.isPresent()) {
+                                        return GlobalResponse
+                                                        .builder()
+                                                        .message("Email already exist")
+                                                        .status(HttpStatus.FOUND)
+                                                        .build();
+                                }
+                                if (checkUsername.isPresent()) {
+                                        return GlobalResponse
+                                                        .builder()
+                                                        .message("Username already exist")
+                                                        .status(HttpStatus.FOUND)
+                                                        .build();
+                                }
+                                userRepository.save(user);
+                        } catch (SqlScriptException e) {
+                                return GlobalResponse.builder().error(e).status(HttpStatus.BAD_REQUEST).build();
                         }
                         return GlobalResponse
                                         .builder()
@@ -530,12 +576,23 @@ public class UserService {
                                         .status(HttpStatus.OK)
                                         .build();
                 } catch (SqlScriptException e) {
-                        throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Sql error");
+                        return GlobalResponse
+                                        .builder()
+                                        .error(e)
+                                        .status(HttpStatus.UNPROCESSABLE_ENTITY)
+                                        .build();
                 } catch (DataException e) {
-                        throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Data error");
-
+                        return GlobalResponse
+                                        .builder()
+                                        .error(e)
+                                        .status(HttpStatus.UNPROCESSABLE_ENTITY)
+                                        .build();
                 } catch (Exception e) {
-                        throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Server error");
+                        return GlobalResponse
+                                        .builder()
+                                        .error(e)
+                                        .status(HttpStatus.BAD_REQUEST)
+                                        .build();
                 }
         }
 
@@ -552,45 +609,56 @@ public class UserService {
                                         .id(userDTO.getRole_id())
                                         .build();
 
-                        Main mainId = Main.builder()
-                                        .id(userDTO.getMain_id())
-                                        .build();
+                        Main mainId = new Main();
+                        if (userDTO.getMain_id() != null) {
+                                mainId = Main.builder()
+                                                .id(userDTO.getMain_id().get())
+                                                .build();
+                        } else {
+                                mainId = null;
+                        }
 
+                        System.out.println("Sampe sini 1");
                         List<Long> region = new ArrayList<>();
-                        if (!userDTO.getRegion_id().isEmpty() || userDTO.getRegion_id() != null) {
-                                for (int i = 0; i < userDTO.getRegion_id().size(); i++) {
-                                        Region getRegion = regionRepository.findById(userDTO.getRegion_id().get(i))
+                        if (userDTO.getRegion_id() != null) {
+                                for (int i = 0; i < userDTO.getRegion_id().get().size(); i++) {
+                                        Region getRegion = regionRepository
+                                                        .findById(userDTO.getRegion_id().get().get(i))
                                                         .orElseThrow(() -> new ResourceNotFoundException(
                                                                         "Region not found"));
-                                        region.add(getRegion.getId());
+                                        if (getRegion != null) {
+                                                region.add(getRegion.getId());
+                                        }
                                 }
-                        } else {
-                                region = null;
                         }
-
+                        System.out.println("Sampe sini 2");
                         List<Long> area = new ArrayList<>();
-                        if (!userDTO.getArea_id().isEmpty() || userDTO.getArea_id() != null) {
-                                for (int i = 0; i < userDTO.getArea_id().size(); i++) {
-                                        Area getArea = areaRepository.findById(userDTO.getArea_id().get(i)).orElseThrow(
-                                                        () -> new ResourceNotFoundException("Area not found"));
-                                        area.add(getArea.getId());
+                        if (userDTO.getArea_id() != null) {
+                                for (int i = 0; i < userDTO.getArea_id().get().size(); i++) {
+                                        Area getArea = areaRepository
+                                                        .findById(userDTO.getArea_id().get().get(i))
+                                                        .orElseThrow(
+                                                                        () -> new ResourceNotFoundException(
+                                                                                        "Area not found"));
+                                        if (getArea != null) {
+                                                area.add(getArea.getId());
+                                        }
                                 }
-                        } else {
-                                area = null;
                         }
-
+                        System.out.println("Sampe sini 3");
                         List<Long> branch = new ArrayList<>();
-                        if (!userDTO.getBranch_id().isEmpty() || userDTO.getBranch_id() != null) {
-                                for (int i = 0; i < userDTO.getBranch_id().size(); i++) {
-                                        Branch getBranch = branchRepository.findById(userDTO.getBranch_id().get(i))
+                        if (userDTO.getBranch_id() != null) {
+                                for (int i = 0; i < userDTO.getBranch_id().get().size(); i++) {
+                                        Branch getBranch = branchRepository
+                                                        .findById(userDTO.getBranch_id().get().get(i))
                                                         .orElseThrow(() -> new ResourceNotFoundException(
                                                                         "Branch not found"));
-                                        branch.add(getBranch.getId());
+                                        if (getBranch != null) {
+                                                branch.add(getBranch.getId());
+                                        }
                                 }
-                        } else {
-                                branch = null;
                         }
-
+                        System.out.println("Sampe sini 4");
                         User user = new User(
                                         id,
                                         roleId,
@@ -610,9 +678,20 @@ public class UserService {
                                         userGet.getCreated_at(),
                                         new Date());
 
-                        User response = userRepository.save(user);
-                        if (response == null) {
-                                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Bad Request");
+                        try {
+                                userRepository.save(user);
+                        } catch (DataIntegrityViolationException e) {
+                                return GlobalResponse
+                                                .builder()
+                                                .error(e)
+                                                .status(HttpStatus.BAD_REQUEST)
+                                                .build();
+                        } catch (Exception e) {
+                                return GlobalResponse
+                                                .builder()
+                                                .error(e)
+                                                .status(HttpStatus.BAD_REQUEST)
+                                                .build();
                         }
 
                         return GlobalResponse
@@ -620,11 +699,24 @@ public class UserService {
                                         .message("Success")
                                         .status(HttpStatus.OK)
                                         .build();
+                } catch (SqlScriptException e) {
+                        return GlobalResponse
+                                        .builder()
+                                        .error(e)
+                                        .status(HttpStatus.UNPROCESSABLE_ENTITY)
+                                        .build();
                 } catch (DataException e) {
-                        throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Data error");
-
+                        return GlobalResponse
+                                        .builder()
+                                        .error(e)
+                                        .status(HttpStatus.UNPROCESSABLE_ENTITY)
+                                        .build();
                 } catch (Exception e) {
-                        throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Server error");
+                        return GlobalResponse
+                                        .builder()
+                                        .error(e)
+                                        .status(HttpStatus.BAD_REQUEST)
+                                        .build();
                 }
         }
 
@@ -658,11 +750,19 @@ public class UserService {
                         User getUser = userRepository.findByUsername(username)
                                         .orElseThrow(() -> new ResourceNotFoundException("User is not found"));
 
-                        User user = getUser;
-                        user.setPassword(changePasswordDTO.getPassword());
-                        user.setUpdated_at(new Date());
+                        if (getUser.getPassword() == passwordEncoder.encode(changePasswordDTO.getCurrent_password())) {
+                                User user = getUser;
+                                user.setPassword(passwordEncoder.encode(changePasswordDTO.getNew_password()));
+                                user.setUpdated_at(new Date());
+                                userRepository.save(user);
+                        } else {
+                                return GlobalResponse
+                                                .builder()
+                                                .message("Password invalid")
+                                                .status(HttpStatus.BAD_REQUEST)
+                                                .build();
+                        }
 
-                        userRepository.save(user);
                         return GlobalResponse
                                         .builder()
                                         .message("Success")
@@ -680,12 +780,12 @@ public class UserService {
                         User getUser = userRepository.findByUsername(username)
                                         .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
-                        if(dto.getUsername() == getUser.getUsername() || dto.getEmail() == getUser.getEmail()){
+                        if (dto.getUsername() == getUser.getUsername() || dto.getEmail() == getUser.getEmail()) {
                                 return GlobalResponse
-                                        .builder()
-                                        .message("User already exist")
-                                        .status(HttpStatus.BAD_REQUEST)
-                                        .build();
+                                                .builder()
+                                                .message("User already exist")
+                                                .status(HttpStatus.BAD_REQUEST)
+                                                .build();
                         }
 
                         User user = getUser;

@@ -56,14 +56,17 @@ public class AuditDailyReportDetail {
     @Column(name = "permanent_recommendations")
     private String permanent_recommendations;
 
+    @Column(name = "is_research")
+    private Integer is_research;
+
     @Column(name = "is_delete")
     private Integer is_delete;
 
     @Column(name = "created_by")
-    private String created_by;
+    private Long created_by;
 
     @Column(name = "updated_by")
-    private String updated_by;
+    private Long updated_by;
 
     @Column(name = "created_at")
     private Date created_at;

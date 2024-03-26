@@ -34,11 +34,12 @@ public class AuditDailyReportController {
 
         @GetMapping
         public ResponseEntity<Object> get(
+                        @RequestParam(required = false) Optional<Long> schedule_id,
                         @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Optional<Date> start_date,
                         @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Optional<Date> end_date,
                         @RequestParam("page") Optional<Integer> page,
                         @RequestParam("size") Optional<Integer> size) {
-                GlobalResponse response = auditDailyReportService.get(page.orElse(0), size.orElse(10),start_date.orElse(null),end_date.orElse(null));
+                GlobalResponse response = auditDailyReportService.get(page.orElse(0), size.orElse(10),start_date.orElse(null),end_date.orElse(null),schedule_id.orElse(null));
                 return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(),
                                 response.getStatus(),
                                 response.getError());
@@ -47,17 +48,6 @@ public class AuditDailyReportController {
         @GetMapping("/{id}")
         public ResponseEntity<Object> get(@PathVariable("id") Long id) {
                 GlobalResponse response = auditDailyReportService.getById(id);
-                return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(),
-                                response.getStatus(),
-                                response.getError());
-        }
-
-        @GetMapping("/{id}/schedule")
-        public ResponseEntity<Object> getBySchedule(
-                        @PathVariable("id") Long id,
-                        @RequestParam("page") Optional<Integer> page,
-                        @RequestParam("size") Optional<Integer> size) {
-                GlobalResponse response = auditDailyReportService.getByScheduleId(id, page.orElse(0), size.orElse(10));
                 return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(),
                                 response.getStatus(),
                                 response.getError());

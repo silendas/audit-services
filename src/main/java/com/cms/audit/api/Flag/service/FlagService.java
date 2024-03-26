@@ -34,4 +34,9 @@ public class FlagService {
         return GlobalResponse.builder().data(response).status(HttpStatus.OK).build();
     }
 
+    public GlobalResponse getByDetail(Long detailId){
+        Flag response = repo.findOneByAuditDailyReportDetailId(detailId).orElseThrow(()-> new ResourceNotFoundException("Flag with lha_detail_id: " + detailId + " is undefined"));
+        return GlobalResponse.builder().data(response).status(HttpStatus.OK).build();
+    }
+
 }

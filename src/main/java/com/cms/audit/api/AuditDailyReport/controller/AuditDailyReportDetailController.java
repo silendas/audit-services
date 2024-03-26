@@ -4,6 +4,7 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,6 +23,7 @@ import com.cms.audit.api.Common.response.GlobalResponse;
 import com.cms.audit.api.Common.response.ResponseEntittyHandler;
 
 @RestController
+@Validated
 @RequestMapping(value = BasePath.BASE_PATH_LHA_DETAIL)
 public class AuditDailyReportDetailController {
 
@@ -30,9 +32,10 @@ public class AuditDailyReportDetailController {
 
     @GetMapping
     public ResponseEntity<Object> get(
+        @RequestParam("lha_id") Optional<Long> lha_id,
         @RequestParam("page") Optional<Integer> page,
         @RequestParam("size") Optional<Integer> size) {
-        GlobalResponse response = service.get(page.orElse(0), size.orElse(10));
+        GlobalResponse response = service.get(page.orElse(0), size.orElse(10),lha_id.orElse(null));
         return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(),
                 response.getError());
     }
@@ -44,22 +47,22 @@ public class AuditDailyReportDetailController {
                 response.getError());
     }
 
-    @GetMapping("/{id}/lha/all")
-    public ResponseEntity<Object> getByLHA(
-        @PathVariable("id") Long id,
-        @RequestParam("page") Optional<Integer> page,
-        @RequestParam("size") Optional<Integer> size) {
-        GlobalResponse response = service.getByLHAId(id, page.orElse(0),size.orElse(10));
-        return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(),
-                response.getError());
-    }
+    // @GetMapping("/{id}/lha/all")
+    // public ResponseEntity<Object> getByLHA(
+    //     @PathVariable("id") Long id,
+    //     @RequestParam("page") Optional<Integer> page,
+    //     @RequestParam("size") Optional<Integer> size) {
+    //     GlobalResponse response = service.getByLHAId(id, page.orElse(0),size.orElse(10));
+    //     return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(),
+    //             response.getError());
+    // }
 
-    @GetMapping("/{id}/lha/last")
-    public ResponseEntity<Object> getOneByLHA(@PathVariable("id") Long id) {
-        GlobalResponse response = service.getOneByLHAId(id);
-        return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(),
-                response.getError());
-    }
+    // @GetMapping("/{id}/lha/last")
+    // public ResponseEntity<Object> getOneByLHA(@PathVariable("id") Long id) {
+    //     GlobalResponse response = service.getOneByLHAId(id);
+    //     return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(),
+    //             response.getError());
+    // }
 
     @PostMapping
     public ResponseEntity<Object> post(@RequestBody AuditDailyReportDetailDTO dto) {

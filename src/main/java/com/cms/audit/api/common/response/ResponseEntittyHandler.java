@@ -1,5 +1,6 @@
 package com.cms.audit.api.Common.response;
 
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -7,11 +8,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 public class ResponseEntittyHandler {
-    public static ResponseEntity<Object> authSuccess(String message,String token, HttpStatus status) {
+    public static ResponseEntity<Object> authSuccess(String message, String token, HttpStatus status) {
 
         Map<String, Object> meta = new LinkedHashMap<>();
-        meta.put("timestamp", null);
-        meta.put("api_version", null);
+        meta.put("timestamp", new Date());
+        meta.put("api_version", "0.0.1");
 
         Map<String, Object> data = new LinkedHashMap<>();
         if (token != null) {
@@ -31,8 +32,8 @@ public class ResponseEntittyHandler {
     public static ResponseEntity<Object> allHandler(Object data, String message, HttpStatus status, Exception error) {
 
         Map<String, Object> meta = new LinkedHashMap<>();
-        meta.put("timestamp", null);
-        meta.put("api_version", null);
+        meta.put("timestamp", new Date());
+        meta.put("api_version", "0.0.1");
 
         Map<String, Object> map = new LinkedHashMap<>();
 
@@ -51,7 +52,9 @@ public class ResponseEntittyHandler {
             map.put("meta", meta);
             map.put("message", message);
             map.put("status", status.value());
-            map.put("data", data);
+            if(data !=null){
+                map.put("data", data);
+            }
         }
 
         return new ResponseEntity<Object>(map, status);

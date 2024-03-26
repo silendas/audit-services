@@ -15,5 +15,5 @@ public class EditAuditDailyReportDetailDTO {
     private String suggestion;
     private String temporary_recommendations;
     private String permanent_recommendations;
-    private String update_by;
+    private Integer is_research;
 }

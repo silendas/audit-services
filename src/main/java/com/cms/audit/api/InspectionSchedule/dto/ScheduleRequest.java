@@ -1,4 +1,6 @@
-package com.cms.audit.api.Management.User.dto;
+package com.cms.audit.api.InspectionSchedule.dto;
+
+import java.util.*;
 
 import lombok.Data;
 import lombok.Getter;
@@ -11,7 +13,6 @@ import lombok.ToString;
 @Setter
 @Getter
 @NoArgsConstructor
-public class ChangePasswordDTO {
-    private String current_password;
-    private String new_password;
+public class ScheduleRequest {
+    private List<ScheduleDTO> listSchedule;
 }

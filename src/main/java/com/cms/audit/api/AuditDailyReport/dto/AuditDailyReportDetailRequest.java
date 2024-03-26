@@ -7,8 +7,7 @@ import lombok.*;
 @Setter
 @Getter
 @NoArgsConstructor
-public class AuditDailyReportDetailDTO {
-    private Long audit_daily_report_id;
+public class AuditDailyReportDetailRequest {
     private Long case_id;
     private Long case_category_id;
     private String description;

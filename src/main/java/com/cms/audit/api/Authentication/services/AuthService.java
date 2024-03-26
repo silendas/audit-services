@@ -43,15 +43,16 @@ public class AuthService {
                                 signinDTO.getUsername());
                 if (!response.isPresent()) {
                         return AuthResponse.builder().message("Wrong username or password")
-                                        .status(HttpStatus.OK).build();
+                                        .status(HttpStatus.BAD_REQUEST).build();
                 };
 
-                // valdite auth manager user
+                // validate auth manager user
                 try {
                         authenticationManager.authenticate(
                                         new UsernamePasswordAuthenticationToken(
                                                         response.get().getUsername(),
-                                                        signinDTO.getPassword()));
+                                                        signinDTO.getPassword())
+                                        );
                 } catch (BadCredentialsException e) {
                         return AuthResponse.builder().message("Invalid username or password")
                                         .status(HttpStatus.UNAUTHORIZED).build();

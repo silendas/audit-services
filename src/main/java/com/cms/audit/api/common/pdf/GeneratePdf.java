@@ -27,7 +27,7 @@ import com.itextpdf.layout.property.TextAlignment;
 import com.itextpdf.layout.property.VerticalAlignment;
 
 public class GeneratePdf {
-        public static PDFResponse generateClarificationPDF(Clarification response)
+        public static PDFResponse generateClarificationPDF(Clarification response, String formulir)
                         throws FileNotFoundException, MalformedURLException {
                 String fileName = randomValueNumber.randomNumberGenerator() + response.getUser().getInitial_name()
                                 + "-clarification.pdf";
@@ -58,7 +58,7 @@ public class GeneratePdf {
                 // right header
                 nestedheader.addCell(new Cell().add("No Formulir").setFontSize(5).setBackgroundColor(Color.LIGHT_GRAY));
                 nestedheader.addCell(
-                                new Cell().add(response.getCode()).setFontSize(5)
+                                new Cell().add(formulir).setFontSize(5)
                                                 .setHorizontalAlignment(HorizontalAlignment.CENTER));
                 nestedheader.addCell(
                                 new Cell().add("Mulai berlaku").setFontSize(5).setBackgroundColor(Color.LIGHT_GRAY));

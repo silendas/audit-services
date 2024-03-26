@@ -23,7 +23,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.cms.audit.api.Clarifications.models.Clarification;
 import com.cms.audit.api.Common.constant.BasePath;
 import com.cms.audit.api.Common.response.GlobalResponse;
 import com.cms.audit.api.Common.response.ResponseEntittyHandler;
@@ -70,7 +69,7 @@ public class FollowupController {
         HttpHeaders httpHeaders = new HttpHeaders();
 
         httpHeaders.setContentType(MediaType.valueOf("application/pdf"));
-        httpHeaders.set("Content-Disposition", "inline; filename=" + response.getFileName());
+        httpHeaders.set("Content-Disposition", "inline; filename=" + response.getFilename());
 
         return new ResponseEntity<InputStreamResource>(isr, httpHeaders, HttpStatus.ACCEPTED);
     }
