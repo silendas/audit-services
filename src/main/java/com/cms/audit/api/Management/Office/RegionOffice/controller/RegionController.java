@@ -35,7 +35,7 @@ public class RegionController {
             @RequestParam("name") Optional<String> name,
             @RequestParam("page") Optional<Integer> page,
             @RequestParam("size") Optional<Integer> size) {
-        GlobalResponse response = regionService.findAll(name.orElse(""), page.orElse(0), size.orElse(10),mainId.orElse(null));
+        GlobalResponse response = regionService.findAll(name.orElse(null), page.orElse(0), size.orElse(10),mainId.orElse(null));
         return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(), response.getError());
     }
 

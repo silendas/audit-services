@@ -1,9 +1,7 @@
 package com.cms.audit.api.Management.Office.BranchOffice.services;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Date;
-import java.util.LinkedHashMap;
 import java.util.Optional;
 
 import org.hibernate.exception.DataException;
@@ -12,7 +10,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import com.cms.audit.api.Common.response.GlobalResponse;
 import com.cms.audit.api.Management.Office.AreaOffice.models.Area;
@@ -41,11 +38,12 @@ public class BranchService {
     public GlobalResponse findAll(String name, int page, int size, Long areaId) {
         try {
             Page<Branch> response;
-            if (areaId == null) {
+            if (name != null) {
                 response = pagBranch.findByNameContaining(name, PageRequest.of(page, size));
-            } else {
+            } else if(areaId !=null){
                 response = pagBranch.findBranchByAreaId(areaId, PageRequest.of(page, size));
-
+            } else {
+                response = pagBranch.findAllBranch(PageRequest.of(page, size));
             }
             if (response.isEmpty()) {
                 return GlobalResponse

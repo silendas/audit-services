@@ -32,7 +32,7 @@ public class MainController {
             @RequestParam("name") Optional<String> name,
             @RequestParam("page") Optional<Integer> page,
             @RequestParam("size") Optional<Integer> size) {
-        GlobalResponse response = mainService.findAll(name.orElse(""), page.orElse(0), size.orElse(10));
+        GlobalResponse response = mainService.findAll(name.orElse(null), page.orElse(0), size.orElse(10));
         if (response.getError() != null) {
             return ResponseEntittyHandler.allHandler(null, null, response.getStatus(), response.getError());
         }

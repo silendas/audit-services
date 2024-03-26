@@ -33,7 +33,12 @@ public class MainService {
 
     public GlobalResponse findAll(String name, int page, int size) {
         try {
-            Page<Main> response = pagMain.findByNameContaining(name, PageRequest.of(page, size));
+            Page<Main> response = null;
+            if(name != null){
+                response = pagMain.findByNameContaining(name, PageRequest.of(page, size));
+            } else {
+                response = pagMain.findAllMain(PageRequest.of(page, size));
+            }
             if (response.isEmpty()) {
                 return GlobalResponse
                         .builder()

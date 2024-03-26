@@ -8,10 +8,8 @@ import org.hibernate.exception.DataException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import com.cms.audit.api.Common.response.GlobalResponse;
 import com.cms.audit.api.Management.Office.AreaOffice.dto.AreaDTO;
@@ -40,11 +38,12 @@ public class AreaService {
     public GlobalResponse findAll(String name, int page, int size, Long regionId) {
         try {
             Page<Area> response;
-            if (regionId == null) {
+            if (name != null) {
                 response = pagArea.findByNameContaining(name, PageRequest.of(page, size));
-            } else {
+            } else if(regionId != null){
                 response = pagArea.findAreaByRegionId(regionId, PageRequest.of(page, size));
-
+            } else {
+                response = pagArea.findAllArea(PageRequest.of(page, size));
             }
             if (response.isEmpty()) {
                 return GlobalResponse

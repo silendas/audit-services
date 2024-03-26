@@ -33,7 +33,7 @@ public class AreaController {
             @RequestParam("name") Optional<String> name,
             @RequestParam("page") Optional<Integer> page,
             @RequestParam("size") Optional<Integer> size) {
-        GlobalResponse response = areaService.findAll(name.orElse(""), page.orElse(0), size.orElse(10), regionId.orElse(null));
+        GlobalResponse response = areaService.findAll(name.orElse(null), page.orElse(0), size.orElse(10), regionId.orElse(null));
         return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(), response.getError());
     }
 

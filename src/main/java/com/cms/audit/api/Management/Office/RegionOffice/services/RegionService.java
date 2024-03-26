@@ -10,11 +10,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import com.cms.audit.api.Common.response.GlobalResponse;
-import com.cms.audit.api.Management.Office.AreaOffice.models.Area;
-import com.cms.audit.api.Management.Office.BranchOffice.models.Branch;
 import com.cms.audit.api.Management.Office.MainOffice.models.Main;
 import com.cms.audit.api.Management.Office.MainOffice.repository.MainRepository;
 import com.cms.audit.api.Management.Office.RegionOffice.dto.RegionDTO;
@@ -41,10 +38,12 @@ public class RegionService {
     public GlobalResponse findAll(String name, int page, int size, Long mainId) {
         try {
             Page<Region> response;
-            if (mainId == null) {
+            if (name != null) {
                 response = pagRegion.findByNameContaining(name, PageRequest.of(page, size));
-            } else {
+            } else if(mainId != null) {
                 response = pagRegion.findRegionByMainId(mainId, PageRequest.of(page, size));
+            } else {
+                response = pagRegion.findAllRegion(PageRequest.of(page, size));
             }
             if (response.isEmpty()) {
                 return GlobalResponse
