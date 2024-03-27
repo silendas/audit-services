@@ -1,0 +1,78 @@
+package com.cms.audit.api.AuditDailyReport.service;
+
+import java.util.*;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Service;
+
+import com.cms.audit.api.AuditDailyReport.dto.RevisionDTO;
+import com.cms.audit.api.AuditDailyReport.models.AuditDailyReportDetail;
+import com.cms.audit.api.AuditDailyReport.models.Revision;
+import com.cms.audit.api.AuditDailyReport.repository.AuditDailyReportDetailRepository;
+import com.cms.audit.api.AuditDailyReport.repository.RevisionRepository;
+import com.cms.audit.api.Common.response.GlobalResponse;
+import com.cms.audit.api.Management.Case.models.Case;
+import com.cms.audit.api.Management.Case.repository.CaseRepository;
+import com.cms.audit.api.Management.CaseCategory.models.CaseCategory;
+import com.cms.audit.api.Management.CaseCategory.repository.CaseCategoryRepository;
+import com.cms.audit.api.Management.User.models.User;
+
+import jakarta.transaction.Transactional;
+
+@Service
+@Transactional
+public class RevisionService {
+
+    @Autowired
+    private RevisionRepository repository;
+
+    @Autowired
+    private AuditDailyReportDetailRepository auditDailyReportDetailRepository; 
+
+    @Autowired
+    private CaseRepository caseRepository;
+
+    @Autowired
+    private CaseCategoryRepository caseCategoryRepository;
+
+    public GlobalResponse insertNewRevision(RevisionDTO dto) {
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        Optional<AuditDailyReportDetail> detail = auditDailyReportDetailRepository.findById(dto.getAudit_daily_report_detail_id());
+        if(!detail.isPresent()){
+            return GlobalResponse.builder().message("Not found").status(HttpStatus.BAD_REQUEST).build();
+        }
+
+        Optional<Case> cases = caseRepository.findById(dto.getCase_id());
+        if(!cases.isPresent()){
+            return GlobalResponse.builder().message("Not found").status(HttpStatus.BAD_REQUEST).build();
+        }
+
+        Optional<CaseCategory> caseCategory = caseCategoryRepository.findById(dto.getCase_category_id());
+        if(!cases.isPresent()){
+            return GlobalResponse.builder().message("Not found").status(HttpStatus.BAD_REQUEST).build();
+        }
+
+        Revision revision = new Revision();
+        revision.setAuditDailyReportDetail(detail.get());
+        revision.setCases(cases.get());
+        revision.setCaseCategory(caseCategory.get());
+        revision.setDescription(dto.getDescription());
+        revision.setIs_delete(0);
+        revision.setPermanent_recommendations(dto.getPermanent_recommendations());
+        revision.setTemporary_recommendations(dto.getTemporary_recommendations());
+        revision.setSuggestion(dto.getSuggestion());
+        revision.setCreated_by(user.getId());
+        revision.setCreated_at(new Date());
+
+        try {
+            repository.save(revision);
+            return GlobalResponse.builder().message("Success").status(HttpStatus.OK).build();
+        } catch (Exception e) {
+            return GlobalResponse.builder().error(e).status(HttpStatus.BAD_REQUEST).build();
+        }
+    }
+
+}

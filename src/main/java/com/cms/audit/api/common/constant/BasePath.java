@@ -30,6 +30,7 @@ public interface BasePath {
 
     String BASE_PATH_LHA = BASE_API+"/lha";
     String BASE_PATH_LHA_DETAIL = BASE_API+"/lha-detail";
+    String BASE_PATH_LHA_REVISION = BASE_API+"/lha-revision";
 
     String BASE_PATH_WORKING_PAPER = BASE_API+"/kka";
 

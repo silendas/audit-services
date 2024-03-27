@@ -14,8 +14,8 @@ import lombok.ToString;
 @Getter
 @NoArgsConstructor
 public class RequestReschedule {
-    private Long schedule_id;
     private Long user_id;
+    private Long schedule_id;
     private Long branch_id;
     private Date start_date;
     private Date end_date;

@@ -15,6 +15,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -24,6 +27,7 @@ import com.cms.audit.api.Common.response.GlobalResponse;
 import com.cms.audit.api.Management.Level.models.Level;
 import com.cms.audit.api.Management.Office.AreaOffice.models.Area;
 import com.cms.audit.api.Management.Office.AreaOffice.repository.AreaRepository;
+import com.cms.audit.api.Management.Office.BranchOffice.dto.response.BranchInterface;
 import com.cms.audit.api.Management.Office.BranchOffice.models.Branch;
 import com.cms.audit.api.Management.Office.BranchOffice.repository.BranchRepository;
 import com.cms.audit.api.Management.Office.MainOffice.models.Main;
@@ -82,10 +86,23 @@ public class UserService {
                                 for (int i = 0; i < getUser.getRegionId().size(); i++) {
                                         Long regionId = getUser.getRegionId().get(i);
                                         for (int u = 0; u < userAgain.size(); u++) {
-                                                for (int o = 0; o < userAgain.get(u).getRegionId()
-                                                                .size(); o++) {
-                                                        if (regionId == userAgain.get(u).getRegionId().get(o)) {
-                                                                user.add(userAgain.get(u));
+                                                if (userAgain.get(u).getRegionId().isEmpty()) {
+                                                        for (int e = 0; e < userAgain.get(u).getBranchId()
+                                                                        .size(); e++) {
+                                                                Optional<Branch> branchAgain = branchRepository
+                                                                                .findById(userAgain.get(u).getBranchId()
+                                                                                                .get(e));
+                                                                if (branchAgain.get().getArea().getRegion().getId() == regionId) {
+                                                                        user.add(userAgain.get(u));
+                                                                }
+
+                                                        }
+                                                } else {
+                                                        for (int o = 0; o < userAgain.get(u).getRegionId()
+                                                                        .size(); o++) {
+                                                                if (regionId == userAgain.get(u).getRegionId().get(o)) {
+                                                                        user.add(userAgain.get(u));
+                                                                }
                                                         }
                                                 }
                                         }
@@ -371,6 +388,21 @@ public class UserService {
                 }
         }
 
+        public List<DropDownUser> dropDownByManyRegion(Long id) {
+                try {
+                        List<DropDownUser> response = userRepository.findDropDownByRegion(id);
+                        if (response.isEmpty()) {
+                                return null;
+                        }
+                        return response;
+                } catch (DataException e) {
+                        throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Data error");
+
+                } catch (Exception e) {
+                        throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Server error");
+                }
+        }
+
         public GlobalResponse dropDownByRegionId(Long id) {
                 try {
                         List<DropDownUser> response = userRepository.findDropDownByRegion(id);
@@ -482,7 +514,7 @@ public class UserService {
                         Main mainId = new Main();
                         if (userDTO.getMain_id() != null) {
                                 mainId = Main.builder()
-                                                .id(userDTO.getMain_id().get())
+                                                .id(userDTO.getMain_id())
                                                 .build();
                         } else {
                                 mainId = null;
@@ -491,9 +523,9 @@ public class UserService {
                         System.out.println("Sampe sini 1");
                         List<Long> region = new ArrayList<>();
                         if (userDTO.getRegion_id() != null) {
-                                for (int i = 0; i < userDTO.getRegion_id().get().size(); i++) {
+                                for (int i = 0; i < userDTO.getRegion_id().size(); i++) {
                                         Region getRegion = regionRepository
-                                                        .findById(userDTO.getRegion_id().get().get(i))
+                                                        .findById(userDTO.getRegion_id().get(i))
                                                         .orElseThrow(() -> new ResourceNotFoundException(
                                                                         "Region not found"));
                                         if (getRegion != null) {
@@ -504,9 +536,9 @@ public class UserService {
                         System.out.println("Sampe sini 2");
                         List<Long> area = new ArrayList<>();
                         if (userDTO.getArea_id() != null) {
-                                for (int i = 0; i < userDTO.getArea_id().get().size(); i++) {
+                                for (int i = 0; i < userDTO.getArea_id().size(); i++) {
                                         Area getArea = areaRepository
-                                                        .findById(userDTO.getArea_id().get().get(i))
+                                                        .findById(userDTO.getArea_id().get(i))
                                                         .orElseThrow(
                                                                         () -> new ResourceNotFoundException(
                                                                                         "Area not found"));
@@ -518,9 +550,9 @@ public class UserService {
                         System.out.println("Sampe sini 3");
                         List<Long> branch = new ArrayList<>();
                         if (userDTO.getBranch_id() != null) {
-                                for (int i = 0; i < userDTO.getBranch_id().get().size(); i++) {
+                                for (int i = 0; i < userDTO.getBranch_id().size(); i++) {
                                         Branch getBranch = branchRepository
-                                                        .findById(userDTO.getBranch_id().get().get(i))
+                                                        .findById(userDTO.getBranch_id().get(i))
                                                         .orElseThrow(() -> new ResourceNotFoundException(
                                                                         "Branch not found"));
                                         if (getBranch != null) {
@@ -612,7 +644,7 @@ public class UserService {
                         Main mainId = new Main();
                         if (userDTO.getMain_id() != null) {
                                 mainId = Main.builder()
-                                                .id(userDTO.getMain_id().get())
+                                                .id(userDTO.getMain_id())
                                                 .build();
                         } else {
                                 mainId = null;
@@ -621,9 +653,9 @@ public class UserService {
                         System.out.println("Sampe sini 1");
                         List<Long> region = new ArrayList<>();
                         if (userDTO.getRegion_id() != null) {
-                                for (int i = 0; i < userDTO.getRegion_id().get().size(); i++) {
+                                for (int i = 0; i < userDTO.getRegion_id().size(); i++) {
                                         Region getRegion = regionRepository
-                                                        .findById(userDTO.getRegion_id().get().get(i))
+                                                        .findById(userDTO.getRegion_id().get(i))
                                                         .orElseThrow(() -> new ResourceNotFoundException(
                                                                         "Region not found"));
                                         if (getRegion != null) {
@@ -634,9 +666,9 @@ public class UserService {
                         System.out.println("Sampe sini 2");
                         List<Long> area = new ArrayList<>();
                         if (userDTO.getArea_id() != null) {
-                                for (int i = 0; i < userDTO.getArea_id().get().size(); i++) {
+                                for (int i = 0; i < userDTO.getArea_id().size(); i++) {
                                         Area getArea = areaRepository
-                                                        .findById(userDTO.getArea_id().get().get(i))
+                                                        .findById(userDTO.getArea_id().get(i))
                                                         .orElseThrow(
                                                                         () -> new ResourceNotFoundException(
                                                                                         "Area not found"));
@@ -648,9 +680,9 @@ public class UserService {
                         System.out.println("Sampe sini 3");
                         List<Long> branch = new ArrayList<>();
                         if (userDTO.getBranch_id() != null) {
-                                for (int i = 0; i < userDTO.getBranch_id().get().size(); i++) {
+                                for (int i = 0; i < userDTO.getBranch_id().size(); i++) {
                                         Branch getBranch = branchRepository
-                                                        .findById(userDTO.getBranch_id().get().get(i))
+                                                        .findById(userDTO.getBranch_id().get(i))
                                                         .orElseThrow(() -> new ResourceNotFoundException(
                                                                         "Branch not found"));
                                         if (getBranch != null) {
@@ -746,11 +778,15 @@ public class UserService {
 
         public GlobalResponse changePassword(ChangePasswordDTO changePasswordDTO, String username) {
                 try {
+                        User getUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-                        User getUser = userRepository.findByUsername(username)
-                                        .orElseThrow(() -> new ResourceNotFoundException("User is not found"));
+                        // String current =
+                        // passwordEncoder.encode(changePasswordDTO.getCurrent_password());
 
-                        if (getUser.getPassword() == passwordEncoder.encode(changePasswordDTO.getCurrent_password())) {
+                        boolean result = passwordEncoder.matches(changePasswordDTO.getCurrent_password(),
+                                        getUser.getPassword());
+                        System.out.println(result);
+                        if (result) {
                                 User user = getUser;
                                 user.setPassword(passwordEncoder.encode(changePasswordDTO.getNew_password()));
                                 user.setUpdated_at(new Date());

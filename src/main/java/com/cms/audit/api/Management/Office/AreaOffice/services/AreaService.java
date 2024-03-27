@@ -17,6 +17,7 @@ import com.cms.audit.api.Management.Office.AreaOffice.dto.response.AreaInterface
 import com.cms.audit.api.Management.Office.AreaOffice.models.Area;
 import com.cms.audit.api.Management.Office.AreaOffice.repository.AreaRepository;
 import com.cms.audit.api.Management.Office.AreaOffice.repository.PagArea;
+import com.cms.audit.api.Management.Office.BranchOffice.services.BranchService;
 import com.cms.audit.api.Management.Office.RegionOffice.models.Region;
 import com.cms.audit.api.Management.Office.RegionOffice.repository.RegionRepository;
 
@@ -31,6 +32,9 @@ public class AreaService {
 
     @Autowired
     private PagArea pagArea;
+
+    @Autowired
+    private BranchService branchService;
 
     @Autowired
     private RegionRepository regionRepository;
@@ -303,17 +307,18 @@ public class AreaService {
 
             Area areaGet = areaRepository.findById(id).get();
 
-            Region regionId = Region.builder()
-                    .id(areaGet.getRegion().getId())
+            GlobalResponse branch = branchService.findSpecificByAreaId(id);
+            if(branch.getData()!= null){
+                return GlobalResponse
+                    .builder()
+                    .message("Cannot delete because relation")
+                    .status(HttpStatus.BAD_REQUEST)
                     .build();
+            }
 
-            Area area = new Area(
-                    id,
-                    areaGet.getName(),
-                    areaGet.getCreated_at(),
-                    new Date(),
-                    1,
-                    regionId);
+            Area area = areaGet;
+            area.setIs_delete(1);
+            area.setUpdated_at(new Date());
 
             Area response = areaRepository.save(area);
             if (response == null) {

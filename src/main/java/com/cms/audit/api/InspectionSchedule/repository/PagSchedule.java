@@ -13,6 +13,7 @@ import com.cms.audit.api.InspectionSchedule.models.Schedule;
 
 @Repository
 public interface PagSchedule extends PagingAndSortingRepository<Schedule, Long> {
+        
         Page<Schedule> findAll(Pageable pageable);
 
         @Query(value = "SELECT * FROM inspection_schedule u WHERE u.category = :category AND u.status <> 'REJECTED' AND u.status <> 'CLOSE' AND u.is_delete <> 1 ORDER BY u.id DESC ", nativeQuery = true)
@@ -27,8 +28,12 @@ public interface PagSchedule extends PagingAndSortingRepository<Schedule, Long> 
         Page<Schedule> findByRegionId(@Param("regionId") Long regionId, @Param("category") String ucategory,
                         Pageable pageable);
 
-        @Query(value = "SELECT * FROM inspection_schedule u WHERE u.user_id = :userId AND u.category = :category  AND u.is_delete <> 1 AND u.status <> 'CLOSE' ORDER BY u.start_date ASC;", nativeQuery = true)
+        @Query(value = "SELECT * FROM inspection_schedule u WHERE u.user_id = :userId AND u.category = :category  AND u.is_delete <> 1 AND u.status <> 'REQUEST' AND u.status <> 'APPROVE' AND u.status <> 'REJECTED' ORDER BY u.id DESC;", nativeQuery = true)
         Page<Schedule> findAllScheduleByUserId(@Param("userId") Long id, @Param("category") String ucategory,
+                        Pageable pageable);
+
+        @Query(value = "SELECT * FROM inspection_schedule u WHERE u.category = :category  AND u.is_delete <> 1 AND u.status <> 'CLOSE' ORDER BY u.start_date ASC;", nativeQuery = true)
+        Page<Schedule> findAllScheduleByCategory(@Param("category") String ucategory,
                         Pageable pageable);
 
         @Query(value = "SELECT * FROM inspection_schedule u WHERE u.branch_id = :branchId AND u.category = :category AND u.is_delete = 0 ORDER BY u.id DESC ", nativeQuery = true)
@@ -46,7 +51,7 @@ public interface PagSchedule extends PagingAndSortingRepository<Schedule, Long> 
                         @Param("start_date") Date start_date,
                         @Param("end_date") Date end_date, Pageable pageable);
 
-        @Query(value = "SELECT * FROM inspection_schedule u WHERE u.user_id = :userId AND u.category = :category AND u.start_date BETWEEN :start_date AND :end_date AND u.end_date BETWEEN :start_date AND :end_date AND u.is_delete <> 1 AND u.status <> 'CLOSE' ORDER BY u.start_date ASC;", nativeQuery = true)
+        @Query(value = "SELECT * FROM inspection_schedule u WHERE u.user_id = :userId AND u.category = :category AND u.start_date BETWEEN :start_date AND :end_date AND u.end_date BETWEEN :start_date AND :end_date AND u.is_delete <> 1 AND u.status <> 'REQUEST' AND u.status <> 'APPROVE' AND u.status <> 'REJECTED' ORDER BY u.d DESC;", nativeQuery = true)
         Page<Schedule> findScheduleInDateRangeByUserId(@Param("userId") Long userId,
                         @Param("category") String ucategory, @Param("start_date") Date start_date,
                         @Param("end_date") Date end_date, Pageable pageable);
@@ -56,7 +61,7 @@ public interface PagSchedule extends PagingAndSortingRepository<Schedule, Long> 
                         @Param("category") String ucategory, @Param("start_date") Date start_date,
                         @Param("end_date") Date end_date, Pageable pageable);
 
-        @Query(value = "SELECT * FROM inspection_schedule u WHERE u.status = :status AND u.is_delete <> 1 ORDER BY u.start_date ASC;", nativeQuery = true)
+        @Query(value = "SELECT * FROM inspection_schedule u WHERE u.status = :status OR u.status = 'REQUEST' OR u.status = 'APPROVE' OR u.status = 'REJECTED' AND u.is_delete <> 1 ORDER BY u.start_date ASC;", nativeQuery = true)
         Page<Schedule> findOneScheduleByStatus(@Param("status") String scheduleId, Pageable pageable);
 
 }

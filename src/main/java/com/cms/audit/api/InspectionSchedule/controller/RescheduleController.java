@@ -53,6 +53,12 @@ public class RescheduleController {
                 response.getError());
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<Object> getById(@PathVariable("id") Long id) {
+        GlobalResponse response = scheduleService.getById(id);
+        return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(), null);
+    }
+
     @PostMapping("/request")
     public ResponseEntity<Object> requestReschedule(
             @RequestBody RequestReschedule dto,
