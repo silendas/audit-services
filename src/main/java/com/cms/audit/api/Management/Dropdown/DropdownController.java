@@ -1,8 +1,11 @@
 package com.cms.audit.api.Management.Dropdown;
 
+import java.util.*;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,12 +23,18 @@ import com.cms.audit.api.Management.Case.services.CaseService;
 import com.cms.audit.api.Management.CaseCategory.services.CaseCategoryService;
 import com.cms.audit.api.Management.Level.services.LevelService;
 import com.cms.audit.api.Management.Office.AreaOffice.services.AreaService;
+import com.cms.audit.api.Management.Office.BranchOffice.models.Branch;
+import com.cms.audit.api.Management.Office.BranchOffice.repository.BranchRepository;
 import com.cms.audit.api.Management.Office.BranchOffice.services.BranchService;
 import com.cms.audit.api.Management.Office.MainOffice.services.MainService;
 import com.cms.audit.api.Management.Office.RegionOffice.services.RegionService;
 import com.cms.audit.api.Management.Penalty.services.PenaltyService;
 import com.cms.audit.api.Management.ReportType.services.ReportTypeService;
 import com.cms.audit.api.Management.Role.services.RoleService;
+import com.cms.audit.api.Management.User.dto.DropDownUserDTO;
+import com.cms.audit.api.Management.User.dto.response.DropDownUser;
+import com.cms.audit.api.Management.User.models.User;
+import com.cms.audit.api.Management.User.repository.UserRepository;
 import com.cms.audit.api.Management.User.services.UserService;
 
 import jakarta.annotation.Nullable;
@@ -51,6 +60,9 @@ public class DropdownController {
     private BranchService branchService;
 
     @Autowired
+    private BranchRepository branchRepository;
+
+    @Autowired
     private AreaService areaService;
 
     @Autowired
@@ -63,22 +75,64 @@ public class DropdownController {
     private PenaltyService penaltyService;
 
     @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
     private ReportTypeService rtService;
 
     @Autowired
     private RoleService roleService;
 
     @GetMapping("/users")
-    public ResponseEntity<Object> getUserByRegion(
-            @Nullable @RequestParam("regionId") Long regionId,
-            @Nullable @RequestParam("mainId") Long mainId) {
+    public ResponseEntity<Object> getUser(
+            @Nullable @RequestParam("region_id") Long regionId,
+            @Nullable @RequestParam("main_id") Long mainId) {
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
         GlobalResponse response;
         if (regionId != null) {
             response = userService.dropDownByRegionId(regionId);
         } else if (mainId != null) {
-            response = userService.dropDownByMainId(mainId);
-        } else {
             response = userService.dropDown();
+        } else {
+            if (user.getLevel().getId() == 1) {
+                response = userService.dropDown();
+            } else if (user.getLevel().getId() == 2) {
+                List<DropDownUserDTO> listUser = null;
+                for (int i = 0; i < user.getRegionId().size(); i++) {
+                    List<User> userAgain = userRepository.findAll();
+                    for (int u = 0; u < userAgain.size(); u++) {
+                        if (userAgain.get(u).getRegionId() == null) {
+                            if (userAgain.get(u).getBranchId() != null) {
+                                for (int o = 0; o < userAgain.get(u).getBranchId().size(); o++) {
+                                    Optional<Branch> branchAgain = branchRepository
+                                            .findById(userAgain.get(u).getBranchId().get(o));
+                                    if (branchAgain.get().getArea().getRegion().getId() == user.getRegionId().get(i)) {
+                                        DropDownUserDTO userSet = new DropDownUserDTO();
+                                        userSet.setId(userAgain.get(u).getId());
+                                        userSet.setFullname(userAgain.get(u).getFullname());
+                                        userSet.setInitial_name(userAgain.get(u).getInitial_name());
+                                        listUser.add(userSet);
+                                    }
+                                }
+                            }
+                        } else {
+                            for (int o = 0; o < userAgain.get(u).getRegionId().size(); o++) {
+                                if (userAgain.get(u).getRegionId().get(o) == user.getRegionId().get(i)) {
+                                    DropDownUserDTO userSet = new DropDownUserDTO();
+                                    userSet.setId(userAgain.get(u).getId());
+                                    userSet.setFullname(userAgain.get(u).getFullname());
+                                    userSet.setInitial_name(userAgain.get(u).getInitial_name());
+                                    listUser.add(userSet);
+                                }
+                            }
+                        }
+                    }
+                }
+                response = GlobalResponse.builder().data(listUser).message("Success").status(HttpStatus.OK).build();
+            } else {
+                response = userService.dropDown();
+            }
         }
         return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(),
                 response.getError());
@@ -182,23 +236,24 @@ public class DropdownController {
         } else {
             response = areaService.findSpecificByRegionId(id);
         }
-        return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(), response.getError());
+        return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(),
+                response.getError());
     }
 
     @GetMapping("/branch")
     public ResponseEntity<Object> getBranch(
-        @Nullable @RequestParam("areaId") Long areaId,
-        @Nullable @RequestParam("regionId") Long regionId
-    ) {
+            @Nullable @RequestParam("areaId") Long areaId,
+            @Nullable @RequestParam("regionId") Long regionId) {
         GlobalResponse response;
-        if(areaId != null){
+        if (areaId != null) {
             response = branchService.findSpecificByAreaId(areaId);
-        }else if(regionId != null){
+        } else if (regionId != null) {
             response = branchService.findSpecificByRegionId(regionId);
-        }else{
+        } else {
             response = branchService.findSpecific();
         }
-        return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(), response.getError());
+        return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(),
+                response.getError());
     }
 
     @GetMapping("/priority")

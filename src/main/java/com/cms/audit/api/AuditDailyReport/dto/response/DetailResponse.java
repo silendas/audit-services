@@ -12,8 +12,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class DetailResponse {
     Long id;
-    Case cases;
-    CaseCategory caseCategory;
+    String cases;
+    String caseCategory;
     String description;
     String suggestion;
     String temporary_recommendations;

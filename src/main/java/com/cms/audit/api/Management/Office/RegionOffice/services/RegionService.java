@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.cms.audit.api.Common.response.GlobalResponse;
+import com.cms.audit.api.Management.Office.AreaOffice.services.AreaService;
 import com.cms.audit.api.Management.Office.MainOffice.models.Main;
 import com.cms.audit.api.Management.Office.MainOffice.repository.MainRepository;
 import com.cms.audit.api.Management.Office.RegionOffice.dto.RegionDTO;
@@ -31,6 +32,9 @@ public class RegionService {
 
     @Autowired
     private MainRepository mainRepository;
+
+    @Autowired
+    private AreaService areaService;
 
     @Autowired
     private PagRegion pagRegion;
@@ -262,17 +266,18 @@ public class RegionService {
         try {
             Region regionGet = regionRepository.findById(id).get();
 
-            Main mainId = Main.builder()
-                    .id(regionGet.getMain().getId())
+            GlobalResponse area = areaService.findSpecificByRegionId(id);
+            if(area.getData()!= null){
+                return GlobalResponse
+                    .builder()
+                    .message("Cannot delete because relation")
+                    .status(HttpStatus.BAD_REQUEST)
                     .build();
+            }
 
-            Region region = new Region(
-                    id,
-                    regionGet.getName(),
-                    regionGet.getCreated_at(),
-                    new Date(),
-                    1,
-                    mainId);
+            Region region = regionGet;
+            region.setIs_delete(1);
+            region.setUpdated_at(new Date());
 
             Region response = regionRepository.save(region);
             if (response == null) {

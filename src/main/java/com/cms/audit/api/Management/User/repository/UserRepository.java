@@ -50,10 +50,10 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query(value = "SELECT r.user_id FROM user_region r WHERE r.region_id= :id", nativeQuery = true)
     List<UserRegionResponse> findUserRegionByRegionId(@Param("id")Long id);
 
-    @Query(value = "SELECT u.id, u.fullname, u.initial_name FROM users u where u.id IN (SELECT r.user_id FROM user_region r WHERE r.region_id= :id ) AND u.is_delete <> 1 AND role_id <> 2 ;", nativeQuery = true)
+    @Query(value = "SELECT u.id, u.fullname, u.initial_name FROM users u where u.id IN (SELECT r.user_id FROM user_region r WHERE r.region_id= :id ) AND u.is_delete <> 1;", nativeQuery = true)
     List<DropDownUser> findDropDownByRegion(@Param("id") Long id);
 
-    @Query(value = "SELECT u.id, u.fullname, u.initial_name FROM users u where u.main_id = :id AND u.is_delete <> 1 AND role_id <> 2 ;", nativeQuery = true)
+    @Query(value = "SELECT u.id, u.fullname, u.initial_name FROM users u where u.main_id = :id AND u.is_delete <> 1;", nativeQuery = true)
     List<DropDownUser> findDropDownByMain(@Param("id") Long id);
 
 }

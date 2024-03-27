@@ -18,6 +18,7 @@ import com.cms.audit.api.Management.Office.MainOffice.dto.response.MainInterface
 import com.cms.audit.api.Management.Office.MainOffice.models.Main;
 import com.cms.audit.api.Management.Office.MainOffice.repository.MainRepository;
 import com.cms.audit.api.Management.Office.MainOffice.repository.PagMain;
+import com.cms.audit.api.Management.Office.RegionOffice.services.RegionService;
 
 import jakarta.transaction.Transactional;
 
@@ -30,6 +31,9 @@ public class MainService {
 
     @Autowired
     private PagMain pagMain;
+
+    @Autowired
+    private RegionService regionService;
 
     public GlobalResponse findAll(String name, int page, int size) {
         try {
@@ -217,6 +221,14 @@ public class MainService {
 
             Main mainGet = mainRepository.findById(id).get();
 
+            GlobalResponse getRegion = regionService.findSpecificByMainId(id);
+            if(getRegion.getData() != null){
+                return GlobalResponse
+                    .builder()
+                    .message("Cannot delete because relation")
+                    .status(HttpStatus.BAD_REQUEST)
+                    .build();
+            }
             Main main = new Main(
                 mainGet.getId(),
                 mainGet.getName(),

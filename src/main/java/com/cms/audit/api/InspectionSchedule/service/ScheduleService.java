@@ -156,7 +156,7 @@ public class ScheduleService {
                                                 if(start_date!=null || end_date!=null){
                                                         return GlobalResponse.builder().data(pagSchedule.findAllScheduleByDateRange("REGULAR", start_date, end_date, PageRequest.of(page, size))).build();
                                                 }
-                                                return GlobalResponse.builder().data(pagSchedule.findAll(PageRequest.of(page, size))).message("Success").status(HttpStatus.OK).build();
+                                                return GlobalResponse.builder().data(pagSchedule.findAllScheduleByCategory("REGULAR", PageRequest.of(page, size))).message("Success").status(HttpStatus.OK).build();
                                         }
                                         if(start_date == null || end_date == null){
                                                 for (int i = 0; i < user.getRegionId().size(); i++) {
@@ -297,7 +297,7 @@ public class ScheduleService {
                                                 if(start_date!=null || end_date!=null){
                                                         return GlobalResponse.builder().data(pagSchedule.findAllScheduleByDateRange("SPECIAL", start_date, end_date, PageRequest.of(page, size))).build();
                                                 }
-                                                return GlobalResponse.builder().data(pagSchedule.findAll(PageRequest.of(page, size))).message("Success").status(HttpStatus.OK).build();
+                                                return GlobalResponse.builder().data(pagSchedule.findAllScheduleByCategory("SPECIAL", PageRequest.of(page, size))).message("Success").status(HttpStatus.OK).build();
                                         }
                                         if(start_date == null || end_date == null){
                                                 for (int i = 0; i < user.getRegionId().size(); i++) {
@@ -474,7 +474,7 @@ public class ScheduleService {
                 try {
                         User getUser = userRepository.findByUsername(username)
                                         .orElseThrow(() -> new ResourceNotFoundException("User not found"));
-                        Page<Schedule> response = new PageImpl<>(null);
+                        Page<Schedule> response;
                         if (getUser.getLevel().getId() == 1) {
                                 response = pagSchedule.findOneScheduleByStatus("REQUEST",
                                                 PageRequest.of(page, size));
@@ -482,6 +482,8 @@ public class ScheduleService {
                         } else if (getUser.getLevel().getId() == 2) {
                                 response = pagSchedule.findOneScheduleByStatus("PENDING",
                                                 PageRequest.of(page, size));
+                        } else {
+                                response = null;
                         }
                         if (response.isEmpty()) {
                                 return GlobalResponse
@@ -593,22 +595,22 @@ public class ScheduleService {
                 try {
                         User getUser = userRepository.findByUsername(username)
                                         .orElseThrow(() -> new ResourceNotFoundException("user not found"));
-                        for (int i = 0; i < scheduleDTO.getListSchedule().size(); i++) {
+                        for (int i = 0; i < scheduleDTO.getSchedules().size(); i++) {
                                 Branch branchId = Branch.builder()
-                                                .id(scheduleDTO.getListSchedule().get(i).getBranch_id())
+                                                .id(scheduleDTO.getSchedules().get(i).getBranch_id())
                                                 .build();
 
                                 User userId = User.builder()
-                                                .id(scheduleDTO.getListSchedule().get(i).getUser_id())
+                                                .id(scheduleDTO.getSchedules().get(i).getUser_id())
                                                 .build();
                                 Schedule schedule = new Schedule(
                                                 null,
                                                 null,
                                                 userId,
                                                 branchId,
-                                                scheduleDTO.getListSchedule().get(i).getDescription(),
-                                                scheduleDTO.getListSchedule().get(i).getStart_date(),
-                                                scheduleDTO.getListSchedule().get(i).getEnd_date(),
+                                                scheduleDTO.getSchedules().get(i).getDescription(),
+                                                scheduleDTO.getSchedules().get(i).getStart_date(),
+                                                scheduleDTO.getSchedules().get(i).getEnd_date(),
                                                 null,
                                                 null,
                                                 EStatus.TODO,
@@ -621,9 +623,9 @@ public class ScheduleService {
 
                                 // check if schedule already exist?
                                 List<Schedule> checkIfExist = repository.findScheduleInDateRangeByUserId(
-                                                scheduleDTO.getListSchedule().get(i).getUser_id(), "REGULAR",
-                                                scheduleDTO.getListSchedule().get(i).getStart_date(),
-                                                scheduleDTO.getListSchedule().get(i).getEnd_date());
+                                                scheduleDTO.getSchedules().get(i).getUser_id(), "REGULAR",
+                                                scheduleDTO.getSchedules().get(i).getStart_date(),
+                                                scheduleDTO.getSchedules().get(i).getEnd_date());
                                 if (!checkIfExist.isEmpty()) {
                                         return GlobalResponse
                                                         .builder()
@@ -671,22 +673,22 @@ public class ScheduleService {
                 try {
                         User getUser = userRepository.findByUsername(username)
                                         .orElseThrow(() -> new ResourceNotFoundException("user not found"));
-                        for (int i = 0; i < scheduleDTO.getListSchedule().size(); i++) {
+                        for (int i = 0; i < scheduleDTO.getSchedules().size(); i++) {
                                 Branch branchId = Branch.builder()
-                                                .id(scheduleDTO.getListSchedule().get(i).getBranch_id())
+                                                .id(scheduleDTO.getSchedules().get(i).getBranch_id())
                                                 .build();
 
                                 User userId = User.builder()
-                                                .id(scheduleDTO.getListSchedule().get(i).getUser_id())
+                                                .id(scheduleDTO.getSchedules().get(i).getUser_id())
                                                 .build();
                                 Schedule schedule = new Schedule(
                                                 null,
                                                 null,
                                                 userId,
                                                 branchId,
-                                                scheduleDTO.getListSchedule().get(i).getDescription(),
-                                                scheduleDTO.getListSchedule().get(i).getStart_date(),
-                                                scheduleDTO.getListSchedule().get(i).getEnd_date(),
+                                                scheduleDTO.getSchedules().get(i).getDescription(),
+                                                scheduleDTO.getSchedules().get(i).getStart_date(),
+                                                scheduleDTO.getSchedules().get(i).getEnd_date(),
                                                 null,
                                                 null,
                                                 EStatus.TODO,
@@ -699,19 +701,19 @@ public class ScheduleService {
 
                                 // change all todo or progress status to pending status
                                 repository.editStatusPendingScheduleByDate(
-                                                scheduleDTO.getListSchedule().get(i).getUser_id(),
-                                                getUser.getId(), scheduleDTO.getListSchedule().get(i).getStart_date(),
-                                                scheduleDTO.getListSchedule().get(i).getEnd_date());
+                                                scheduleDTO.getSchedules().get(i).getUser_id(),
+                                                getUser.getId(), scheduleDTO.getSchedules().get(i).getStart_date(),
+                                                scheduleDTO.getSchedules().get(i).getEnd_date());
 
                                 // Schedule response = repository.save(schedule);
                                 Schedule response = repository.save(schedule);
-                                if (response == null) {
-                                        return GlobalResponse
-                                                        .builder()
-                                                        .message("Failed")
-                                                        .status(HttpStatus.UNPROCESSABLE_ENTITY)
-                                                        .build();
-                                }
+                                // if (response == null) {
+                                //         return GlobalResponse
+                                //                         .builder()
+                                //                         .message("Failed")
+                                //                         .status(HttpStatus.UNPROCESSABLE_ENTITY)
+                                //                         .build();
+                                // }
 
                                 logService.save(response.getCreatedBy(), response.getDescription(), response.getId(),
                                                 ECategory.SPECIAL, response.getStatus());
@@ -790,48 +792,6 @@ public class ScheduleService {
                 }
         }
 
-        // public GlobalResponse reschedule(RescheduleDTO dto) {
-        // try {
-        // Schedule getSchedule = repository.findById(dto.getSchedule_id())
-        // .orElseThrow(() -> new ResourceNotFoundException(
-        // "Schedule with id: " + dto.getSchedule_id() + " is undefined"));
-        // Schedule editSchedule = getSchedule;
-        // editSchedule.setStatus(EStatus.DONE);
-        // repository.save(editSchedule);
-
-        // User setUser = User.builder().id(dto.getUser_id()).build();
-        // Branch setBranch = Branch.builder().id(dto.getBranch_id()).build();
-
-        // Schedule reschedule = new Schedule(
-        // null,
-        // setUser,
-        // setBranch,
-        // dto.getDescription(),
-        // dto.getStart_date(),
-        // dto.getEnd_date(),
-        // null,
-        // null,
-        // EStatus.TODO,
-        // ECategory.REGULAR,
-        // 0,
-        // dto.getCreate_by(),
-        // dto.getCreate_by(),
-        // new Date(),
-        // new Date());
-
-        // repository.save(reschedule);
-
-        // return
-        // GlobalResponse.builder().message("Success").status(HttpStatus.OK).build();
-        // } catch (Exception e) {
-        // return GlobalResponse
-        // .builder()
-        // .message("Exception :" + e.getMessage())
-        // .status(HttpStatus.INTERNAL_SERVER_ERROR)
-        // .build();
-        // }
-        // }
-
         public GlobalResponse editSchedule(EditScheduleDTO dto, Long id, ECategory category, String username) {
                 try {
                         User getUser = userRepository.findByUsername(username)
@@ -905,7 +865,7 @@ public class ScheduleService {
                 repository.save(schedule);
 
                 Schedule editSchedule = getSchedule;
-                editSchedule.setStatus(EStatus.DONE);
+                editSchedule.setStatus(EStatus.APPROVE);
                 editSchedule.setUpdatedBy(user.getId());
                 editSchedule.setUpdated_at(new Date());
                 repository.save(editSchedule);

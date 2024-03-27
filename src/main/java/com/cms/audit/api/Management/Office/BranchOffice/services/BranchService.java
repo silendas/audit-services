@@ -52,9 +52,6 @@ public class BranchService {
                         .status(HttpStatus.OK)
                         .build();
             }
-            // Map<String, Object> data = new LinkedHashMap<>();
-            // data.put("recordCount", response.size());
-            // data.put("result", response);
             return GlobalResponse
                     .builder()
                     .message("Success")

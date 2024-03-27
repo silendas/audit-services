@@ -2,28 +2,19 @@ package com.cms.audit.api.Authentication.services;
 
 import java.util.Optional;
 
-import org.hibernate.exception.DataException;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
-//import org.springframework.security.crypto.password.PasswordEncoder;
-//import org.springframework.security.web.firewall.RequestRejectedException;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import com.cms.audit.api.Authentication.dto.SigninDTO;
 import com.cms.audit.api.Authentication.dto.response.AuthResponse;
-//import com.cms.audit.api.Authentication.dto.SignupDTO;
 import com.cms.audit.api.Authentication.repository.AuthRepository;
-import com.cms.audit.api.Common.response.GlobalResponse;
 import com.cms.audit.api.Config.Jwt.JwtService;
 import com.cms.audit.api.Management.User.models.User;
 
-import io.jsonwebtoken.JwtException;
 import lombok.RequiredArgsConstructor;
 
 @Service
