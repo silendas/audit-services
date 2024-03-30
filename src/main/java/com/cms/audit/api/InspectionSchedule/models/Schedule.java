@@ -4,6 +4,8 @@ import java.util.Date;
 
 import com.cms.audit.api.Management.Office.BranchOffice.models.Branch;
 import com.cms.audit.api.Management.User.models.User;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -34,6 +36,7 @@ public class Schedule {
     @Column(name = "id")
     private Long id;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "schdule_trx_id", referencedColumnName = "id")
     private ScheduleTrx scheduleTrx;
@@ -49,15 +52,19 @@ public class Schedule {
     @Column(name = "description")
     private String description;
 
+    //@JsonFormat(pattern="yyyy-MM-dd")
     @Column(name = "start_date",columnDefinition = "DATE")
     private Date start_date;
 
+    //@JsonFormat(pattern="yyyy-MM-dd")
     @Column(name = "end_date",columnDefinition = "DATE")
     private Date end_date;
 
+   // @JsonFormat(pattern="yyyy-MM-dd")
     @Column(name = "start_date_realization", columnDefinition = "DATE")
     private Date start_date_realization;
 
+    //@JsonFormat(pattern="yyyy-MM-dd")
     @Column(name = "end_date_realization", columnDefinition = "DATE")
     private Date end_date_realization;
 

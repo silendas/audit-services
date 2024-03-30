@@ -71,7 +71,7 @@ public class Clarification {
     @Column(name = "location",columnDefinition = "TEXT")
     private String location;
 
-    @Column(name = "supervisor")
+    @Column(name = "auditee")
     private String auditee;
 
     // @Column(name = "part")

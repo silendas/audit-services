@@ -16,9 +16,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class FollowUpDTO {
     private Long followup_id;
+    private Long penalty_id;
     private String description;
-    private String file_name;
-    private String file_path;
-    private EStatusFollowup status;
     private Long is_penalty;
 }

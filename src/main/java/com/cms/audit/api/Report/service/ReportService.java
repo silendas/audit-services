@@ -216,8 +216,10 @@ public class ReportService {
             response = repository.findByFullname(name);
         } else if(branchId != null){
             response = repository.findByBranchId(branchId);
-        } else {
+        } else if(start_date != null && end_date != null){
             response = repository.findClarificationInDateRange(start_date, end_date);
+        } else {
+            response = repository.findAll();
         }
         ByteArrayInputStream data = ExcelUtil.dataToExcel(response);
         return data;

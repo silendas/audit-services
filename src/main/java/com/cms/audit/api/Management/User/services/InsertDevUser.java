@@ -1,5 +1,6 @@
 package com.cms.audit.api.Management.User.services;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -8,7 +9,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.cms.audit.api.Management.Level.models.Level;
-import com.cms.audit.api.Management.Office.MainOffice.models.Main;
 import com.cms.audit.api.Management.Role.models.Role;
 import com.cms.audit.api.Management.User.models.User;
 import com.cms.audit.api.Management.User.repository.UserRepository;
@@ -32,11 +32,12 @@ public class InsertDevUser {
         if (!response.isEmpty()) {
             return;
         }
+        List<Long> list = new ArrayList<>();
         User user = new User();
         user.setMain(null);
-        user.setAreaId(null);
-        user.setRegionId(null);
-        user.setBranchId(null);
+        user.setAreaId(list);
+        user.setRegionId(list);
+        user.setBranchId(list);
         user.setRole(Role.builder().id(Long.valueOf(2)).build());
         user.setLevel(Level.builder().id(Long.valueOf(1)).build());
         user.setEmail("dev@gmail.com");

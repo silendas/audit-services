@@ -16,6 +16,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,8 +27,11 @@ import org.springframework.web.multipart.MultipartFile;
 import com.cms.audit.api.Common.constant.BasePath;
 import com.cms.audit.api.Common.response.GlobalResponse;
 import com.cms.audit.api.Common.response.ResponseEntittyHandler;
+import com.cms.audit.api.FollowUp.dto.FollowUpDTO;
 import com.cms.audit.api.FollowUp.models.FollowUp;
 import com.cms.audit.api.FollowUp.service.FollowupService;
+import org.springframework.web.bind.annotation.RequestBody;
+
 
 @RestController
 @Validated
@@ -71,12 +75,19 @@ public class FollowupController {
         httpHeaders.setContentType(MediaType.valueOf("application/pdf"));
         httpHeaders.set("Content-Disposition", "inline; filename=" + response.getFilename());
 
-        return new ResponseEntity<InputStreamResource>(isr, httpHeaders, HttpStatus.ACCEPTED);
+        return new ResponseEntity<InputStreamResource>(isr, httpHeaders, HttpStatus.OK);
     }
 
-    @PostMapping(value = "/file/{id}")
+    @PostMapping
+    public ResponseEntity<Object> save(@RequestBody FollowUpDTO dto) {
+        GlobalResponse response = service.save(dto);
+        return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(), response.getError());
+    }
+    
+
+    @PostMapping(value = "/file")
     public ResponseEntity<Object> upload(@RequestParam(value = "file", required = false) MultipartFile file,
-            @PathVariable("id") Long id) {
+            @ModelAttribute("id") Long id) {
         GlobalResponse response = service.uploadFile(file, id);
         return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(),
                 response.getError());

@@ -1,8 +1,11 @@
 package com.cms.audit.api.AuditWorkingPaper.service;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.Optional;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.tomcat.util.http.fileupload.impl.IOFileUploadException;
 import org.hibernate.exception.DataException;
@@ -18,15 +21,13 @@ import com.cms.audit.api.AuditWorkingPaper.models.AuditWorkingPaper;
 import com.cms.audit.api.AuditWorkingPaper.repository.AuditWorkingPaperRepository;
 import com.cms.audit.api.AuditWorkingPaper.repository.PagAuditWorkingPaper;
 import com.cms.audit.api.Common.constant.FolderPath;
+import com.cms.audit.api.Common.constant.convertDateToRoman;
 import com.cms.audit.api.Common.constant.randomValueNumber;
 import com.cms.audit.api.Common.exception.ResourceNotFoundException;
 import com.cms.audit.api.Common.response.GlobalResponse;
-import com.cms.audit.api.Flag.model.Flag;
-import com.cms.audit.api.Flag.repository.FlagRepo;
 import com.cms.audit.api.InspectionSchedule.models.EStatus;
 import com.cms.audit.api.InspectionSchedule.models.Schedule;
 import com.cms.audit.api.InspectionSchedule.repository.ScheduleRepository;
-import com.cms.audit.api.NewsInspection.models.NewsInspection;
 
 import jakarta.transaction.Transactional;
 
@@ -56,6 +57,41 @@ public class AuditWorkingPaperService {
             } else {
                 response = pag.findWorkingPaperInDateRange(start_date, end_date, PageRequest.of(page, size));
             }
+            List<Object> listKka = new ArrayList<>();
+            for(int i=0;i<response.getContent().size();i++){
+                AuditWorkingPaper kka = response.getContent().get(i);
+                Map<String,Object> kkaMap = new LinkedHashMap<>();
+                kkaMap.put("id", kka.getId());
+
+                Map<String,Object> user = new LinkedHashMap<>();
+                user.put("id", kka.getUser().getId());
+                user.put("email", kka.getUser().getEmail());
+                user.put("fullname", kka.getUser().getFullname());
+                user.put("initial_name", kka.getUser().getInitial_name());
+                kkaMap.put("user",user);
+
+                Map<String,Object> branch = new LinkedHashMap<>();
+                branch.put("id", kka.getBranch().getId());
+                branch.put("name", kka.getBranch().getName());
+                kkaMap.put("branch", branch);
+
+                Map<String,Object> schedule = new LinkedHashMap<>();
+                schedule.put("id", kka.getSchedule().getId());
+                schedule.put("start_date", convertDateToRoman.convertDateToString(kka.getSchedule().getStart_date()));
+                schedule.put("end_date", convertDateToRoman.convertDateToString(kka.getSchedule().getEnd_date()));
+                kkaMap.put("schedule", schedule);
+
+                kkaMap.put("start_date", convertDateToRoman.convertDateToString(kka.getStart_date()));
+                kkaMap.put("end_date", convertDateToRoman.convertDateToString(kka.getEnd_date()));
+                kkaMap.put("filename", kka.getFilename());
+                kkaMap.put("file_path", kka.getFile_path());
+
+                listKka.add(kkaMap);
+
+            }
+            Map<String,Object> parent = new LinkedHashMap<>();
+            parent.put("content", listKka);
+            parent.put("pageable", response.getPageable());
             if (response.isEmpty()) {
                 return GlobalResponse
                         .builder()
@@ -66,7 +102,7 @@ public class AuditWorkingPaperService {
             return GlobalResponse
                     .builder()
                     .message("Success")
-                    .data(response)
+                    .data(parent)
                     .status(HttpStatus.OK)
                     .build();
         } catch (ResponseStatusException e) {
@@ -88,10 +124,36 @@ public class AuditWorkingPaperService {
         try {
             AuditWorkingPaper response = repository.findById(id)
                     .orElseThrow(() -> new ResourceNotFoundException("LHA with id: " + id + " is undefined"));
+
+                    Map<String,Object> kkaMap = new LinkedHashMap<>();
+                    kkaMap.put("id", response.getId());
+    
+                    Map<String,Object> user = new LinkedHashMap<>();
+                    user.put("id", response.getUser().getId());
+                    user.put("email", response.getUser().getEmail());
+                    user.put("fullname", response.getUser().getFullname());
+                    user.put("initial_name", response.getUser().getInitial_name());
+                    kkaMap.put("user",user);
+    
+                    Map<String,Object> branch = new LinkedHashMap<>();
+                    branch.put("id", response.getBranch().getId());
+                    branch.put("name",response.getBranch().getName());
+                    kkaMap.put("branch", branch);
+    
+                    Map<String,Object> schedule = new LinkedHashMap<>();
+                    schedule.put("id", response.getSchedule().getId());
+                    schedule.put("start_date", convertDateToRoman.convertDateToString(response.getSchedule().getStart_date()));
+                    schedule.put("end_date", convertDateToRoman.convertDateToString(response.getSchedule().getEnd_date()));
+                    kkaMap.put("schedule", schedule);
+    
+                    kkaMap.put("start_date", convertDateToRoman.convertDateToString(response.getStart_date()));
+                    kkaMap.put("end_date", convertDateToRoman.convertDateToString(response.getEnd_date()));
+                    kkaMap.put("filename", response.getFilename());
+                    kkaMap.put("file_path", response.getFile_path());
             return GlobalResponse
                     .builder()
                     .message("Success")
-                    .data(response)
+                    .data(kkaMap)
                     .status(HttpStatus.OK)
                     .build();
         } catch (ResponseStatusException e) {

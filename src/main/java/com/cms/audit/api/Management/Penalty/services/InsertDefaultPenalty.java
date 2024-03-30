@@ -24,6 +24,13 @@ public class InsertDefaultPenalty {
         if (!response.isEmpty()) {
             return;
         }
+        Penalty penalty0 = new Penalty(
+                null,
+                "ST",
+                0,
+                new Date(),
+                new Date());
+        repository.save(penalty0);
         Penalty penalty1 = new Penalty(
                 null,
                 "SP1",

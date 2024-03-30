@@ -1,10 +1,15 @@
 package com.cms.audit.api.Management.User.dto.response;
 
+import java.util.*;
+
 public interface UserProfileInterface {
     Long getId();
     Long getRole_id();
     Long getLevel_id();
-    Long getBranch_id();
+    List<Long> getMain_id();
+    List<Long> getRegion_id();
+    List<Long> getArea_id();
+    List<Long> getBranch_id();
     String getNip();
     String getFullname();
     String getInitial_Name();

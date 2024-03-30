@@ -45,11 +45,11 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
                         @Param("category") String ucategory, @Param("start_date") Date start_date,
                         @Param("end_date") Date end_date);
 
-        @Query(value = "SELECT u.id, u.user_id, u.branch_id, u.description, u.start_date, u.end_date, u.start_date_realization, u.end_date_realization, u.status, u.category, u.is_delete, u.updated_by, u.created_by, u.created_at, u.updated_at FROM inspection_schedule u INNER JOIN branch_office bo ON u.branch_id = bo.id INNER JOIN area_office ao ON bo.area_id = ao.id INNER JOIN region_office ro ON ao.region_id = ro.id WHERE ro.id = :regionId AND u.category = :category AND u.is_delete <> 1 ORDER BY u.start_date ASC;", nativeQuery = true)
+        @Query(value = "SELECT u.* FROM inspection_schedule u INNER JOIN branch_office bo ON u.branch_id = bo.id INNER JOIN area_office ao ON bo.area_id = ao.id INNER JOIN region_office ro ON ao.region_id = ro.id WHERE ro.id = :regionId AND u.category = :category AND u.is_delete <> 1 ORDER BY u.start_date ASC;", nativeQuery = true)
         public List<Schedule> findByRegionId(@Param("regionId") Long regionId, @Param("category") String category);
 
         
-        @Query(value = "SELECT u.id, u.user_id, u.branch_id, u.description, u.start_date, u.end_date, u.start_date_realization, u.end_date_realization, u.status, u.category, u.is_delete, u.updated_by, u.created_by, u.created_at, u.updated_at FROM inspection_schedule u INNER JOIN branch_office bo ON u.branch_id = bo.id INNER JOIN area_office ao ON bo.area_id = ao.id INNER JOIN region_office ro ON ao.region_id = ro.id WHERE ro.id = :regionId AND u.category = :category AND u.start_date BETWEEN :start_date AND :end_date AND u.end_date BETWEEN :start_date AND :end_date AND u.is_delete <> 1 ORDER BY u.start_date ASC;", nativeQuery = true)
+        @Query(value = "SELECT u.* FROM inspection_schedule u INNER JOIN branch_office bo ON u.branch_id = bo.id INNER JOIN area_office ao ON bo.area_id = ao.id INNER JOIN region_office ro ON ao.region_id = ro.id WHERE ro.id = :regionId AND u.category = :category AND u.start_date BETWEEN :start_date AND :end_date AND u.end_date BETWEEN :start_date AND :end_date AND u.is_delete <> 1 ORDER BY u.start_date ASC;", nativeQuery = true)
         List<Schedule> findScheduleInDateRangeByRegionId(@Param("regionId") Long regionId, @Param("category") String ucategory,@Param("start_date") Date start_date,
         @Param("end_date") Date end_date);
 

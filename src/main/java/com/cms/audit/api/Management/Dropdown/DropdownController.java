@@ -87,55 +87,80 @@ public class DropdownController {
     public ResponseEntity<Object> getUser(
             @Nullable @RequestParam("region_id") Long regionId,
             @Nullable @RequestParam("main_id") Long mainId) {
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User getUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        GlobalResponse response;
+        GlobalResponse response = null;
+        System.out.println("nyampe sini");
         if (regionId != null) {
+            System.out.println("kesini");
             response = userService.dropDownByRegionId(regionId);
         } else if (mainId != null) {
+            System.out.println("kesini2");
             response = userService.dropDown();
         } else {
-            if (user.getLevel().getId() == 1) {
+            System.out.println("kesini3");
+            if (getUser.getLevel().getId() == 1) {
                 response = userService.dropDown();
-            } else if (user.getLevel().getId() == 2) {
-                List<DropDownUserDTO> listUser = null;
-                for (int i = 0; i < user.getRegionId().size(); i++) {
+            } else if (getUser.getLevel().getId() == 2) {
+                List<DropDownUserDTO> user = new ArrayList<>();
+                if (getUser.getRegionId() != null) {
+                    System.out.println("2");
                     List<User> userAgain = userRepository.findAll();
                     for (int u = 0; u < userAgain.size(); u++) {
-                        if (userAgain.get(u).getRegionId() == null) {
-                            if (userAgain.get(u).getBranchId() != null) {
-                                for (int o = 0; o < userAgain.get(u).getBranchId().size(); o++) {
-                                    Optional<Branch> branchAgain = branchRepository
-                                            .findById(userAgain.get(u).getBranchId().get(o));
-                                    if (branchAgain.get().getArea().getRegion().getId() == user.getRegionId().get(i)) {
-                                        DropDownUserDTO userSet = new DropDownUserDTO();
-                                        userSet.setId(userAgain.get(u).getId());
-                                        userSet.setFullname(userAgain.get(u).getFullname());
-                                        userSet.setInitial_name(userAgain.get(u).getInitial_name());
-                                        listUser.add(userSet);
+                        for (int i = 0; i < getUser.getRegionId().size(); i++) {
+                            System.out.println("2.1");
+                            Long region_id = getUser.getRegionId().get(i);
+                            System.out.println("2.2");
+                            if (userAgain.get(u).getRegionId().size() == 0 || userAgain.get(u).getRegionId() == null) {
+                                System.out.println("2.4");
+                                if (userAgain.get(u).getBranchId() != null
+                                        || userAgain.get(u).getBranchId().size() != 0) {
+                                    System.out.println("2.4.2");
+
+                                    for (int e = 0; e < userAgain.get(u).getBranchId()
+                                            .size(); e++) {
+                                        Optional<Branch> branchAgain = branchRepository
+                                                .findById(userAgain.get(u)
+                                                        .getBranchId()
+                                                        .get(e));
+                                        if (branchAgain.get().getArea().getRegion()
+                                                .getId() == region_id) {
+                                            System.out.println("2.4.OK");
+                                            DropDownUserDTO builder = new DropDownUserDTO();
+                                            builder.setFullname(userAgain.get(u).getFullname());
+                                            builder.setId(userAgain.get(u).getId());
+                                            builder.setInitial_name(userAgain.get(u).getInitial_name());
+                                            user.add(builder);
+                                        }
+
                                     }
                                 }
-                            }
-                        } else {
-                            for (int o = 0; o < userAgain.get(u).getRegionId().size(); o++) {
-                                if (userAgain.get(u).getRegionId().get(o) == user.getRegionId().get(i)) {
-                                    DropDownUserDTO userSet = new DropDownUserDTO();
-                                    userSet.setId(userAgain.get(u).getId());
-                                    userSet.setFullname(userAgain.get(u).getFullname());
-                                    userSet.setInitial_name(userAgain.get(u).getInitial_name());
-                                    listUser.add(userSet);
+                            } else {
+                                System.out.println("2.5");
+                                System.out.println(userAgain.get(u).getRegionId()
+                                        .size());
+                                for (int o = 0; o < userAgain.get(u).getRegionId()
+                                        .size(); o++) {
+                                    if (region_id == userAgain.get(u).getRegionId().get(o)) {
+                                        System.out.println("2.5.OK");
+                                        DropDownUserDTO builder = new DropDownUserDTO();
+                                        builder.setFullname(userAgain.get(u).getFullname());
+                                        builder.setId(userAgain.get(u).getId());
+                                        builder.setInitial_name(userAgain.get(u).getInitial_name());
+                                        user.add(builder);
+                                    }
                                 }
                             }
                         }
                     }
+                    response = GlobalResponse.builder().data(user).message("Success").status(HttpStatus.OK).build();
+                } else {
+                    response = null;
                 }
-                response = GlobalResponse.builder().data(listUser).message("Success").status(HttpStatus.OK).build();
-            } else {
-                response = userService.dropDown();
             }
         }
         return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(),
-                response.getError());
+                    response.getError());
     }
 
     @GetMapping("/schedule-status")

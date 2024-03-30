@@ -33,6 +33,7 @@ import com.cms.audit.api.Common.response.GlobalResponse;
 import com.cms.audit.api.Common.response.ResponseEntittyHandler;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 
 @RestController
 @Validated
@@ -73,7 +74,7 @@ public class ClarificationController {
         httpHeaders.setContentType(MediaType.valueOf("application/pdf"));
         httpHeaders.set("Content-Disposition", "inline; filename=" + response.getFilename());
 
-        return new ResponseEntity<InputStreamResource>(isr, httpHeaders, HttpStatus.ACCEPTED);
+        return new ResponseEntity<InputStreamResource>(isr, httpHeaders, HttpStatus.OK);
     }
 
     @GetMapping("/download/{fileName}")
@@ -90,20 +91,19 @@ public class ClarificationController {
         httpHeaders.setContentType(MediaType.valueOf("application/pdf"));
         httpHeaders.set("Content-Disposition", "attachment; filename=" + response.getFilename());
 
-        return new ResponseEntity<InputStreamResource>(isr, httpHeaders, HttpStatus.ACCEPTED);
+        return new ResponseEntity<InputStreamResource>(isr, httpHeaders, HttpStatus.OK);
     }
 
-    @PostMapping("/{id}")
-    public ResponseEntity<Object> save(@RequestBody InputClarificationDTO dto, @PathVariable("id") Long id) {
-        GlobalResponse response = service.inputClarification(dto, id);
+    @PostMapping
+    public ResponseEntity<Object> save(@RequestBody InputClarificationDTO dto) {
+        GlobalResponse response = service.inputClarification(dto);
         return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(),
                 response.getError());
     }
 
-    @PostMapping("/identification/{id}")
-    public ResponseEntity<Object> saveIdentification(@RequestBody IdentificationDTO dto,
-            @PathVariable("id") Long id) {
-        GlobalResponse response = service.identificationClarification(dto, id);
+    @PostMapping("/identification")
+    public ResponseEntity<Object> saveIdentification(@RequestBody IdentificationDTO dto) {
+        GlobalResponse response = service.identificationClarification(dto);
         return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(),
                 response.getError());
     }
@@ -115,9 +115,9 @@ public class ClarificationController {
                 response.getError());
     }
 
-    @PostMapping(value = "/upload/{id}")
+    @PostMapping(value = "/upload")
     public ResponseEntity<Object> upload(@RequestParam(value = "file", required = false) MultipartFile file,
-            @PathVariable("id") Long id) {
+            @ModelAttribute("clarification_id") Long id) {
         GlobalResponse response = service.uploadFile(file, id);
         return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(),
                 response.getError());

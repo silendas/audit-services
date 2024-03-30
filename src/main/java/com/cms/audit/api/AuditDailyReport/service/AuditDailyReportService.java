@@ -2,10 +2,10 @@ package com.cms.audit.api.AuditDailyReport.service;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-import java.util.Map;
 import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import org.hibernate.exception.DataException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -98,9 +98,11 @@ public class AuditDailyReportService {
                                                 .status(HttpStatus.OK)
                                                 .build();
                         }
+                        List<Object> listLha = new ArrayList<>();
                         for (int i = 0; i < response.getContent().size(); i++) {
                                 List<AuditDailyReportDetail> getDetail = auditDailyReportDetailRepository
                                                 .findByLHAId(response.getContent().get(i).getId());
+                                Integer flag = 0;
                                 for (int u = 0; u < getDetail.size(); u++) {
                                         if (response.getContent().get(i).getIs_research() != 1) {
                                                 if (getDetail.get(u).getIs_research() == 1) {
@@ -108,21 +110,46 @@ public class AuditDailyReportService {
                                                                         getDetail.get(u).getId()).orElse(null);
                                                         if (isFlag != null) {
                                                                 if (isFlag.getClarification().getFilename() == null) {
-                                                                        response.getContent().get(i).setIs_research(1);
+                                                                        flag = 1;
                                                                 } else {
-                                                                        response.getContent().get(i).setIs_research(0);
+                                                                        flag = 0;
                                                                 }
                                                         } else {
-                                                                response.getContent().get(i).setIs_research(0);
+                                                                flag = 0;
                                                         }
                                                 }
                                         }
                                 }
+                                Map<String, Object> responseS = new LinkedHashMap<>();
+                                responseS.put("id", response.getContent().get(i).getId());
+                                Map<String, Object> user = new LinkedHashMap<>();
+                                user.put("id", response.getContent().get(i).getUser().getId());
+                                user.put("fullname", response.getContent().get(i).getUser().getFullname());
+                                user.put("email", response.getContent().get(i).getUser().getEmail());
+                                user.put("initial_name", response.getContent().get(i).getUser().getInitial_name());
+                                responseS.put("user", user);
+
+                                Map<String, Object> branch = new LinkedHashMap<>();
+                                branch.put("id", response.getContent().get(i).getBranch().getId());
+                                branch.put("name", response.getContent().get(i).getBranch().getName());
+                                responseS.put("branch", branch);
+
+                                Map<String, Object> schedule = new LinkedHashMap<>();
+                                schedule.put("id", response.getContent().get(i).getSchedule().getId());
+                                schedule.put("start_date", response.getContent().get(i).getSchedule().getStart_date());
+                                schedule.put("end_date", response.getContent().get(i).getSchedule().getEnd_date());
+                                responseS.put("schedule", schedule);
+
+                                responseS.put("is_research", flag);
+                                listLha.add(responseS);
                         }
+                        Map<String, Object> parent = new LinkedHashMap<>();
+                        parent.put("content", listLha);
+                        parent.put("pageable", response.getPageable());
                         return GlobalResponse
                                         .builder()
                                         .message("Success")
-                                        .data(response)
+                                        .data(parent)
                                         .status(HttpStatus.OK)
                                         .build();
                 } catch (ResponseStatusException e) {
@@ -153,6 +180,7 @@ public class AuditDailyReportService {
 
                         List<AuditDailyReportDetail> getDetail = auditDailyReportDetailRepository.findByLHAId(id);
                         List<DetailResponse> details = new ArrayList<>();
+                        Integer is_flag = 0;
                         for (int i = 0; i < getDetail.size(); i++) {
                                 Optional<Revision> getRevision = revisionRepo.findByDetailId(getDetail.get(i).getId());
                                 if (!getRevision.isPresent()) {
@@ -176,6 +204,7 @@ public class AuditDailyReportService {
                                                         builder.setIs_research(0);
                                                 } else {
                                                         builder.setIs_research(1);
+                                                        is_flag = 1;
                                                 }
                                         } else {
                                                 builder.setIs_research(0);
@@ -188,9 +217,9 @@ public class AuditDailyReportService {
                                         builder.setCaseCategory(getRevision.get().getCaseCategory().getName());
                                         builder.setDescription(getRevision.get().getDescription());
                                         builder.setPermanent_recommendations(
-                                                getRevision.get().getPermanent_recommendations());
+                                                        getRevision.get().getPermanent_recommendations());
                                         builder.setTemporary_recommendations(
-                                                getRevision.get().getTemporary_recommendations());
+                                                        getRevision.get().getTemporary_recommendations());
                                         builder.setSuggestion(getRevision.get().getSuggestion());
                                         if (getDetail.get(i).getIs_research() == 1) {
                                                 Flag isFLag = flagRepo
@@ -213,11 +242,27 @@ public class AuditDailyReportService {
 
                         Map<String, Object> response = new LinkedHashMap<>();
                         response.put("id", getLha.getId());
-                        response.put("user", getLha.getUser());
-                        response.put("branch", getLha.getBranch());
-                        response.put("schedule", getLha.getSchedule());
-                        response.put("is_research", getLha.getIs_research());
-                        response.put("details", details);
+
+                        Map<String, Object> user = new LinkedHashMap<>();
+                        user.put("id", getLha.getUser().getId());
+                        user.put("fullname", getLha.getUser().getFullname());
+                        user.put("email", getLha.getUser().getEmail());
+                        user.put("initial_name", getLha.getUser().getInitial_name());
+                        response.put("user", user);
+
+                        Map<String, Object> branch = new LinkedHashMap<>();
+                        branch.put("id", getLha.getBranch().getId());
+                        branch.put("name", getLha.getBranch().getName());
+                        response.put("branch", branch);
+
+                        Map<String, Object> schedule = new LinkedHashMap<>();
+                        schedule.put("id", getLha.getSchedule().getId());
+                        schedule.put("start_date", getLha.getSchedule().getStart_date());
+                        schedule.put("end_date", getLha.getSchedule().getEnd_date());
+                        response.put("schedule", schedule);
+
+                        response.put("is_research", is_flag);
+                        response.put("lha_details", details);
                         return GlobalResponse
                                         .builder()
                                         .message("Success")
@@ -249,6 +294,31 @@ public class AuditDailyReportService {
                 try {
                         Page<AuditDailyReport> response = pagAuditDailyReport.findByScheduleId(id,
                                         PageRequest.of(page, size));
+                        List<Object> listLha = new ArrayList<>();
+                        for(int i = 0;i<response.getContent().size();i++){
+                                Map<String, Object> responseS = new LinkedHashMap<>();
+                                responseS.put("id", response.getContent().get(i).getId());
+                                Map<String, Object> user = new LinkedHashMap<>();
+                                user.put("id", response.getContent().get(i).getUser().getId());
+                                user.put("fullname", response.getContent().get(i).getUser().getFullname());
+                                user.put("email", response.getContent().get(i).getUser().getEmail());
+                                user.put("initial_name", response.getContent().get(i).getUser().getInitial_name());
+                                responseS.put("user", user);
+
+                                Map<String, Object> branch = new LinkedHashMap<>();
+                                branch.put("id", response.getContent().get(i).getBranch().getId());
+                                branch.put("name", response.getContent().get(i).getBranch().getName());
+                                responseS.put("branch", branch);
+
+                                Map<String, Object> schedule = new LinkedHashMap<>();
+                                schedule.put("id", response.getContent().get(i).getSchedule().getId());
+                                schedule.put("start_date", response.getContent().get(i).getSchedule().getStart_date());
+                                schedule.put("end_date", response.getContent().get(i).getSchedule().getEnd_date());
+                                responseS.put("schedule", schedule);
+
+                                responseS.put("is_research", response.getContent().get(i).getIs_research());
+                                listLha.add(responseS);
+                        }
                         if (response.isEmpty()) {
                                 return GlobalResponse
                                                 .builder()
@@ -256,10 +326,13 @@ public class AuditDailyReportService {
                                                 .status(HttpStatus.OK)
                                                 .build();
                         }
+                        Map<String, Object> parent = new LinkedHashMap<>();
+                        parent.put("content", listLha);
+                        parent.put("pageable", response.getPageable());
                         return GlobalResponse
                                         .builder()
                                         .message("Success")
-                                        .data(response)
+                                        .data(parent)
                                         .status(HttpStatus.OK)
                                         .build();
                 } catch (ResponseStatusException e) {

@@ -1,8 +1,7 @@
 package com.cms.audit.api.Clarifications.service;
 
 import java.io.File;
-import java.util.Date;
-import java.util.Optional;
+import java.util.*;
 
 import org.apache.tomcat.util.http.fileupload.impl.IOFileUploadException;
 import org.hibernate.exception.DataException;
@@ -10,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
@@ -75,10 +75,53 @@ public class ClarificationService {
         public GlobalResponse getAll(int page, int size, Date start_date, Date end_date) {
                 try {
                         Page<Clarification> response;
-                        if(start_date == null || end_date == null){
+                        if (start_date == null || end_date == null) {
                                 response = pag.findAll(PageRequest.of(page, size));
                         } else {
-                                response = pag.findClarificationInDateRange(start_date, end_date, PageRequest.of(page, size));
+                                response = pag.findClarificationInDateRange(start_date, end_date,
+                                                PageRequest.of(page, size));
+                        }
+                        List<Object> listCl = new ArrayList<>();
+                        for (int i = 0; i < response.getContent().size(); i++) {
+                                Map<String, Object> clarification = new LinkedHashMap<>();
+                                clarification.put("id", response.getContent().get(i).getId());
+
+                                Map<String, Object> user = new LinkedHashMap<>();
+                                user.put("id", response.getContent().get(i).getUser().getId());
+                                user.put("fullname", response.getContent().get(i).getUser().getFullname());
+                                user.put("initial_name", response.getContent().get(i).getUser().getInitial_name());
+                                user.put("email", response.getContent().get(i).getUser().getEmail());
+                                clarification.put("user", user);
+
+                                Map<String, Object> branch = new LinkedHashMap<>();
+                                branch.put("id", response.getContent().get(i).getBranch().getId());
+                                branch.put("name", response.getContent().get(i).getBranch().getName());
+                                clarification.put("branch", branch);
+
+                                Map<String, Object> cases = new LinkedHashMap<>();
+                                cases.put("id", response.getContent().get(i).getCases().getId());
+                                cases.put("name", response.getContent().get(i).getCases().getName());
+                                cases.put("code", response.getContent().get(i).getCases().getCode());
+                                clarification.put("cases", cases);
+
+                                Map<String, Object> cc = new LinkedHashMap<>();
+                                cc.put("id", response.getContent().get(i).getCaseCategory().getId());
+                                cc.put("name", response.getContent().get(i).getCaseCategory().getName());
+                                clarification.put("case_category", cc);
+
+                                clarification.put("code", response.getContent().get(i).getCode());
+                                clarification.put("priority", response.getContent().get(i).getPriority());
+                                clarification.put("file_name", response.getContent().get(i).getFilename());
+                                clarification.put("file_path", response.getContent().get(i).getFile_path());
+                                clarification.put("description", response.getContent().get(i).getDescription());
+                                clarification.put("status", response.getContent().get(i).getStatus());
+                                clarification.put("is_follow_up", response.getContent().get(i).getIs_follow_up());
+                                if (response.getContent().get(i).getFilename() == null) {
+                                        clarification.put("is_flag", 1);
+                                } else {
+                                        clarification.put("is_flag", 0);
+                                }
+                                listCl.add(clarification);
                         }
                         if (response.isEmpty()) {
                                 return GlobalResponse
@@ -87,10 +130,13 @@ public class ClarificationService {
                                                 .status(HttpStatus.OK)
                                                 .build();
                         }
+                        Map<String, Object> parent = new LinkedHashMap<>();
+                        parent.put("content", listCl);
+                        parent.put("pageable", response.getPageable());
                         return GlobalResponse
                                         .builder()
                                         .message("Success")
-                                        .data(response)
+                                        .data(parent)
                                         .status(HttpStatus.OK)
                                         .build();
                 } catch (ResponseStatusException e) {
@@ -110,18 +156,62 @@ public class ClarificationService {
 
         public GlobalResponse getOneById(Long id) {
                 try {
-                        Optional<Clarification> response = repository.findById(id);
-                        if (!response.isPresent()) {
+                        Clarification response = repository.findById(id).orElse(null);
+                        if (response == null) {
                                 return GlobalResponse
                                                 .builder()
                                                 .message("No Content")
                                                 .status(HttpStatus.OK)
                                                 .build();
                         }
+                        Map<String, Object> clarification = new LinkedHashMap<>();
+
+                        Map<String, Object> user = new LinkedHashMap<>();
+                        user.put("id", response.getUser().getId());
+                        user.put("fullname", response.getUser().getFullname());
+                        user.put("initial_name", response.getUser().getInitial_name());
+                        user.put("email", response.getUser().getEmail());
+                        clarification.put("user", user);
+
+                        Map<String, Object> branch = new LinkedHashMap<>();
+                        branch.put("id", response.getBranch().getId());
+                        branch.put("name", response.getBranch().getName());
+                        clarification.put("branch", branch);
+
+                        Map<String, Object> cases = new LinkedHashMap<>();
+                        cases.put("id", response.getCases().getId());
+                        cases.put("name", response.getCases().getName());
+                        cases.put("code", response.getCases().getCode());
+                        clarification.put("cases", cases);
+
+                        Map<String, Object> cc = new LinkedHashMap<>();
+                        cc.put("id", response.getCaseCategory().getId());
+                        cc.put("name", response.getCaseCategory().getName());
+                        clarification.put("case_category", cc);
+
+                        clarification.put("code", response.getCode());
+                        clarification.put("priority", response.getPriority());
+                        clarification.put("file_name", response.getFilename());
+                        clarification.put("file_path", response.getFile_path());
+                        clarification.put("description", response.getDescription());
+                        clarification.put("location", response.getLocation());
+                        clarification.put("auditee", response.getAuditee());
+                        clarification.put("auditee_leader", response.getAuditee_leader());
+                        clarification.put("recomendation", response.getRecomendation());
+                        clarification.put("evaluation", response.getEvaluation());
+                        clarification.put("status", response.getStatus());
+                        clarification.put("nominal_loss", response.getNominal_loss());
+                        clarification.put("evaluation_limitation", convertDateToRoman.convertDateToString(response.getEvaluation_limitation()));
+                        clarification.put("is_follow_up", response.getIs_follow_up());
+                        if (response.getFilename() == null) {
+                                clarification.put("is_flag", 1);
+                        } else {
+                                clarification.put("is_flag", 0);
+                        }
                         return GlobalResponse
                                         .builder()
                                         .message("Success")
-                                        .data(response)
+                                        .data(clarification)
                                         .status(HttpStatus.OK)
                                         .build();
                 } catch (ResponseStatusException e) {
@@ -172,13 +262,10 @@ public class ClarificationService {
 
         public GlobalResponse generateCK(GenerateCKDTO dto) {
                 try {
-                        User setUserId = User.builder().id(dto.getUser_id()).build();
+                        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
                         Case setCaseId = Case.builder().id(dto.getCase_id()).build();
                         CaseCategory setCaseCaegoryId = CaseCategory.builder().id(dto.getCase_category_id()).build();
-                        ReportType setReportTypeId = ReportType.builder().id(dto.getReport_type_id()).build();
-                        User getUser = userRepository.findById(dto.getUser_id())
-                                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.OK,
-                                                        "User with id " + dto.getUser_id() + " does now exist"));
 
                         Case getCase = caseRepository.findById(dto.getCase_id())
                                         .orElseThrow(() -> new ResponseStatusException(HttpStatus.OK,
@@ -188,7 +275,7 @@ public class ClarificationService {
                         String rptNum = null;
 
                         Optional<NumberClarificationInterface> checkClBefore = repository
-                                        .checkNumberClarification(dto.getUser_id());
+                                        .checkNumberClarification(user.getId());
                         if (checkClBefore.isPresent()) {
                                 if (checkClBefore.get().getCreated_Year().longValue() == Long
                                                 .valueOf(convertDateToRoman.getIntYear())) {
@@ -209,27 +296,30 @@ public class ClarificationService {
                                 reportNumber = Long.valueOf(1);
                         }
 
-                        Branch branch = branchRepository.findById(dto.getBranch_id()).orElseThrow(()-> new ResourceNotFoundException("Branch with id:"+ dto.getBranch_id()+" is undefined"));
+                        Branch branch = branchRepository.findById(dto.getBranch_id())
+                                        .orElseThrow(() -> new ResourceNotFoundException(
+                                                        "Branch with id:" + dto.getBranch_id() + " is undefined"));
 
                         String branchName = branch.getName();
-                        String initialName = getUser.getInitial_name();
+                        String initialName = user.getInitial_name();
                         String caseName = getCase.getCode();
-                        String lvlCode = getUser.getLevel().getCode();
+                        String lvlCode = user.getLevel().getCode();
                         String romanMonth = convertDateToRoman.getRomanMonth();
                         Integer thisYear = convertDateToRoman.getIntYear();
 
                         Optional<ReportType> reportType = reportTypeRepository.findByCode("CK");
 
                         String reportCode = rptNum + lvlCode + "/" + initialName + "-" + caseName
-                                        + "/" + reportType.get().getCode() + "/" +branchName + "/" + romanMonth + "/" + thisYear;
+                                        + "/" + reportType.get().getCode() + "/" + branchName + "/" + romanMonth + "/"
+                                        + thisYear;
 
                         Clarification clarification = new Clarification(
                                         null,
-                                        setUserId,
+                                        user,
                                         branch,
                                         setCaseId,
                                         setCaseCaegoryId,
-                                        setReportTypeId,
+                                        reportType.get(),
                                         reportNumber,
                                         reportCode,
                                         null,
@@ -276,9 +366,9 @@ public class ClarificationService {
                 }
         }
 
-        public GlobalResponse inputClarification(InputClarificationDTO dto, Long id) {
+        public GlobalResponse inputClarification(InputClarificationDTO dto) {
                 try {
-                        Optional<Clarification> getClarification = repository.findById(id);
+                        Optional<Clarification> getClarification = repository.findById(dto.getClarification_id());
                         if (!getClarification.isPresent()) {
                                 return GlobalResponse
                                                 .builder()
@@ -296,7 +386,7 @@ public class ClarificationService {
                                         .build();
 
                         Clarification clarification = new Clarification(
-                                        id,
+                                        dto.getClarification_id(),
                                         setUserId,
                                         getClarification.get().getBranch(),
                                         setCaseId,
@@ -322,7 +412,16 @@ public class ClarificationService {
 
                         Clarification response = repository.save(clarification);
 
-                        String formulir = "FM/"+ response.getCases().getCode() + "-" + response.getReport_number();
+                        String reportNumber = null;
+                        if (response.getReport_number() < 10) {
+                                reportNumber = "00" + reportNumber;
+                        } else if (response.getReport_number() < 100) {
+                                reportNumber = "0" + reportNumber;
+                        } else {
+                                reportNumber = response.getReport_number().toString();
+                        }
+
+                        String formulir = "FM/" + response.getCases().getCode() + "-" + reportNumber;
 
                         PDFResponse generatePDF = GeneratePdf.generateClarificationPDF(response, formulir);
 
@@ -358,9 +457,9 @@ public class ClarificationService {
                 }
         }
 
-        public GlobalResponse identificationClarification(IdentificationDTO dto, Long id) {
+        public GlobalResponse identificationClarification(IdentificationDTO dto) {
                 try {
-                        Optional<Clarification> getBefore = repository.findById(id);
+                        Optional<Clarification> getBefore = repository.findById(dto.getClarification_id());
                         if (!getBefore.isPresent()) {
                                 return GlobalResponse
                                                 .builder()
@@ -370,7 +469,7 @@ public class ClarificationService {
                         }
 
                         Clarification clarification = new Clarification(
-                                        id,
+                                        dto.getClarification_id(),
                                         getBefore.get().getUser(),
                                         getBefore.get().getBranch(),
                                         getBefore.get().getCases(),
@@ -396,124 +495,116 @@ public class ClarificationService {
 
                         Clarification response = repository.save(clarification);
 
-                        if (dto.getNominal_loss().isEmpty() || dto.getNominal_loss() == null
-                                        || dto.getNominal_loss() == "") {
-                                return GlobalResponse
-                                                .builder()
-                                                .message("Success")
-                                                .status(HttpStatus.OK)
-                                                .build();
-                        }
-
                         Long reportNumber = null;
                         String rptNum = null;
 
-                        Optional<NumberClarificationInterface> checkClBefore = newsInspectionRepository
-                                        .checkNumberBAP(response.getUser().getId());
-                        if (checkClBefore.isPresent()) {
-                                if (checkClBefore.get().getCreated_Year() == Long
-                                                .valueOf(convertDateToRoman.getIntYear())) {
-                                        reportNumber = checkClBefore.get().getReport_Number() + 1;
-                                        if (reportNumber < 10) {
-                                                rptNum = "00" + reportNumber;
-                                        } else if (reportNumber < 100) {
-                                                rptNum = "0" + reportNumber;
+                        if (!dto.getNominal_loss().isEmpty() || dto.getNominal_loss() != "") {
+
+                                Optional<NumberClarificationInterface> checkClBefore = newsInspectionRepository
+                                                .checkNumberBAP(response.getUser().getId());
+                                if (checkClBefore.isPresent()) {
+                                        if (checkClBefore.get().getCreated_Year().longValue() == Long
+                                                        .valueOf(convertDateToRoman.getIntYear())) {
+                                                reportNumber = checkClBefore.get().getReport_Number() + 1;
+                                                if (reportNumber < 10) {
+                                                        rptNum = "00" + reportNumber;
+                                                } else if (reportNumber < 100) {
+                                                        rptNum = "0" + reportNumber;
+                                                } else {
+                                                        rptNum = reportNumber.toString();
+                                                }
                                         } else {
-                                                rptNum = reportNumber.toString();
+                                                rptNum = "001";
+                                                reportNumber = Long.valueOf(1);
                                         }
                                 } else {
                                         rptNum = "001";
                                         reportNumber = Long.valueOf(1);
                                 }
-                        } else {
-                                rptNum = "001";
-                                reportNumber = Long.valueOf(1);
+
+                                String branchName = response.getBranch().getName();
+                                String initialName = response.getUser().getInitial_name();
+                                String caseName = response.getCases().getCode();
+                                String lvlCode = response.getUser().getLevel().getCode();
+                                String romanMonth = convertDateToRoman.getRomanMonth();
+                                Integer thisYear = convertDateToRoman.getIntYear();
+
+                                Optional<ReportType> reportType = reportTypeRepository.findByCode("BA");
+
+                                String reportCode = rptNum + lvlCode + "/" + initialName + "-" + caseName + "/"
+                                                + reportType.get().getCode() + "/" + branchName + "/" + romanMonth + "/"
+                                                + thisYear;
+
+                                User setUserId = User.builder().id(response.getUser().getId()).build();
+                                Clarification setClarificationId = Clarification.builder().id(response.getId()).build();
+
+                                NewsInspection newsInspection = new NewsInspection(
+                                                null,
+                                                setUserId,
+                                                setClarificationId,
+                                                reportType.get(),
+                                                null,
+                                                null,
+                                                reportNumber,
+                                                reportCode,
+                                                new Date(),
+                                                new Date());
+
+                                newsInspectionRepository.save(newsInspection);
                         }
 
-                        String branchName = response.getBranch().getName();
-                        String initialName = response.getUser().getInitial_name();
-                        String caseName = response.getCases().getCode();
-                        String lvlCode = response.getUser().getLevel().getCode();
-                        String romanMonth = convertDateToRoman.getRomanMonth();
-                        Integer thisYear = convertDateToRoman.getIntYear();
-
-                        Optional<ReportType> reportType = reportTypeRepository.findByCode("BA");
-
-                        String reportCode = rptNum + lvlCode + "/" + initialName + "-" + caseName + "/"
-                                        + reportType.get().getCode() + "/" + branchName + "/" + romanMonth + "/" + thisYear;
-
-                        User setUserId = User.builder().id(response.getUser().getId()).build();
-                        ReportType setReportId = ReportType.builder().id(Long.valueOf(2)).build();
-                        Clarification setClarificationId = Clarification.builder().id(response.getId()).build();
-
-                        NewsInspection newsInspection = new NewsInspection(
-                                        null,
-                                        setUserId,
-                                        setClarificationId,
-                                        setReportId,
-                                        null,
-                                        null,
-                                        reportNumber,
-                                        reportCode,
-                                        new Date(),
-                                        new Date());
-
-                        newsInspectionRepository.save(newsInspection);
-
-                        if (dto.getIs_followup() == 0 || dto.getIs_followup() == null
-                                        || dto.getIs_followup().toString() == "") {
-                                return GlobalResponse
-                                                .builder()
-                                                .message("Success")
-                                                .status(HttpStatus.OK)
-                                                .build();
-                        }
-
-                        Optional<NumberClarificationInterface> checkTLBefore = followUpRepository.checkNumberFollowUp(response.getUser().getId());
-                        if (checkTLBefore.isPresent()) {
-                                if (checkTLBefore.get().getCreated_Year() == Long
-                                                .valueOf(convertDateToRoman.getIntYear())) {
-                                        reportNumber = checkTLBefore.get().getReport_Number() + 1;
-                                        if (reportNumber < 10) {
-                                                rptNum = "00" + reportNumber;
-                                        } else if (reportNumber < 100) {
-                                                rptNum = "0" + reportNumber;
+                        if (dto.getIs_followup() != 0 || dto.getIs_followup() != null
+                                        || dto.getIs_followup().toString() != "") {
+                                Optional<NumberClarificationInterface> checkTLBefore = followUpRepository
+                                                .checkNumberFollowUp(response.getUser().getId());
+                                if (checkTLBefore.isPresent()) {
+                                        if (checkTLBefore.get().getCreated_Year().longValue() == Long
+                                                        .valueOf(convertDateToRoman.getIntYear())) {
+                                                reportNumber = checkTLBefore.get().getReport_Number() + 1;
+                                                if (reportNumber < 10) {
+                                                        rptNum = "00" + reportNumber;
+                                                } else if (reportNumber < 100) {
+                                                        rptNum = "0" + reportNumber;
+                                                } else {
+                                                        rptNum = reportNumber.toString();
+                                                }
                                         } else {
-                                                rptNum = reportNumber.toString();
+                                                rptNum = "001";
+                                                reportNumber = Long.valueOf(1);
                                         }
                                 } else {
                                         rptNum = "001";
                                         reportNumber = Long.valueOf(1);
                                 }
-                        } else {
-                                rptNum = "001";
-                                reportNumber = Long.valueOf(1);
+
+                                String branchName2 = response.getBranch().getName();
+                                String initialName2 = response.getUser().getInitial_name();
+                                String caseName2 = response.getCases().getCode();
+                                String lvlCode2 = response.getUser().getLevel().getCode();
+                                String romanMonth2 = convertDateToRoman.getRomanMonth();
+                                Integer thisYear2 = convertDateToRoman.getIntYear();
+
+                                Optional<ReportType> reportType2 = reportTypeRepository.findByCode("TL");
+
+                                String reportCode2 = rptNum + lvlCode2 + "/" + initialName2 + "-" + caseName2 + "/"
+                                                + reportType2.get().getCode() + "/" + branchName2 + "/" + romanMonth2
+                                                + "/"
+                                                + thisYear2;
+
+                                User setUserId = User.builder().id(response.getUser().getId()).build();
+                                Clarification setClarificationId = Clarification.builder().id(response.getId()).build();
+
+                                FollowUp followUp = new FollowUp();
+                                followUp.setClarification(setClarificationId);
+                                followUp.setUser(setUserId);
+                                followUp.setReportType(reportType2.get());
+                                followUp.setReport_number(reportNumber);
+                                followUp.setCode(reportCode2);
+                                followUp.setStatus(EStatusFollowup.CREATE);
+                                followUp.setCreatedAt(new Date());
+
+                                followUpRepository.save(followUp);
                         }
-
-                        String branchName2 = response.getBranch().getName();
-                        String initialName2 = response.getUser().getInitial_name();
-                        String caseName2 = response.getCases().getCode();
-                        String lvlCode2 = response.getUser().getLevel().getCode();
-                        String romanMonth2 = convertDateToRoman.getRomanMonth();
-                        Integer thisYear2 = convertDateToRoman.getIntYear();
-
-                        ReportType setReportId2 = ReportType.builder().id(Long.valueOf(3)).build();
-
-                        Optional<ReportType> reportType2 = reportTypeRepository.findByCode("TL");
-
-                        String reportCode2 = rptNum + lvlCode2 + "/" + initialName2 + "-" + caseName2 + "/"
-                                        + reportType2.get().getCode() + "/" + branchName2 + "/" + romanMonth2 + "/" + thisYear2;
-
-                        FollowUp followUp = new FollowUp();
-                        followUp.setClarification(setClarificationId);
-                        followUp.setUser(setUserId);
-                        followUp.setReportType(setReportId2);
-                        followUp.setReport_number(reportNumber);
-                        followUp.setCode(reportCode2);
-                        followUp.setStatus(EStatusFollowup.CREATE);
-                        followUp.setCreatedAt(new Date());
-                        
-                        followUpRepository.save(followUp);
 
                         return GlobalResponse
                                         .builder()
@@ -609,7 +700,8 @@ public class ClarificationService {
 
         public Clarification downloadFile(String fileName) throws java.io.IOException, IOFileUploadException {
                 Clarification response = repository.findByFilename(fileName)
-                                .orElseThrow(() -> new ResourceNotFoundException("File not found with name: " + fileName ));
+                                .orElseThrow(() -> new ResourceNotFoundException(
+                                                "File not found with name: " + fileName));
                 return response;
         }
 
