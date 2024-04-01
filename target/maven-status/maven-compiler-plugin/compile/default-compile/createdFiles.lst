@@ -28,6 +28,7 @@ com\cms\audit\api\AuditWorkingPaper\service\AuditWorkingPaperService.class
 com\cms\audit\api\InspectionSchedule\repository\ScheduleRepository.class
 com\cms\audit\api\AuditWorkingPaper\repository\PagAuditWorkingPaper.class
 com\cms\audit\api\InspectionSchedule\controller\RescheduleController.class
+com\cms\audit\api\AuditDailyReport\models\Revision.class
 com\cms\audit\api\Flag\model\Flag$FlagBuilder.class
 com\cms\audit\api\Common\dto\BaseResponse.class
 com\cms\audit\api\AuditDailyReport\repository\PagAuditDailyReportDetail.class
@@ -43,6 +44,7 @@ com\cms\audit\api\Common\dto\ResponseDto.class
 com\cms\audit\api\Management\User\models\User$UserBuilder.class
 com\cms\audit\api\Config\Jwt\JwtAuthenticationFIlter.class
 com\cms\audit\api\Flag\model\Flag.class
+com\cms\audit\api\AuditDailyReport\repository\RevisionRepository.class
 com\cms\audit\api\Clarifications\dto\response\NumberClarificationInterface.class
 com\cms\audit\api\InspectionSchedule\dto\ScheduleRequest.class
 com\cms\audit\api\FollowUp\dto\FollowUpDTO.class
@@ -95,6 +97,7 @@ com\cms\audit\api\Report\controller\ReportController.class
 com\cms\audit\api\Common\response\ResponseEntittyHandler.class
 com\cms\audit\api\Management\Case\dto\response\CaseInterface.class
 com\cms\audit\api\AuditDailyReport\controller\AuditDailyReportController.class
+com\cms\audit\api\AuditDailyReport\service\RevisionService.class
 com\cms\audit\api\Management\Role\models\Role$RoleBuilder.class
 com\cms\audit\api\NewsInspection\controller\NewsInspecionController.class
 com\cms\audit\api\AuditWorkingPaper\controller\AuditWorkingPaperController.class
@@ -113,13 +116,13 @@ com\cms\audit\api\InspectionSchedule\controller\MainScheduleConroller.class
 com\cms\audit\api\Management\Office\RegionOffice\dto\response\RegionInterface.class
 com\cms\audit\api\Clarifications\service\ClarificationService.class
 com\cms\audit\api\Management\Office\RegionOffice\services\RegionService.class
-com\cms\audit\api\Clarifications\dto\IdentificationDTO$IdentificationDTOBuilder.class
 com\cms\audit\api\Management\User\dto\ChangePasswordDTO.class
 com\cms\audit\api\Management\ReportType\dto\response\ReportTypeInterface.class
 com\cms\audit\api\InspectionSchedule\models\ECategory.class
 com\cms\audit\api\Management\Case\controller\CaseController.class
 com\cms\audit\api\Authentication\dto\SigninDTO$SigninDTOBuilder.class
 com\cms\audit\api\Common\constant\FolderPath.class
+com\cms\audit\api\AuditDailyReport\models\Revision$RevisionBuilder.class
 com\cms\audit\api\AuditDailyReport\repository\pagAuditDailyReport.class
 com\cms\audit\api\InspectionSchedule\models\EStatus.class
 com\cms\audit\api\InspectionSchedule\models\LogSchedule$LogScheduleBuilder.class
@@ -180,6 +183,7 @@ com\cms\audit\api\Management\Level\dto\response\LevelInterface.class
 com\cms\audit\api\Common\util\ExcelUtil.class
 com\cms\audit\api\Clarifications\dto\IdentificationDTO.class
 com\cms\audit\api\InspectionSchedule\models\Schedule$ScheduleBuilder.class
+com\cms\audit\api\AuditDailyReport\controller\RevisionController.class
 com\cms\audit\api\Common\exception\ResourceNotFoundException.class
 com\cms\audit\api\FollowUp\service\FollowupService.class
 com\cms\audit\api\FollowUp\controller\FollowupController.class
@@ -187,6 +191,7 @@ com\cms\audit\api\Management\Office\BranchOffice\repository\PagBranch.class
 com\cms\audit\api\Management\Role\repository\RoleRepository.class
 com\cms\audit\api\InspectionSchedule\dto\response\ScheduleInterface.class
 com\cms\audit\api\Management\User\repository\PagUser.class
+com\cms\audit\api\AuditDailyReport\dto\RevisionDTO.class
 com\cms\audit\api\InspectionSchedule\repository\LogScheduleRepository.class
 com\cms\audit\api\Management\Case\repository\CaseRepository.class
 com\cms\audit\api\Authentication\repository\AuthRepository.class

@@ -3,8 +3,10 @@ package com.cms.audit.api.FollowUp.models;
 import java.util.Date;
 
 import com.cms.audit.api.Clarifications.models.Clarification;
+import com.cms.audit.api.Management.Penalty.models.Penalty;
 import com.cms.audit.api.Management.ReportType.models.ReportType;
 import com.cms.audit.api.Management.User.models.User;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -39,6 +41,10 @@ public class FollowUp {
     private User user;
 
     @ManyToOne
+    @JoinColumn(name = "penalty_id")
+    private Penalty penalty;
+
+    @ManyToOne
     @JoinColumn(name = "report_type_id")
     private ReportType reportType;
 
@@ -63,6 +69,7 @@ public class FollowUp {
     @Column(name = "is_penalty")
     private Long isPenalty;
 
+    @JsonFormat(pattern="yyyy-MM-dd")
     @Column(name = "created_at")
     private Date createdAt;
     

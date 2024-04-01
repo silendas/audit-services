@@ -17,6 +17,7 @@ import com.cms.audit.api.Management.Office.BranchOffice.models.Branch;
 import com.cms.audit.api.Management.Office.MainOffice.models.Main;
 import com.cms.audit.api.Management.Office.RegionOffice.models.Region;
 import com.cms.audit.api.Management.Role.models.Role;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -65,41 +66,14 @@ public class User implements UserDetails {
     @JoinColumn(name = "main_id", nullable = true)
     private Main main;
 
-    // @ManyToOne
-    // @JoinColumn(name = "region_id", nullable = true)
-    // private Region region;
-
     @Column(name = "region_id",nullable = true)
     private List<Long> regionId;
-
-    // @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    // @JoinTable(name = "user_region",joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),inverseJoinColumns = @JoinColumn(name = "region_id",referencedColumnName = "id"))
-    // private List<Region> region = new ArrayList<>();
-
-    // @ManyToOne
-    // @JoinColumn(name = "area_id", nullable = true)
-    // private Area area;
-
-    // @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    // @JoinTable(name = "user_area",joinColumns = @JoinColumn(name = "user_id",referencedColumnName = "id"),inverseJoinColumns = @JoinColumn(name = "area_id",referencedColumnName = "id"))
-    // private List<Area> area = new ArrayList<>();
 
     @Column(name = "area_id",nullable = true)
     private List<Long> areaId;
 
-    // @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
-    // private List<Branch> branch;
-
-    // @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    // @JoinTable(name = "user_branch",joinColumns = @JoinColumn(name = "user_id",referencedColumnName = "id"),inverseJoinColumns = @JoinColumn(name = "branch_id",referencedColumnName = "id"))
-    // private List<Branch> branch = new ArrayList<>();
-
     @Column(name = "branch_id",nullable = true)
     private List<Long> branchId;
-
-    // @ManyToOne
-    // @JoinColumn(name = "branch_id", nullable = true)
-    // private Branch branch;
 
     @Column(name = "email")
     private String email;
@@ -110,6 +84,7 @@ public class User implements UserDetails {
     @Column(name = "username")
     private String username;
 
+    @JsonIgnore
     @Column(name = "password")
     private String password;
 
@@ -142,29 +117,34 @@ public class User implements UserDetails {
         return username;
     }
 
+    @JsonIgnore
     @Override
     public String getPassword() {
         return password;
     }
 
+    @JsonIgnore
     @Override
     public boolean isAccountNonExpired() {
         // TODO Auto-generated method stub
         return true;
     }
 
+    @JsonIgnore
     @Override
     public boolean isAccountNonLocked() {
         // TODO Auto-generated method stub
         return true;
     }
 
+    @JsonIgnore
     @Override
     public boolean isCredentialsNonExpired() {
         // TODO Auto-generated method stub
         return true;
     }
 
+    @JsonIgnore
     @Override
     public boolean isEnabled() {
         // TODO Auto-generated method stub

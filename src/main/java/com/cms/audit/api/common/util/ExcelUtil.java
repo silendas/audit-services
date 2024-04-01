@@ -48,7 +48,11 @@ public class ExcelUtil {
                 row1.createCell(8).setCellValue(c.getAuditee_leader());
                 row1.createCell(9).setCellValue(c.getFilename());
                 row1.createCell(10).setCellValue(c.getDescription());
-                row1.createCell(11).setCellValue(c.getPriority().name());
+                if(c.getPriority() != null){
+                    row1.createCell(11).setCellValue(c.getPriority().name());
+                } else {
+                    row1.createCell(11).setCellValue("");
+                }
                 row1.createCell(12).setCellValue(c.getStatus().name());
             }
 

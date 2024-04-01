@@ -1,9 +1,11 @@
 package com.cms.audit.api.NewsInspection.service;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.net.MalformedURLException;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.apache.tomcat.util.http.fileupload.impl.IOFileUploadException;
@@ -16,16 +18,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.cms.audit.api.Clarifications.models.Clarification;
 import com.cms.audit.api.Clarifications.repository.ClarificationRepository;
 import com.cms.audit.api.Common.constant.FolderPath;
+import com.cms.audit.api.Common.constant.convertDateToRoman;
 import com.cms.audit.api.Common.constant.randomValueNumber;
 import com.cms.audit.api.Common.exception.ResourceNotFoundException;
-import com.cms.audit.api.Common.pdf.GeneratePdf;
 import com.cms.audit.api.Common.response.GlobalResponse;
-import com.cms.audit.api.FollowUp.models.FollowUp;
-import com.cms.audit.api.Management.ReportType.models.ReportType;
-import com.cms.audit.api.Management.User.models.User;
 import com.cms.audit.api.NewsInspection.models.NewsInspection;
 import com.cms.audit.api.NewsInspection.repository.NewsInspectionRepository;
 import com.cms.audit.api.NewsInspection.repository.PagNewsInspection;
@@ -55,6 +53,35 @@ public class NewsInspectionService {
             } else {
                 response = pag.findBAPInDateRange(start_date, end_date, PageRequest.of(page, size));
             }
+            List<Object> listBAP = new ArrayList<>();
+            for(int i=0;i<response.getContent().size();i++){
+                NewsInspection bap = response.getContent().get(i);
+                Map<String,Object> kkaMap = new LinkedHashMap<>();
+                kkaMap.put("id", bap.getId());
+
+                Map<String,Object> user = new LinkedHashMap<>();
+                user.put("id", bap.getUser().getId());
+                user.put("email", bap.getUser().getEmail());
+                user.put("fullname", bap.getUser().getFullname());
+                user.put("initial_name", bap.getUser().getInitial_name());
+                kkaMap.put("user",user);
+
+                Map<String,Object> clarification = new LinkedHashMap<>();
+                clarification.put("id", bap.getClarification().getId());
+                clarification.put("code", bap.getClarification().getCode());
+                clarification.put("evaluation_limitation", convertDateToRoman.convertDateToString(bap.getClarification().getEvaluation_limitation()));
+                kkaMap.put("clarification", clarification);
+
+                kkaMap.put("code", bap.getCode());
+                kkaMap.put("filename", bap.getFileName());
+                kkaMap.put("file_path", bap.getFile_path());
+
+                listBAP.add(kkaMap);
+
+            }
+            Map<String,Object> parent = new LinkedHashMap<>();
+            parent.put("content", listBAP);
+            parent.put("pageable", response.getPageable());
             if (response.isEmpty()) {
                 return GlobalResponse
                         .builder()
@@ -65,7 +92,7 @@ public class NewsInspectionService {
             return GlobalResponse
                     .builder()
                     .message("Success")
-                    .data(response)
+                    .data(parent)
                     .status(HttpStatus.OK)
                     .build();
         } catch (ResponseStatusException e) {
@@ -92,6 +119,27 @@ public class NewsInspectionService {
     public GlobalResponse getOneById(Long id) {
         try {
             Optional<NewsInspection> response = repository.findById(id);
+            NewsInspection bap = response.get();
+            Map<String,Object> kkaMap = new LinkedHashMap<>();
+            kkaMap.put("id", bap.getId());
+
+            Map<String,Object> user = new LinkedHashMap<>();
+            user.put("id", bap.getUser().getId());
+            user.put("email", bap.getUser().getEmail());
+            user.put("fullname", bap.getUser().getFullname());
+            user.put("initial_name", bap.getUser().getInitial_name());
+            kkaMap.put("user",user);
+
+            Map<String,Object> clarification = new LinkedHashMap<>();
+            clarification.put("id", bap.getClarification().getId());
+            clarification.put("code", bap.getClarification().getCode());
+            clarification.put("evaluation_limitation", convertDateToRoman.convertDateToString(bap.getClarification().getEvaluation_limitation()));
+            kkaMap.put("clarification", clarification);
+
+            kkaMap.put("code", bap.getCode());
+            kkaMap.put("filename", bap.getFileName());
+            kkaMap.put("filename", bap.getFileName());
+            kkaMap.put("file_path", bap.getFile_path());
             if (!response.isPresent()) {
                 return GlobalResponse
                         .builder()
@@ -102,7 +150,7 @@ public class NewsInspectionService {
             return GlobalResponse
                     .builder()
                     .message("Success")
-                    .data(response)
+                    .data(kkaMap)
                     .status(HttpStatus.OK)
                     .build();
         } catch (ResponseStatusException e) {

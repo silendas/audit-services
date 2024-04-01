@@ -1,7 +1,6 @@
 package com.cms.audit.api.AuditDailyReport.service;
 
-import java.util.Date;
-import java.util.Optional;
+import java.util.*;
 
 import org.hibernate.exception.DataException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,11 +13,16 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.cms.audit.api.AuditDailyReport.dto.AuditDailyReportDetailDTO;
 import com.cms.audit.api.AuditDailyReport.dto.EditAuditDailyReportDetailDTO;
+import com.cms.audit.api.AuditDailyReport.dto.response.DetailResponse;
 import com.cms.audit.api.AuditDailyReport.models.AuditDailyReport;
 import com.cms.audit.api.AuditDailyReport.models.AuditDailyReportDetail;
+import com.cms.audit.api.AuditDailyReport.models.Revision;
 import com.cms.audit.api.AuditDailyReport.repository.AuditDailyReportDetailRepository;
 import com.cms.audit.api.AuditDailyReport.repository.PagAuditDailyReportDetail;
+import com.cms.audit.api.AuditDailyReport.repository.RevisionRepository;
+import com.cms.audit.api.Common.exception.ResourceNotFoundException;
 import com.cms.audit.api.Common.response.GlobalResponse;
+import com.cms.audit.api.Flag.model.Flag;
 import com.cms.audit.api.Management.Case.models.Case;
 import com.cms.audit.api.Management.CaseCategory.models.CaseCategory;
 import com.cms.audit.api.Management.User.models.User;
@@ -34,6 +38,9 @@ public class AuditDailyReportDetailService {
     @Autowired
     private PagAuditDailyReportDetail pag;
 
+    @Autowired
+    private RevisionRepository revisionRepo;
+
     public GlobalResponse get(int page, int size, Long lhaId) {
         try {
             Page<AuditDailyReportDetail> response;
@@ -42,6 +49,37 @@ public class AuditDailyReportDetailService {
             } else {
                 response = pag.findByLHAId(lhaId, PageRequest.of(page, size));
             }
+            List<Object> details = new ArrayList<>();
+            for (int i = 0; i < response.getContent().size(); i++) {
+                Optional<Revision> getRevision = revisionRepo.findByDetailId(response.getContent().get(i).getId());
+                if (!getRevision.isPresent()) {
+                    DetailResponse builder = new DetailResponse();
+                    builder.setId(response.getContent().get(i).getId());
+                    builder.setCases(response.getContent().get(i).getCases().getName());
+                    builder.setCaseCategory(response.getContent().get(i).getCaseCategory().getName());
+                    builder.setDescription(response.getContent().get(i).getDescription());
+                    builder.setPermanent_recommendations(
+                            response.getContent().get(i).getPermanent_recommendations());
+                    builder.setTemporary_recommendations(
+                            response.getContent().get(i).getTemporary_recommendations());
+                    builder.setSuggestion(response.getContent().get(i).getSuggestion());
+                    builder.setIs_research(response.getContent().get(i).getIs_research());
+                    details.add(builder);
+                } else {
+                    DetailResponse builder = new DetailResponse();
+                    builder.setId(getRevision.get().getId());
+                    builder.setCases(getRevision.get().getCases().getName());
+                    builder.setCaseCategory(getRevision.get().getCaseCategory().getName());
+                    builder.setDescription(getRevision.get().getDescription());
+                    builder.setPermanent_recommendations(
+                            getRevision.get().getPermanent_recommendations());
+                    builder.setTemporary_recommendations(
+                            getRevision.get().getTemporary_recommendations());
+                    builder.setSuggestion(getRevision.get().getSuggestion());
+                    builder.setIs_research(getRevision.get().getIs_research());
+                    details.add(builder);
+                }
+            }
             if (response.isEmpty()) {
                 return GlobalResponse
                         .builder()
@@ -49,10 +87,14 @@ public class AuditDailyReportDetailService {
                         .status(HttpStatus.NO_CONTENT)
                         .build();
             }
+            Map<String, Object> parent = new LinkedHashMap<>();
+            parent.put("lha_details", details);
+            parent.put("pageable", response.getPageable());
+
             return GlobalResponse
                     .builder()
                     .message("Success")
-                    .data(response)
+                    .data(parent)
                     .status(HttpStatus.OK)
                     .build();
         } catch (ResponseStatusException e) {
@@ -81,10 +123,31 @@ public class AuditDailyReportDetailService {
             AuditDailyReportDetail response = repository.findOneByLHADetailId(id)
                     .orElseThrow(() -> new IllegalStateException(
                             "lha with id " + id + " does now exist"));
+            Map<String,Object> builder = new LinkedHashMap<>();
+            builder.put("id",response.getId());
+
+            Map<String,Object> cases = new LinkedHashMap<>();
+            cases.put("id", response.getCases().getId());
+            cases.put("name", response.getCases().getName());
+            cases.put("code", response.getCases().getCode());
+            builder.put("case",cases);
+
+            Map<String,Object> caseCategory = new LinkedHashMap<>();
+            caseCategory.put("id", response.getCaseCategory().getId());
+            caseCategory.put("name", response.getCaseCategory().getName());
+            builder.put("case_category",caseCategory);
+
+            builder.put("description",response.getDescription());
+            builder.put(
+                    "permanent_recommendation",response.getPermanent_recommendations());
+            builder.put(
+                    "temporary_recommendation",response.getTemporary_recommendations());
+            builder.put("suggestion",response.getSuggestion());
+            builder.put("is_research",response.getIs_research());
             return GlobalResponse
                     .builder()
                     .message("Success")
-                    .data(response)
+                    .data(builder)
                     .status(HttpStatus.OK)
                     .build();
         } catch (ResponseStatusException e) {

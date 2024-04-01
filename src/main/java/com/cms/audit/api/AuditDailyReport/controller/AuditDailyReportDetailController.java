@@ -47,23 +47,6 @@ public class AuditDailyReportDetailController {
                 response.getError());
     }
 
-    // @GetMapping("/{id}/lha/all")
-    // public ResponseEntity<Object> getByLHA(
-    //     @PathVariable("id") Long id,
-    //     @RequestParam("page") Optional<Integer> page,
-    //     @RequestParam("size") Optional<Integer> size) {
-    //     GlobalResponse response = service.getByLHAId(id, page.orElse(0),size.orElse(10));
-    //     return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(),
-    //             response.getError());
-    // }
-
-    // @GetMapping("/{id}/lha/last")
-    // public ResponseEntity<Object> getOneByLHA(@PathVariable("id") Long id) {
-    //     GlobalResponse response = service.getOneByLHAId(id);
-    //     return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(),
-    //             response.getError());
-    // }
-
     @PostMapping
     public ResponseEntity<Object> post(@RequestBody AuditDailyReportDetailDTO dto) {
         GlobalResponse response = service.save(dto);

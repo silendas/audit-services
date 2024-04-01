@@ -17,6 +17,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class InputClarificationDTO {
+    private Long clarification_id;
     private Date evaluation_limitation;
     private String location;
     private String auditee;

@@ -5,6 +5,7 @@ import java.util.Date;
 import com.cms.audit.api.InspectionSchedule.models.Schedule;
 import com.cms.audit.api.Management.Office.BranchOffice.models.Branch;
 import com.cms.audit.api.Management.User.models.User;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -33,6 +34,7 @@ public class AuditDailyReport {
     @Column(name = "id")
     private Long id;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "schedule_id")
     private Schedule schedule;

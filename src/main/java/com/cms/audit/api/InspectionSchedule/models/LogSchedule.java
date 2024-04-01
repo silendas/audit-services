@@ -2,9 +2,6 @@ package com.cms.audit.api.InspectionSchedule.models;
 
 import java.util.Date;
 
-import com.cms.audit.api.Management.Office.BranchOffice.models.Branch;
-import com.cms.audit.api.Management.User.models.User;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;

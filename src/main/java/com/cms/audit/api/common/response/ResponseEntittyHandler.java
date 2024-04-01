@@ -22,9 +22,9 @@ public class ResponseEntittyHandler {
 
         Map<String, Object> map = new LinkedHashMap<>();
         map.put("meta", meta);
-        map.put("data", data);
         map.put("message", message);
         map.put("status", status.value());
+        map.put("data", data);
 
         return new ResponseEntity<Object>(map, status);
     }
@@ -40,8 +40,12 @@ public class ResponseEntittyHandler {
         if (error != null) {
             Map<String, Object> err = new LinkedHashMap<>();
             err.put("name", error.getClass());
-            err.put("message", error.getMessage());
-            err.put("header", error.getStackTrace());
+            if(message != null){
+                err.put("message", message);
+            }else{
+                err.put("message", error.getMessage());
+            }
+            err.put("cause", error.getStackTrace());
 
             map.put("meta", meta);
             map.put("status", status.value());

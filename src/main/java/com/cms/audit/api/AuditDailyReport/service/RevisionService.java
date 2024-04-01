@@ -37,6 +37,18 @@ public class RevisionService {
     @Autowired
     private CaseCategoryRepository caseCategoryRepository;
 
+    public GlobalResponse getAll(){
+        try {
+            List<Revision> response = repository.findAll();
+        if(response.isEmpty()){
+            return GlobalResponse.builder().message("No Content").status(HttpStatus.NO_CONTENT).build();
+        }
+        return GlobalResponse.builder().data(response).message("Success").status(HttpStatus.OK).build();
+        } catch (Exception e) {
+            return GlobalResponse.builder().error(e).status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
     public GlobalResponse insertNewRevision(RevisionDTO dto) {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
@@ -66,6 +78,13 @@ public class RevisionService {
         revision.setSuggestion(dto.getSuggestion());
         revision.setCreated_by(user.getId());
         revision.setCreated_at(new Date());
+
+        Optional<Revision> getRevision = repository.findByDetailId(detail.get().getId());
+        if(getRevision.isPresent()){
+            revision.setRevisionNumber(getRevision.get().getRevisionNumber() + 1);
+        } else {
+            revision.setRevisionNumber(1L);
+        }
 
         try {
             repository.save(revision);

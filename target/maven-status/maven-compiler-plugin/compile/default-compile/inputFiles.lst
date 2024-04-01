@@ -44,6 +44,7 @@ C:\Project\Spring Boot\final\last\very last\audit-services\src\main\java\com\cms
 C:\Project\Spring Boot\final\last\very last\audit-services\src\main\java\com\cms\audit\api\Management\ReportType\repository\ReportTypeRepository.java
 C:\Project\Spring Boot\final\last\very last\audit-services\src\main\java\com\cms\audit\api\Management\CaseCategory\models\CaseCategory.java
 C:\Project\Spring Boot\final\last\very last\audit-services\src\main\java\com\cms\audit\api\Management\CaseCategory\dto\CaseCategoryDTO.java
+C:\Project\Spring Boot\final\last\very last\audit-services\src\main\java\com\cms\audit\api\Management\User\dto\UserResponseOther.java
 C:\Project\Spring Boot\final\last\very last\audit-services\src\main\java\com\cms\audit\api\AuditDailyReport\repository\AuditDailyReportRepository.java
 C:\Project\Spring Boot\final\last\very last\audit-services\src\main\java\com\cms\audit\api\InspectionSchedule\dto\RescheduleDTO.java
 C:\Project\Spring Boot\final\last\very last\audit-services\src\main\java\com\cms\audit\api\Common\dto\BaseResponse.java

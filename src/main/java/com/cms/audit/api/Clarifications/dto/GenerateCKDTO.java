@@ -14,9 +14,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class GenerateCKDTO {
-    private Long user_id;
     private Long case_id;
     private Long case_category_id;
     private Long branch_id;
-    private Long report_type_id;
 }
