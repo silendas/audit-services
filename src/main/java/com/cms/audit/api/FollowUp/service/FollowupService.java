@@ -19,6 +19,8 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.cms.audit.api.AuditWorkingPaper.models.AuditWorkingPaper;
 import com.cms.audit.api.Clarifications.models.Clarification;
+import com.cms.audit.api.Common.constant.FileStorageFU;
+import com.cms.audit.api.Common.constant.FileStorageService;
 import com.cms.audit.api.Common.constant.FolderPath;
 import com.cms.audit.api.Common.constant.convertDateToRoman;
 import com.cms.audit.api.Common.constant.randomValueNumber;
@@ -43,6 +45,9 @@ import jakarta.transaction.Transactional;
 public class FollowupService {
     @Autowired
     private FollowUpRepository repository;
+
+    @Autowired
+    private FileStorageFU fileStorageService;
 
     @Autowired
     private PagFollowup pagination;
@@ -227,8 +232,9 @@ public class FollowupService {
             FollowUp getFollowUp = repository.findById(id)
                     .orElseThrow(() -> new ResourceNotFoundException("followUp with id: " + id + " is undefined"));
 
-            String fileName = randomValueNumber.randomNumberGenerator() + "-" + file.getOriginalFilename();
+            //String fileName = randomValueNumber.randomNumberGenerator() + "-" + file.getOriginalFilename();
 
+            String fileName = fileStorageService.storeFile(file);
             String path = FOLDER_PATH + fileName;
             String filePath = path;
 

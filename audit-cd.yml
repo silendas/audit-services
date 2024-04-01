@@ -1,0 +1,33 @@
+pipeline:
+  agent:
+    any
+
+  environment:
+    SERVER_APP: ""
+    USER_APP: "exampleusername"
+    # PASSWORD_APP: "examplepass"
+    TOMCAT_WEBAPPS_DIR: "/example/tomcat/webapps"
+    WAR_FILE: "audit-service.war"
+
+  stages:
+    - stage: Checkout
+      steps:
+        - script:
+            - git 'https://github.com/cmsmaju/audit-services.git'
+
+    - stage: Build
+      steps:
+        - script:
+            - mvn clean install
+
+    - stage: Deploy
+      steps:
+        - script:
+            - echo "Copying WAR file to Tomcat server"
+            - scp target/$WAR_FILE $USER_APP@$SERVER_APP:$TOMCAT_WEBAPPS_DIR/
+
+  post:
+    success:
+      - script:
+          - echo "Restarting Tomcat server"
+          - ssh $USER_APP@$SERVER_APP "$TOMCAT_WEBAPPS_DIR/../bin/shutdown.sh && $TOMCAT_WEBAPPS_DIR/../bin/startup.sh"

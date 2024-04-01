@@ -38,6 +38,7 @@ C:\Project\Spring Boot\final\last\very last\audit-services\src\main\java\com\cms
 C:\Project\Spring Boot\final\last\very last\audit-services\src\main\java\com\cms\audit\api\Authentication\repository\AuthRepository.java
 C:\Project\Spring Boot\final\last\very last\audit-services\src\main\java\com\cms\audit\api\Management\User\services\InsertDevUser.java
 C:\Project\Spring Boot\final\last\very last\audit-services\src\main\java\com\cms\audit\api\Management\ReportType\dto\ReportTypeDTO.java
+C:\Project\Spring Boot\final\last\very last\audit-services\src\main\java\com\cms\audit\api\Common\constant\FileStorageBAP.java
 C:\Project\Spring Boot\final\last\very last\audit-services\src\main\java\com\cms\audit\api\Management\User\controller\UserController.java
 C:\Project\Spring Boot\final\last\very last\audit-services\src\main\java\com\cms\audit\api\Management\Office\AreaOffice\repository\PagArea.java
 C:\Project\Spring Boot\final\last\very last\audit-services\src\main\java\com\cms\audit\api\Config\ApplicationConfig.java
@@ -67,6 +68,7 @@ C:\Project\Spring Boot\final\last\very last\audit-services\src\main\java\com\cms
 C:\Project\Spring Boot\final\last\very last\audit-services\src\main\java\com\cms\audit\api\Management\User\controller\ProfileController.java
 C:\Project\Spring Boot\final\last\very last\audit-services\src\main\java\com\cms\audit\api\AuditDailyReport\dto\EditAuditDailyReportDTO.java
 C:\Project\Spring Boot\final\last\very last\audit-services\src\main\java\com\cms\audit\api\Management\Office\BranchOffice\repository\PagBranch.java
+C:\Project\Spring Boot\final\last\very last\audit-services\src\main\java\com\cms\audit\api\Common\constant\FileStorageFU.java
 C:\Project\Spring Boot\final\last\very last\audit-services\src\main\java\com\cms\audit\api\Flag\model\Flag.java
 C:\Project\Spring Boot\final\last\very last\audit-services\src\main\java\com\cms\audit\api\Management\Level\services\InsertDefaultLevel.java
 C:\Project\Spring Boot\final\last\very last\audit-services\src\main\java\com\cms\audit\api\AuditDailyReport\service\AuditDailyReportDetailService.java
@@ -111,6 +113,7 @@ C:\Project\Spring Boot\final\last\very last\audit-services\src\main\java\com\cms
 C:\Project\Spring Boot\final\last\very last\audit-services\src\main\java\com\cms\audit\api\Management\Role\services\InsertDefaultRole.java
 C:\Project\Spring Boot\final\last\very last\audit-services\src\main\java\com\cms\audit\api\Management\CaseCategory\dto\response\CaseCategoryInterface.java
 C:\Project\Spring Boot\final\last\very last\audit-services\src\main\java\com\cms\audit\api\Management\Penalty\dto\response\PenaltyInterface.java
+C:\Project\Spring Boot\final\last\very last\audit-services\src\main\java\com\cms\audit\api\Common\constant\FileStorageKKA.java
 C:\Project\Spring Boot\final\last\very last\audit-services\src\main\java\com\cms\audit\api\InspectionSchedule\controller\MainScheduleConroller.java
 C:\Project\Spring Boot\final\last\very last\audit-services\src\main\java\com\cms\audit\api\AuditDailyReport\dto\AuditDailyReportDetailDTO.java
 C:\Project\Spring Boot\final\last\very last\audit-services\src\main\java\com\cms\audit\api\Common\exception\ItemAlreadyExistException.java
@@ -195,5 +198,6 @@ C:\Project\Spring Boot\final\last\very last\audit-services\src\main\java\com\cms
 C:\Project\Spring Boot\final\last\very last\audit-services\src\main\java\com\cms\audit\api\Flag\repository\FlagRepo.java
 C:\Project\Spring Boot\final\last\very last\audit-services\src\main\java\com\cms\audit\api\Management\CaseCategory\controller\CaseCategoryController.java
 C:\Project\Spring Boot\final\last\very last\audit-services\src\main\java\com\cms\audit\api\Report\repository\ReportRepository.java
+C:\Project\Spring Boot\final\last\very last\audit-services\src\main\java\com\cms\audit\api\Common\constant\FileStorageService.java
 C:\Project\Spring Boot\final\last\very last\audit-services\src\main\java\com\cms\audit\api\NewsInspection\repository\NewsInspectionRepository.java
 C:\Project\Spring Boot\final\last\very last\audit-services\src\main\java\com\cms\audit\api\Management\Office\BranchOffice\services\BranchService.java

@@ -20,6 +20,8 @@ import org.springframework.web.server.ResponseStatusException;
 import com.cms.audit.api.AuditWorkingPaper.models.AuditWorkingPaper;
 import com.cms.audit.api.AuditWorkingPaper.repository.AuditWorkingPaperRepository;
 import com.cms.audit.api.AuditWorkingPaper.repository.PagAuditWorkingPaper;
+import com.cms.audit.api.Common.constant.FileStorageKKA;
+import com.cms.audit.api.Common.constant.FileStorageService;
 import com.cms.audit.api.Common.constant.FolderPath;
 import com.cms.audit.api.Common.constant.convertDateToRoman;
 import com.cms.audit.api.Common.constant.randomValueNumber;
@@ -36,6 +38,9 @@ import jakarta.transaction.Transactional;
 public class AuditWorkingPaperService {
 
     @Autowired
+    private FileStorageKKA fileStorageService;
+
+    @Autowired
     private AuditWorkingPaperRepository repository;
 
     @Autowired
@@ -50,7 +55,8 @@ public class AuditWorkingPaperService {
         try {
             Page<AuditWorkingPaper> response;
             if (schedule_id != null) {
-                return GlobalResponse.builder().data(repository.findByScheduleId(schedule_id)).message("Success").status(HttpStatus.OK).build();
+                return GlobalResponse.builder().data(repository.findByScheduleId(schedule_id)).message("Success")
+                        .status(HttpStatus.OK).build();
             }
             if (start_date == null || end_date == null) {
                 response = pag.findAll(PageRequest.of(page, size));
@@ -58,24 +64,24 @@ public class AuditWorkingPaperService {
                 response = pag.findWorkingPaperInDateRange(start_date, end_date, PageRequest.of(page, size));
             }
             List<Object> listKka = new ArrayList<>();
-            for(int i=0;i<response.getContent().size();i++){
+            for (int i = 0; i < response.getContent().size(); i++) {
                 AuditWorkingPaper kka = response.getContent().get(i);
-                Map<String,Object> kkaMap = new LinkedHashMap<>();
+                Map<String, Object> kkaMap = new LinkedHashMap<>();
                 kkaMap.put("id", kka.getId());
 
-                Map<String,Object> user = new LinkedHashMap<>();
+                Map<String, Object> user = new LinkedHashMap<>();
                 user.put("id", kka.getUser().getId());
                 user.put("email", kka.getUser().getEmail());
                 user.put("fullname", kka.getUser().getFullname());
                 user.put("initial_name", kka.getUser().getInitial_name());
-                kkaMap.put("user",user);
+                kkaMap.put("user", user);
 
-                Map<String,Object> branch = new LinkedHashMap<>();
+                Map<String, Object> branch = new LinkedHashMap<>();
                 branch.put("id", kka.getBranch().getId());
                 branch.put("name", kka.getBranch().getName());
                 kkaMap.put("branch", branch);
 
-                Map<String,Object> schedule = new LinkedHashMap<>();
+                Map<String, Object> schedule = new LinkedHashMap<>();
                 schedule.put("id", kka.getSchedule().getId());
                 schedule.put("start_date", convertDateToRoman.convertDateToString(kka.getSchedule().getStart_date()));
                 schedule.put("end_date", convertDateToRoman.convertDateToString(kka.getSchedule().getEnd_date()));
@@ -89,7 +95,7 @@ public class AuditWorkingPaperService {
                 listKka.add(kkaMap);
 
             }
-            Map<String,Object> parent = new LinkedHashMap<>();
+            Map<String, Object> parent = new LinkedHashMap<>();
             parent.put("content", listKka);
             parent.put("pageable", response.getPageable());
             if (response.isEmpty()) {
@@ -125,31 +131,31 @@ public class AuditWorkingPaperService {
             AuditWorkingPaper response = repository.findById(id)
                     .orElseThrow(() -> new ResourceNotFoundException("LHA with id: " + id + " is undefined"));
 
-                    Map<String,Object> kkaMap = new LinkedHashMap<>();
-                    kkaMap.put("id", response.getId());
-    
-                    Map<String,Object> user = new LinkedHashMap<>();
-                    user.put("id", response.getUser().getId());
-                    user.put("email", response.getUser().getEmail());
-                    user.put("fullname", response.getUser().getFullname());
-                    user.put("initial_name", response.getUser().getInitial_name());
-                    kkaMap.put("user",user);
-    
-                    Map<String,Object> branch = new LinkedHashMap<>();
-                    branch.put("id", response.getBranch().getId());
-                    branch.put("name",response.getBranch().getName());
-                    kkaMap.put("branch", branch);
-    
-                    Map<String,Object> schedule = new LinkedHashMap<>();
-                    schedule.put("id", response.getSchedule().getId());
-                    schedule.put("start_date", convertDateToRoman.convertDateToString(response.getSchedule().getStart_date()));
-                    schedule.put("end_date", convertDateToRoman.convertDateToString(response.getSchedule().getEnd_date()));
-                    kkaMap.put("schedule", schedule);
-    
-                    kkaMap.put("start_date", convertDateToRoman.convertDateToString(response.getStart_date()));
-                    kkaMap.put("end_date", convertDateToRoman.convertDateToString(response.getEnd_date()));
-                    kkaMap.put("filename", response.getFilename());
-                    kkaMap.put("file_path", response.getFile_path());
+            Map<String, Object> kkaMap = new LinkedHashMap<>();
+            kkaMap.put("id", response.getId());
+
+            Map<String, Object> user = new LinkedHashMap<>();
+            user.put("id", response.getUser().getId());
+            user.put("email", response.getUser().getEmail());
+            user.put("fullname", response.getUser().getFullname());
+            user.put("initial_name", response.getUser().getInitial_name());
+            kkaMap.put("user", user);
+
+            Map<String, Object> branch = new LinkedHashMap<>();
+            branch.put("id", response.getBranch().getId());
+            branch.put("name", response.getBranch().getName());
+            kkaMap.put("branch", branch);
+
+            Map<String, Object> schedule = new LinkedHashMap<>();
+            schedule.put("id", response.getSchedule().getId());
+            schedule.put("start_date", convertDateToRoman.convertDateToString(response.getSchedule().getStart_date()));
+            schedule.put("end_date", convertDateToRoman.convertDateToString(response.getSchedule().getEnd_date()));
+            kkaMap.put("schedule", schedule);
+
+            kkaMap.put("start_date", convertDateToRoman.convertDateToString(response.getStart_date()));
+            kkaMap.put("end_date", convertDateToRoman.convertDateToString(response.getEnd_date()));
+            kkaMap.put("filename", response.getFilename());
+            kkaMap.put("file_path", response.getFile_path());
             return GlobalResponse
                     .builder()
                     .message("Success")
@@ -176,9 +182,10 @@ public class AuditWorkingPaperService {
             Schedule getSchedule = scheduleRepository.findById(id)
                     .orElseThrow(() -> new ResourceNotFoundException("Schedule with id: " + id + " is undefined"));
 
-            String fileName = randomValueNumber.randomNumberGenerator() + file.getOriginalFilename();
+            //String name = randomValueNumber.randomNumberGenerator() + file.getOriginalFilename();
+
+            String fileName = fileStorageService.storeFile(file);
             String path = FOLDER_PATH + fileName;
-            String filePath = path;
 
             AuditWorkingPaper kka = new AuditWorkingPaper();
             kka.setUser(getSchedule.getUser());
@@ -194,7 +201,7 @@ public class AuditWorkingPaperService {
 
             repository.save(kka);
 
-            file.transferTo(new File(filePath));
+            //file.transferTo(new File(filePath));
 
             Schedule schedule = getSchedule;
             schedule.setStatus(EStatus.DONE);

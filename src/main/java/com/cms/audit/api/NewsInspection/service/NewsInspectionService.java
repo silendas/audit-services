@@ -19,6 +19,8 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.cms.audit.api.Clarifications.repository.ClarificationRepository;
+import com.cms.audit.api.Common.constant.FileStorageBAP;
+import com.cms.audit.api.Common.constant.FileStorageService;
 import com.cms.audit.api.Common.constant.FolderPath;
 import com.cms.audit.api.Common.constant.convertDateToRoman;
 import com.cms.audit.api.Common.constant.randomValueNumber;
@@ -33,6 +35,9 @@ import jakarta.transaction.Transactional;
 @Service
 @Transactional
 public class NewsInspectionService {
+
+    @Autowired
+    private FileStorageBAP fileStorageService;
 
     @Autowired
     private NewsInspectionRepository repository;
@@ -178,8 +183,9 @@ public class NewsInspectionService {
         try {
             NewsInspection getBAP = repository.findById(id).orElseThrow(()-> new ResourceNotFoundException("BAP with id: " + id + " is undefined"));
 
-            String fileName = randomValueNumber.randomNumberGenerator() + "-" + file.getOriginalFilename();
+            //String fileName = randomValueNumber.randomNumberGenerator() + "-" + file.getOriginalFilename();
 
+            String fileName = fileStorageService.storeFile(file);
             String path = FOLDER_PATH + fileName;
             String filePath = path;
 
@@ -189,7 +195,7 @@ public class NewsInspectionService {
 
             repository.save(bap);
 
-            file.transferTo(new File(filePath));
+            //file.transferTo(new File(filePath));
 
             return GlobalResponse
                     .builder()

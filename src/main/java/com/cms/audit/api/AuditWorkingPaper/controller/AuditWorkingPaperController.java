@@ -61,7 +61,7 @@ public class AuditWorkingPaperController {
                                 response.getError());
         }
 
-        @GetMapping("/file/{fileName}")
+        @GetMapping("/download/{fileName}")
         public ResponseEntity<InputStreamResource> getFileName(@PathVariable("fileName") String fileName)
                         throws IOException {
                 AuditWorkingPaper response = service.downloadFile(fileName);
@@ -81,7 +81,7 @@ public class AuditWorkingPaperController {
 
         @PostMapping(value = "/upload")
         public ResponseEntity<Object> upload(@RequestParam(value = "file", required = true) MultipartFile file,
-                        @ModelAttribute("id") Long id) {
+                        @ModelAttribute("schedule_id") Long id) {
                 GlobalResponse response = service.uploadFile(file, id);
                 return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(),
                                 response.getStatus(),
