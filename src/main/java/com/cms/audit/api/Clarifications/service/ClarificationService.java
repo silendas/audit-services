@@ -22,6 +22,7 @@ import com.cms.audit.api.Clarifications.models.Clarification;
 import com.cms.audit.api.Clarifications.models.EStatusClarification;
 import com.cms.audit.api.Clarifications.repository.ClarificationRepository;
 import com.cms.audit.api.Clarifications.repository.PagClarification;
+import com.cms.audit.api.Common.constant.FileStorageService;
 import com.cms.audit.api.Common.constant.FolderPath;
 import com.cms.audit.api.Common.constant.convertDateToRoman;
 import com.cms.audit.api.Common.exception.ResourceNotFoundException;
@@ -48,6 +49,9 @@ public class ClarificationService {
 
         @Autowired
         private ClarificationRepository repository;
+
+        @Autowired
+        private FileStorageService fileStorageService;
 
         @Autowired
         private UserRepository userRepository;
@@ -630,10 +634,10 @@ public class ClarificationService {
                                                 .status(HttpStatus.OK)
                                                 .build();
                         }
+                        String fileName = fileStorageService.storeFile(file);
 
-                        String path = UPLOAD_FOLDER_PATH + file.getOriginalFilename();
+                        String path = UPLOAD_FOLDER_PATH + fileName;
 
-                        String fileName = file.getOriginalFilename();
                         String filePath = path;
 
                         User setUserId = User.builder().id(getClarification.get().getUser().getId()).build();
