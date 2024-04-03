@@ -113,9 +113,9 @@
         <profile>
             <id>miror</id>
             <properties>
-                <spring.datasource.url>jdbc:postgresql://192.168.10.52:5432/audit_services</spring.datasource.url>
+                <spring.datasource.url>jdbc:postgresql://127.0.0.1:5432/audit_services</spring.datasource.url>
                 <spring.datasource.username>postgres</spring.datasource.username>
-                <spring.datasource.password>root</spring.datasource.password>
+                <spring.datasource.password>admin</spring.datasource.password>
             </properties>
         </profile>
     </profiles>
