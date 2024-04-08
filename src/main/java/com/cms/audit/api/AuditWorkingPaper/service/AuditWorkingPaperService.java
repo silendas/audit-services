@@ -101,8 +101,8 @@ public class AuditWorkingPaperService {
             if (response.isEmpty()) {
                 return GlobalResponse
                         .builder()
-                        .message("No Content")
-                        .status(HttpStatus.NO_CONTENT)
+                        .message("Data not found")
+                        .status(HttpStatus.OK)
                         .build();
             }
             return GlobalResponse

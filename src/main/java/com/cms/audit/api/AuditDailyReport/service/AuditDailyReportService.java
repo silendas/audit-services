@@ -10,7 +10,9 @@ import java.util.Optional;
 import org.hibernate.exception.DataException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -33,6 +35,7 @@ import com.cms.audit.api.Clarifications.repository.ClarificationRepository;
 import com.cms.audit.api.Common.constant.convertDateToRoman;
 import com.cms.audit.api.Common.exception.ResourceNotFoundException;
 import com.cms.audit.api.Common.response.GlobalResponse;
+import com.cms.audit.api.Common.response.PDFResponse;
 import com.cms.audit.api.Flag.model.Flag;
 import com.cms.audit.api.Flag.repository.FlagRepo;
 import com.cms.audit.api.InspectionSchedule.models.EStatus;
@@ -42,9 +45,13 @@ import com.cms.audit.api.Management.Case.models.Case;
 import com.cms.audit.api.Management.Case.repository.CaseRepository;
 import com.cms.audit.api.Management.CaseCategory.models.CaseCategory;
 import com.cms.audit.api.Management.Office.BranchOffice.models.Branch;
+import com.cms.audit.api.Management.Office.RegionOffice.models.Region;
+import com.cms.audit.api.Management.Office.RegionOffice.repository.RegionRepository;
 import com.cms.audit.api.Management.ReportType.models.ReportType;
 import com.cms.audit.api.Management.ReportType.repository.ReportTypeRepository;
 import com.cms.audit.api.Management.User.models.User;
+import com.cms.audit.api.Report.dto.LhaReportDTO;
+import com.cms.audit.api.Report.dto.ListLhaDTO;
 
 import jakarta.transaction.Transactional;
 
@@ -74,15 +81,33 @@ public class AuditDailyReportService {
         private RevisionRepository revisionRepo;
 
         @Autowired
+        private RegionRepository regionRepository;
+
+        @Autowired
         private FlagRepo flagRepo;
 
         @Autowired
         private pagAuditDailyReport pagAuditDailyReport;
 
-        public GlobalResponse get(int page, int size, Date startDate, Date endDate, Long shcedule_id) {
+        public GlobalResponse get(int page, int size, Date startDate, Date endDate, Long shcedule_id, Long branch_id,
+                        String name) {
                 try {
                         Page<AuditDailyReport> response;
-                        if (startDate != null || endDate != null) {
+                        if (name != null && branch_id != null && startDate != null && endDate != null) {
+                                response = pagAuditDailyReport.findLHAByAll(branch_id, name, startDate, endDate,
+                                                PageRequest.of(page, size));
+                        } else if (name != null && startDate != null && endDate != null) {
+                                response = pagAuditDailyReport.findLHANameInDateRange(name, startDate, endDate,
+                                                PageRequest.of(page, size));
+                        } else if (branch_id != null && startDate != null && endDate != null) {
+                                response = pagAuditDailyReport.findAllLHAByBranchAndDateRange(branch_id, startDate,
+                                                endDate, PageRequest.of(page, size));
+                        } else if (name != null) {
+                                response = pagAuditDailyReport.findLHAName(name, PageRequest.of(page, size));
+                        } else if (branch_id != null) {
+                                response = pagAuditDailyReport.findAllLHAByBranch(branch_id,
+                                                PageRequest.of(page, size));
+                        } else if (startDate != null || endDate != null) {
                                 response = pagAuditDailyReport.findLHAInDateRange(startDate, endDate,
                                                 PageRequest.of(page, size));
                         } else if (shcedule_id != null) {
@@ -94,7 +119,7 @@ public class AuditDailyReportService {
                         if (response.isEmpty()) {
                                 return GlobalResponse
                                                 .builder()
-                                                .message("No Content")
+                                                .message("Data not found")
                                                 .status(HttpStatus.OK)
                                                 .build();
                         }
@@ -295,7 +320,7 @@ public class AuditDailyReportService {
                         Page<AuditDailyReport> response = pagAuditDailyReport.findByScheduleId(id,
                                         PageRequest.of(page, size));
                         List<Object> listLha = new ArrayList<>();
-                        for(int i = 0;i<response.getContent().size();i++){
+                        for (int i = 0; i < response.getContent().size(); i++) {
                                 Map<String, Object> responseS = new LinkedHashMap<>();
                                 responseS.put("id", response.getContent().get(i).getId());
                                 Map<String, Object> user = new LinkedHashMap<>();
@@ -322,7 +347,7 @@ public class AuditDailyReportService {
                         if (response.isEmpty()) {
                                 return GlobalResponse
                                                 .builder()
-                                                .message("No Content")
+                                                .message("Data not found")
                                                 .status(HttpStatus.OK)
                                                 .build();
                         }
@@ -352,6 +377,131 @@ public class AuditDailyReportService {
                                         .builder()
                                         .error(e)
                                         .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                                        .build();
+                }
+        }
+
+        public GlobalResponse getLhaReport(String name, Long areaId, Date start_date,
+                        Date end_date, int page, int size) {
+                List<AuditDailyReport> response;
+                LhaReportDTO dto = new LhaReportDTO();
+                List<ListLhaDTO> list = new ArrayList<>();
+                List<LhaReportDTO> listAllReport = new ArrayList<>();
+                Pageable pageable = PageRequest.of(page, size);
+
+                if (name != null && areaId != null && start_date != null && end_date != null) {
+                        response = auditDailyReportRepository.findLHAByAllFilter(areaId, name, start_date, end_date);
+                } else if (areaId != null && start_date != null && end_date != null) {
+                        response = auditDailyReportRepository.findLHAByRegionInDateRange(areaId, start_date, end_date);
+                } else if (name != null && start_date != null && end_date != null) {
+                        response = auditDailyReportRepository.findLHAByNameInDateRange(name, start_date, end_date);
+                } else if (name != null) {
+                        response = auditDailyReportRepository.findLHAByName(name);
+                } else if (areaId != null) {
+                        response = auditDailyReportRepository.findLHAByRegion(areaId);
+                } else if (start_date != null && end_date != null) {
+                        response = auditDailyReportRepository.findLHAInDateRange(start_date, end_date);
+                } else {
+                        response = auditDailyReportRepository.findAll();
+                }
+                if (response.isEmpty()) {
+                        return null;
+                }
+                PDFResponse pdf;
+                if (areaId != null) {
+                        Optional<Region> region = regionRepository.findOneRegionById(areaId);
+                        if (!region.isPresent()) {
+                                return null;
+                        }
+                        for (int i = 0; i < response.size(); i++) {
+                                String fullName = response.get(i).getUser().getFullname();
+                                List<AuditDailyReportDetail> detail = auditDailyReportDetailRepository
+                                                .findByLHAId(response.get(i).getId());
+
+                                boolean found = false;
+                                for (int j = 0; j < list.size(); j++) {
+                                        if (fullName.equals(list.get(j).getName())) {
+                                                list.get(j).getLhaDetails().addAll(detail);
+                                                found = true;
+                                                break;
+                                        }
+                                }
+
+                                if (!found) {
+                                        ListLhaDTO listLha = new ListLhaDTO();
+                                        listLha.setName(fullName);
+                                        listLha.setBranch(response.get(i).getBranch().getName());
+                                        listLha.setLhaDetails(detail);
+                                        list.add(listLha);
+                                }
+                        }
+                        dto.setLhaDetail(list);
+                        dto.setAreaName(region.get().getName());
+                        dto.setDate(convertDateToRoman.convertDateToString(new Date()));
+                        list.clear();
+                } else {
+                        for (int i = 0; i < response.size(); i++) {
+                                List<AuditDailyReportDetail> detail = auditDailyReportDetailRepository
+                                                .findByLHAId(response.get(i).getId());
+                                String regionName = response.get(i).getBranch().getArea().getRegion().getName();
+                                String fullName = response.get(i).getUser().getFullname();
+
+                                boolean foundRegion = false;
+                                for (int x = 0; x < listAllReport.size(); x++) {
+                                        if (regionName.equals(listAllReport.get(x).getAreaName())) {
+                                                foundRegion = true;
+                                                List<ListLhaDTO> lhaDetails = listAllReport.get(x).getLhaDetail();
+                                                boolean foundUser = false;
+                                                for (int y = 0; y < lhaDetails.size(); y++) {
+                                                        if (fullName.equals(lhaDetails.get(y).getName())) {
+                                                                lhaDetails.get(y).getLhaDetails().addAll(detail);
+                                                                foundUser = true;
+                                                                break;
+                                                        }
+                                                }
+                                                if (!foundUser) {
+                                                        ListLhaDTO lhaDto = new ListLhaDTO();
+                                                        lhaDto.setName(fullName);
+                                                        lhaDto.setBranch(response.get(i).getBranch().getName());
+                                                        lhaDto.setLhaDetails(detail);
+                                                        lhaDetails.add(lhaDto);
+                                                }
+                                                break;
+                                        }
+                                }
+
+                                if (!foundRegion) {
+                                        LhaReportDTO reportDto = new LhaReportDTO();
+                                        reportDto.setAreaName(regionName);
+                                        reportDto.setDate(convertDateToRoman.convertDateToString(new Date()));
+                                        List<ListLhaDTO> lhaDetailList = new ArrayList<>();
+                                        ListLhaDTO lhaDto = new ListLhaDTO();
+                                        lhaDto.setName(fullName);
+                                        lhaDto.setBranch(response.get(i).getBranch().getName());
+                                        lhaDto.setLhaDetails(detail);
+                                        lhaDetailList.add(lhaDto);
+                                        reportDto.setLhaDetail(lhaDetailList);
+                                        listAllReport.add(reportDto);
+                                }
+                        }
+                }
+
+                try {
+                        int start = (int) pageable.getOffset();
+                        int end = Math.min((start + pageable.getPageSize()), response.size());
+                        List<AuditDailyReport> pageContent = response.subList(start, end);
+                        Page<AuditDailyReport> result = new PageImpl<>(pageContent, pageable, response.size());
+                        return GlobalResponse
+                                        .builder()
+                                        .message("Success")
+                                        .data(result)
+                                        .status(HttpStatus.OK)
+                                        .build();
+                } catch (Exception e) {
+                        return GlobalResponse
+                                        .builder()
+                                        .message("Data not found")
+                                        .status(HttpStatus.OK)
                                         .build();
                 }
         }
@@ -389,7 +539,7 @@ public class AuditDailyReportService {
                         if (!getSchedule.isPresent()) {
                                 return GlobalResponse
                                                 .builder()
-                                                .message("No Content")
+                                                .message("Data not found")
                                                 .status(HttpStatus.OK)
                                                 .build();
                         }
@@ -431,7 +581,7 @@ public class AuditDailyReportService {
 
                                         Case getCase = caseRepository.findById(dto.getLha_detail().get(i).getCase_id())
                                                         .orElseThrow(() -> new ResponseStatusException(HttpStatus.OK,
-                                                                        "no content"));
+                                                                        "Data not found"));
 
                                         Long reportNumber = null;
                                         String rptNum = null;

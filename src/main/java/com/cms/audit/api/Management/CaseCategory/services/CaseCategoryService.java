@@ -49,7 +49,7 @@ public class CaseCategoryService {
             if (response.isEmpty()) {
                 return GlobalResponse
                         .builder()
-                        .message("No Content")
+                        .message("Data not found")
                         .status(HttpStatus.OK)
                         .build();
             }
@@ -81,7 +81,7 @@ public class CaseCategoryService {
             if (response.isEmpty()) {
                 return GlobalResponse
                         .builder()
-                        .message("Not Content")
+                        .message("Data not found")
                         .status(HttpStatus.OK)
                         .build();
             }
@@ -113,7 +113,7 @@ public class CaseCategoryService {
             if (!response.isPresent()) {
                 return GlobalResponse
                         .builder()
-                        .message("Not Content")
+                        .message("Data not found")
                         .status(HttpStatus.OK)
                         .build();
             }
@@ -145,7 +145,7 @@ public class CaseCategoryService {
             if(!set.isPresent()){
                 return GlobalResponse
                 .builder()
-                .message("No Content")
+                .message("Data not found")
                 .status(HttpStatus.OK)
                 .build();
         }
@@ -153,7 +153,7 @@ public class CaseCategoryService {
             if (response.isEmpty()) {
                 return GlobalResponse
                         .builder()
-                        .message("Not Content")
+                        .message("Data not found")
                         .status(HttpStatus.OK)
                         .build();
             }
@@ -185,7 +185,7 @@ public class CaseCategoryService {
             if (response.isEmpty()) {
                 return GlobalResponse
                         .builder()
-                        .message("Not Content")
+                        .message("Data not found")
                         .status(HttpStatus.OK)
                         .build();
             }

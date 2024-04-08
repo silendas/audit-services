@@ -83,8 +83,8 @@ public class AuditDailyReportDetailService {
             if (response.isEmpty()) {
                 return GlobalResponse
                         .builder()
-                        .message("No Content")
-                        .status(HttpStatus.NO_CONTENT)
+                        .message("Data not found")
+                        .status(HttpStatus.OK)
                         .build();
             }
             Map<String, Object> parent = new LinkedHashMap<>();
@@ -177,8 +177,8 @@ public class AuditDailyReportDetailService {
             if (response.isEmpty()) {
                 return GlobalResponse
                         .builder()
-                        .message("No Content")
-                        .status(HttpStatus.NO_CONTENT)
+                        .message("Data not found")
+                        .status(HttpStatus.OK)
                         .build();
             }
             return GlobalResponse
@@ -214,8 +214,8 @@ public class AuditDailyReportDetailService {
             if (!response.isPresent()) {
                 return GlobalResponse
                         .builder()
-                        .message("No Content")
-                        .status(HttpStatus.NO_CONTENT)
+                        .message("Data not found")
+                        .status(HttpStatus.OK)
                         .build();
             }
             return GlobalResponse

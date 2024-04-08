@@ -10,6 +10,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import com.cms.audit.api.Common.exception.JwtException;
 import com.cms.audit.api.Config.Jwt.JwtAuthenticationFIlter;
 
 import lombok.RequiredArgsConstructor;
@@ -22,12 +23,15 @@ public class SecurityConfiguration {
     private final JwtAuthenticationFIlter jwtAuthFilter;
 
     private final AuthenticationProvider authenticationProvider;
+
+    private final JwtException jwtException;
     
     @Bean 
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         http
                 .csrf(AbstractHttpConfigurer::disable)
+                .exceptionHandling(exception -> exception.authenticationEntryPoint(jwtException))
                 .authorizeHttpRequests(requests -> requests
                         .requestMatchers("/api/auth/**")
                         .permitAll()
@@ -39,10 +43,8 @@ public class SecurityConfiguration {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
-
         
         return http.build();
 
     } 
-
 }

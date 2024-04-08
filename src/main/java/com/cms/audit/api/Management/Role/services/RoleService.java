@@ -30,7 +30,7 @@ public class RoleService {
             if (response.isEmpty()) {
                 return GlobalResponse
                         .builder()
-                        .message("No Content")
+                        .message("Data not found")
                         .status(HttpStatus.OK)
                         .build();
             }
@@ -62,7 +62,7 @@ public class RoleService {
             if (response.isEmpty()) {
                 return GlobalResponse
                         .builder()
-                        .message("No Content")
+                        .message("Data not found")
                         .status(HttpStatus.OK)
                         .build();
             }
@@ -94,7 +94,7 @@ public class RoleService {
             if (!response.isPresent()) {
                 return GlobalResponse
                         .builder()
-                        .message("No Content")
+                        .message("Data not found")
                         .status(HttpStatus.OK)
                         .build();
             }

@@ -52,7 +52,7 @@ public class RegionService {
             if (response.isEmpty()) {
                 return GlobalResponse
                         .builder()
-                        .message("No Content")
+                        .message("Data not found")
                         .status(HttpStatus.OK)
                         .build();
             }
@@ -84,7 +84,7 @@ public class RegionService {
             if (response.isEmpty()) {
                 return GlobalResponse
                         .builder()
-                        .message("No Content")
+                        .message("Data not found")
                         .status(HttpStatus.OK)
                         .build();
             }
@@ -116,7 +116,7 @@ public class RegionService {
             if (response.isEmpty()) {
                 return GlobalResponse
                         .builder()
-                        .message("No Content")
+                        .message("Data not found")
                         .status(HttpStatus.OK)
                         .build();
             }
@@ -148,7 +148,7 @@ public class RegionService {
             if (response.isEmpty()) {
                 return GlobalResponse
                         .builder()
-                        .message("No Content")
+                        .message("Data not found")
                         .status(HttpStatus.OK)
                         .build();
             }

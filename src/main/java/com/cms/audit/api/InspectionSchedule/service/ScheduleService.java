@@ -83,8 +83,8 @@ public class ScheduleService {
                         if (response.isEmpty()) {
                                 return GlobalResponse
                                                 .builder()
-                                                .message("No Content")
-                                                .status(HttpStatus.NO_CONTENT)
+                                                .message("Data not found")
+                                                .status(HttpStatus.OK)
                                                 .build();
                         }
                         return GlobalResponse
@@ -121,7 +121,7 @@ public class ScheduleService {
                 } else if (name != null) {
                         List<User> getUser = userRepository.findByFullnameLike(name);
                         if (getUser.isEmpty()) {
-                                return GlobalResponse.builder().message("No COntent").status(HttpStatus.NO_CONTENT)
+                                return GlobalResponse.builder().message("Data not found").status(HttpStatus.OK)
                                                 .build();
                         }
                         Pageable pageable = PageRequest.of(page, size);
@@ -418,8 +418,8 @@ public class ScheduleService {
                         if (!getSchedule.isPresent()) {
                                 return GlobalResponse
                                                 .builder()
-                                                .message("Not Content of schedule")
-                                                .status(HttpStatus.NO_CONTENT)
+                                                .message("Data not found of schedule")
+                                                .status(HttpStatus.OK)
                                                 .build();
                         }
                         Map<String, Object> response = new LinkedHashMap<>();
@@ -507,7 +507,7 @@ public class ScheduleService {
                         if (response.isEmpty()) {
                                 return GlobalResponse
                                                 .builder()
-                                                .message("No Content")
+                                                .message("Data not found")
                                                 .status(HttpStatus.OK)
                                                 .build();
                         }
@@ -645,8 +645,8 @@ public class ScheduleService {
                         if (response.isEmpty()) {
                                 return GlobalResponse
                                                 .builder()
-                                                .message("No Content")
-                                                .status(HttpStatus.NO_CONTENT)
+                                                .message("Data not found")
+                                                .status(HttpStatus.OK)
                                                 .build();
                         }
                         return GlobalResponse
@@ -685,7 +685,7 @@ public class ScheduleService {
                         if (response.isEmpty()) {
                                 return GlobalResponse
                                                 .builder()
-                                                .message("No Content")
+                                                .message("Data not found")
                                                 .status(HttpStatus.OK)
                                                 .build();
                         }
@@ -932,9 +932,6 @@ public class ScheduleService {
                         schedule.setDescription(dto.getDescription());
                         schedule.setStart_date(dto.getStart_date());
                         schedule.setEnd_date(dto.getEnd_date());
-                        schedule.setStart_date_realization(dto.getStart_date_realization());
-                        schedule.setEnd_date_realization(dto.getEnd_date_realization());
-                        schedule.setStatus(dto.getStatus());
                         schedule.setUpdatedBy(getUser.getId());
                         schedule.setUpdated_at(new Date());
 

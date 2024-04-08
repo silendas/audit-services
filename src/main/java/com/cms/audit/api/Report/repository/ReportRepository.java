@@ -31,6 +31,10 @@ public interface ReportRepository extends JpaRepository<Clarification, Long> {
         List<Clarification> findByBranchInDateRange(@Param("id") Long id, @Param("start_date") Date start_date,
                         @Param("end_date") Date end_date);
 
+        @Query(value = "SELECT * FROM clarification u INNER JOIN users us ON u.user_id=us.id WHERE us.fullname LIKE '% :name %' AND u.created_at BETWEEN :start_date AND :end_date ", nativeQuery = true)
+        List<Clarification> findByNameInDateRange(@Param("name") String name, @Param("start_date") Date start_date,
+                        @Param("end_date") Date end_date);
+
         @Query(value = "SELECT u.* FROM clarification u INNER JOIN users us ON u.user_id=us.id WHERE us.fullname LIKE '% :name %'", nativeQuery = true)
         List<Clarification> findByFullname(@Param("name") String name);
 

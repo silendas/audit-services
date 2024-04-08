@@ -1,5 +1,7 @@
 package com.cms.audit.api.AuditDailyReport.controller;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,6 +15,9 @@ import com.cms.audit.api.Common.response.ResponseEntittyHandler;
 
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 
 @RestController
@@ -20,6 +25,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 public class RevisionController {
     @Autowired
     private RevisionService service;
+
+    @GetMapping
+    public ResponseEntity<Object> getByDetailId(@RequestParam("lha_detail_id") Optional<Long> id) {
+        GlobalResponse response = service.getAll(id.orElse(null));
+        return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(), response.getError());
+    }
+    
 
     @PostMapping
     public ResponseEntity<Object> postMethodName(@RequestBody RevisionDTO dto) {

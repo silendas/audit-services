@@ -29,7 +29,7 @@ public class RevisionService {
     private RevisionRepository repository;
 
     @Autowired
-    private AuditDailyReportDetailRepository auditDailyReportDetailRepository; 
+    private AuditDailyReportDetailRepository auditDailyReportDetailRepository;
 
     @Autowired
     private CaseRepository caseRepository;
@@ -37,13 +37,22 @@ public class RevisionService {
     @Autowired
     private CaseCategoryRepository caseCategoryRepository;
 
-    public GlobalResponse getAll(){
+    public GlobalResponse getAll(Long detaild) {
         try {
-            List<Revision> response = repository.findAll();
-        if(response.isEmpty()){
-            return GlobalResponse.builder().message("No Content").status(HttpStatus.NO_CONTENT).build();
-        }
-        return GlobalResponse.builder().data(response).message("Success").status(HttpStatus.OK).build();
+
+            if (detaild == null) {
+                List<Revision> response = repository.findAll();
+                if (response.isEmpty()) {
+                    return GlobalResponse.builder().message("Data not found").status(HttpStatus.OK).build();
+                }
+                return GlobalResponse.builder().data(response).message("Success").status(HttpStatus.OK).build();
+            } else {
+                Optional<Revision> response = repository.findByDetailId(detaild);
+                if (response.isEmpty()) {
+                    return GlobalResponse.builder().message("Data not found").status(HttpStatus.OK).build();
+                }
+                return GlobalResponse.builder().data(response).message("Success").status(HttpStatus.OK).build();
+            }
         } catch (Exception e) {
             return GlobalResponse.builder().error(e).status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
@@ -52,18 +61,19 @@ public class RevisionService {
     public GlobalResponse insertNewRevision(RevisionDTO dto) {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        Optional<AuditDailyReportDetail> detail = auditDailyReportDetailRepository.findById(dto.getAudit_daily_report_detail_id());
-        if(!detail.isPresent()){
+        Optional<AuditDailyReportDetail> detail = auditDailyReportDetailRepository
+                .findById(dto.getAudit_daily_report_detail_id());
+        if (!detail.isPresent()) {
             return GlobalResponse.builder().message("Not found").status(HttpStatus.BAD_REQUEST).build();
         }
 
         Optional<Case> cases = caseRepository.findById(dto.getCase_id());
-        if(!cases.isPresent()){
+        if (!cases.isPresent()) {
             return GlobalResponse.builder().message("Not found").status(HttpStatus.BAD_REQUEST).build();
         }
 
         Optional<CaseCategory> caseCategory = caseCategoryRepository.findById(dto.getCase_category_id());
-        if(!cases.isPresent()){
+        if (!cases.isPresent()) {
             return GlobalResponse.builder().message("Not found").status(HttpStatus.BAD_REQUEST).build();
         }
 
@@ -80,7 +90,7 @@ public class RevisionService {
         revision.setCreated_at(new Date());
 
         Optional<Revision> getRevision = repository.findByDetailId(detail.get().getId());
-        if(getRevision.isPresent()){
+        if (getRevision.isPresent()) {
             revision.setRevisionNumber(getRevision.get().getRevisionNumber() + 1);
         } else {
             revision.setRevisionNumber(1L);

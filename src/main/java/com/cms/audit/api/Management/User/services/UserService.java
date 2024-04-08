@@ -193,8 +193,8 @@ public class UserService {
                 } catch (Exception e) {
                         return GlobalResponse
                                         .builder()
-                                        .message("No Content")
-                                        .status(HttpStatus.NO_CONTENT)
+                                        .message("Data not found")
+                                        .status(HttpStatus.OK)
                                         .build();
                 }
         }
@@ -203,7 +203,7 @@ public class UserService {
                 try {
                         Optional<User> response = userRepository.findById(id);
                         if (!response.isPresent()) {
-                                return GlobalResponse.builder().message("No Content").status(HttpStatus.OK)
+                                return GlobalResponse.builder().message("Data not found").status(HttpStatus.OK)
                                                 .build();
                         }
                         List<Region> region = new ArrayList<>();
@@ -265,7 +265,7 @@ public class UserService {
                 try {
                         Optional<User> response = userRepository.findByUsername(username);
                         if (!response.isPresent()) {
-                                return GlobalResponse.builder().message("No Content").status(HttpStatus.OK)
+                                return GlobalResponse.builder().message("Data not found").status(HttpStatus.OK)
                                                 .build();
                         }
                         List<Region> region = new ArrayList<>();
@@ -329,13 +329,13 @@ public class UserService {
                         if (!setMain.isPresent()) {
                                 return GlobalResponse
                                                 .builder()
-                                                .message("No Content")
+                                                .message("Data not found")
                                                 .status(HttpStatus.OK)
                                                 .build();
                         }
                         Page<User> response = pagUser.findByMain(setMain.get(), PageRequest.of(page, size));
                         if (response.isEmpty()) {
-                                return GlobalResponse.builder().message("No Content").status(HttpStatus.OK).build();
+                                return GlobalResponse.builder().message("Data not found").status(HttpStatus.OK).build();
                         }
                         return GlobalResponse
                                         .builder()
@@ -357,14 +357,14 @@ public class UserService {
         // if (!set.isPresent()) {
         // return GlobalResponse
         // .builder()
-        // .message("No Content")
+        // .message("Data not found")
         // .status(HttpStatus.OK)
         // .build();
         // }
         // Page<User> response = pagUser.findByRegion(set.get(), PageRequest.of(page,
         // size));
         // if (response.isEmpty()) {
-        // return GlobalResponse.builder().message("No Content").status(HttpStatus.OK)
+        // return GlobalResponse.builder().message("Data not found").status(HttpStatus.OK)
         // .build();
         // }
         // return GlobalResponse
@@ -388,7 +388,7 @@ public class UserService {
                 try {
                         List<DropDownUser> response = userRepository.findDropDown();
                         if (response.isEmpty()) {
-                                return GlobalResponse.builder().message("No Content").status(HttpStatus.OK)
+                                return GlobalResponse.builder().message("Data not found").status(HttpStatus.OK)
                                                 .build();
                         }
                         return GlobalResponse
@@ -455,7 +455,7 @@ public class UserService {
                                 }
                         }
                         if (response.isEmpty()) {
-                                return GlobalResponse.builder().message("No Content").status(HttpStatus.OK)
+                                return GlobalResponse.builder().message("Data not found").status(HttpStatus.OK)
                                                 .build();
                         }
                         return GlobalResponse
@@ -476,7 +476,7 @@ public class UserService {
                 try {
                         List<DropDownUser> response = userRepository.findDropDownByMain(id);
                         if (response.isEmpty()) {
-                                return GlobalResponse.builder().message("No Content").status(HttpStatus.OK)
+                                return GlobalResponse.builder().message("Data not found").status(HttpStatus.OK)
                                                 .build();
                         }
                         return GlobalResponse
@@ -499,7 +499,7 @@ public class UserService {
         // .orElseThrow(() -> new ResponseStatusException(HttpStatus.OK));
         // Page<User> response = pagUser.findByArea(set, PageRequest.of(page, size));
         // if (response.isEmpty()) {
-        // return GlobalResponse.builder().message("No Content").status(HttpStatus.OK)
+        // return GlobalResponse.builder().message("Data not found").status(HttpStatus.OK)
         // .build();
         // }
         // return GlobalResponse
@@ -525,7 +525,7 @@ public class UserService {
         // .orElseThrow(() -> new ResponseStatusException(HttpStatus.OK));
         // Page<User> response = pagUser.findByBranch(set, PageRequest.of(page, size));
         // if (response.isEmpty()) {
-        // return GlobalResponse.builder().message("No Content").status(HttpStatus.OK)
+        // return GlobalResponse.builder().message("Data not found").status(HttpStatus.OK)
         // .build();
         // }
         // return GlobalResponse

@@ -130,7 +130,7 @@ public class ClarificationService {
                         if (response.isEmpty()) {
                                 return GlobalResponse
                                                 .builder()
-                                                .message("No Content")
+                                                .message("Data not found")
                                                 .status(HttpStatus.OK)
                                                 .build();
                         }
@@ -164,7 +164,7 @@ public class ClarificationService {
                         if (response == null) {
                                 return GlobalResponse
                                                 .builder()
-                                                .message("No Content")
+                                                .message("Data not found")
                                                 .status(HttpStatus.OK)
                                                 .build();
                         }
@@ -376,7 +376,7 @@ public class ClarificationService {
                         if (!getClarification.isPresent()) {
                                 return GlobalResponse
                                                 .builder()
-                                                .message("No Content")
+                                                .message("Data not found")
                                                 .status(HttpStatus.OK)
                                                 .build();
                         }
@@ -630,7 +630,7 @@ public class ClarificationService {
                         if (!getClarification.isPresent()) {
                                 return GlobalResponse
                                                 .builder()
-                                                .message("No Content")
+                                                .message("Data not found")
                                                 .status(HttpStatus.OK)
                                                 .build();
                         }
