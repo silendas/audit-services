@@ -60,12 +60,12 @@ public class AuditDailyReportController {
         @GetMapping("/report")
         public ResponseEntity<Object> getReport(
                 @RequestParam(required = false) Optional<String> name,
-                @RequestParam(required = false) Optional<Long> branch_id,
+                @RequestParam(required = false) Optional<Long> area_id,
                 @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Optional<Date> start_date,
                 @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Optional<Date> end_date,
                 @RequestParam("page") Optional<Integer> page,
                 @RequestParam("size") Optional<Integer> size) {
-                GlobalResponse response = auditDailyReportService.getLhaReport(name.orElse(null), branch_id.orElse(null), start_date.orElse(null), end_date.orElse(null), page.orElse(null), size.orElse(null));
+                GlobalResponse response = auditDailyReportService.getLhaReport(name.orElse(null), area_id.orElse(null), start_date.orElse(null), end_date.orElse(null), page.orElse(0), size.orElse(10));
                 return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(),
                                 response.getStatus(),
                                 response.getError());

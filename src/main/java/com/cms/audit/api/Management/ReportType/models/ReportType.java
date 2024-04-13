@@ -3,6 +3,7 @@ package com.cms.audit.api.Management.ReportType.models;
 import java.util.Date;
 
 import com.cms.audit.api.Management.User.models.User;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -32,7 +33,8 @@ public class ReportType {
 
     private String code;
 
-    @Column(length = 2, nullable = true)
+    @JsonIgnore
+    @Column(name = "is_delete", length = 2, nullable = true)
     private Integer is_delete;
 
     private Date created_at;

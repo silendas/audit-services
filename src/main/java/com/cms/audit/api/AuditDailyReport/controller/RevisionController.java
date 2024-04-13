@@ -16,6 +16,7 @@ import com.cms.audit.api.Common.response.ResponseEntittyHandler;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
 
@@ -31,7 +32,12 @@ public class RevisionController {
         GlobalResponse response = service.getAll(id.orElse(null));
         return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(), response.getError());
     }
-    
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Object> detail(@PathVariable("id") Long id) {
+        GlobalResponse response = service.getOne(id);
+        return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(), response.getError());
+    }
 
     @PostMapping
     public ResponseEntity<Object> postMethodName(@RequestBody RevisionDTO dto) {

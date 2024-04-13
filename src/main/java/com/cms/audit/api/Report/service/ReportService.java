@@ -260,7 +260,9 @@ public class ReportService {
 
     public ResponseEntity<InputStreamResource> getDataDownloadLHA(Long user_id, Long areaId, Date start_date,
             Date end_date) throws FileNotFoundException, MalformedURLException {
-        List<AuditDailyReport> response;
+        User getUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        List<AuditDailyReport> response = new ArrayList<>();
         LhaReportDTO dto = new LhaReportDTO();
         List<ListLhaDTO> list = new ArrayList<>();
         List<LhaReportDTO> listAllReport = new ArrayList<>();
@@ -278,7 +280,23 @@ public class ReportService {
         } else if (start_date != null && end_date != null) {
             response = lhaRepository.findLHAInDateRange(start_date, end_date);
         } else {
-            response = lhaRepository.findAll();
+            if (getUser.getLevel().getId() == 2) {
+                for (int i = 0; i < getUser.getRegionId().size(); i++) {
+                    List<AuditDailyReport> listLHA = lhaRepository
+                            .findLHAByRegion(getUser.getRegionId().get(i));
+                    for (int u = 0; u < listLHA.size(); u++) {
+                        response.add(listLHA.get(u));
+                    }
+                }
+            } else if (getUser.getLevel().getId() == 3) {
+                List<AuditDailyReport> listLHA = lhaRepository
+                        .findAllLHAByUserId(getUser.getId());
+                for (int u = 0; u < listLHA.size(); u++) {
+                    response.add(listLHA.get(u));
+                }
+            } else {
+                response = lhaRepository.findAll();
+            }
         }
         if (response.isEmpty()) {
             return null;
@@ -295,8 +313,8 @@ public class ReportService {
 
                 boolean found = false;
                 for (int j = 0; j < list.size(); j++) {
-                    if (fullName.equals(list.get(j).getName())) {
-                        list.get(j).getLhaDetails().addAll(detail);
+                    if (fullName.equals(list.get(j).getFullname())) {
+                        list.get(j).getDetails().addAll(detail);
                         found = true;
                         break;
                     }
@@ -304,14 +322,14 @@ public class ReportService {
 
                 if (!found) {
                     ListLhaDTO listLha = new ListLhaDTO();
-                    listLha.setName(fullName);
+                    listLha.setFullname(fullName);
                     listLha.setBranch(response.get(i).getBranch().getName());
-                    listLha.setLhaDetails(detail);
+                    listLha.setDetails(detail);
                     list.add(listLha);
                 }
             }
-            dto.setLhaDetail(list);
-            dto.setAreaName(region.get().getName());
+            dto.setLha_detail(list);
+            dto.setArea_name(region.get().getName());
             dto.setDate(convertDateToRoman.convertDateToString(new Date()));
             pdf = LHAReport.generateLHAPDF(dto);
             list.clear();
@@ -323,22 +341,22 @@ public class ReportService {
 
                 boolean foundRegion = false;
                 for (int x = 0; x < listAllReport.size(); x++) {
-                    if (regionName.equals(listAllReport.get(x).getAreaName())) {
+                    if (regionName.equals(listAllReport.get(x).getArea_name())) {
                         foundRegion = true;
-                        List<ListLhaDTO> lhaDetails = listAllReport.get(x).getLhaDetail();
+                        List<ListLhaDTO> lhaDetails = listAllReport.get(x).getLha_detail();
                         boolean foundUser = false;
                         for (int y = 0; y < lhaDetails.size(); y++) {
-                            if (fullName.equals(lhaDetails.get(y).getName())) {
-                                lhaDetails.get(y).getLhaDetails().addAll(detail);
+                            if (fullName.equals(lhaDetails.get(y).getFullname())) {
+                                lhaDetails.get(y).getDetails().addAll(detail);
                                 foundUser = true;
                                 break;
                             }
                         }
                         if (!foundUser) {
                             ListLhaDTO lhaDto = new ListLhaDTO();
-                            lhaDto.setName(fullName);
+                            lhaDto.setFullname(fullName);
                             lhaDto.setBranch(response.get(i).getBranch().getName());
-                            lhaDto.setLhaDetails(detail);
+                            lhaDto.setDetails(detail);
                             lhaDetails.add(lhaDto);
                         }
                         break;
@@ -347,15 +365,15 @@ public class ReportService {
 
                 if (!foundRegion) {
                     LhaReportDTO reportDto = new LhaReportDTO();
-                    reportDto.setAreaName(regionName);
+                    reportDto.setArea_name(regionName);
                     reportDto.setDate(convertDateToRoman.convertDateToString(new Date()));
                     List<ListLhaDTO> lhaDetailList = new ArrayList<>();
                     ListLhaDTO lhaDto = new ListLhaDTO();
-                    lhaDto.setName(fullName);
+                    lhaDto.setFullname(fullName);
                     lhaDto.setBranch(response.get(i).getBranch().getName());
-                    lhaDto.setLhaDetails(detail);
+                    lhaDto.setDetails(detail);
                     lhaDetailList.add(lhaDto);
-                    reportDto.setLhaDetail(lhaDetailList);
+                    reportDto.setLha_detail(lhaDetailList);
                     listAllReport.add(reportDto);
                 }
             }

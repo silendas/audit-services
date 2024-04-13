@@ -58,35 +58,38 @@ public class RevisionService {
         }
     }
 
+    public GlobalResponse getOne(Long id) {
+        try {
+            Optional<Revision> response = repository.findById(id);
+            if(!response.isPresent()){
+                return GlobalResponse.builder().message("Data tidak ditemukan").status(HttpStatus.BAD_REQUEST).build();
+            }
+            return GlobalResponse.builder().message("Success").data(response).status(HttpStatus.OK).build();
+        } catch (Exception e) {
+            return GlobalResponse.builder().error(e).status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
     public GlobalResponse insertNewRevision(RevisionDTO dto) {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         Optional<AuditDailyReportDetail> detail = auditDailyReportDetailRepository
                 .findById(dto.getAudit_daily_report_detail_id());
         if (!detail.isPresent()) {
-            return GlobalResponse.builder().message("Not found").status(HttpStatus.BAD_REQUEST).build();
-        }
-
-        Optional<Case> cases = caseRepository.findById(dto.getCase_id());
-        if (!cases.isPresent()) {
-            return GlobalResponse.builder().message("Not found").status(HttpStatus.BAD_REQUEST).build();
-        }
-
-        Optional<CaseCategory> caseCategory = caseCategoryRepository.findById(dto.getCase_category_id());
-        if (!cases.isPresent()) {
-            return GlobalResponse.builder().message("Not found").status(HttpStatus.BAD_REQUEST).build();
+            return GlobalResponse.builder().message("DEtail Not found").status(HttpStatus.BAD_REQUEST).build();
         }
 
         Revision revision = new Revision();
         revision.setAuditDailyReportDetail(detail.get());
-        revision.setCases(cases.get());
-        revision.setCaseCategory(caseCategory.get());
+        revision.setCases(detail.get().getCases());
+        revision.setCaseCategory(detail.get().getCaseCategory());
         revision.setDescription(dto.getDescription());
         revision.setIs_delete(0);
         revision.setPermanent_recommendations(dto.getPermanent_recommendations());
         revision.setTemporary_recommendations(dto.getTemporary_recommendations());
         revision.setSuggestion(dto.getSuggestion());
         revision.setCreated_by(user.getId());
+        revision.setIs_research(detail.get().getIs_research());
         revision.setCreated_at(new Date());
 
         Optional<Revision> getRevision = repository.findByDetailId(detail.get().getId());

@@ -18,6 +18,7 @@ import com.cms.audit.api.Management.Office.AreaOffice.models.Area;
 import com.cms.audit.api.Management.Office.AreaOffice.repository.AreaRepository;
 import com.cms.audit.api.Management.Office.AreaOffice.repository.PagArea;
 import com.cms.audit.api.Management.Office.BranchOffice.services.BranchService;
+import com.cms.audit.api.Management.Office.MainOffice.models.Main;
 import com.cms.audit.api.Management.Office.RegionOffice.models.Region;
 import com.cms.audit.api.Management.Office.RegionOffice.repository.RegionRepository;
 
@@ -44,7 +45,7 @@ public class AreaService {
             Page<Area> response;
             if (name != null) {
                 response = pagArea.findByNameContaining(name, PageRequest.of(page, size));
-            } else if(regionId != null){
+            } else if (regionId != null) {
                 response = pagArea.findAreaByRegionId(regionId, PageRequest.of(page, size));
             } else {
                 response = pagArea.findAllArea(PageRequest.of(page, size));
@@ -217,9 +218,10 @@ public class AreaService {
     public GlobalResponse save(AreaDTO dto) {
         try {
 
-            Region regionId = Region.builder()
-                    .id(dto.getRegion_id())
-                    .build();
+            Optional<Region> regionId = regionRepository.findById(dto.getRegion_id());
+            if (!regionId.isPresent()) {
+                return GlobalResponse.builder().message("Data region not found").status(HttpStatus.BAD_REQUEST).build();
+            }
 
             Area area = new Area(
                     null,
@@ -227,7 +229,7 @@ public class AreaService {
                     new Date(),
                     new Date(),
                     0,
-                    regionId);
+                    regionId.get());
 
             Area response = areaRepository.save(area);
             if (response == null) {
@@ -262,9 +264,10 @@ public class AreaService {
 
             Area areaGet = areaRepository.findById(id).get();
 
-            Region regionId = Region.builder()
-                    .id(dto.getRegion_id())
-                    .build();
+            Optional<Region> regionId = regionRepository.findById(dto.getRegion_id());
+            if (!regionId.isPresent()) {
+                return GlobalResponse.builder().message("Data region not found").status(HttpStatus.BAD_REQUEST).build();
+            }
 
             Area area = new Area(
                     id,
@@ -272,7 +275,7 @@ public class AreaService {
                     areaGet.getCreated_at(),
                     new Date(),
                     0,
-                    regionId);
+                    regionId.get());
 
             Area response = areaRepository.save(area);
             if (response == null) {
@@ -308,12 +311,12 @@ public class AreaService {
             Area areaGet = areaRepository.findById(id).get();
 
             GlobalResponse branch = branchService.findSpecificByAreaId(id);
-            if(branch.getData()!= null){
+            if (branch.getData() != null) {
                 return GlobalResponse
-                    .builder()
-                    .message("Cannot delete because relation")
-                    .status(HttpStatus.BAD_REQUEST)
-                    .build();
+                        .builder()
+                        .message("Cannot delete because relation")
+                        .status(HttpStatus.BAD_REQUEST)
+                        .build();
             }
 
             Area area = areaGet;

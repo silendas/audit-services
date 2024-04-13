@@ -2,6 +2,8 @@ package com.cms.audit.api.Management.Case.models;
 
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -30,7 +32,8 @@ public class Case {
 
     private String code;
     
-    @Column(length = 2, nullable = true)
+    @JsonIgnore
+    @Column(name = "is_delete", length = 2, nullable = true)
     private Integer is_delete;
 
     private Date created_at;

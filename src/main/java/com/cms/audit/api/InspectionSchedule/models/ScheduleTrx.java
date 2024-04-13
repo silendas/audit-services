@@ -4,6 +4,7 @@ import java.util.Date;
 
 import com.cms.audit.api.Management.Office.BranchOffice.models.Branch;
 import com.cms.audit.api.Management.User.models.User;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -63,7 +64,8 @@ public class ScheduleTrx {
     @Column(name = "category")
     private ECategory category;
 
-    @Column(name = "is_delete",length = 2, nullable = true)
+    @JsonIgnore
+    @Column(name = "is_delete", length = 2, nullable = true)
     private Integer is_delete;
 
     @Column(name = "created_by")

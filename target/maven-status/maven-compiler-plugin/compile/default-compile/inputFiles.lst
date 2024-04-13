@@ -191,6 +191,7 @@ C:\Project\Spring Boot\final\last\very last\audit-services\src\main\java\com\cms
 C:\Project\Spring Boot\final\last\very last\audit-services\src\main\java\com\cms\audit\api\NewsInspection\controller\NewsInspecionController.java
 C:\Project\Spring Boot\final\last\very last\audit-services\src\main\java\com\cms\audit\api\Management\Office\MainOffice\repository\PagMain.java
 C:\Project\Spring Boot\final\last\very last\audit-services\src\main\java\com\cms\audit\api\AuditWorkingPaper\controller\AuditWorkingPaperController.java
+C:\Project\Spring Boot\final\last\very last\audit-services\src\main\java\com\cms\audit\api\AuditDailyReport\dto\LhaReportDTO.java
 C:\Project\Spring Boot\final\last\very last\audit-services\src\main\java\com\cms\audit\api\Config\Jwt\TokenBlacklist.java
 C:\Project\Spring Boot\final\last\very last\audit-services\src\main\java\com\cms\audit\api\Management\CaseCategory\repository\CaseCategoryRepository.java
 C:\Project\Spring Boot\final\last\very last\audit-services\src\main\java\com\cms\audit\api\Management\Office\AreaOffice\repository\AreaRepository.java
@@ -201,6 +202,7 @@ C:\Project\Spring Boot\final\last\very last\audit-services\src\main\java\com\cms
 C:\Project\Spring Boot\final\last\very last\audit-services\src\main\java\com\cms\audit\api\Common\pdf\LHAReport.java
 C:\Project\Spring Boot\final\last\very last\audit-services\src\main\java\com\cms\audit\api\InspectionSchedule\dto\response\ScheduleInterface.java
 C:\Project\Spring Boot\final\last\very last\audit-services\src\main\java\com\cms\audit\api\Management\User\models\User.java
+C:\Project\Spring Boot\final\last\very last\audit-services\src\main\java\com\cms\audit\api\AuditDailyReport\dto\ListDetailDTO.java
 C:\Project\Spring Boot\final\last\very last\audit-services\src\main\java\com\cms\audit\api\Flag\repository\FlagRepo.java
 C:\Project\Spring Boot\final\last\very last\audit-services\src\main\java\com\cms\audit\api\Management\CaseCategory\controller\CaseCategoryController.java
 C:\Project\Spring Boot\final\last\very last\audit-services\src\main\java\com\cms\audit\api\Report\repository\ReportRepository.java

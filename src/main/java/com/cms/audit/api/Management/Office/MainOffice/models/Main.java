@@ -2,6 +2,8 @@ package com.cms.audit.api.Management.Office.MainOffice.models;
 
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -30,7 +32,8 @@ public class Main {
     @Column(name = "name")
     private String name;
 
-    @Column(name = "is_delete",length = 2, nullable = true)
+    @JsonIgnore
+    @Column(name = "is_delete", length = 2, nullable = true)
     private Integer is_delete;
 
     @Column(name = "created_at")

@@ -159,17 +159,13 @@ public class ScheduleService {
                         return getByBranchIdInDate(branch_id, category, page, size, start_date,
                                         end_date);
                 } else {
-                        System.out.println("1");
                         Pageable pageable = PageRequest.of(page, size);
                         List<Schedule> scheduleList = new ArrayList<>();
                         for (int i = 0; i < user.getRegionId().size(); i++) {
-                                System.out.println("1.2");
                                 List<Schedule> scheduleAgain = repository.findByRegionId(user.getRegionId().get(i),
                                                 category);
                                 if (!scheduleAgain.isEmpty()) {
-                                        System.out.println("1.3");
                                         for (int u = 0; u < scheduleAgain.size(); u++) {
-                                                System.out.println("1.OK");
                                                 scheduleList.add(scheduleAgain.get(u));
                                         }
                                 }
@@ -181,7 +177,7 @@ public class ScheduleService {
                                 List<Schedule> pageContent = scheduleList.subList(start, end);
                                 Page<Schedule> response2 = new PageImpl<>(pageContent, pageable,
                                                 scheduleList.size());
-                                                System.out.println("OK");
+                                System.out.println("OK");
                                 return GlobalResponse
                                                 .builder()
                                                 .message("Success")
@@ -251,7 +247,6 @@ public class ScheduleService {
                                         return getByBranchIdInDate(branch_id, "REGULAR", page, size, start_date,
                                                         end_date);
                                 } else {
-                                        System.out.println("kesini");
                                         return getScheduleArea(user, "REGULAR", branch_id, name, page, size, start_date,
                                                         end_date);
                                 }
@@ -532,12 +527,12 @@ public class ScheduleService {
         }
 
         public List<Object> mappingListSchedule(List<Schedule> response) {
-                UserResponseOther setUser = new UserResponseOther();
                 List<Object> listSchedule = new ArrayList<>();
                 for (int i = 0; i < response.size(); i++) {
                         Map<String, Object> mapParent = new LinkedHashMap<>();
                         mapParent.put("id", response.get(i).getId());
 
+                        UserResponseOther setUser = new UserResponseOther();
                         setUser.setId(response.get(i).getUser().getId());
                         setUser.setEmail(response.get(i).getUser().getEmail());
                         setUser.setFullname(response.get(i).getUser().getFullname());
@@ -596,13 +591,13 @@ public class ScheduleService {
         }
 
         public Map<String, Object> mappingPageSchedule(Page<Schedule> response) {
-                UserResponseOther setUser = new UserResponseOther();
                 Map<String, Object> parentMap = new LinkedHashMap<>();
                 List<Object> listSchedule = new ArrayList<>();
                 for (int i = 0; i < response.getContent().size(); i++) {
                         Map<String, Object> map = new LinkedHashMap<>();
                         map.put("id", response.getContent().get(i).getId());
 
+                        UserResponseOther setUser = new UserResponseOther();
                         setUser.setId(response.getContent().get(i).getUser().getId());
                         setUser.setEmail(response.getContent().get(i).getUser().getEmail());
                         setUser.setFullname(response.getContent().get(i).getUser().getFullname());
@@ -626,8 +621,17 @@ public class ScheduleService {
 
                         listSchedule.add(map);
                 }
-                parentMap.put("content", listSchedule);
                 parentMap.put("pageable", response.getPageable());
+                parentMap.put("totalPage", response.getTotalPages());
+                parentMap.put("totalElement", response.getTotalElements());
+                parentMap.put("size", response.getSize());
+                parentMap.put("number", response.getNumber());
+                parentMap.put("last", response.isLast());
+                parentMap.put("first", response.isFirst());
+                parentMap.put("numberOfElement", response.getNumberOfElements());
+                parentMap.put("empty", response.isEmpty());
+                parentMap.put("sort", response.getSort());
+                parentMap.put("content", listSchedule);
                 return parentMap;
         }
 
@@ -823,8 +827,6 @@ public class ScheduleService {
                                                 scheduleDTO.getSchedules().get(i).getUser_id(),
                                                 getUser.getId(), scheduleDTO.getSchedules().get(i).getStart_date(),
                                                 scheduleDTO.getSchedules().get(i).getEnd_date());
-
-                                // Schedule response = repository.save(schedule);
                                 Schedule response = repository.save(schedule);
                                 // if (response == null) {
                                 // return GlobalResponse
@@ -873,6 +875,7 @@ public class ScheduleService {
                         ScheduleTrx scheduleTrx = new ScheduleTrx();
                         scheduleTrx.setUser(setUser);
                         scheduleTrx.setBranch(setBranch);
+                        scheduleTrx.setDescription(dto.getDescription());
                         scheduleTrx.setStart_date(dto.getStart_date());
                         scheduleTrx.setEnd_date(dto.getEnd_date());
                         scheduleTrx.setStatus(EStatus.TODO);

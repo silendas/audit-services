@@ -50,7 +50,7 @@ public class LHAReport {
                                 .setTextAlignment(TextAlignment.CENTER));
                 header2.addCell(new Cell().add(dto.getDate()).setBackgroundColor(Color.WHITE).setFontSize(5)
                                 .setTextAlignment(TextAlignment.CENTER));
-                header2.addCell(new Cell().add(dto.getAreaName()).setBackgroundColor(Color.YELLOW).setFontSize(5)
+                header2.addCell(new Cell().add(dto.getArea_name()).setBackgroundColor(Color.YELLOW).setFontSize(5)
                                 .setTextAlignment(TextAlignment.CENTER));
                 document.add(header2);
 
@@ -82,44 +82,44 @@ public class LHAReport {
 
                 float bodyLenght[] = { 45f, 555f };
                 Table body = new Table(bodyLenght).setHorizontalAlignment(HorizontalAlignment.CENTER);
-                body.addCell(new Cell().add(dto.getAreaName()).setBackgroundColor(Color.YELLOW).setFontSize(5)
+                body.addCell(new Cell().add(dto.getArea_name()).setBackgroundColor(Color.YELLOW).setFontSize(5)
                                 .setTextAlignment(TextAlignment.CENTER).setVerticalAlignment(VerticalAlignment.MIDDLE));
                 // float bodyNestedLenght[] = { 65f, 50f, 440f };
                 Table bodyNested = new Table(new float[] { 64f, 50f, 440f });
                 float bodyNested2Lenght[] = { 30f, 97f, 96f, 99f, 100f };
-                for (int i = 0; i < dto.getLhaDetail().size(); i++) {
-                        bodyNested.addCell(new Cell().add(dto.getLhaDetail().get(i).getName())
+                for (int i = 0; i < dto.getLha_detail().size(); i++) {
+                        bodyNested.addCell(new Cell().add(dto.getLha_detail().get(i).getFullname())
                                         .setBackgroundColor(Color.YELLOW)
                                         .setFontSize(5).setTextAlignment(TextAlignment.CENTER)
                                         .setVerticalAlignment(VerticalAlignment.MIDDLE));
-                        bodyNested.addCell(new Cell().add(dto.getLhaDetail().get(i).getBranch())
+                        bodyNested.addCell(new Cell().add(dto.getLha_detail().get(i).getBranch())
                                         .setBackgroundColor(Color.YELLOW)
                                         .setFontSize(5).setTextAlignment(TextAlignment.CENTER)
                                         .setVerticalAlignment(VerticalAlignment.MIDDLE));
                         Table bodyNested2 = new Table(bodyNested2Lenght)
                                         .setHorizontalAlignment(HorizontalAlignment.CENTER);
-                        for (int u = 0; u < dto.getLhaDetail().get(i).getLhaDetails().size(); u++) {
+                        for (int u = 0; u < dto.getLha_detail().get(i).getDetails().size(); u++) {
                                 bodyNested2.addCell(new Cell()
-                                                .add(dto.getLhaDetail().get(i).getLhaDetails().get(u).getCases()
+                                                .add(dto.getLha_detail().get(i).getDetails().get(u).getCases()
                                                                 .getCode())
                                                 .setBackgroundColor(Color.WHITE)
                                                 .setFontSize(5).setTextAlignment(TextAlignment.CENTER));
                                 bodyNested2.addCell(new Cell()
-                                                .add(dto.getLhaDetail().get(i).getLhaDetails().get(u).getCaseCategory()
+                                                .add(dto.getLha_detail().get(i).getDetails().get(u).getCaseCategory()
                                                                 .getName())
                                                 .setBackgroundColor(Color.WHITE)
                                                 .setFontSize(5).setTextAlignment(TextAlignment.CENTER));
                                 bodyNested2.addCell(new Cell()
-                                                .add(dto.getLhaDetail().get(i).getLhaDetails().get(u).getDescription())
+                                                .add(dto.getLha_detail().get(i).getDetails().get(u).getDescription())
                                                 .setBackgroundColor(Color.WHITE)
                                                 .setFontSize(5).setTextAlignment(TextAlignment.CENTER));
                                 bodyNested2.addCell(new Cell()
-                                                .add(dto.getLhaDetail().get(i).getLhaDetails().get(u)
+                                                .add(dto.getLha_detail().get(i).getDetails().get(u)
                                                                 .getTemporary_recommendations())
                                                 .setBackgroundColor(Color.WHITE)
                                                 .setFontSize(5).setTextAlignment(TextAlignment.CENTER));
                                 bodyNested2.addCell(new Cell()
-                                                .add(dto.getLhaDetail().get(i).getLhaDetails().get(u)
+                                                .add(dto.getLha_detail().get(i).getDetails().get(u)
                                                                 .getPermanent_recommendations())
                                                 .setBackgroundColor(Color.WHITE)
                                                 .setFontSize(5).setTextAlignment(TextAlignment.CENTER));
@@ -166,7 +166,7 @@ public class LHAReport {
                         header2.addCell(new Cell().add(dto.get(o).getDate()).setBackgroundColor(Color.WHITE)
                                         .setFontSize(5)
                                         .setTextAlignment(TextAlignment.CENTER));
-                        header2.addCell(new Cell().add(dto.get(o).getAreaName()).setBackgroundColor(Color.YELLOW)
+                        header2.addCell(new Cell().add(dto.get(o).getArea_name()).setBackgroundColor(Color.YELLOW)
                                         .setFontSize(5)
                                         .setTextAlignment(TextAlignment.CENTER));
                         document.add(header2);
@@ -208,7 +208,7 @@ public class LHAReport {
 
                         float bodyLenght[] = { 43f, 555f };
                         Table body = new Table(bodyLenght).setHorizontalAlignment(HorizontalAlignment.CENTER);
-                        body.addCell(new Cell().add(dto.get(o).getAreaName()).setBackgroundColor(Color.YELLOW)
+                        body.addCell(new Cell().add(dto.get(o).getArea_name()).setBackgroundColor(Color.YELLOW)
                                         .setFontSize(5)
                                         .setTextAlignment(TextAlignment.CENTER)
                                         .setVerticalAlignment(VerticalAlignment.MIDDLE));
@@ -216,45 +216,45 @@ public class LHAReport {
                         System.out.println("kesini 1");
                         Table bodyNested = new Table(new float[] { 64f, 50f, 440f });
                         float bodyNested2Lenght[] = { 30f, 97f, 96f, 99f, 100f };
-                        for (int i = 0; i < dto.get(o).getLhaDetail().size(); i++) {
+                        for (int i = 0; i < dto.get(o).getLha_detail().size(); i++) {
                                 System.out.println("kesini 1.1");
-                                bodyNested.addCell(new Cell().add(dto.get(o).getLhaDetail().get(i).getName())
+                                bodyNested.addCell(new Cell().add(dto.get(o).getLha_detail().get(i).getFullname())
                                                 .setBackgroundColor(Color.YELLOW)
                                                 .setFontSize(5).setTextAlignment(TextAlignment.CENTER)
                                                 .setVerticalAlignment(VerticalAlignment.MIDDLE));
                                 System.out.println("kesini 1.2");
-                                bodyNested.addCell(new Cell().add(dto.get(o).getLhaDetail().get(i).getBranch())
+                                bodyNested.addCell(new Cell().add(dto.get(o).getLha_detail().get(i).getBranch())
                                                 .setBackgroundColor(Color.YELLOW)
                                                 .setFontSize(5).setTextAlignment(TextAlignment.CENTER)
                                                 .setVerticalAlignment(VerticalAlignment.MIDDLE));
                                 Table bodyNested2 = new Table(bodyNested2Lenght)
                                                 .setHorizontalAlignment(HorizontalAlignment.CENTER);
-                                for (int u = 0; u < dto.get(o).getLhaDetail().get(i).getLhaDetails().size(); u++) {
+                                for (int u = 0; u < dto.get(o).getLha_detail().get(i).getDetails().size(); u++) {
                                         System.out.println("kesini 2");
                                         bodyNested2.addCell(new Cell()
-                                                        .add(dto.get(o).getLhaDetail().get(i).getLhaDetails().get(u)
+                                                        .add(dto.get(o).getLha_detail().get(i).getDetails().get(u)
                                                                         .getCases()
                                                                         .getCode())
                                                         .setBackgroundColor(Color.WHITE)
                                                         .setFontSize(5).setTextAlignment(TextAlignment.CENTER));
                                         bodyNested2.addCell(new Cell()
-                                                        .add(dto.get(o).getLhaDetail().get(i).getLhaDetails().get(u)
+                                                        .add(dto.get(o).getLha_detail().get(i).getDetails().get(u)
                                                                         .getCaseCategory()
                                                                         .getName())
                                                         .setBackgroundColor(Color.WHITE)
                                                         .setFontSize(5).setTextAlignment(TextAlignment.CENTER));
                                         bodyNested2.addCell(new Cell()
-                                                        .add(dto.get(o).getLhaDetail().get(i).getLhaDetails().get(u)
+                                                        .add(dto.get(o).getLha_detail().get(i).getDetails().get(u)
                                                                         .getDescription())
                                                         .setBackgroundColor(Color.WHITE)
                                                         .setFontSize(5).setTextAlignment(TextAlignment.CENTER));
                                         bodyNested2.addCell(new Cell()
-                                                        .add(dto.get(o).getLhaDetail().get(i).getLhaDetails().get(u)
+                                                        .add(dto.get(o).getLha_detail().get(i).getDetails().get(u)
                                                                         .getTemporary_recommendations())
                                                         .setBackgroundColor(Color.WHITE)
                                                         .setFontSize(5).setTextAlignment(TextAlignment.CENTER));
                                         bodyNested2.addCell(new Cell()
-                                                        .add(dto.get(o).getLhaDetail().get(i).getLhaDetails().get(u)
+                                                        .add(dto.get(o).getLha_detail().get(i).getDetails().get(u)
                                                                         .getPermanent_recommendations())
                                                         .setBackgroundColor(Color.WHITE)
                                                         .setFontSize(5).setTextAlignment(TextAlignment.CENTER));

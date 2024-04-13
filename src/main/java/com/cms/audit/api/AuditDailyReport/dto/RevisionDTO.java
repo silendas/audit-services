@@ -9,11 +9,8 @@ import lombok.*;
 @NoArgsConstructor
 public class RevisionDTO {
     private Long audit_daily_report_detail_id;
-    private Long case_id;
-    private Long case_category_id;
     private String description;
     private String suggestion;
     private String temporary_recommendations;
     private String permanent_recommendations;
-    private Integer is_research;
 }

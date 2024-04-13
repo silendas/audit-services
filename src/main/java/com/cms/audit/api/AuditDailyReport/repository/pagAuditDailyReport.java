@@ -22,6 +22,9 @@ public interface pagAuditDailyReport extends PagingAndSortingRepository<AuditDai
     @Query(value = "SELECT * FROM audit_daily_report u WHERE u.schedule_id = :id AND u.is_delete <> 1", nativeQuery = true)
     Page<AuditDailyReport> findByScheduleId(@Param("id") Long id, Pageable pageable);
 
+    @Query(value = "SELECT * FROM audit_daily_report u WHERE u.user_id = :id AND u.is_delete <> 1", nativeQuery = true)
+    Page<AuditDailyReport> findByUserId(@Param("id") Long id, Pageable pageable);
+
     @Query(value = "SELECT * FROM audit_daily_report u WHERE u.created_at BETWEEN :start_date AND :end_date ", nativeQuery = true)
     Page<AuditDailyReport> findLHAInDateRange(@Param("start_date") Date start_date,
             @Param("end_date") Date end_date, Pageable pageable);

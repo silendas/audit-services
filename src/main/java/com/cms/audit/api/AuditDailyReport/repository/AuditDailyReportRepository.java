@@ -43,6 +43,9 @@ public interface AuditDailyReportRepository extends JpaRepository<AuditDailyRepo
                         @Param("start_date") Date start_date,
                         @Param("end_date") Date end_date);
 
+        @Query(value = "SELECT u.* FROM audit_daily_report u WHERE u.branch_id = :id AND u.is_delete <> 1;", nativeQuery = true)
+        public List<AuditDailyReport> findLHAByBranch(@Param("id") Long branch_id);
+
         @Query(value = "SELECT u.* FROM audit_daily_report u INNER JOIN branch_office bo ON u.branch_id = bo.id INNER JOIN area_office ao ON bo.area_id = ao.id INNER JOIN region_office ro ON ao.region_id=ro.id WHERE ro.id = :id  AND u.is_delete <> 1;", nativeQuery = true)
         public List<AuditDailyReport> findLHAByRegion(@Param("id") Long area_id);
 
@@ -60,12 +63,15 @@ public interface AuditDailyReportRepository extends JpaRepository<AuditDailyRepo
 
         @Query(value = "SELECT u.* FROM audit_daily_report u INNER JOIN users us ON u.user_id = us.id INNER JOIN branch_office bo ON u.branch_id = bo.id INNER JOIN area_office ao ON bo.area_id = ao.id INNER JOIN region_office ro ON ao.region_id=ro.id WHERE ro.id = :id AND us.fullname LIKE '% :name %' AND u.created_at BETWEEN :start_date AND :end_date;", nativeQuery = true)
         List<AuditDailyReport> findLHAByAllFilter(@Param("id") Long area_id,
-        @Param("name") String name,
-        @Param("start_date") Date start_date,
-        @Param("end_date") Date end_date);
+                        @Param("name") String name,
+                        @Param("start_date") Date start_date,
+                        @Param("end_date") Date end_date);
 
-        // @Query(value = "SELECT * FROM audit_daily_report u INNER JOIN users us ON u.user_id = us.id WHERE us.fullname LIKE '% :name %' AND u.created_at BETWEEN :start_date AND :end_date AND u.is_delete <> 1", nativeQuery = true)
-        // List<AuditDailyReport> findLHAByNameInDateRange(String name, Date start_date, Date end_date);
+        // @Query(value = "SELECT * FROM audit_daily_report u INNER JOIN users us ON
+        // u.user_id = us.id WHERE us.fullname LIKE '% :name %' AND u.created_at BETWEEN
+        // :start_date AND :end_date AND u.is_delete <> 1", nativeQuery = true)
+        // List<AuditDailyReport> findLHAByNameInDateRange(String name, Date start_date,
+        // Date end_date);
 
         @Query(value = "SELECT u.* FROM audit_daily_report u INNER JOIN users us ON u.user_id = us.id WHERE us.fullname LIKE '% :name %'", nativeQuery = true)
         List<AuditDailyReport> findLHAByName(@Param("name") String name);

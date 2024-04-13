@@ -59,22 +59,23 @@ public class NewsInspectionService {
                 response = pag.findBAPInDateRange(start_date, end_date, PageRequest.of(page, size));
             }
             List<Object> listBAP = new ArrayList<>();
-            for(int i=0;i<response.getContent().size();i++){
+            for (int i = 0; i < response.getContent().size(); i++) {
                 NewsInspection bap = response.getContent().get(i);
-                Map<String,Object> kkaMap = new LinkedHashMap<>();
+                Map<String, Object> kkaMap = new LinkedHashMap<>();
                 kkaMap.put("id", bap.getId());
 
-                Map<String,Object> user = new LinkedHashMap<>();
+                Map<String, Object> user = new LinkedHashMap<>();
                 user.put("id", bap.getUser().getId());
                 user.put("email", bap.getUser().getEmail());
                 user.put("fullname", bap.getUser().getFullname());
                 user.put("initial_name", bap.getUser().getInitial_name());
-                kkaMap.put("user",user);
+                kkaMap.put("user", user);
 
-                Map<String,Object> clarification = new LinkedHashMap<>();
+                Map<String, Object> clarification = new LinkedHashMap<>();
                 clarification.put("id", bap.getClarification().getId());
                 clarification.put("code", bap.getClarification().getCode());
-                clarification.put("evaluation_limitation", convertDateToRoman.convertDateToString(bap.getClarification().getEvaluation_limitation()));
+                clarification.put("evaluation_limitation",
+                        convertDateToRoman.convertDateToString(bap.getClarification().getEvaluation_limitation()));
                 kkaMap.put("clarification", clarification);
 
                 kkaMap.put("code", bap.getCode());
@@ -84,9 +85,18 @@ public class NewsInspectionService {
                 listBAP.add(kkaMap);
 
             }
-            Map<String,Object> parent = new LinkedHashMap<>();
-            parent.put("content", listBAP);
+            Map<String, Object> parent = new LinkedHashMap<>();
             parent.put("pageable", response.getPageable());
+            parent.put("totalPage", response.getTotalPages());
+            parent.put("totalElement", response.getTotalElements());
+            parent.put("size", response.getSize());
+            parent.put("number", response.getNumber());
+            parent.put("last", response.isLast());
+            parent.put("first", response.isFirst());
+            parent.put("numberOfElement", response.getNumberOfElements());
+            parent.put("empty", response.isEmpty());
+            parent.put("sort", response.getSort());
+            parent.put("content", listBAP);
             if (response.isEmpty()) {
                 return GlobalResponse
                         .builder()
@@ -125,20 +135,21 @@ public class NewsInspectionService {
         try {
             Optional<NewsInspection> response = repository.findById(id);
             NewsInspection bap = response.get();
-            Map<String,Object> kkaMap = new LinkedHashMap<>();
+            Map<String, Object> kkaMap = new LinkedHashMap<>();
             kkaMap.put("id", bap.getId());
 
-            Map<String,Object> user = new LinkedHashMap<>();
+            Map<String, Object> user = new LinkedHashMap<>();
             user.put("id", bap.getUser().getId());
             user.put("email", bap.getUser().getEmail());
             user.put("fullname", bap.getUser().getFullname());
             user.put("initial_name", bap.getUser().getInitial_name());
-            kkaMap.put("user",user);
+            kkaMap.put("user", user);
 
-            Map<String,Object> clarification = new LinkedHashMap<>();
+            Map<String, Object> clarification = new LinkedHashMap<>();
             clarification.put("id", bap.getClarification().getId());
             clarification.put("code", bap.getClarification().getCode());
-            clarification.put("evaluation_limitation", convertDateToRoman.convertDateToString(bap.getClarification().getEvaluation_limitation()));
+            clarification.put("evaluation_limitation",
+                    convertDateToRoman.convertDateToString(bap.getClarification().getEvaluation_limitation()));
             kkaMap.put("clarification", clarification);
 
             kkaMap.put("code", bap.getCode());
@@ -181,9 +192,11 @@ public class NewsInspectionService {
 
     public GlobalResponse uploadFile(MultipartFile file, Long id) {
         try {
-            NewsInspection getBAP = repository.findById(id).orElseThrow(()-> new ResourceNotFoundException("BAP with id: " + id + " is undefined"));
+            NewsInspection getBAP = repository.findById(id)
+                    .orElseThrow(() -> new ResourceNotFoundException("BAP with id: " + id + " is undefined"));
 
-            //String fileName = randomValueNumber.randomNumberGenerator() + "-" + file.getOriginalFilename();
+            // String fileName = randomValueNumber.randomNumberGenerator() + "-" +
+            // file.getOriginalFilename();
 
             String fileName = fileStorageService.storeFile(file);
             String path = FOLDER_PATH + fileName;
@@ -195,7 +208,7 @@ public class NewsInspectionService {
 
             repository.save(bap);
 
-            //file.transferTo(new File(filePath));
+            // file.transferTo(new File(filePath));
 
             return GlobalResponse
                     .builder()
@@ -223,9 +236,10 @@ public class NewsInspectionService {
         }
     }
 
-      public NewsInspection downloadFile(String fileName) throws java.io.IOException, IOFileUploadException {
-                NewsInspection response = repository.findByFileName(fileName).orElseThrow(() -> new ResourceNotFoundException("File not found with name: " + fileName ));
-                return response;
-        }
+    public NewsInspection downloadFile(String fileName) throws java.io.IOException, IOFileUploadException {
+        NewsInspection response = repository.findByFileName(fileName)
+                .orElseThrow(() -> new ResourceNotFoundException("File not found with name: " + fileName));
+        return response;
+    }
 
 }

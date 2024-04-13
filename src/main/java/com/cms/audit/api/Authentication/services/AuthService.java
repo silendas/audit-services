@@ -46,7 +46,7 @@ public class AuthService {
                                         );
                 } catch (BadCredentialsException e) {
                         return AuthResponse.builder().message("Invalid username or password")
-                                        .status(HttpStatus.UNAUTHORIZED).build();
+                                        .status(HttpStatus.BAD_REQUEST).build();
                 }
 
                 //User user = authRepository.findByUsername(response.get().getUsername()).orElseThrow();

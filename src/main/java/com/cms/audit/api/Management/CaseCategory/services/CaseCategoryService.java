@@ -19,6 +19,7 @@ import com.cms.audit.api.Management.CaseCategory.dto.response.CaseCategoryInterf
 import com.cms.audit.api.Management.CaseCategory.models.CaseCategory;
 import com.cms.audit.api.Management.CaseCategory.repository.CaseCategoryRepository;
 import com.cms.audit.api.Management.CaseCategory.repository.PagCaseCategory;
+import com.cms.audit.api.Management.Office.AreaOffice.models.Area;
 
 import jakarta.transaction.Transactional;
 
@@ -35,15 +36,15 @@ public class CaseCategoryService {
     @Autowired
     private CaseRepository caseRepository;
 
-    public GlobalResponse findAll(Long caseId,String name, int page, int size) {
+    public GlobalResponse findAll(Long caseId, String name, int page, int size) {
         try {
-            if(caseId != null){
+            if (caseId != null) {
                 return findOneByCasesId(caseId, page, size);
             }
             Page<CaseCategory> response = null;
-            if(name!=null){
+            if (name != null) {
                 response = pagCaseCategory.findByNameContaining(name, PageRequest.of(page, size));
-            }else{
+            } else {
                 response = pagCaseCategory.findAllCC(PageRequest.of(page, size));
             }
             if (response.isEmpty()) {
@@ -142,13 +143,13 @@ public class CaseCategoryService {
     public GlobalResponse findOneByCasesId(Long id, int page, int size) {
         try {
             Optional<Case> set = caseRepository.findById(id);
-            if(!set.isPresent()){
+            if (!set.isPresent()) {
                 return GlobalResponse
-                .builder()
-                .message("Data not found")
-                .status(HttpStatus.OK)
-                .build();
-        }
+                        .builder()
+                        .message("Data not found")
+                        .status(HttpStatus.OK)
+                        .build();
+            }
             Page<CaseCategory> response = pagCaseCategory.findByCases(set.get().getId(), PageRequest.of(page, size));
             if (response.isEmpty()) {
                 return GlobalResponse
@@ -214,10 +215,10 @@ public class CaseCategoryService {
     public GlobalResponse save(CaseCategoryDTO caseCategoryDTO) {
         try {
 
-            Case caseId = Case
-                    .builder()
-                    .id(caseCategoryDTO.getCase_id())
-                    .build();
+            Optional<Case> caseId = caseRepository.findById(caseCategoryDTO.getCase_id());
+            if (!caseId.isPresent()) {
+                return GlobalResponse.builder().message("Data case not found").status(HttpStatus.BAD_REQUEST).build();
+            }
 
             CaseCategory caseCategoryEntity = new CaseCategory(
                     null,
@@ -225,7 +226,7 @@ public class CaseCategoryService {
                     0,
                     new Date(),
                     new Date(),
-                    caseId);
+                    caseId.get());
 
             CaseCategory response = caseCategoryRepository.save(caseCategoryEntity);
             if (response == null) {
@@ -259,10 +260,10 @@ public class CaseCategoryService {
         try {
             CaseCategory caseCategoryGet = caseCategoryRepository.findById(id).get();
 
-            Case caseId = Case
-                    .builder()
-                    .id(caseCategoryGet.getCases().getId())
-                    .build();
+            Optional<Case> caseId = caseRepository.findById(caseCategoryDTO.getCase_id());
+            if (!caseId.isPresent()) {
+                return GlobalResponse.builder().message("Data case not found").status(HttpStatus.BAD_REQUEST).build();
+            }
 
             CaseCategory caseCategoryEntity = new CaseCategory(
                     id,
@@ -270,8 +271,7 @@ public class CaseCategoryService {
                     0,
                     caseCategoryGet.getCreated_at(),
                     new Date(),
-                    caseId
-                    );
+                    caseId.get());
 
             CaseCategory response = caseCategoryRepository.save(caseCategoryEntity);
             if (response == null) {
@@ -316,8 +316,7 @@ public class CaseCategoryService {
                     1,
                     caseCategoryGet.getCreated_at(),
                     new Date(),
-                    caseId
-                    );
+                    caseId);
 
             CaseCategory response = caseCategoryRepository.save(caseCategoryEntity);
             if (response == null) {
@@ -346,6 +345,5 @@ public class CaseCategoryService {
                     .build();
         }
     }
-
 
 }

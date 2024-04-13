@@ -79,7 +79,7 @@ public class FollowupService {
                 fuMap.put("user", user);
 
                 Map<String, Object> penalty = new LinkedHashMap<>();
-                if(fu.getPenalty() != null){
+                if (fu.getPenalty() != null) {
                     penalty.put("id", fu.getPenalty().getId());
                     penalty.put("code", fu.getPenalty().getName());
                     fuMap.put("penalty", penalty);
@@ -105,8 +105,17 @@ public class FollowupService {
 
             }
             Map<String, Object> parent = new LinkedHashMap<>();
-            parent.put("content", listFU);
             parent.put("pageable", response.getPageable());
+            parent.put("totalPage", response.getTotalPages());
+            parent.put("totalElement", response.getTotalElements());
+            parent.put("size", response.getSize());
+            parent.put("number", response.getNumber());
+            parent.put("last", response.isLast());
+            parent.put("first", response.isFirst());
+            parent.put("numberOfElement", response.getNumberOfElements());
+            parent.put("empty", response.isEmpty());
+            parent.put("sort", response.getSort());
+            parent.put("content", listFU);
             if (response.isEmpty()) {
                 return GlobalResponse
                         .builder()
@@ -145,7 +154,7 @@ public class FollowupService {
             fuMap.put("user", user);
 
             Map<String, Object> penalty = new LinkedHashMap<>();
-            if(fu.getPenalty() != null){
+            if (fu.getPenalty() != null) {
                 penalty.put("id", fu.getPenalty().getId());
                 penalty.put("code", fu.getPenalty().getName());
                 fuMap.put("penalty", penalty);
@@ -232,7 +241,8 @@ public class FollowupService {
             FollowUp getFollowUp = repository.findById(id)
                     .orElseThrow(() -> new ResourceNotFoundException("followUp with id: " + id + " is undefined"));
 
-            //String fileName = randomValueNumber.randomNumberGenerator() + "-" + file.getOriginalFilename();
+            // String fileName = randomValueNumber.randomNumberGenerator() + "-" +
+            // file.getOriginalFilename();
 
             String fileName = fileStorageService.storeFile(file);
             String path = FOLDER_PATH + fileName;

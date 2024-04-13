@@ -19,6 +19,7 @@ import com.cms.audit.api.Management.Office.BranchOffice.dto.response.BranchInter
 import com.cms.audit.api.Management.Office.BranchOffice.models.Branch;
 import com.cms.audit.api.Management.Office.BranchOffice.repository.BranchRepository;
 import com.cms.audit.api.Management.Office.BranchOffice.repository.PagBranch;
+import com.cms.audit.api.Management.Office.RegionOffice.models.Region;
 
 import jakarta.transaction.Transactional;
 
@@ -40,7 +41,7 @@ public class BranchService {
             Page<Branch> response;
             if (name != null) {
                 response = pagBranch.findByNameContaining(name, PageRequest.of(page, size));
-            } else if(areaId !=null){
+            } else if (areaId != null) {
                 response = pagBranch.findBranchByAreaId(areaId, PageRequest.of(page, size));
             } else {
                 response = pagBranch.findAllBranch(PageRequest.of(page, size));
@@ -248,10 +249,10 @@ public class BranchService {
     public GlobalResponse save(BranchDTO branchDTO) {
         try {
 
-            Area areaId = Area
-                    .builder()
-                    .id(branchDTO.getArea_id())
-                    .build();
+            Optional<Area> areaId = areaRepository.findById(branchDTO.getArea_id());
+            if (!areaId.isPresent()) {
+                return GlobalResponse.builder().message("Data area not found").status(HttpStatus.BAD_REQUEST).build();
+            }
 
             Branch branch = new Branch(
                     null,
@@ -259,7 +260,7 @@ public class BranchService {
                     new Date(),
                     new Date(),
                     0,
-                    areaId);
+                    areaId.get());
 
             Branch response = branchRepository.save(branch);
             if (response == null) {
@@ -294,10 +295,10 @@ public class BranchService {
 
             Branch branchGet = branchRepository.findById(id).get();
 
-            Area areaId = Area
-                    .builder()
-                    .id(branchDTO.getArea_id())
-                    .build();
+            Optional<Area> areaId = areaRepository.findById(branchDTO.getArea_id());
+            if (!areaId.isPresent()) {
+                return GlobalResponse.builder().message("Data area not found").status(HttpStatus.BAD_REQUEST).build();
+            }
 
             Branch branch = new Branch(
                     id,
@@ -305,7 +306,7 @@ public class BranchService {
                     branchGet.getCreated_at(),
                     new Date(),
                     0,
-                    areaId);
+                    areaId.get());
 
             Branch response = branchRepository.save(branch);
             if (response == null) {

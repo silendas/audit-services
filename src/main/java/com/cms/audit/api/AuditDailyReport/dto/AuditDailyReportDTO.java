@@ -11,6 +11,5 @@ import lombok.*;
 @NoArgsConstructor
 public class AuditDailyReportDTO {
     private Long schedule_id;
-    private Long branch_id;
     private List<AuditDailyReportDetailRequest> lha_detail;
 }

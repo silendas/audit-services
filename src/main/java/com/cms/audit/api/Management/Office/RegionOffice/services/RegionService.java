@@ -177,9 +177,10 @@ public class RegionService {
     public GlobalResponse save(RegionDTO dto) {
         try {
 
-            Main mainId = Main.builder()
-                    .id(dto.getMain_id())
-                    .build();
+            Optional<Main> mainId = mainRepository.findById(dto.getMain_id());
+            if(!mainId.isPresent()){
+                return GlobalResponse.builder().message("Data main not found").status(HttpStatus.BAD_REQUEST).build();
+            }
 
             Region region = new Region(
                     null,
@@ -187,7 +188,7 @@ public class RegionService {
                     new Date(),
                     new Date(),
                     0,
-                    mainId);
+                    mainId.get());
 
             Region response = regionRepository.save(region);
             if (response == null) {
@@ -222,9 +223,10 @@ public class RegionService {
 
             Region regionGet = regionRepository.findById(id).get();
 
-            Main mainId = Main.builder()
-                    .id(dto.getMain_id())
-                    .build();
+            Optional<Main> mainId = mainRepository.findById(dto.getMain_id());
+            if(!mainId.isPresent()){
+                return GlobalResponse.builder().message("Data main not found").status(HttpStatus.BAD_REQUEST).build();
+            }
 
             Region region = new Region(
                     id,
@@ -232,7 +234,7 @@ public class RegionService {
                     regionGet.getCreated_at(),
                     new Date(),
                     0,
-                    mainId);
+                    mainId.get());
 
             Region response = regionRepository.save(region);
             if (response == null) {

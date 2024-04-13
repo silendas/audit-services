@@ -3,6 +3,7 @@ package com.cms.audit.api.Management.Role.models;
 import java.util.Date;
 
 import com.cms.audit.api.Management.User.models.User;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -30,7 +31,8 @@ public class Role {
 
     private String name;
 
-    @Column(length = 2, nullable = true)
+    @JsonIgnore
+    @Column(name = "is_delete", length = 2, nullable = true)
     private Integer is_delete;
 
     private Date created_at;
