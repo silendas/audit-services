@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cms.audit.api.Common.constant.BasePath;
+import com.cms.audit.api.Common.constant.convertDateToRoman;
 import com.cms.audit.api.Report.service.ReportService;
 
 @RestController
@@ -33,9 +34,16 @@ public class ReportController {
                         @RequestParam("name") Optional<String> name,
                         @RequestParam(required = false) Optional<Long> area_id,
                         @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date start_date,
-                        @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date end_date) throws IOException {
-                String fileName = start_date + "-" + end_date + "-report.xlsx";
-                ByteArrayInputStream inputStream = service.getDataDownloadClarification(name.orElse(null),area_id.orElse(null), start_date,
+                        @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date end_date)
+                        throws IOException {
+                String fileName;
+                if (start_date != null && end_date != null) {
+                        fileName = convertDateToRoman.convertDateHehe(start_date) + "-" + convertDateToRoman.convertDateHehe(end_date) + "-report.xlsx";
+                } else {
+                        fileName = "all-report.xlsx";
+                }
+                ByteArrayInputStream inputStream = service.getDataDownloadClarification(name.orElse(null),
+                                area_id.orElse(null), start_date,
                                 end_date);
                 InputStreamResource resource = new InputStreamResource(inputStream);
 
@@ -50,7 +58,8 @@ public class ReportController {
                         @RequestParam(required = false) Optional<Long> user_id,
                         @RequestParam(required = false) Optional<Long> area_id,
                         @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date start_date,
-                        @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date end_date) throws IOException {
+                        @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date end_date)
+                        throws IOException {
                 return service.getDataDownloadLHA(user_id.orElse(null), area_id.orElse(null), start_date, end_date);
         }
 

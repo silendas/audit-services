@@ -213,16 +213,13 @@ public class LHAReport {
                                         .setTextAlignment(TextAlignment.CENTER)
                                         .setVerticalAlignment(VerticalAlignment.MIDDLE));
                         // float bodyNestedLenght[] = { 65f, 50f, 440f };
-                        System.out.println("kesini 1");
                         Table bodyNested = new Table(new float[] { 68f, 50f, 440f });
                         float bodyNested2Lenght[] = { 30f, 97f, 96f, 99f, 100f };
                         for (int i = 0; i < dto.get(o).getLha_detail().size(); i++) {
-                                System.out.println("kesini 1.1");
                                 bodyNested.addCell(new Cell().add(dto.get(o).getLha_detail().get(i).getFullname())
                                                 .setBackgroundColor(Color.YELLOW)
                                                 .setFontSize(5).setTextAlignment(TextAlignment.CENTER)
                                                 .setVerticalAlignment(VerticalAlignment.MIDDLE));
-                                System.out.println("kesini 1.2");
                                 bodyNested.addCell(new Cell().add(dto.get(o).getLha_detail().get(i).getBranch())
                                                 .setBackgroundColor(Color.YELLOW)
                                                 .setFontSize(5).setTextAlignment(TextAlignment.CENTER)
@@ -230,7 +227,6 @@ public class LHAReport {
                                 Table bodyNested2 = new Table(bodyNested2Lenght)
                                                 .setHorizontalAlignment(HorizontalAlignment.CENTER);
                                 for (int u = 0; u < dto.get(o).getLha_detail().get(i).getDetails().size(); u++) {
-                                        System.out.println("kesini 2");
                                         bodyNested2.addCell(new Cell()
                                                         .add(dto.get(o).getLha_detail().get(i).getDetails().get(u)
                                                                         .getCases()
@@ -259,13 +255,11 @@ public class LHAReport {
                                                         .setBackgroundColor(Color.WHITE)
                                                         .setFontSize(5).setTextAlignment(TextAlignment.CENTER));
                                 }
-                                System.out.println("kesini 2nOK");
                                 bodyNested.addCell(
                                                 new Cell().add(bodyNested2).setBorder(Border.NO_BORDER).setPadding(0));
                         }
                         body.addCell(new Cell().add(bodyNested).setBorder(Border.NO_BORDER).setPadding(0));
 
-                        System.out.println("kesini DONE");
                         document.add(body);
 
                         if(o < dto.size() && o != dto.size()){

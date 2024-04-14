@@ -674,7 +674,7 @@ public class ClarificationService {
                                         new Date());
                         repository.save(clarification);
 
-                        file.transferTo(new File(filePath));
+                        //file.transferTo(new File(filePath));
 
                         return GlobalResponse
                                         .builder()

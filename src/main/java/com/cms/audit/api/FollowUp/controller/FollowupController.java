@@ -78,6 +78,27 @@ public class FollowupController {
         return new ResponseEntity<InputStreamResource>(isr, httpHeaders, HttpStatus.OK);
     }
 
+    @GetMapping("/download/{fileName}")
+    public ResponseEntity<InputStreamResource> download(@PathVariable("fileName") String fileName)
+            throws IOException {
+        FollowUp response = service.downloadFile(fileName);
+        String path = response.getFilePath();
+        File file = new File(path);
+        InputStream inputStream = new FileInputStream(file);
+        InputStreamResource isr = new InputStreamResource(inputStream);
+
+        HttpHeaders httpHeaders = new HttpHeaders();
+
+        httpHeaders.setContentType(MediaType.valueOf("application/pdf"));
+        httpHeaders.set("Content-Disposition", "attachment; filename=" + response.getFilename());
+
+        return ResponseEntity.ok()
+                .headers(httpHeaders)
+                .contentLength(file.length())
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .body(isr);
+    }
+
     @PostMapping
     public ResponseEntity<Object> save(@RequestBody FollowUpDTO dto) {
         GlobalResponse response = service.save(dto);
