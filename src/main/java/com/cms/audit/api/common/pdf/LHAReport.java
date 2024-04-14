@@ -214,7 +214,7 @@ public class LHAReport {
                                         .setVerticalAlignment(VerticalAlignment.MIDDLE));
                         // float bodyNestedLenght[] = { 65f, 50f, 440f };
                         System.out.println("kesini 1");
-                        Table bodyNested = new Table(new float[] { 64f, 50f, 440f });
+                        Table bodyNested = new Table(new float[] { 68f, 50f, 440f });
                         float bodyNested2Lenght[] = { 30f, 97f, 96f, 99f, 100f };
                         for (int i = 0; i < dto.get(o).getLha_detail().size(); i++) {
                                 System.out.println("kesini 1.1");

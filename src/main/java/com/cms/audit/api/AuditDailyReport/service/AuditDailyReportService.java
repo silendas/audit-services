@@ -414,7 +414,7 @@ public class AuditDailyReportService {
                         Optional<Revision> getRevision = revisionRepo.findByDetailId(dto.get(i).getId());
                         if (getRevision.isPresent()) {
                                 parent.put("id", getRevision.get().getId());
-                                parent.put("reviision_number", getRevision.get().getRevisionNumber());
+                                parent.put("revision_number", getRevision.get().getRevisionNumber());
 
                                 Map<String, Object> lhaDetail = new LinkedHashMap<>();
                                 lhaDetail.put("id", getRevision.get().getAuditDailyReportDetail().getId());
