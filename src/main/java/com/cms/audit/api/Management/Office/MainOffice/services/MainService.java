@@ -79,6 +79,7 @@ public class MainService {
                 return GlobalResponse
                         .builder()
                         .message("Data not found")
+                        .data(response)
                         .status(HttpStatus.OK)
                         .build();
             }

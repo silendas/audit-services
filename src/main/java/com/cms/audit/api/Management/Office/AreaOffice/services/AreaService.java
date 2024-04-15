@@ -55,6 +55,7 @@ public class AreaService {
                         .builder()
                         .message("Data not found")
                         .status(HttpStatus.OK)
+                        .data(response)
                         .build();
             }
             return GlobalResponse
@@ -87,6 +88,7 @@ public class AreaService {
                         .builder()
                         .message("Data not found")
                         .status(HttpStatus.OK)
+                        .data(response)
                         .build();
             }
             return GlobalResponse
@@ -119,6 +121,7 @@ public class AreaService {
                         .builder()
                         .message("Data not found")
                         .status(HttpStatus.OK)
+                        .data(response)
                         .build();
             }
             return GlobalResponse
@@ -149,8 +152,8 @@ public class AreaService {
             if (!setRegion.isPresent()) {
                 return GlobalResponse
                         .builder()
-                        .message("Data not found")
-                        .status(HttpStatus.OK)
+                        .message("Region with id:" +setRegion.get().getId()+" is not found")
+                        .status(HttpStatus.BAD_REQUEST)
                         .build();
             }
             Page<Area> response = pagArea.findByRegion(setRegion.get(), PageRequest.of(page, size));
@@ -159,6 +162,7 @@ public class AreaService {
                         .builder()
                         .message("Data not found")
                         .status(HttpStatus.OK)
+                        .data(response)
                         .build();
             }
             return GlobalResponse
@@ -191,6 +195,7 @@ public class AreaService {
                         .builder()
                         .message("Data not found")
                         .status(HttpStatus.OK)
+                        .data(response)
                         .build();
             }
             return GlobalResponse

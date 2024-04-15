@@ -54,6 +54,7 @@ public class RegionService {
                         .builder()
                         .message("Data not found")
                         .status(HttpStatus.OK)
+                        .data(response)
                         .build();
             }
             return GlobalResponse
@@ -86,6 +87,7 @@ public class RegionService {
                         .builder()
                         .message("Data not found")
                         .status(HttpStatus.OK)
+                        .data(response)
                         .build();
             }
             return GlobalResponse
@@ -118,6 +120,7 @@ public class RegionService {
                         .builder()
                         .message("Data not found")
                         .status(HttpStatus.OK)
+                        .data(response)
                         .build();
             }
             return GlobalResponse
@@ -150,6 +153,7 @@ public class RegionService {
                         .builder()
                         .message("Data not found")
                         .status(HttpStatus.OK)
+                        .data(response)
                         .build();
             }
             return GlobalResponse

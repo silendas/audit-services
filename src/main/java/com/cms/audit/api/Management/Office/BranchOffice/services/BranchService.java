@@ -51,6 +51,7 @@ public class BranchService {
                         .builder()
                         .message("Data not found")
                         .status(HttpStatus.OK)
+                        .data(response)
                         .build();
             }
             return GlobalResponse
@@ -83,6 +84,7 @@ public class BranchService {
                         .builder()
                         .message("Data not found")
                         .status(HttpStatus.OK)
+                        .data(response)
                         .build();
             }
             return GlobalResponse
@@ -115,6 +117,7 @@ public class BranchService {
                         .builder()
                         .message("Data not found")
                         .status(HttpStatus.OK)
+                        .data(response)
                         .build();
             }
             return GlobalResponse
@@ -145,8 +148,8 @@ public class BranchService {
             if (!setArea.isPresent()) {
                 return GlobalResponse
                         .builder()
-                        .message("Data not found")
-                        .status(HttpStatus.OK)
+                        .message("Area with id:" +setArea.get().getId()+ "is not found")
+                        .status(HttpStatus.BAD_REQUEST)
                         .build();
             }
             Page<Branch> response = pagBranch.findByArea(setArea.get(), PageRequest.of(page, size));
@@ -155,6 +158,7 @@ public class BranchService {
                         .builder()
                         .message("Data not found")
                         .status(HttpStatus.OK)
+                        .data(response)
                         .build();
             }
             // Map<String, Object> data = new LinkedHashMap<>();
@@ -190,6 +194,7 @@ public class BranchService {
                         .builder()
                         .message("Data not found")
                         .status(HttpStatus.OK)
+                        .data(response)
                         .build();
             }
             return GlobalResponse
@@ -222,6 +227,7 @@ public class BranchService {
                         .builder()
                         .message("Data not found")
                         .status(HttpStatus.OK)
+                        .data(response)
                         .build();
             }
             return GlobalResponse

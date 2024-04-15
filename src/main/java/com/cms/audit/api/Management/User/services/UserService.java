@@ -93,10 +93,12 @@ public class UserService {
                                                 System.out.println("2.1");
                                                 Long regionId = getUser.getRegionId().get(i);
                                                 System.out.println("2.2");
-                                                if (userAgain.get(u).getRegionId().size() == 0 || userAgain.get(u).getRegionId() == null) {
+                                                if (userAgain.get(u).getRegionId().size() == 0
+                                                                || userAgain.get(u).getRegionId() == null) {
                                                         System.out.println("2.4");
-                                                        if (userAgain.get(u).getBranchId() != null || userAgain.get(u).getBranchId().size() != 0) {
-                                                        System.out.println("2.4.2");
+                                                        if (userAgain.get(u).getBranchId() != null
+                                                                        || userAgain.get(u).getBranchId().size() != 0) {
+                                                                System.out.println("2.4.2");
 
                                                                 for (int e = 0; e < userAgain.get(u).getBranchId()
                                                                                 .size(); e++) {
@@ -115,7 +117,7 @@ public class UserService {
                                                 } else {
                                                         System.out.println("2.5");
                                                         System.out.println(userAgain.get(u).getRegionId()
-                                                        .size());
+                                                                        .size());
                                                         for (int o = 0; o < userAgain.get(u).getRegionId()
                                                                         .size(); o++) {
                                                                 if (regionId == userAgain.get(u).getRegionId().get(o)) {
@@ -365,7 +367,8 @@ public class UserService {
         // Page<User> response = pagUser.findByRegion(set.get(), PageRequest.of(page,
         // size));
         // if (response.isEmpty()) {
-        // return GlobalResponse.builder().message("Data not found").status(HttpStatus.OK)
+        // return GlobalResponse.builder().message("Data not
+        // found").status(HttpStatus.OK)
         // .build();
         // }
         // return GlobalResponse
@@ -389,7 +392,7 @@ public class UserService {
                 try {
                         List<DropDownUser> response = userRepository.findDropDown();
                         if (response.isEmpty()) {
-                                return GlobalResponse.builder().message("Data not found").status(HttpStatus.OK)
+                                return GlobalResponse.builder().message("Data not found").data(response).status(HttpStatus.OK)
                                                 .build();
                         }
                         return GlobalResponse
@@ -456,7 +459,7 @@ public class UserService {
                                 }
                         }
                         if (response.isEmpty()) {
-                                return GlobalResponse.builder().message("Data not found").status(HttpStatus.OK)
+                                return GlobalResponse.builder().message("Data not found").data(response).status(HttpStatus.OK)
                                                 .build();
                         }
                         return GlobalResponse
@@ -500,7 +503,8 @@ public class UserService {
         // .orElseThrow(() -> new ResponseStatusException(HttpStatus.OK));
         // Page<User> response = pagUser.findByArea(set, PageRequest.of(page, size));
         // if (response.isEmpty()) {
-        // return GlobalResponse.builder().message("Data not found").status(HttpStatus.OK)
+        // return GlobalResponse.builder().message("Data not
+        // found").status(HttpStatus.OK)
         // .build();
         // }
         // return GlobalResponse
@@ -526,7 +530,8 @@ public class UserService {
         // .orElseThrow(() -> new ResponseStatusException(HttpStatus.OK));
         // Page<User> response = pagUser.findByBranch(set, PageRequest.of(page, size));
         // if (response.isEmpty()) {
-        // return GlobalResponse.builder().message("Data not found").status(HttpStatus.OK)
+        // return GlobalResponse.builder().message("Data not
+        // found").status(HttpStatus.OK)
         // .build();
         // }
         // return GlobalResponse
@@ -562,54 +567,64 @@ public class UserService {
 
                         Main mainId = new Main();
                         if (userDTO.getMain_id() != null) {
-                                mainId = Main.builder()
-                                                .id(userDTO.getMain_id())
-                                                .build();
+                                Optional<Main> mainGet = mainRepository.findById(userDTO.getMain_id());
+                                if (!mainGet.isPresent()) {
+                                        return GlobalResponse.builder()
+                                                        .message("Main with id:" + mainGet.get().getId()
+                                                                        + " is not found")
+                                                        .status(HttpStatus.BAD_REQUEST).build();
+                                } else {
+                                        mainId = Main.builder().id(mainGet.get().getId()).build();
+                                }
                         } else {
                                 mainId = null;
                         }
 
-                        System.out.println("Sampe sini 1");
                         List<Long> region = new ArrayList<>();
                         if (userDTO.getRegion_id() != null) {
                                 for (int i = 0; i < userDTO.getRegion_id().size(); i++) {
-                                        Region getRegion = regionRepository
-                                                        .findById(userDTO.getRegion_id().get(i))
-                                                        .orElseThrow(() -> new ResourceNotFoundException(
-                                                                        "Region not found"));
-                                        if (getRegion != null) {
-                                                region.add(getRegion.getId());
+                                        Optional<Region> getRegion = regionRepository
+                                                        .findById(userDTO.getRegion_id().get(i));
+                                        if (!getRegion.isPresent()) {
+                                                return GlobalResponse.builder()
+                                                                .message("Region with id:" + getRegion.get().getId()
+                                                                                + " is not found")
+                                                                .status(HttpStatus.BAD_REQUEST).build();
+                                        } else {
+                                                region.add(getRegion.get().getId());
                                         }
                                 }
                         }
-                        System.out.println("Sampe sini 2");
                         List<Long> area = new ArrayList<>();
                         if (userDTO.getArea_id() != null) {
                                 for (int i = 0; i < userDTO.getArea_id().size(); i++) {
-                                        Area getArea = areaRepository
-                                                        .findById(userDTO.getArea_id().get(i))
-                                                        .orElseThrow(
-                                                                        () -> new ResourceNotFoundException(
-                                                                                        "Area not found"));
-                                        if (getArea != null) {
-                                                area.add(getArea.getId());
+                                        Optional<Area> getArea = areaRepository
+                                                        .findById(userDTO.getArea_id().get(i));
+                                        if (!getArea.isPresent()) {
+                                                return GlobalResponse.builder()
+                                                                .message("Area with id:" + getArea.get().getId()
+                                                                                + " is not found")
+                                                                .status(HttpStatus.BAD_REQUEST).build();
+                                        } else {
+                                                region.add(getArea.get().getId());
                                         }
                                 }
                         }
-                        System.out.println("Sampe sini 3");
                         List<Long> branch = new ArrayList<>();
                         if (userDTO.getBranch_id() != null) {
                                 for (int i = 0; i < userDTO.getBranch_id().size(); i++) {
-                                        Branch getBranch = branchRepository
-                                                        .findById(userDTO.getBranch_id().get(i))
-                                                        .orElseThrow(() -> new ResourceNotFoundException(
-                                                                        "Branch not found"));
-                                        if (getBranch != null) {
-                                                branch.add(getBranch.getId());
+                                        Optional<Branch> getBranch = branchRepository
+                                                        .findById(userDTO.getBranch_id().get(i));
+                                        if (!getBranch.isPresent()) {
+                                                return GlobalResponse.builder()
+                                                                .message("Branch with id:" + getBranch.get().getId()
+                                                                                + " is not found")
+                                                                .status(HttpStatus.BAD_REQUEST).build();
+                                        } else {
+                                                region.add(getBranch.get().getId());
                                         }
                                 }
                         }
-                        System.out.println("Sampe sini 4");
 
                         User user = new User(
                                         null,

@@ -37,7 +37,7 @@ public class CaseService {
                 return GlobalResponse
                         .builder()
                         .message("Data not found")
-                        .status(HttpStatus.OK)
+                        .data(response).status(HttpStatus.OK)
                         .build();
             }
             return GlobalResponse
@@ -69,7 +69,7 @@ public class CaseService {
                 return GlobalResponse
                         .builder()
                         .message("Data not found")
-                        .status(HttpStatus.OK)
+                        .data(response).status(HttpStatus.OK)
                         .build();
             }
             return GlobalResponse
@@ -101,7 +101,7 @@ public class CaseService {
                 return GlobalResponse
                         .builder()
                         .message("Data not found")
-                        .status(HttpStatus.OK)
+                        .data(response).status(HttpStatus.OK)
                         .build();
             }
             return GlobalResponse
@@ -130,13 +130,12 @@ public class CaseService {
         try {
 
             Case caseEntity = new Case(
-                null,
-                caseDTO.getName(),
-                caseDTO.getCode(),
-                0,
-                new Date(),
-                new Date()
-            );
+                    null,
+                    caseDTO.getName(),
+                    caseDTO.getCode(),
+                    0,
+                    new Date(),
+                    new Date());
 
             Case response = caseRepository.save(caseEntity);
             if (response == null) {
@@ -171,13 +170,12 @@ public class CaseService {
             Case caseGet = caseRepository.findById(id).get();
 
             Case caseEntity = new Case(
-                id,
-                caseDTO.getName(),
-                caseDTO.getCode(),
-                0,
-                caseGet.getCreated_at(),
-                new Date()
-            );
+                    id,
+                    caseDTO.getName(),
+                    caseDTO.getCode(),
+                    0,
+                    caseGet.getCreated_at(),
+                    new Date());
 
             Case response = caseRepository.save(caseEntity);
             if (response == null) {
@@ -212,13 +210,12 @@ public class CaseService {
             Case caseGet = caseRepository.findById(id).get();
 
             Case caseEntity = new Case(
-                id,
-                caseGet.getName(),
-                caseGet.getCode(),
-                1,
-                caseGet.getCreated_at(),
-                new Date()
-            );
+                    id,
+                    caseGet.getName(),
+                    caseGet.getCode(),
+                    1,
+                    caseGet.getCreated_at(),
+                    new Date());
 
             Case response = caseRepository.save(caseEntity);
             if (response == null) {
