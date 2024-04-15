@@ -33,7 +33,7 @@ public class AuthService {
                 Optional<User> response = authRepository.findOneUsersByEmailOrUsername(signinDTO.getUsername(),
                                 signinDTO.getUsername());
                 if (!response.isPresent()) {
-                        return AuthResponse.builder().message("Wrong username or password")
+                        return AuthResponse.builder().message("Wrong username or email")
                                         .status(HttpStatus.BAD_REQUEST).build();
                 };
 
