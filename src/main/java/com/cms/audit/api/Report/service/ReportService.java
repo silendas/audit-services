@@ -470,7 +470,6 @@ public class ReportService {
         httpHeaders.setContentType(MediaType.valueOf("application/pdf"));
         httpHeaders.set("Content-Disposition", "inline; filename=" + pdf.getFileName());
 
-        System.out.println("kesinin OK");
         return ResponseEntity.ok()
                 .headers(httpHeaders)
                 .contentLength(file.length())
