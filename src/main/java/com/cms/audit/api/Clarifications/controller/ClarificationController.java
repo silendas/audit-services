@@ -49,8 +49,10 @@ public class ClarificationController {
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Optional<Date> end_date,
             @RequestParam("page") Optional<Integer> page,
             @RequestParam("size") Optional<Integer> size) {
-        GlobalResponse response = service.getAll(page.orElse(0), size.orElse(10), start_date.orElse(null), end_date.orElse(null));
-        return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(), response.getError());
+        GlobalResponse response = service.getAll(page.orElse(0), size.orElse(10), start_date.orElse(null),
+                end_date.orElse(null));
+        return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(),
+                response.getError());
     }
 
     @GetMapping("/{id}")
@@ -91,7 +93,11 @@ public class ClarificationController {
         httpHeaders.setContentType(MediaType.valueOf("application/pdf"));
         httpHeaders.set("Content-Disposition", "attachment; filename=" + response.getFilename());
 
-        return new ResponseEntity<InputStreamResource>(isr, httpHeaders, HttpStatus.OK);
+        return ResponseEntity.ok()
+                .headers(httpHeaders)
+                .contentLength(file.length())
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .body(isr);
     }
 
     @PostMapping

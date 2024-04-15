@@ -9,6 +9,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import com.cms.audit.api.Clarifications.models.Clarification;
+import com.cms.audit.api.Common.constant.convertDateToRoman;
 import com.itextpdf.io.source.ByteArrayOutputStream;
 
 import java.io.ByteArrayInputStream;
@@ -16,7 +17,7 @@ import java.io.IOException;
 
 public class ExcelUtil {
     public static String HEADER[] = { "comment_clarification", "auditor", "kasus", "kategori", "kerugian",
-            "batas_evaluasi", "lokasi", "auditee", "atasan", "file", "deskripsi", "prioritas", "status" };
+            "batas_evaluasi", "lokasi", "auditee", "atasan auditee", "file", "deskripsi", "prioritas","created_at", "status" };
 
     public static String SHEET_NAME = "Laporan";
 
@@ -53,7 +54,9 @@ public class ExcelUtil {
                 } else {
                     row1.createCell(11).setCellValue("");
                 }
-                row1.createCell(12).setCellValue(c.getStatus().name());
+
+                row1.createCell(12).setCellValue(convertDateToRoman.convertDateToString(c.getCreated_at()));
+                row1.createCell(13).setCellValue(c.getStatus().name());
             }
 
             workbook.write(byteArrayOutputStream);

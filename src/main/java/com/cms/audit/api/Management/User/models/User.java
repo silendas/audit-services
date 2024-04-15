@@ -54,6 +54,7 @@ public class User implements UserDetails {
     @Column(name = "id")
     private Long id;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "role_id")
     private Role role;
@@ -97,6 +98,7 @@ public class User implements UserDetails {
     @Column(name = "is_active", length = 2, nullable = true)
     private Integer is_active;
 
+    @JsonIgnore
     @Column(name = "is_delete", length = 2, nullable = true)
     private Integer is_delete;
 

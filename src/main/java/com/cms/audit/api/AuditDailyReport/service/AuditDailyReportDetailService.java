@@ -18,13 +18,14 @@ import com.cms.audit.api.AuditDailyReport.models.AuditDailyReport;
 import com.cms.audit.api.AuditDailyReport.models.AuditDailyReportDetail;
 import com.cms.audit.api.AuditDailyReport.models.Revision;
 import com.cms.audit.api.AuditDailyReport.repository.AuditDailyReportDetailRepository;
+import com.cms.audit.api.AuditDailyReport.repository.AuditDailyReportRepository;
 import com.cms.audit.api.AuditDailyReport.repository.PagAuditDailyReportDetail;
 import com.cms.audit.api.AuditDailyReport.repository.RevisionRepository;
-import com.cms.audit.api.Common.exception.ResourceNotFoundException;
 import com.cms.audit.api.Common.response.GlobalResponse;
-import com.cms.audit.api.Flag.model.Flag;
 import com.cms.audit.api.Management.Case.models.Case;
+import com.cms.audit.api.Management.Case.repository.CaseRepository;
 import com.cms.audit.api.Management.CaseCategory.models.CaseCategory;
+import com.cms.audit.api.Management.CaseCategory.repository.CaseCategoryRepository;
 import com.cms.audit.api.Management.User.models.User;
 
 import jakarta.transaction.Transactional;
@@ -34,6 +35,15 @@ import jakarta.transaction.Transactional;
 public class AuditDailyReportDetailService {
     @Autowired
     private AuditDailyReportDetailRepository repository;
+
+    @Autowired
+    private AuditDailyReportRepository lhaReportsitory;
+
+    @Autowired
+    private CaseRepository caseRepository;
+
+    @Autowired
+    private CaseCategoryRepository ccRepository;
 
     @Autowired
     private PagAuditDailyReportDetail pag;
@@ -83,8 +93,8 @@ public class AuditDailyReportDetailService {
             if (response.isEmpty()) {
                 return GlobalResponse
                         .builder()
-                        .message("No Content")
-                        .status(HttpStatus.NO_CONTENT)
+                        .message("Data not found")
+                        .status(HttpStatus.OK)
                         .build();
             }
             Map<String, Object> parent = new LinkedHashMap<>();
@@ -177,8 +187,8 @@ public class AuditDailyReportDetailService {
             if (response.isEmpty()) {
                 return GlobalResponse
                         .builder()
-                        .message("No Content")
-                        .status(HttpStatus.NO_CONTENT)
+                        .message("Data not found")
+                        .status(HttpStatus.OK)
                         .build();
             }
             return GlobalResponse
@@ -214,8 +224,8 @@ public class AuditDailyReportDetailService {
             if (!response.isPresent()) {
                 return GlobalResponse
                         .builder()
-                        .message("No Content")
-                        .status(HttpStatus.NO_CONTENT)
+                        .message("Data not found")
+                        .status(HttpStatus.OK)
                         .build();
             }
             return GlobalResponse
@@ -249,15 +259,24 @@ public class AuditDailyReportDetailService {
         try {
             User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-            AuditDailyReport setId = AuditDailyReport.builder().id(dto.getAudit_daily_report_id()).build();
-            Case setCaseId = Case.builder().id(dto.getCase_id()).build();
-            CaseCategory setCCId = CaseCategory.builder().id(dto.getCase_category_id()).build();
+            Optional<AuditDailyReport> setId = lhaReportsitory.findById(dto.getAudit_daily_report_id());
+            if(!setId.isPresent()){
+                return GlobalResponse.builder().message("Lha id not found").status(HttpStatus.BAD_REQUEST).build();
+            }
+            Optional<Case> setCaseId = caseRepository.findById(dto.getCase_id());
+            if(!setCaseId.isPresent()){
+                return GlobalResponse.builder().message("Case not found").status(HttpStatus.BAD_REQUEST).build();
+            }
+            Optional<CaseCategory> setCCId = ccRepository.findById(dto.getCase_category_id());
+            if(!setCCId.isPresent()){
+                return GlobalResponse.builder().message("Case Category not found").status(HttpStatus.BAD_REQUEST).build();
+            }
 
             AuditDailyReportDetail auditDailyReport = new AuditDailyReportDetail(
                     null,
-                    setId,
-                    setCaseId,
-                    setCCId,
+                    setId.get(),
+                    setCaseId.get(),
+                    setCCId.get(),
                     dto.getDescription(),
                     dto.getSuggestion(),
                     dto.getTemporary_recommendations(),
@@ -269,7 +288,8 @@ public class AuditDailyReportDetailService {
                     new Date(),
                     new Date());
 
-            AuditDailyReportDetail response = repository.save(auditDailyReport);
+            repository.save(auditDailyReport);
+
             return GlobalResponse
                     .builder()
                     .message("Success")
@@ -304,19 +324,25 @@ public class AuditDailyReportDetailService {
             if (!getBefore.isPresent()) {
                 return GlobalResponse
                         .builder()
-                        .message("Not Found")
-                        .status(HttpStatus.NOT_FOUND)
+                        .message("LHA not found")
+                        .status(HttpStatus.BAD_REQUEST)
                         .build();
             }
 
-            Case setCaseId = Case.builder().id(dto.getCase_id()).build();
-            CaseCategory setCCId = CaseCategory.builder().id(dto.getCase_category_id()).build();
+            Optional<Case> setCaseId = caseRepository.findById(dto.getCase_id());
+            if(!setCaseId.isPresent()){
+                return GlobalResponse.builder().message("Case not found").status(HttpStatus.BAD_REQUEST).build();
+            }
+            Optional<CaseCategory> setCCId = ccRepository.findById(dto.getCase_category_id());
+            if(!setCCId.isPresent()){
+                return GlobalResponse.builder().message("Case Category not found").status(HttpStatus.BAD_REQUEST).build();
+            }
 
             AuditDailyReportDetail auditDailyReport = new AuditDailyReportDetail(
                     id,
                     getBefore.get().getAuditDailyReport(),
-                    setCaseId,
-                    setCCId,
+                    setCaseId.get(),
+                    setCCId.get(),
                     dto.getDescription(),
                     dto.getSuggestion(),
                     dto.getTemporary_recommendations(),

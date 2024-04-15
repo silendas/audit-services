@@ -46,7 +46,7 @@ public class MainService {
             if (response.isEmpty()) {
                 return GlobalResponse
                         .builder()
-                        .message("No Content")
+                        .message("Data not found")
                         .status(HttpStatus.OK)
                         .build();
             }
@@ -78,7 +78,7 @@ public class MainService {
             if (response.isEmpty()) {
                 return GlobalResponse
                         .builder()
-                        .message("No Content")
+                        .message("Data not found")
                         .status(HttpStatus.OK)
                         .build();
             }
@@ -110,7 +110,7 @@ public class MainService {
             if (!response.isPresent()) {
                 return GlobalResponse
                         .builder()
-                        .message("No Content")
+                        .message("Data not found")
                         .status(HttpStatus.OK)
                         .build();
             }

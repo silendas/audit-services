@@ -3,6 +3,7 @@ package com.cms.audit.api.AuditWorkingPaper.models;
 import java.util.Date;
 
 import com.cms.audit.api.Management.User.models.User;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.cms.audit.api.Management.Office.BranchOffice.models.Branch;
 import com.cms.audit.api.InspectionSchedule.models.Schedule;
 
@@ -57,7 +58,8 @@ public class AuditWorkingPaper {
     @Column(name = "file_path")
     private String file_path;
 
-    @Column(name = "is_delete", length = 2)
+    @JsonIgnore
+    @Column(name = "is_delete", length = 2, nullable = true)
     private Integer is_delete;
 
     @Column(name = "created_by")

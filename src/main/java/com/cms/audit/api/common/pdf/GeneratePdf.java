@@ -78,7 +78,7 @@ public class GeneratePdf {
                 // section 1
 
                 // section 2
-                float blank1lenght[] = { 600 };
+                float blank1lenght[] = { 620 };
                 Table blank1 = new Table(blank1lenght).setHorizontalAlignment(HorizontalAlignment.CENTER)
                                 .setBorder(Border.NO_BORDER);
                 blank1.addCell(new Cell().add("").setPadding(5).setBorder(Border.NO_BORDER));
@@ -87,7 +87,7 @@ public class GeneratePdf {
                 // section 2
 
                 // section 3
-                float subHeader1Lenght[] = { 506f, 180 };
+                float subHeader1Lenght[] = { 520f, 175 };
                 Table subheader1 = new Table(subHeader1Lenght).setHorizontalAlignment(HorizontalAlignment.CENTER);
                 subheader1.addCell(new Cell().add("").setBorderRight(Border.NO_BORDER));
 
@@ -453,7 +453,7 @@ public class GeneratePdf {
                 body5.addCell(new Cell().add("").setBorder(Border.NO_BORDER).setHeight(140).setFontSize(7));
                 body5.addCell(new Cell().add(".............. , ...... ........... 2024").setBorder(Border.NO_BORDER).setFontSize(7));
                 body5.addCell(new Cell().add("").setBorder(Border.NO_BORDER).setHeight(40));
-                body5.addCell(new Cell().add("(...........................)").setBorderLeft(Border.NO_BORDER).setBorderRight(Border.NO_BORDER).setBorderTop(Border.NO_BORDER).setFontSize(7));
+                body5.addCell(new Cell().add("(............................................)").setBorderLeft(Border.NO_BORDER).setBorderRight(Border.NO_BORDER).setBorderTop(Border.NO_BORDER).setFontSize(7));
                 body5.addCell(new Cell().add("" + "").setBorder(Border.NO_BORDER).setFontSize(7).setHeight(40));
                 body.addCell(new Cell().add(body5).setBorder(Border.NO_BORDER));
                 //section 7
@@ -464,31 +464,31 @@ public class GeneratePdf {
                 body6.addCell(new Cell().add("Photo Copy sangsi administrasi berupa :").setBold().setFontSize(7).setBorder(Border.NO_BORDER));
                 float nestedbody6llenght[] = { 18f, 25f, 18f, 25f, 18f, 25f, 18f, 25f, 18f, 350f };
                 Table nested6 = new Table(nestedbody6llenght);
-                if(response.getIsPenalty() == 1){
+                if(response.getPenalty().getId() == 1){
                         nested6.addCell(new Cell().add("").setBackgroundColor(Color.RED));
                 } else {
                         nested6.addCell(new Cell().add(""));
                 }
                 nested6.addCell(new Cell().add("ST").setBorder(Border.NO_BORDER).setFontSize(7).setBold());
-                if(response.getIsPenalty() == 2){
+                if(response.getPenalty().getId() == 2){
                         nested6.addCell(new Cell().add("").setBackgroundColor(Color.RED));
                 } else {
                         nested6.addCell(new Cell().add(""));
                 }
                 nested6.addCell(new Cell().add("SP 1").setBorder(Border.NO_BORDER).setFontSize(7).setBold());
-                if(response.getIsPenalty() == 3){
+                if(response.getPenalty().getId() == 3){
                         nested6.addCell(new Cell().add("").setBackgroundColor(Color.RED));
                 } else {
                         nested6.addCell(new Cell().add(""));
                 }
                 nested6.addCell(new Cell().add("SP 2").setBorder(Border.NO_BORDER).setFontSize(7).setBold());
-                if(response.getIsPenalty() == 4){
+                if(response.getPenalty().getId() == 4){
                         nested6.addCell(new Cell().add("").setBackgroundColor(Color.RED));
                 } else {
                         nested6.addCell(new Cell().add(""));
                 }
                 nested6.addCell(new Cell().add("SP 3").setBorder(Border.NO_BORDER).setFontSize(7).setBold());
-                if(response.getIsPenalty() == 5){
+                if(response.getPenalty().getId() == 5){
                         nested6.addCell(new Cell().add("").setBackgroundColor(Color.RED));
                 } else {
                         nested6.addCell(new Cell().add(""));

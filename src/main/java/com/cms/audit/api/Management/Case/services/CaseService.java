@@ -36,7 +36,7 @@ public class CaseService {
             if (response.isEmpty()) {
                 return GlobalResponse
                         .builder()
-                        .message("No Content")
+                        .message("Data not found")
                         .status(HttpStatus.OK)
                         .build();
             }
@@ -68,7 +68,7 @@ public class CaseService {
             if (response.isEmpty()) {
                 return GlobalResponse
                         .builder()
-                        .message("No Content")
+                        .message("Data not found")
                         .status(HttpStatus.OK)
                         .build();
             }
@@ -100,7 +100,7 @@ public class CaseService {
             if (!response.isPresent()) {
                 return GlobalResponse
                         .builder()
-                        .message("No Content")
+                        .message("Data not found")
                         .status(HttpStatus.OK)
                         .build();
             }

@@ -3,6 +3,7 @@ package com.cms.audit.api.Management.Office.RegionOffice.models;
 import java.util.Date;
 
 import com.cms.audit.api.Management.Office.MainOffice.models.Main;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -47,7 +48,8 @@ public class Region {
     @Column(name = "updated_at")
     private Date updated_at;
 
-    @Column(name = "is_delete",length = 2, nullable = true)
+    @JsonIgnore
+    @Column(name = "is_delete", length = 2, nullable = true)
     private Integer is_delete;
 
     @ManyToOne

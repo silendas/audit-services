@@ -28,8 +28,8 @@ public class LogScheduleService {
                         if (response.isEmpty()) {
                                 return GlobalResponse
                                                 .builder()
-                                                .message("Not Content")
-                                                .status(HttpStatus.NO_CONTENT)
+                                                .message("Data not found")
+                                                .status(HttpStatus.OK)
                                                 .build();
                         }
                         return GlobalResponse
@@ -58,8 +58,8 @@ public class LogScheduleService {
                         if (response.isPresent()) {
                                 return GlobalResponse
                                                 .builder()
-                                                .message("Not Content")
-                                                .status(HttpStatus.NO_CONTENT)
+                                                .message("Data not found")
+                                                .status(HttpStatus.OK)
                                                 .build();
                         }
                         return GlobalResponse

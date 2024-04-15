@@ -43,6 +43,7 @@ public class InsertDevUser {
         user.setEmail("dev@gmail.com");
         user.setUsername("developer");
         user.setPassword(passwordEncoder.encode("developer123"));
+        user.setFullname("Developer");
         user.setInitial_name("DEV");
         user.setNip("DEV1");
         user.setIs_active(1);

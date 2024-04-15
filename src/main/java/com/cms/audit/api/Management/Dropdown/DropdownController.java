@@ -90,32 +90,23 @@ public class DropdownController {
         User getUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         GlobalResponse response = null;
-        System.out.println("nyampe sini");
         if (regionId != null) {
-            System.out.println("kesini");
             response = userService.dropDownByRegionId(regionId);
         } else if (mainId != null) {
-            System.out.println("kesini2");
             response = userService.dropDown();
         } else {
-            System.out.println("kesini3");
             if (getUser.getLevel().getId() == 1) {
                 response = userService.dropDown();
             } else if (getUser.getLevel().getId() == 2) {
                 List<DropDownUserDTO> user = new ArrayList<>();
                 if (getUser.getRegionId() != null) {
-                    System.out.println("2");
                     List<User> userAgain = userRepository.findAll();
                     for (int u = 0; u < userAgain.size(); u++) {
                         for (int i = 0; i < getUser.getRegionId().size(); i++) {
-                            System.out.println("2.1");
                             Long region_id = getUser.getRegionId().get(i);
-                            System.out.println("2.2");
                             if (userAgain.get(u).getRegionId().size() == 0 || userAgain.get(u).getRegionId() == null) {
-                                System.out.println("2.4");
                                 if (userAgain.get(u).getBranchId() != null
                                         || userAgain.get(u).getBranchId().size() != 0) {
-                                    System.out.println("2.4.2");
 
                                     for (int e = 0; e < userAgain.get(u).getBranchId()
                                             .size(); e++) {
@@ -125,7 +116,6 @@ public class DropdownController {
                                                         .get(e));
                                         if (branchAgain.get().getArea().getRegion()
                                                 .getId() == region_id) {
-                                            System.out.println("2.4.OK");
                                             DropDownUserDTO builder = new DropDownUserDTO();
                                             builder.setFullname(userAgain.get(u).getFullname());
                                             builder.setId(userAgain.get(u).getId());
@@ -136,13 +126,11 @@ public class DropdownController {
                                     }
                                 }
                             } else {
-                                System.out.println("2.5");
                                 System.out.println(userAgain.get(u).getRegionId()
                                         .size());
                                 for (int o = 0; o < userAgain.get(u).getRegionId()
                                         .size(); o++) {
                                     if (region_id == userAgain.get(u).getRegionId().get(o)) {
-                                        System.out.println("2.5.OK");
                                         DropDownUserDTO builder = new DropDownUserDTO();
                                         builder.setFullname(userAgain.get(u).getFullname());
                                         builder.setId(userAgain.get(u).getId());
@@ -183,9 +171,9 @@ public class DropdownController {
     }
 
     @GetMapping("/case-category")
-    public ResponseEntity<Object> getCaseCategory(@Nullable @RequestParam("caseId") Long id) {
+    public ResponseEntity<Object> getCaseCategory(@Nullable @RequestParam("case_id") Long id) {
         GlobalResponse response;
-        if (id != null) {
+        if (id == null) {
             response = ccService.findSpecific();
         } else {
             response = ccService.findSpecificByCasesId(id);

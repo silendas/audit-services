@@ -53,5 +53,11 @@ public class convertDateToRoman {
         String dateToString = df.format(dt);
         return dateToString;
     }
+
+    public static String convertDateHehe(Date dt){
+        DateFormat df = new SimpleDateFormat("dd-MM-yyyy");
+        String dateToString = df.format(dt);
+        return dateToString;
+    }
     
 }

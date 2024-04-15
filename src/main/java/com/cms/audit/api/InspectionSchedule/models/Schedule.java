@@ -76,7 +76,8 @@ public class Schedule {
     @Column(name = "category")
     private ECategory category;
 
-    @Column(name = "is_delete",length = 2, nullable = true)
+    @JsonIgnore
+    @Column(name = "is_delete", length = 2, nullable = true)
     private Integer is_delete;
 
     @Column(name = "updated_by")

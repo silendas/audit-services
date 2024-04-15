@@ -50,7 +50,8 @@ public class AuditDailyReport {
     @Column(name = "is_research",length = 2)
     private Integer is_research;
 
-    @Column(name = "is_delete", length = 2)
+    @JsonIgnore
+    @Column(name = "is_delete", length = 2, nullable = true)
     private Integer is_delete;
 
     @Column(name = "created_by")

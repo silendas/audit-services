@@ -24,7 +24,9 @@ public class ResponseEntittyHandler {
         map.put("meta", meta);
         map.put("message", message);
         map.put("status", status.value());
-        map.put("data", data);
+        if(token != null){
+            map.put("data", data);
+        }
 
         return new ResponseEntity<Object>(map, status);
     }

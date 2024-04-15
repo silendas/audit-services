@@ -20,8 +20,5 @@ public class EditScheduleDTO {
     private Long branch_id;
     private Date start_date;
     private Date end_date;
-    private Date start_date_realization;
-    private Date end_date_realization;
     private String description;
-    private EStatus status;
 }
