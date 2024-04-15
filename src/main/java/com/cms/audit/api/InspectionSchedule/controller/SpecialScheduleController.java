@@ -79,11 +79,8 @@ public class SpecialScheduleController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Object> delete(@PathVariable("id") Long id, @Nonnull HttpServletRequest request) {
-        final String tokenHeader = request.getHeader("Authorization");
-        String jwtToken = tokenHeader.substring(7);
-        String username = jwtService.extractUsername(jwtToken);
-        GlobalResponse response = scheduleService.delete(id, username);
+    public ResponseEntity<Object> delete(@PathVariable("id") Long id) {
+        GlobalResponse response = scheduleService.delete(id);
         return ResponseEntittyHandler.allHandler(null, response.getMessage(), response.getStatus(), null);
     }
 

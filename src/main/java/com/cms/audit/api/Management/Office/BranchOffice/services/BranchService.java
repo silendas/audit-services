@@ -194,7 +194,7 @@ public class BranchService {
                         .builder()
                         .message("Data not found")
                         .status(HttpStatus.OK)
-                        .data(response)
+                        .data(null)
                         .build();
             }
             return GlobalResponse

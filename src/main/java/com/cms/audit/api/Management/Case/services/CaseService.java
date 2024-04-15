@@ -17,6 +17,8 @@ import com.cms.audit.api.Management.Case.dto.response.CaseInterface;
 import com.cms.audit.api.Management.Case.models.Case;
 import com.cms.audit.api.Management.Case.repository.CaseRepository;
 import com.cms.audit.api.Management.Case.repository.PagCase;
+import com.cms.audit.api.Management.CaseCategory.models.CaseCategory;
+import com.cms.audit.api.Management.CaseCategory.repository.CaseCategoryRepository;
 
 import jakarta.transaction.Transactional;
 
@@ -26,6 +28,9 @@ public class CaseService {
 
     @Autowired
     private CaseRepository caseRepository;
+
+    @Autowired
+    private CaseCategoryRepository caseCategoryRepository;
 
     @Autowired
     private PagCase pagCase;
@@ -208,6 +213,11 @@ public class CaseService {
     public GlobalResponse delete(Long id) {
         try {
             Case caseGet = caseRepository.findById(id).get();
+
+            List<CaseCategory> check = caseCategoryRepository.findOneCaseCategoryByCasesId(id);
+            if(!check.isEmpty()){
+                return GlobalResponse.builder().message("Cannot delete because relation").status(HttpStatus.BAD_REQUEST).build();
+            }
 
             Case caseEntity = new Case(
                     id,

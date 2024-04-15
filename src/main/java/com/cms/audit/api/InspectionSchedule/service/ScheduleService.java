@@ -892,7 +892,7 @@ public class ScheduleService {
                         Schedule response2 = repository.save(schedule1);
 
                         logService.save(response2.getUpdatedBy(), response2.getDescription(), response2.getId(),
-                                        ECategory.REGULAR, response2.getStatus());
+                                        response2.getCategory(), response2.getStatus());
 
                         return GlobalResponse
                                         .builder()
@@ -941,7 +941,7 @@ public class ScheduleService {
                         Schedule response = repository.save(schedule);
 
                         logService.edit(response.getCreatedBy(), response.getDescription(), response.getId(),
-                                        ECategory.REGULAR, response.getStatus());
+                                        response.getCategory(), response.getStatus());
 
                         return GlobalResponse
                                         .builder()
@@ -1016,7 +1016,7 @@ public class ScheduleService {
                         }
 
                         logService.edit(response.getCreatedBy(), response.getDescription(), response.getId(),
-                                        ECategory.REGULAR, response.getStatus());
+                                        response.getCategory(), response.getStatus());
 
                         return GlobalResponse
                                         .builder()
@@ -1038,14 +1038,15 @@ public class ScheduleService {
                 }
         }
 
-        public GlobalResponse delete(Long id, String username) {
+        public GlobalResponse delete(Long id) {
                 try {
-                        User getUser = userRepository.findByUsername(username)
-                                        .orElseThrow(() -> new ResourceNotFoundException("user not found"));
-                        Schedule getSchedule = repository.findById(id)
-                                        .orElseThrow(() -> new ResourceNotFoundException("Schedule not found"));
+                        User getUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-                        Schedule schedule = getSchedule;
+                        Optional<Schedule> getSchedule = repository.findById(id);
+                        if(!getSchedule.isPresent()){
+                                return GlobalResponse.builder().message("Shcedule with id :" + getSchedule.get().getId()+" is not found").build();
+                        }
+                        Schedule schedule = getSchedule.get();
                         schedule.setIs_delete(1);
                         schedule.setUpdatedBy(getUser.getId());
                         schedule.setUpdated_at(new Date());
@@ -1055,7 +1056,7 @@ public class ScheduleService {
                                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Bad Request");
                         }
                         logService.delete(response.getCreatedBy(), response.getDescription(), response.getId(),
-                                        ECategory.REGULAR, response.getStatus());
+                                        response.getCategory(), response.getStatus());
                         return GlobalResponse
                                         .builder()
                                         .message("Success")

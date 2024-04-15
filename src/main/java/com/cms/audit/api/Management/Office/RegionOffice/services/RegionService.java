@@ -152,8 +152,8 @@ public class RegionService {
                 return GlobalResponse
                         .builder()
                         .message("Data not found")
-                        .status(HttpStatus.OK)
-                        .data(response)
+                        .status(HttpStatus.BAD_REQUEST)
+                        .data(null)
                         .build();
             }
             return GlobalResponse
@@ -273,7 +273,7 @@ public class RegionService {
             Region regionGet = regionRepository.findById(id).get();
 
             GlobalResponse area = areaService.findSpecificByRegionId(id);
-            if(area.getData()!= null){
+            if(area.getData() !=null){
                 return GlobalResponse
                     .builder()
                     .message("Cannot delete because relation")

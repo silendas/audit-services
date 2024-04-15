@@ -195,7 +195,7 @@ public class AreaService {
                         .builder()
                         .message("Data not found")
                         .status(HttpStatus.OK)
-                        .data(response)
+                        .data(null)
                         .build();
             }
             return GlobalResponse
@@ -316,7 +316,7 @@ public class AreaService {
             Area areaGet = areaRepository.findById(id).get();
 
             GlobalResponse branch = branchService.findSpecificByAreaId(id);
-            if (branch.getData() != null) {
+            if (branch.getData()!=null) {
                 return GlobalResponse
                         .builder()
                         .message("Cannot delete because relation")
