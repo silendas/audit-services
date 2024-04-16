@@ -1,11 +1,5 @@
 package com.cms.audit.api.AuditWorkingPaper.controller;
 
-import com.cms.audit.api.AuditWorkingPaper.models.AuditWorkingPaper;
-import com.cms.audit.api.AuditWorkingPaper.service.AuditWorkingPaperService;
-import com.cms.audit.api.Common.constant.BasePath;
-import com.cms.audit.api.Common.response.GlobalResponse;
-import com.cms.audit.api.Common.response.ResponseEntittyHandler;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -30,6 +24,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.cms.audit.api.AuditWorkingPaper.models.AuditWorkingPaper;
+import com.cms.audit.api.AuditWorkingPaper.service.AuditWorkingPaperService;
+import com.cms.audit.api.Common.constant.BasePath;
+import com.cms.audit.api.Common.response.GlobalResponse;
+import com.cms.audit.api.Common.response.ResponseEntittyHandler;
+
 @RestController
 @Validated
 @RequestMapping(value = BasePath.BASE_PATH_WORKING_PAPER)
@@ -45,9 +45,39 @@ public class AuditWorkingPaperController {
                         @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Optional<Date> end_date,
                         @RequestParam("page") Optional<Integer> page,
                         @RequestParam("size") Optional<Integer> size) {
-                GlobalResponse response = service.getAll(schedule_id.orElse(null), page.orElse(0), size.orElse(10),
-                                start_date.orElse(null),
-                                end_date.orElse(null));
+                Long scheduleId;
+                if (schedule_id.isPresent()) {
+                        if (schedule_id.get().toString() != "") {
+                                scheduleId = schedule_id.get();
+                        } else {
+                                scheduleId = null;
+                        }
+                } else {
+                        scheduleId = null;
+                }
+                Date startDate;
+                if (start_date.isPresent()) {
+                        if (start_date.get().toString() != "") {
+                                startDate = start_date.get();
+                        } else {
+                                startDate = null;
+                        }
+                } else {
+                        startDate = null;
+                }
+                Date endDate;
+                if (end_date.isPresent()) {
+                        if (end_date.get().toString() != "") {
+                                endDate = end_date.get();
+                        } else {
+                                endDate = null;
+                        }
+                } else {
+                        endDate = null;
+                }
+                GlobalResponse response = service.getAll(scheduleId, page.orElse(0), size.orElse(10),
+                                startDate,
+                                endDate);
                 return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(),
                                 response.getStatus(),
                                 response.getError());

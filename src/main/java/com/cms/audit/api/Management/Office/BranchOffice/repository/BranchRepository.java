@@ -17,6 +17,8 @@ public interface BranchRepository extends JpaRepository<Branch, Long> {
     @Query(value = "SELECT * FROM branch_office u WHERE u.is_delete <> 1", nativeQuery = true)
     public List<Branch> findAllBranch();
 
+    public List<Branch> findByNameContainingIgnoreCase(String name);
+
     @Query(value = "SELECT u.id,u.name FROM branch_office u WHERE u.is_delete <> 1", nativeQuery = true)
     public List<BranchInterface> findSpecificBranch();
 
@@ -25,6 +27,10 @@ public interface BranchRepository extends JpaRepository<Branch, Long> {
 
     @Query(value = "SELECT * FROM branch_office u WHERE u.area_id = :areaId AND u.is_delete <> 1", nativeQuery = true)
     public List<Branch> findBranchByAreaId(@Param("areaId") Long areaId);
+
+    
+    @Query(value = "SELECT u.id,u.name FROM branch_office u WHERE u.id = :id AND u.is_delete <> 1", nativeQuery = true)
+    public Optional<BranchInterface> findSpecificBranchById(@Param("id") Long id);
 
     @Query(value = "SELECT u.id,u.name FROM branch_office u WHERE u.area_id = :areaId AND u.is_delete <> 1", nativeQuery = true)
     public List<BranchInterface> findSpecificBranchByAreaId(@Param("areaId") Long areaId);

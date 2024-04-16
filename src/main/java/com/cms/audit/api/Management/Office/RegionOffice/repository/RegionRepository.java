@@ -23,6 +23,9 @@ public interface RegionRepository extends JpaRepository<Region, Long> {
     @Query(value = "SELECT u.id,u.name FROM region_office u WHERE u.is_delete <> 1", nativeQuery = true)
     public List<RegionInterface> findSpecificRegion();
 
+    @Query(value = "SELECT u.id,u.name FROM region_office u WHERE u.id = :id AND u.is_delete <> 1", nativeQuery = true)
+    public List<RegionInterface> findSpecificRegionById(@Param("id") Long id);
+
     @Query(value = "SELECT u.id,u.name FROM region_office u WHERE u.main_id = :mainId AND u.is_delete <> 1", nativeQuery = true)
     public List<RegionInterface> findSpecificRegionByMainId(@Param("mainId") Long id);
 

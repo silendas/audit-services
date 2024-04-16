@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.cms.audit.api.Common.response.GlobalResponse;
@@ -20,6 +21,7 @@ import com.cms.audit.api.Management.Office.RegionOffice.dto.response.RegionInter
 import com.cms.audit.api.Management.Office.RegionOffice.models.Region;
 import com.cms.audit.api.Management.Office.RegionOffice.repository.PagRegion;
 import com.cms.audit.api.Management.Office.RegionOffice.repository.RegionRepository;
+import com.cms.audit.api.Management.User.models.User;
 
 import jakarta.transaction.Transactional;
 
@@ -54,6 +56,7 @@ public class RegionService {
                         .builder()
                         .message("Data not found")
                         .status(HttpStatus.OK)
+                        .data(response)
                         .build();
             }
             return GlobalResponse
@@ -80,12 +83,25 @@ public class RegionService {
 
     public GlobalResponse findSpecific() {
         try {
+            User getUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
             List<RegionInterface> response = regionRepository.findSpecificRegion();
+            if(getUser.getLevel().getId() == 2){
+                for(int i = 0; i<getUser.getRegionId().size(); i++){
+                    List<RegionInterface> getBranch = regionRepository.findSpecificRegionById(getUser.getRegionId().get(i));
+                    for(int u = 0; u<getBranch.size();u++){
+                    response.add(getBranch.get(u));
+                    }
+                }
+            } else if(getUser.getLevel().getId() == 1){
+                response = regionRepository.findSpecificRegion();
+            }
             if (response.isEmpty()) {
                 return GlobalResponse
                         .builder()
                         .message("Data not found")
                         .status(HttpStatus.OK)
+                        .data(response)
                         .build();
             }
             return GlobalResponse
@@ -118,6 +134,7 @@ public class RegionService {
                         .builder()
                         .message("Data not found")
                         .status(HttpStatus.OK)
+                        .data(response)
                         .build();
             }
             return GlobalResponse
@@ -149,7 +166,8 @@ public class RegionService {
                 return GlobalResponse
                         .builder()
                         .message("Data not found")
-                        .status(HttpStatus.OK)
+                        .status(HttpStatus.BAD_REQUEST)
+                        .data(null)
                         .build();
             }
             return GlobalResponse
@@ -269,7 +287,7 @@ public class RegionService {
             Region regionGet = regionRepository.findById(id).get();
 
             GlobalResponse area = areaService.findSpecificByRegionId(id);
-            if(area.getData()!= null){
+            if(area.getData() !=null){
                 return GlobalResponse
                     .builder()
                     .message("Cannot delete because relation")

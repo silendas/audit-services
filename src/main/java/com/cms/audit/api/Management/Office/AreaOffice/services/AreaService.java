@@ -1,14 +1,17 @@
 package com.cms.audit.api.Management.Office.AreaOffice.services;
 
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Optional;
 
+import org.apache.poi.ss.formula.ptg.AreaI;
 import org.hibernate.exception.DataException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.cms.audit.api.Common.response.GlobalResponse;
@@ -21,6 +24,7 @@ import com.cms.audit.api.Management.Office.BranchOffice.services.BranchService;
 import com.cms.audit.api.Management.Office.MainOffice.models.Main;
 import com.cms.audit.api.Management.Office.RegionOffice.models.Region;
 import com.cms.audit.api.Management.Office.RegionOffice.repository.RegionRepository;
+import com.cms.audit.api.Management.User.models.User;
 
 import jakarta.transaction.Transactional;
 
@@ -55,6 +59,7 @@ public class AreaService {
                         .builder()
                         .message("Data not found")
                         .status(HttpStatus.OK)
+                        .data(response)
                         .build();
             }
             return GlobalResponse
@@ -81,12 +86,25 @@ public class AreaService {
 
     public GlobalResponse findSpecific() {
         try {
-            List<AreaInterface> response = areaRepository.findSpecificArea();
+            User getUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+            List<AreaInterface> response = new ArrayList<>();
+            if(getUser.getLevel().getId() == 2){
+                for(int i = 0; i<getUser.getRegionId().size(); i++){
+                    List<AreaInterface> getBranch = areaRepository.findSpecificAreaByRegionId(getUser.getRegionId().get(i));
+                    for(int u = 0; u<getBranch.size();u++){
+                    response.add(getBranch.get(u));
+                    }
+                }
+            } else if(getUser.getLevel().getId() == 1){
+                response = areaRepository.findSpecificArea();
+            }
             if (response.isEmpty()) {
                 return GlobalResponse
                         .builder()
                         .message("Data not found")
                         .status(HttpStatus.OK)
+                        .data(response)
                         .build();
             }
             return GlobalResponse
@@ -119,6 +137,7 @@ public class AreaService {
                         .builder()
                         .message("Data not found")
                         .status(HttpStatus.OK)
+                        .data(response)
                         .build();
             }
             return GlobalResponse
@@ -149,8 +168,8 @@ public class AreaService {
             if (!setRegion.isPresent()) {
                 return GlobalResponse
                         .builder()
-                        .message("Data not found")
-                        .status(HttpStatus.OK)
+                        .message("Region with id:" + setRegion.get().getId() + " is not found")
+                        .status(HttpStatus.BAD_REQUEST)
                         .build();
             }
             Page<Area> response = pagArea.findByRegion(setRegion.get(), PageRequest.of(page, size));
@@ -159,6 +178,7 @@ public class AreaService {
                         .builder()
                         .message("Data not found")
                         .status(HttpStatus.OK)
+                        .data(response)
                         .build();
             }
             return GlobalResponse
@@ -191,6 +211,7 @@ public class AreaService {
                         .builder()
                         .message("Data not found")
                         .status(HttpStatus.OK)
+                        .data(null)
                         .build();
             }
             return GlobalResponse

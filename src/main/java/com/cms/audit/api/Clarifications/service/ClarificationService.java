@@ -76,14 +76,32 @@ public class ClarificationService {
 
         private final String UPLOAD_FOLDER_PATH = FolderPath.FOLDER_PATH_UPLOAD_CLARIFICATION;
 
-        public GlobalResponse getAll(int page, int size, Date start_date, Date end_date) {
+        public GlobalResponse getAll(String name, Long branchId, int page, int size, Date start_date, Date end_date) {
                 try {
                         Page<Clarification> response;
-                        if (start_date == null || end_date == null) {
-                                response = pag.findAll(PageRequest.of(page, size));
-                        } else {
+                        if (branchId != null && name != null && start_date != null && end_date != null) {
+                                String likeName = "%" +name+"%";
+                                response = pag.findByAllFilter(likeName, start_date, end_date, PageRequest.of(page, size));
+                        } else if (branchId != null) {
+                                if (start_date != null && end_date != null) {
+                                        response = pag.findByBranchIdByDate(branchId, start_date, end_date, PageRequest.of(page, size));
+                                } else {
+                                        response = pag.findByBranchId(branchId,
+                                                        PageRequest.of(page, size));
+                                }
+                        } else if (name != null) {
+                                String likeName = "%" +name+"%";
+                                if (start_date != null && end_date != null) {
+                                        response = pag.findByFullnameLikeByDate(likeName, start_date, end_date, PageRequest.of(page, size));
+                                } else {
+                                        response = pag.findByFullnameLike(likeName,
+                                                        PageRequest.of(page, size));
+                                }
+                        } else if (start_date != null && end_date != null) {
                                 response = pag.findClarificationInDateRange(start_date, end_date,
                                                 PageRequest.of(page, size));
+                        } else {
+                                response = pag.findAll(PageRequest.of(page, size));
                         }
                         List<Object> listCl = new ArrayList<>();
                         for (int i = 0; i < response.getContent().size(); i++) {
@@ -205,7 +223,8 @@ public class ClarificationService {
                         clarification.put("evaluation", response.getEvaluation());
                         clarification.put("status", response.getStatus());
                         clarification.put("nominal_loss", response.getNominal_loss());
-                        clarification.put("evaluation_limitation", convertDateToRoman.convertDateToString(response.getEvaluation_limitation()));
+                        clarification.put("evaluation_limitation",
+                                        convertDateToRoman.convertDateToString(response.getEvaluation_limitation()));
                         clarification.put("is_follow_up", response.getIs_follow_up());
                         if (response.getFilename() == null) {
                                 clarification.put("is_flag", 1);
@@ -674,7 +693,7 @@ public class ClarificationService {
                                         new Date());
                         repository.save(clarification);
 
-                        //file.transferTo(new File(filePath));
+                        // file.transferTo(new File(filePath));
 
                         return GlobalResponse
                                         .builder()

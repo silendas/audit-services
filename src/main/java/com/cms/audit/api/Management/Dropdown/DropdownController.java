@@ -126,8 +126,6 @@ public class DropdownController {
                                     }
                                 }
                             } else {
-                                System.out.println(userAgain.get(u).getRegionId()
-                                        .size());
                                 for (int o = 0; o < userAgain.get(u).getRegionId()
                                         .size(); o++) {
                                     if (region_id == userAgain.get(u).getRegionId().get(o)) {
@@ -255,10 +253,13 @@ public class DropdownController {
 
     @GetMapping("/branch")
     public ResponseEntity<Object> getBranch(
+        @Nullable @RequestParam("name") String name,
             @Nullable @RequestParam("areaId") Long areaId,
             @Nullable @RequestParam("regionId") Long regionId) {
         GlobalResponse response;
-        if (areaId != null) {
+        if (name != null) {
+            response = branchService.findSpecificByName(name);
+        }else if (areaId != null) {
             response = branchService.findSpecificByAreaId(areaId);
         } else if (regionId != null) {
             response = branchService.findSpecificByRegionId(regionId);

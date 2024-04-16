@@ -41,9 +41,59 @@ public class AuditDailyReportController {
                         @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Optional<Date> end_date,
                         @RequestParam("page") Optional<Integer> page,
                         @RequestParam("size") Optional<Integer> size) {
+                Long branchId;
+                if (branch_id.isPresent()) {
+                        if (branch_id.get().toString() != "") {
+                                branchId = branch_id.get();
+                        } else {
+                                branchId = null;
+                        }
+                } else {
+                        branchId = null;
+                }
+                Long scheduleId;
+                if (schedule_id.isPresent()) {
+                        if (schedule_id.get().toString() != "") {
+                                scheduleId = schedule_id.get();
+                        } else {
+                                scheduleId = null;
+                        }
+                } else {
+                        scheduleId = null;
+                }
+                String fullname;
+                if (name.isPresent()) {
+                        if (name.get().toString() != "") {
+                                fullname = name.get();
+                        } else {
+                                fullname = null;
+                        }
+                } else {
+                        fullname = null;
+                }
+                Date startDate;
+                if (start_date.isPresent()) {
+                        if (start_date.get().toString() != "") {
+                                startDate = start_date.get();
+                        } else {
+                                startDate = null;
+                        }
+                } else {
+                        startDate = null;
+                }
+                Date endDate;
+                if (end_date.isPresent()) {
+                        if (end_date.get().toString() != "") {
+                                endDate = end_date.get();
+                        } else {
+                                endDate = null;
+                        }
+                } else {
+                        endDate = null;
+                }
                 GlobalResponse response = auditDailyReportService.get(page.orElse(0), size.orElse(10),
-                                start_date.orElse(null), end_date.orElse(null), schedule_id.orElse(null),
-                                branch_id.orElse(null), name.orElse(null));
+                                startDate, endDate, scheduleId,
+                                branchId, fullname);
                 return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(),
                                 response.getStatus(),
                                 response.getError());
@@ -59,13 +109,14 @@ public class AuditDailyReportController {
 
         @GetMapping("/report")
         public ResponseEntity<Object> getReport(
-                @RequestParam(required = false) Optional<String> name,
-                @RequestParam(required = false) Optional<Long> area_id,
-                @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Optional<Date> start_date,
-                @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Optional<Date> end_date,
-                @RequestParam("page") Optional<Integer> page,
-                @RequestParam("size") Optional<Integer> size) {
-                GlobalResponse response = auditDailyReportService.getLhaReport(name.orElse(null), area_id.orElse(null), start_date.orElse(null), end_date.orElse(null), page.orElse(0), size.orElse(10));
+                        @RequestParam(required = false) Optional<String> name,
+                        @RequestParam(required = false) Optional<Long> area_id,
+                        @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Optional<Date> start_date,
+                        @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Optional<Date> end_date,
+                        @RequestParam("page") Optional<Integer> page,
+                        @RequestParam("size") Optional<Integer> size) {
+                GlobalResponse response = auditDailyReportService.getLhaReport(name.orElse(null), area_id.orElse(null),
+                                start_date.orElse(null), end_date.orElse(null), page.orElse(0), size.orElse(10));
                 return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(),
                                 response.getStatus(),
                                 response.getError());

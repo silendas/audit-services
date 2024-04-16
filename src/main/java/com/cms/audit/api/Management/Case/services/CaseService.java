@@ -17,6 +17,8 @@ import com.cms.audit.api.Management.Case.dto.response.CaseInterface;
 import com.cms.audit.api.Management.Case.models.Case;
 import com.cms.audit.api.Management.Case.repository.CaseRepository;
 import com.cms.audit.api.Management.Case.repository.PagCase;
+import com.cms.audit.api.Management.CaseCategory.models.CaseCategory;
+import com.cms.audit.api.Management.CaseCategory.repository.CaseCategoryRepository;
 
 import jakarta.transaction.Transactional;
 
@@ -28,6 +30,9 @@ public class CaseService {
     private CaseRepository caseRepository;
 
     @Autowired
+    private CaseCategoryRepository caseCategoryRepository;
+
+    @Autowired
     private PagCase pagCase;
 
     public GlobalResponse findAll(String name, int page, int size) {
@@ -37,7 +42,7 @@ public class CaseService {
                 return GlobalResponse
                         .builder()
                         .message("Data not found")
-                        .status(HttpStatus.OK)
+                        .data(response).status(HttpStatus.OK)
                         .build();
             }
             return GlobalResponse
@@ -69,7 +74,7 @@ public class CaseService {
                 return GlobalResponse
                         .builder()
                         .message("Data not found")
-                        .status(HttpStatus.OK)
+                        .data(response).status(HttpStatus.OK)
                         .build();
             }
             return GlobalResponse
@@ -101,7 +106,7 @@ public class CaseService {
                 return GlobalResponse
                         .builder()
                         .message("Data not found")
-                        .status(HttpStatus.OK)
+                        .data(response).status(HttpStatus.OK)
                         .build();
             }
             return GlobalResponse
@@ -130,13 +135,12 @@ public class CaseService {
         try {
 
             Case caseEntity = new Case(
-                null,
-                caseDTO.getName(),
-                caseDTO.getCode(),
-                0,
-                new Date(),
-                new Date()
-            );
+                    null,
+                    caseDTO.getName(),
+                    caseDTO.getCode(),
+                    0,
+                    new Date(),
+                    new Date());
 
             Case response = caseRepository.save(caseEntity);
             if (response == null) {
@@ -171,13 +175,12 @@ public class CaseService {
             Case caseGet = caseRepository.findById(id).get();
 
             Case caseEntity = new Case(
-                id,
-                caseDTO.getName(),
-                caseDTO.getCode(),
-                0,
-                caseGet.getCreated_at(),
-                new Date()
-            );
+                    id,
+                    caseDTO.getName(),
+                    caseDTO.getCode(),
+                    0,
+                    caseGet.getCreated_at(),
+                    new Date());
 
             Case response = caseRepository.save(caseEntity);
             if (response == null) {
@@ -211,14 +214,18 @@ public class CaseService {
         try {
             Case caseGet = caseRepository.findById(id).get();
 
+            List<CaseCategory> check = caseCategoryRepository.findOneCaseCategoryByCasesId(id);
+            if(!check.isEmpty()){
+                return GlobalResponse.builder().message("Cannot delete because relation").status(HttpStatus.BAD_REQUEST).build();
+            }
+
             Case caseEntity = new Case(
-                id,
-                caseGet.getName(),
-                caseGet.getCode(),
-                1,
-                caseGet.getCreated_at(),
-                new Date()
-            );
+                    id,
+                    caseGet.getName(),
+                    caseGet.getCode(),
+                    1,
+                    caseGet.getCreated_at(),
+                    new Date());
 
             Case response = caseRepository.save(caseEntity);
             if (response == null) {

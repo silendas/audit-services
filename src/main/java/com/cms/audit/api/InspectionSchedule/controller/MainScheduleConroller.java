@@ -1,5 +1,20 @@
 package com.cms.audit.api.InspectionSchedule.controller;
 
+import java.util.Date;
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cms.audit.api.Common.constant.BasePath;
@@ -13,21 +28,6 @@ import com.cms.audit.api.InspectionSchedule.service.ScheduleService;
 
 import jakarta.annotation.Nonnull;
 import jakarta.servlet.http.HttpServletRequest;
-
-import java.util.*;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 @Validated
@@ -48,8 +48,68 @@ public class MainScheduleConroller {
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Optional<Date> end_date,
             @RequestParam("page") Optional<Integer> page,
             @RequestParam("size") Optional<Integer> size) {
-        GlobalResponse response = scheduleService.getMainSchedule(branch_id.orElse(null),name.orElse(null),page.orElse(0), size.orElse(10),
-                start_date.orElse(null), end_date.orElse(null));
+                Long branchId;
+            if(branch_id.isPresent()){
+                if(branch_id.get().toString() != ""){
+                    branchId = branch_id.get();
+                } else {
+                    branchId = null;
+                }
+            } else {
+                branchId = null;
+            }
+            Integer pages;
+            if(page.isPresent()){
+                if(page.get().toString() != ""){
+                    pages = page.get();
+                } else {
+                    pages = 0;
+                }
+            } else {
+                pages = 0;
+            }
+            Integer sizes;
+            if(size.isPresent()){
+                if(size.get().toString() != ""){
+                    sizes = size.get();
+                } else {
+                    sizes = 10;
+                }
+            } else {
+                sizes = 10;
+            }
+            String fullname;
+            if(name.isPresent()){
+                if(name.get().toString() != ""){
+                    fullname = name.get();
+                } else {
+                    fullname = null;
+                }
+            } else {
+                fullname = null;
+            }
+            Date startDate;
+            if(start_date.isPresent()){
+                if(start_date.get().toString() != ""){
+                    startDate = start_date.get();
+                } else {
+                    startDate = null;
+                }
+            } else {
+                startDate = null;
+            }
+            Date endDate;
+            if(end_date.isPresent()){
+                if(end_date.get().toString() != ""){
+                    endDate = end_date.get();
+                } else {
+                    endDate = null;
+                }
+            } else {
+                endDate = null;
+            }
+        GlobalResponse response = scheduleService.getMainSchedule(branchId,fullname,pages,sizes,
+        startDate, endDate);
         return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(), null);
     }
 
@@ -79,11 +139,8 @@ public class MainScheduleConroller {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Object> delete(@PathVariable("id") Long id, @Nonnull HttpServletRequest request) {
-        final String tokenHeader = request.getHeader("Authorization");
-        String jwtToken = tokenHeader.substring(7);
-        String username = jwtService.extractUsername(jwtToken);
-        GlobalResponse response = scheduleService.delete(id, username);
+    public ResponseEntity<Object> delete(@PathVariable("id") Long id) {
+        GlobalResponse response = scheduleService.delete(id);
         return ResponseEntittyHandler.allHandler(null, response.getMessage(), response.getStatus(), null);
     }
 
