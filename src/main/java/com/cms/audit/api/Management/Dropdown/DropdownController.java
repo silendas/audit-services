@@ -126,8 +126,6 @@ public class DropdownController {
                                     }
                                 }
                             } else {
-                                System.out.println(userAgain.get(u).getRegionId()
-                                        .size());
                                 for (int o = 0; o < userAgain.get(u).getRegionId()
                                         .size(); o++) {
                                     if (region_id == userAgain.get(u).getRegionId().get(o)) {
