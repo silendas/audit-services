@@ -1,10 +1,10 @@
 HELP.md
 target/
-.uploaded/bap/
-.uploaded/clarification/
-.uploaded/followup/
-.uploaded/kka/
-.uploaded/report/
+.uploaded/bap/*
+.uploaded/clarification/*
+.uploaded/followup/*
+.uploaded/kka/*
+.uploaded/report/*
 !.mvn/wrapper/maven-wrapper.jar
 !*/src/main/*/target/
 !*/src/test/*/target/
