@@ -1,8 +1,8 @@
 HELP.md
 target/
-*.xlsx
-*.pdf
-
+.xlsx
+.pdf
+!uploaded/
 !.mvn/wrapper/maven-wrapper.jar
 !*/src/main/*/target/
 !*/src/test/*/target/
