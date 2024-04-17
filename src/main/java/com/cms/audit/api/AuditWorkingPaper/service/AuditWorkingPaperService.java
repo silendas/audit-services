@@ -236,7 +236,7 @@ public class AuditWorkingPaperService {
     }
 
     public AuditWorkingPaper downloadFile(String fileName) throws java.io.IOException, IOFileUploadException {
-        AuditWorkingPaper response = repository.findByFilename(fileName)
+        AuditWorkingPaper response = repository.findByFilenameis(fileName)
                 .orElseThrow(() -> new ResourceNotFoundException("File not found with name: " + fileName));
         return response;
     }

@@ -86,19 +86,21 @@ public class BranchService {
             User getUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
             List<BranchInterface> response = new ArrayList<>();
-            if(getUser.getLevel().getId() == 2){
-                for(int i = 0; i<getUser.getRegionId().size(); i++){
-                    List<BranchInterface> getBranch = branchRepository.findSpecificBranchByRegionId(getUser.getRegionId().get(i));
-                    for(int u = 0; u<getBranch.size();u++){
-                    response.add(getBranch.get(u));
+            if (getUser.getLevel().getId() == 2) {
+                for (int i = 0; i < getUser.getRegionId().size(); i++) {
+                    List<BranchInterface> getBranch = branchRepository
+                            .findSpecificBranchByRegionId(getUser.getRegionId().get(i));
+                    for (int u = 0; u < getBranch.size(); u++) {
+                        response.add(getBranch.get(u));
                     }
                 }
-            }else if(getUser.getLevel().getId() == 3){
-                for(int i = 0; i<getUser.getBranchId().size(); i++){
-                    Optional<BranchInterface> getBranch = branchRepository.findSpecificBranchById(getUser.getBranchId().get(i));
+            } else if (getUser.getLevel().getId() == 3) {
+                for (int i = 0; i < getUser.getBranchId().size(); i++) {
+                    Optional<BranchInterface> getBranch = branchRepository
+                            .findSpecificBranchById(getUser.getBranchId().get(i));
                     response.add(getBranch.get());
                 }
-            } else if(getUser.getLevel().getId() == 1){
+            } else if (getUser.getLevel().getId() == 1) {
                 response = branchRepository.findSpecificBranch();
             }
             if (response.isEmpty()) {
@@ -245,10 +247,10 @@ public class BranchService {
         try {
             List<Branch> getBranch = branchRepository.findByNameContainingIgnoreCase(name);
             List<Object> response = new ArrayList<>();
-            for(int i=0;i<getBranch.size();i++){
-                Map<String,Object> mapping = new LinkedHashMap<>();
-                mapping.put("id",getBranch.get(i).getId());
-                mapping.put("name",getBranch.get(i).getName());
+            for (int i = 0; i < getBranch.size(); i++) {
+                Map<String, Object> mapping = new LinkedHashMap<>();
+                mapping.put("id", getBranch.get(i).getId());
+                mapping.put("name", getBranch.get(i).getName());
                 response.add(mapping);
             }
             if (response.isEmpty()) {

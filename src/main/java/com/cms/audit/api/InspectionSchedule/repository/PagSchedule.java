@@ -51,19 +51,19 @@ public interface PagSchedule extends PagingAndSortingRepository<Schedule, Long> 
                         @Param("start_date") Date start_date,
                         @Param("end_date") Date end_date, Pageable pageable);
 
-        @Query(value = "SELECT u.* FROM inspection_schedule u INNER JOIN users us ON u.user_id=us.id INNER JOIN branch_office bo ON u.branch_id=bo.id WHERE us.fullname LIKE '% :name %' AND bo.id = :branchId AND u.category = :category AND (u.start_date BETWEEN :start_date AND :end_date OR u.end_date BETWEEN :start_date AND :end_date) AND u.is_delete = 0 ORDER BY u.id DESC ", nativeQuery = true)
+        @Query(value = "SELECT u.* FROM inspection_schedule u INNER JOIN users us ON u.user_id=us.id INNER JOIN branch_office bo ON u.branch_id=bo.id WHERE us.fullname LIKE %:name% AND bo.id = :branchId AND u.category = :category AND (u.start_date BETWEEN :start_date AND :end_date OR u.end_date BETWEEN :start_date AND :end_date) AND u.is_delete = 0 ORDER BY u.id DESC ", nativeQuery = true)
         Page<Schedule> findAllScheduleByAllFilter(@Param("name") String name, @Param("branchId") Long branchId,
                         @Param("category") String ucategory,
                         @Param("start_date") Date start_date,
                         @Param("end_date") Date end_date, Pageable pageable);
 
-        @Query(value = "SELECT u.* FROM inspection_schedule u INNER JOIN users us ON u.user_id=us.id WHERE us.fullname LIKE :name AND u.category = :category AND u.is_delete = 0 ORDER BY u.id DESC ", nativeQuery = true)
+        @Query(value = "SELECT u.* FROM inspection_schedule u INNER JOIN users us ON u.user_id=us.id WHERE us.fullname LIKE %:name% AND u.category = :category AND u.is_delete = 0 ORDER BY u.id DESC ", nativeQuery = true)
         Page<Schedule> findAllScheduleByFUllename(@Param("name") String name, @Param("category") String ucategory,Pageable pageable);
 
-        @Query(value = "SELECT u.* FROM inspection_schedule u INNER JOIN users us ON u.user_id=us.id WHERE us.fullname LIKE :name AND u.branch_id = :branchId AND u.category = :category AND u.is_delete = 0 ORDER BY u.id DESC ", nativeQuery = true)
+        @Query(value = "SELECT u.* FROM inspection_schedule u INNER JOIN users us ON u.user_id=us.id WHERE us.fullname LIKE %:name% AND u.branch_id = :branchId AND u.category = :category AND u.is_delete = 0 ORDER BY u.id DESC ", nativeQuery = true)
         Page<Schedule> findAllScheduleByFUllenameAndBranch(@Param("name") String name,@Param("branchId") Long id, @Param("category") String ucategory,Pageable pageable);
         
-        @Query(value = "SELECT u.* FROM inspection_schedule u INNER JOIN users us ON u.user_id=us.id WHERE us.fullname LIKE :name AND u.category = :category AND (u.start_date BETWEEN :start_date AND :end_date OR u.end_date BETWEEN :start_date AND :end_date) AND u.is_delete = 0 ORDER BY u.id DESC ", nativeQuery = true)
+        @Query(value = "SELECT u.* FROM inspection_schedule u INNER JOIN users us ON u.user_id=us.id WHERE us.fullname LIKE %:name% AND u.category = :category AND (u.start_date BETWEEN :start_date AND :end_date OR u.end_date BETWEEN :start_date AND :end_date) AND u.is_delete = 0 ORDER BY u.id DESC ", nativeQuery = true)
         Page<Schedule> findAllScheduleByFUllenameAndDate(@Param("name") String name, @Param("category") String ucategory,@Param("start_date") Date start_date,
         @Param("end_date") Date end_date,Pageable pageable);
 

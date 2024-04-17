@@ -13,6 +13,8 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 
 import com.cms.audit.api.Common.exception.JwtException;
 import com.cms.audit.api.Config.Jwt.JwtAuthenticationFIlter;
@@ -32,12 +34,12 @@ public class SecurityConfiguration {
     
     @Bean 
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        CorsConfiguration corsConfiguration = new CorsConfiguration();
-        corsConfiguration.setAllowedHeaders(List.of("Authorization", "Cache-Control", "Content-Type"));
-        corsConfiguration.setAllowedOrigins(List.of("*"));
-        corsConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PUT","OPTIONS","PATCH", "DELETE"));
-        corsConfiguration.setAllowCredentials(true);
-        corsConfiguration.setExposedHeaders(List.of("Authorization"));
+        // CorsConfiguration corsConfiguration = new CorsConfiguration();
+        // corsConfiguration.setAllowedHeaders(List.of("Authorization", "Cache-Control", "Content-Type"));
+        // corsConfiguration.setAllowedOrigins(List.of("*"));
+        // corsConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PUT","OPTIONS","PATCH", "DELETE"));
+        // corsConfiguration.setAllowCredentials(true);
+        // corsConfiguration.setExposedHeaders(List.of("Authorization"));
 
         http
                 .csrf(AbstractHttpConfigurer::disable)
@@ -58,4 +60,17 @@ public class SecurityConfiguration {
         return http.build();
 
     } 
+
+//     @Bean
+//     public CorsFilter corsFilter() {
+//         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+//         CorsConfiguration config = new CorsConfiguration();
+//         config.setAllowedOrigins(List.of("*"));
+//         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
+//         config.setAllowedHeaders(List.of("Authorization", "Cache-Control", "Content-Type"));
+//         config.setExposedHeaders(List.of("Authorization"));
+//         config.setAllowCredentials(true);
+//         source.registerCorsConfiguration("/api/**", config);
+//         return new CorsFilter(source);
+//     }
 }
