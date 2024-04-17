@@ -532,17 +532,16 @@ public class ScheduleService {
                                         .status(HttpStatus.INTERNAL_SERVER_ERROR)
                                         .build();
                 }
-
         }
 
-        public GlobalResponse getByStatus(int page, int size) {
+        public GlobalResponse getByStatus(String name,Long branchId,Date startDate,Date endDate,int page, int size) {
                 try {
                         User getUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
                         Page<Schedule> response;
                         if (getUser.getLevel().getId() == 1) {
-                                response = pagSchedule.findOneScheduleByStatus("REQUEST",
-                                                PageRequest.of(page, size));
+                                response = pagSchedule.findOneScheduleByStatus("PENDING",
+                                PageRequest.of(page, size));
                         } else if (getUser.getLevel().getId() == 2) {
                                 response = pagSchedule.findOneScheduleByStatus("PENDING",
                                                 PageRequest.of(page, size));
@@ -553,6 +552,7 @@ public class ScheduleService {
                                 return GlobalResponse
                                                 .builder()
                                                 .message("Data not found")
+                                                .data(null)
                                                 .status(HttpStatus.OK)
                                                 .build();
                         }

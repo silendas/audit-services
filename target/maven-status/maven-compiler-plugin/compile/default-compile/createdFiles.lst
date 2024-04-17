@@ -202,6 +202,7 @@ com\cms\audit\api\InspectionSchedule\models\Schedule$ScheduleBuilder.class
 com\cms\audit\api\AuditDailyReport\controller\RevisionController.class
 com\cms\audit\api\Common\pdf\LHAReport.class
 com\cms\audit\api\Common\exception\ResourceNotFoundException.class
+com\cms\audit\api\ApiApplication$1.class
 com\cms\audit\api\FollowUp\service\FollowupService.class
 com\cms\audit\api\FollowUp\controller\FollowupController.class
 com\cms\audit\api\Management\Office\BranchOffice\repository\PagBranch.class
