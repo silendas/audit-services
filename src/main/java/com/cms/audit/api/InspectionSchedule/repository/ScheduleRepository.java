@@ -37,6 +37,9 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
         public List<Schedule> findAllScheduleByDateRange(@Param("category") String ucategory, @Param("start_date") Date start_date,
         @Param("end_date") Date end_date);
 
+        @Query(value = "SELECT u.* FROM inspection_schedule u INNER JOIN users us ON u.user_id=us.id WHERE us.fullname LIKE %:name% AND u.branch_id = :branchId AND u.category = :category AND u.is_delete = 0 ORDER BY u.id DESC ", nativeQuery = true)
+        public List<Schedule> findAllScheduleByFUllenameAndBranch(@Param("name") String name,@Param("branchId") Long id, @Param("category") String ucategory);
+
         @Query(value = "SELECT * FROM inspection_schedule u WHERE u.branch_id = :branchId AND u.category = :category AND u.is_delete = 0 ORDER BY u.id DESC ", nativeQuery = true)
         public List<Schedule> findAllScheduleByBranchId(@Param("branchId") Long id, @Param("category") String ucategory);
 

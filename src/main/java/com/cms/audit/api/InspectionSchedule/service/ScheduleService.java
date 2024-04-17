@@ -78,22 +78,23 @@ public class ScheduleService {
                         if (branch_id != null && name != null && start_date != null && end_date != null) {
                                 response = pagSchedule.findAllScheduleByAllFilter(name, branch_id, category, start_date,
                                                 end_date, PageRequest.of(page, size));
+                        } else if (name != null) {
+                                String likeName = name;
+                                if (start_date != null && end_date != null) {
+                                        response = pagSchedule.findAllScheduleByFUllenameAndDate(likeName, category,
+                                                        start_date, end_date, PageRequest.of(page, size));
+                                } else if (branch_id != null) {
+                                        response = pagSchedule.findAllScheduleByFUllenameAndBranch(likeName, branch_id,
+                                                        category,
+                                                        PageRequest.of(page, size));
+                                } else {
+                                        response = pagSchedule.findAllScheduleByFUllename(likeName, category,
+                                                        PageRequest.of(page, size));
+                                }
                         } else if (branch_id != null) {
                                 if (start_date != null && end_date != null) {
                                         response = pagSchedule.findAllScheduleByBranchAndDateRange(branch_id, category,
                                                         start_date, end_date, PageRequest.of(page, size));
-                                } else {
-                                        response = pagSchedule.findAllScheduleByBranchId(branch_id, category,
-                                                        PageRequest.of(page, size));
-                                }
-                        } else if (name != null) {
-                                String likeName = "%" + name + "%";
-                                if (start_date != null && end_date != null) {
-                                        response = pagSchedule.findAllScheduleByFUllename(likeName, category,
-                                                        PageRequest.of(page, size));
-                                } else if (branch_id != null) {
-                                        response = pagSchedule.findAllScheduleByFUllename(likeName, category,
-                                                        PageRequest.of(page, size));
                                 } else {
                                         response = pagSchedule.findAllScheduleByBranchId(branch_id, category,
                                                         PageRequest.of(page, size));
@@ -108,6 +109,7 @@ public class ScheduleService {
                                 return GlobalResponse
                                                 .builder()
                                                 .message("Data not found")
+                                                .data(null)
                                                 .status(HttpStatus.OK)
                                                 .build();
                         }
@@ -227,9 +229,10 @@ public class ScheduleService {
                                 return getByUserId(user.getId(), "REGULAR", page, size, start_date, end_date);
                         } else if (user.getLevel().getId() == 2) {
                                 if (branch_id != null && name != null && start_date != null && end_date != null) {
-                                        Page<Schedule> response = pagSchedule.findAllScheduleByAllFilter(name,
-                                                        branch_id,
-                                                        "REGULAR", start_date, end_date, PageRequest.of(page, size));
+                                        String likeName =name;
+                                        Page<Schedule> response = pagSchedule.findAllScheduleByAllFilter(likeName,
+                                                        branch_id, "REGULAR", start_date, end_date,
+                                                        PageRequest.of(page, size));
                                         return GlobalResponse.builder()
                                                         .data(mappingPageSchedule(response))
                                                         .message("Success").status(HttpStatus.OK).build();
@@ -243,6 +246,8 @@ public class ScheduleService {
                                                         getSchedule = repository.findScheduleInDateRangeByUserId(
                                                                         getUser.get(i).getId(), "REGULAR", start_date,
                                                                         end_date);
+                                                } else if(branch_id != null){
+                                                        getSchedule = repository.findAllScheduleByFUllenameAndBranch(name, branch_id, "REGULAR");
                                                 } else {
                                                         getSchedule = repository.findAllScheduleByUserId(
                                                                         getUser.get(i).getId(), "REGULAR");
@@ -274,8 +279,7 @@ public class ScheduleService {
                                                                 .build();
                                         }
                                 } else if (branch_id != null) {
-                                        return getByBranchIdInDate(branch_id, "REGULAR", page, size, start_date,
-                                                        end_date);
+                                        return getByBranchIdInDate(branch_id, "REGULAR", page, size, start_date,end_date);
                                 } else if (start_date != null && end_date != null) {
                                         Page<Schedule> response = pagSchedule.findAllScheduleByAllFilter(name,
                                                         branch_id,
@@ -336,6 +340,8 @@ public class ScheduleService {
                                                         getSchedule = repository.findScheduleInDateRangeByUserId(
                                                                         getUser.get(i).getId(), "SPECIAL", start_date,
                                                                         end_date);
+                                                }else if(branch_id != null){
+                                                        getSchedule = repository.findAllScheduleByFUllenameAndBranch(name, branch_id, "SPECIAL");
                                                 } else {
                                                         getSchedule = repository.findAllScheduleByUserId(
                                                                         getUser.get(i).getId(), "SPECIAL");

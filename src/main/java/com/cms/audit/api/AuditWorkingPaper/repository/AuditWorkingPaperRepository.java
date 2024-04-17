@@ -12,7 +12,8 @@ import com.cms.audit.api.AuditWorkingPaper.models.AuditWorkingPaper;
 @Repository
 public interface AuditWorkingPaperRepository extends JpaRepository<AuditWorkingPaper, Long>{
 
-    Optional<AuditWorkingPaper> findByFilename(String filename);
+    @Query(value = "SELECT * FROM audit_working_paper u WHERE u.file_name = :filename ;", nativeQuery = true)
+    Optional<AuditWorkingPaper> findByFilenameis(String filename);
 
     @Query(value = "SELECT * FROM audit_working_paper u WHERE u.schedule_id = :id ;", nativeQuery = true)
     Optional<AuditWorkingPaper> findByScheduleId(@Param("id") Long id);
