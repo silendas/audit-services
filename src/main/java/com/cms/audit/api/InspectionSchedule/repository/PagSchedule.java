@@ -80,8 +80,15 @@ public interface PagSchedule extends PagingAndSortingRepository<Schedule, Long> 
         @Query(value = "SELECT * FROM inspection_schedule u WHERE u.status = :status OR u.status = 'REQUEST' OR u.status = 'APPROVE' OR u.status = 'REJECTED' AND u.is_delete <> 1 ORDER BY u.id DESC ;", nativeQuery = true)
         Page<Schedule> findOneScheduleByStatus(@Param("status") String schedule, Pageable pageable);
 
-        @Query(value = "SELECT * FROM inspection_schedule u INNER JOIN users us ON u.user_id=us.id WHERE us.fullname LIKE %:name% AND u.status = :status OR u.status = 'REQUEST' OR u.status = 'APPROVE' OR u.status = 'REJECTED' AND u.is_delete <> 1 ORDER BY u.id DESC ;", nativeQuery = true)
+        @Query(value = "SELECT * FROM inspection_schedule u INNER JOIN users us ON u.user_id=us.id WHERE us.fullname LIKE %:name% AND (u.status = :status OR u.status = 'REQUEST' OR u.status = 'APPROVE' OR u.status = 'REJECTED') AND u.is_delete <> 1 ORDER BY u.id DESC ;", nativeQuery = true)
         Page<Schedule> findOneScheduleByStatusAndName(@Param("status") String schedule,@Param("name") String name ,Pageable pageable);
+
+        @Query(value = "SELECT * FROM inspection_schedule u INNER JOIN users us ON u.user_id=us.id WHERE us.fullname LIKE %:name% AND (u.status = :status OR u.status = 'REQUEST' OR u.status = 'APPROVE' OR u.status = 'REJECTED') AND (u.start_date BETWEEN :start_date AND :end_date OR u.end_date BETWEEN :start_date AND :end_date) AND u.is_delete <> 1 ORDER BY u.id DESC ;", nativeQuery = true)
+        Page<Schedule> findOneScheduleByStatusAndNameAndDate(@Param("status") String schedule,@Param("name") String name ,@Param("start_date") Date start_date,
+        @Param("end_date") Date end_date,Pageable pageable);
+
+        @Query(value = "SELECT * FROM inspection_schedule u INNER JOIN users us ON u.user_id=us.id WHERE us.fullname LIKE %:name% AND (u.status = :status OR u.status = 'REQUEST' OR u.status = 'APPROVE' OR u.status = 'REJECTED') AND (u.start_date BETWEEN :start_date AND :end_date OR u.end_date BETWEEN :start_date AND :end_date) AND u.branch_id = :branchId AND u.is_delete <> 1 ORDER BY u.id DESC ;", nativeQuery = true)
+        Page<Schedule> findOneScheduleByStatusAndFilterAll(@Param("status") String schedule,@Param("name") String name ,@Param("start_date") Date start_date,@Param("end_date") Date end_date,@Param("branchId") Long id,Pageable pageable);
 
         @Query(value = "SELECT * FROM inspection_schedule u INNER JOIN users us ON u.user_id=us.id WHERE us.fullname LIKE %:name% AND u.branch_id = :branchId AND (u.status = :status OR u.status = 'REQUEST' OR u.status = 'APPROVE' OR u.status = 'REJECTED') AND u.is_delete <> 1 ORDER BY u.id DESC ;", nativeQuery = true)
         Page<Schedule> findOneScheduleByStatusAndNameAndBranchId(@Param("status") String schedule,@Param("name") String name,@Param("branchId") Long id,Pageable pageable);

@@ -1,8 +1,13 @@
 HELP.md
 target/
-.xlsx
-.pdf
 
+# uploaded/bap/*
+# uploaded/clarification/*
+# uploaded/followup/*
+# uploaded/kka/*
+# uploaded/report/*
+
+!image/
 !.mvn/wrapper/maven-wrapper.jar
 !*/src/main/*/target/
 !*/src/test/*/target/

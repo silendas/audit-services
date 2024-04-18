@@ -1,5 +1,6 @@
 package com.cms.audit.api.Common.pdf;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.net.MalformedURLException;
 import java.util.Date;
@@ -27,9 +28,11 @@ import com.itextpdf.layout.property.TextAlignment;
 import com.itextpdf.layout.property.VerticalAlignment;
 
 public class GeneratePdf {
+        @SuppressWarnings("resource")
         public static PDFResponse generateClarificationPDF(Clarification response, String formulir)
                         throws FileNotFoundException, MalformedURLException {
-                String fileName = randomValueNumber.randomNumberGenerator() + response.getUser().getInitial_name()+ "-" + response.getReport_number()+ "-clarification.pdf";
+                String fileName = randomValueNumber.randomNumberGenerator() + response.getUser().getInitial_name() + "-"
+                                + response.getReport_number() + "-clarification.pdf";
                 String path = FolderPath.FOLDER_PATH_CLARIFICATION + fileName;
                 PdfWriter pdfWriter = new PdfWriter(path);
                 PdfDocument pdfDocument = new PdfDocument(pdfWriter);
@@ -39,8 +42,19 @@ public class GeneratePdf {
                 // convert date to string
                 String dateNow = convertDateToRoman.convertDateToString(new Date());
 
-                String imagePath = "image\\logo.png";
-                ImageData imageData = ImageDataFactory.create(imagePath);
+                String imagePath = "image/logo.png";
+                File imageFile = new File(imagePath);
+
+                // Mengecek apakah file gambar ada
+                if (!imageFile.exists()) {
+                        throw new FileNotFoundException("File gambar tidak ditemukan: " + imagePath);
+                }
+
+                // Menggunakan Path dari File untuk mendapatkan path absolut
+                String absoluteImagePath = imageFile.getAbsolutePath();
+
+                // Membuat ImageData dari path gambar absolut
+                ImageData imageData = ImageDataFactory.create(absoluteImagePath);
                 Image image = new Image(imageData);
                 image.scaleAbsolute(70, 40);
 
@@ -350,9 +364,11 @@ public class GeneratePdf {
                                 .build();
         }
 
-        public static PDFResponse generateFollowUpPDF(FollowUp response) throws FileNotFoundException, MalformedURLException {
-                String fileName = randomValueNumber.randomNumberGenerator() + response.getClarification().getUser().getInitial_name()
-                + "-followup.pdf";
+        public static PDFResponse generateFollowUpPDF(FollowUp response)
+                        throws FileNotFoundException, MalformedURLException {
+                String fileName = randomValueNumber.randomNumberGenerator()
+                                + response.getClarification().getUser().getInitial_name()
+                                + "-followup.pdf";
                 String path = FolderPath.FOLDER_PATH_UPLOAD_FOLLOW_UP + fileName;
                 PdfWriter pdfWriter = new PdfWriter(path);
                 PdfDocument pdfDocument = new PdfDocument(pdfWriter);
@@ -392,7 +408,9 @@ public class GeneratePdf {
                 Table body1 = new Table(body1Lenght).setHorizontalAlignment(HorizontalAlignment.LEFT);
                 body1.addCell(new Cell().add(
                                 "Menindaklanjuti dari hasil Hasil temuan Auditor Internal, sesuai dengan klarifikasi Nomor : "
-                                                + response.getClarification().getCode() + " tanggal " + convertDateToRoman.convertDateToString(new Date()) + " " + response.getClarification().getLocation() + " perihal : ")
+                                                + response.getClarification().getCode() + " tanggal "
+                                                + convertDateToRoman.convertDateToString(new Date()) + " "
+                                                + response.getClarification().getLocation() + " perihal : ")
                                 .setFontSize(8).setBorder(Border.NO_BORDER));
                 body.addCell(new Cell().add(body1).setBorder(Border.NO_BORDER));
 
@@ -446,57 +464,69 @@ public class GeneratePdf {
                 document.add(blank1);
                 // blank line
 
-                //section 7
+                // section 7
                 float body5Lenght[] = { 540f };
                 Table body5 = new Table(body5Lenght).setHorizontalAlignment(HorizontalAlignment.LEFT);
-                body5.addCell(new Cell().add("Dengan penjelasan :").setBold().setBorder(Border.NO_BORDER).setFontSize(7));
+                body5.addCell(new Cell().add("Dengan penjelasan :").setBold().setBorder(Border.NO_BORDER)
+                                .setFontSize(7));
                 body5.addCell(new Cell().add("").setBorder(Border.NO_BORDER).setHeight(140).setFontSize(7));
-                body5.addCell(new Cell().add(".............. , ...... ........... 2024").setBorder(Border.NO_BORDER).setFontSize(7));
+                body5.addCell(new Cell().add(".............. , ...... ........... 2024").setBorder(Border.NO_BORDER)
+                                .setFontSize(7));
                 body5.addCell(new Cell().add("").setBorder(Border.NO_BORDER).setHeight(40));
-                body5.addCell(new Cell().add("(............................................)").setBorderLeft(Border.NO_BORDER).setBorderRight(Border.NO_BORDER).setBorderTop(Border.NO_BORDER).setFontSize(7));
+                body5.addCell(new Cell().add("(............................................)")
+                                .setBorderLeft(Border.NO_BORDER).setBorderRight(Border.NO_BORDER)
+                                .setBorderTop(Border.NO_BORDER).setFontSize(7));
                 body5.addCell(new Cell().add("" + "").setBorder(Border.NO_BORDER).setFontSize(7).setHeight(40));
                 body.addCell(new Cell().add(body5).setBorder(Border.NO_BORDER));
-                //section 7
+                // section 7
 
                 float body6Lenght[] = { 540f };
                 Table body6 = new Table(body6Lenght).setHorizontalAlignment(HorizontalAlignment.LEFT);
                 body6.addCell(new Cell().add("Lampiran :").setBold().setFontSize(7).setBorder(Border.NO_BORDER));
-                body6.addCell(new Cell().add("Photo Copy sangsi administrasi berupa :").setBold().setFontSize(7).setBorder(Border.NO_BORDER));
+                body6.addCell(new Cell().add("Photo Copy sangsi administrasi berupa :").setBold().setFontSize(7)
+                                .setBorder(Border.NO_BORDER));
                 float nestedbody6llenght[] = { 18f, 25f, 18f, 25f, 18f, 25f, 18f, 25f, 18f, 350f };
                 Table nested6 = new Table(nestedbody6llenght);
-                if(response.getPenalty().getId() == 1){
+                if (response.getPenalty().getId() == 1) {
                         nested6.addCell(new Cell().add("").setBackgroundColor(Color.RED));
                 } else {
                         nested6.addCell(new Cell().add(""));
                 }
                 nested6.addCell(new Cell().add("ST").setBorder(Border.NO_BORDER).setFontSize(7).setBold());
-                if(response.getPenalty().getId() == 2){
+                if (response.getPenalty().getId() == 2) {
                         nested6.addCell(new Cell().add("").setBackgroundColor(Color.RED));
                 } else {
                         nested6.addCell(new Cell().add(""));
                 }
                 nested6.addCell(new Cell().add("SP 1").setBorder(Border.NO_BORDER).setFontSize(7).setBold());
-                if(response.getPenalty().getId() == 3){
+                if (response.getPenalty().getId() == 3) {
                         nested6.addCell(new Cell().add("").setBackgroundColor(Color.RED));
                 } else {
                         nested6.addCell(new Cell().add(""));
                 }
                 nested6.addCell(new Cell().add("SP 2").setBorder(Border.NO_BORDER).setFontSize(7).setBold());
-                if(response.getPenalty().getId() == 4){
+                if (response.getPenalty().getId() == 4) {
                         nested6.addCell(new Cell().add("").setBackgroundColor(Color.RED));
                 } else {
                         nested6.addCell(new Cell().add(""));
                 }
                 nested6.addCell(new Cell().add("SP 3").setBorder(Border.NO_BORDER).setFontSize(7).setBold());
-                if(response.getPenalty().getId() == 5){
+                if (response.getPenalty().getId() == 5) {
                         nested6.addCell(new Cell().add("").setBackgroundColor(Color.RED));
                 } else {
                         nested6.addCell(new Cell().add(""));
                 }
-                nested6.addCell(new Cell().add("Surat Pembebanan/PG").setBorder(Border.NO_BORDER).setFontSize(7).setBold());
+                nested6.addCell(new Cell().add("Surat Pembebanan/PG").setBorder(Border.NO_BORDER).setFontSize(7)
+                                .setBold());
                 body6.addCell(new Cell().add(nested6).setBorder(Border.NO_BORDER));
                 body6.addCell(new Cell().add("").setBorder(Border.NO_BORDER).setHeight(10));
-                body6.addCell(new Cell().add("( Form ini agar diserahkan kembali ke Divisi Pengawasan paling lambat tanggal "+convertDateToRoman.convertDateToString(response.getClarification().getEvaluation_limitation())+" )").setBold().setFontSize(7).setBorder(Border.NO_BORDER).setTextAlignment(TextAlignment.CENTER));
+                body6.addCell(new Cell()
+                                .add("( Form ini agar diserahkan kembali ke Divisi Pengawasan paling lambat tanggal "
+                                                + convertDateToRoman.convertDateToString(
+                                                                response.getClarification().getEvaluation_limitation())
+                                                + " )")
+                                .setBold().setFontSize(7).setBorder(Border.NO_BORDER)
+                                .setTextAlignment(TextAlignment.CENTER));
                 body.addCell(new Cell().add(body6).setBorder(Border.NO_BORDER));
 
                 parent.addCell(new Cell().add(body).setPadding(5));

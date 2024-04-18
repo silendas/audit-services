@@ -1,7 +1,11 @@
 package com.cms.audit.api.Clarifications.service;
 
-import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import org.apache.tomcat.util.http.fileupload.impl.IOFileUploadException;
 import org.hibernate.exception.DataException;
@@ -40,7 +44,6 @@ import com.cms.audit.api.Management.Office.BranchOffice.repository.BranchReposit
 import com.cms.audit.api.Management.ReportType.models.ReportType;
 import com.cms.audit.api.Management.ReportType.repository.ReportTypeRepository;
 import com.cms.audit.api.Management.User.models.User;
-import com.cms.audit.api.Management.User.repository.UserRepository;
 import com.cms.audit.api.NewsInspection.models.NewsInspection;
 import com.cms.audit.api.NewsInspection.repository.NewsInspectionRepository;
 
@@ -52,9 +55,6 @@ public class ClarificationService {
 
         @Autowired
         private FileStorageService fileStorageService;
-
-        @Autowired
-        private UserRepository userRepository;
 
         @Autowired
         private ReportTypeRepository reportTypeRepository;
@@ -80,17 +80,19 @@ public class ClarificationService {
                 try {
                         Page<Clarification> response;
                         if (branchId != null && name != null && start_date != null && end_date != null) {
-                                String likeName = "%" +name+"%";
+                                String likeName = name;
                                 response = pag.findByAllFilter(likeName, start_date, end_date, PageRequest.of(page, size));
                         } else if (branchId != null) {
                                 if (start_date != null && end_date != null) {
                                         response = pag.findByBranchIdByDate(branchId, start_date, end_date, PageRequest.of(page, size));
+                                } else if(name != null){
+                                        response = pag.findByFullnameLikeAndBranch(name, branchId, PageRequest.of(page, size));
                                 } else {
                                         response = pag.findByBranchId(branchId,
                                                         PageRequest.of(page, size));
                                 }
                         } else if (name != null) {
-                                String likeName = "%" +name+"%";
+                                String likeName = name;
                                 if (start_date != null && end_date != null) {
                                         response = pag.findByFullnameLikeByDate(likeName, start_date, end_date, PageRequest.of(page, size));
                                 } else {
@@ -183,10 +185,12 @@ public class ClarificationService {
                                 return GlobalResponse
                                                 .builder()
                                                 .message("Data not found")
-                                                .status(HttpStatus.OK)
+                                                .status(HttpStatus.BAD_REQUEST)
                                                 .build();
                         }
                         Map<String, Object> clarification = new LinkedHashMap<>();
+                        clarification.put("id", response.getId());
+
 
                         Map<String, Object> user = new LinkedHashMap<>();
                         user.put("id", response.getUser().getId());
@@ -223,8 +227,12 @@ public class ClarificationService {
                         clarification.put("evaluation", response.getEvaluation());
                         clarification.put("status", response.getStatus());
                         clarification.put("nominal_loss", response.getNominal_loss());
-                        clarification.put("evaluation_limitation",
+                        if(response.getEvaluation_limitation() == null){
+                                clarification.put("evaluation_limitation",null);
+                        } else {
+                                clarification.put("evaluation_limitation",
                                         convertDateToRoman.convertDateToString(response.getEvaluation_limitation()));
+                        }
                         clarification.put("is_follow_up", response.getIs_follow_up());
                         if (response.getFilename() == null) {
                                 clarification.put("is_flag", 1);
@@ -396,7 +404,7 @@ public class ClarificationService {
                                 return GlobalResponse
                                                 .builder()
                                                 .message("Data not found")
-                                                .status(HttpStatus.OK)
+                                                .status(HttpStatus.BAD_REQUEST)
                                                 .build();
                         }
 
@@ -452,11 +460,20 @@ public class ClarificationService {
                         clarification2.setFilename(generatePDF.fileName);
                         clarification2.setFile_path(generatePDF.filePath);
 
-                        repository.save(clarification2);
+                        Clarification getResponse = repository.save(clarification2);
+
+                        Map<String,Object> returnResponse = new LinkedHashMap<>();
+                        Map<String,Object> mappingRes = new LinkedHashMap<>();
+                        mappingRes.put("id", getResponse.getId()); 
+                        mappingRes.put("file_name", getResponse.getFilename()); 
+                        mappingRes.put("file_path", getResponse.getFile_path()); 
+
+                        returnResponse.put("clarification", mappingRes); 
 
                         return GlobalResponse
                                         .builder()
                                         .message("Success")
+                                        .data(returnResponse)
                                         .status(HttpStatus.OK)
                                         .build();
                 } catch (DataException e) {
@@ -520,6 +537,8 @@ public class ClarificationService {
 
                         Long reportNumber = null;
                         String rptNum = null;
+                        
+                        Map<String,Object> returnResponse = new LinkedHashMap<>();
 
                         if (!dto.getNominal_loss().isEmpty() || dto.getNominal_loss() != "") {
 
@@ -564,6 +583,7 @@ public class ClarificationService {
                                 NewsInspection newsInspection = new NewsInspection(
                                                 null,
                                                 setUserId,
+                                                response.getBranch(),
                                                 setClarificationId,
                                                 reportType.get(),
                                                 null,
@@ -573,7 +593,13 @@ public class ClarificationService {
                                                 new Date(),
                                                 new Date());
 
-                                newsInspectionRepository.save(newsInspection);
+                                NewsInspection getResponse = newsInspectionRepository.save(newsInspection);
+
+                                Map<String,Object> mappingFU = new LinkedHashMap<>();
+                                mappingFU.put("id", getResponse.getId()); 
+                                mappingFU.put("code", getResponse.getCode()); 
+
+                                returnResponse.put("bap", mappingFU); 
                         }
 
                         if (dto.getIs_followup() != 0 || dto.getIs_followup() != null
@@ -619,6 +645,7 @@ public class ClarificationService {
 
                                 FollowUp followUp = new FollowUp();
                                 followUp.setClarification(setClarificationId);
+                                followUp.setBranch(response.getBranch());
                                 followUp.setUser(setUserId);
                                 followUp.setReportType(reportType2.get());
                                 followUp.setReport_number(reportNumber);
@@ -632,6 +659,7 @@ public class ClarificationService {
                         return GlobalResponse
                                         .builder()
                                         .message("Success")
+                                        .data(returnResponse)
                                         .status(HttpStatus.OK)
                                         .build();
                 } catch (Exception e) {

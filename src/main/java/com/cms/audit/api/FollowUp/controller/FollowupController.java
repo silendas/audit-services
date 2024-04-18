@@ -32,86 +32,129 @@ import com.cms.audit.api.FollowUp.models.FollowUp;
 import com.cms.audit.api.FollowUp.service.FollowupService;
 import org.springframework.web.bind.annotation.RequestBody;
 
-
 @RestController
 @Validated
 @RequestMapping(value = BasePath.BASE_PATH_FOLLOW_UP)
 public class FollowupController {
 
-    @Autowired
-    private FollowupService service;
+        @Autowired
+        private FollowupService service;
 
-    @GetMapping
-    public ResponseEntity<Object> getAll(
-            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Optional<Date> start_date,
-            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Optional<Date> end_date,
-            @RequestParam("page") Optional<Integer> page,
-            @RequestParam("size") Optional<Integer> size) {
-        GlobalResponse response = service.getAll(page.orElse(0), size.orElse(10), start_date.orElse(null),
-                end_date.orElse(null));
-        return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(),
-                response.getError());
-    }
+        @GetMapping
+        public ResponseEntity<Object> getAll(
+                        @RequestParam(required = false) Optional<String> name,
+                        @RequestParam(required = false) Optional<Long> branch_id,
+                        @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Optional<Date> start_date,
+                        @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Optional<Date> end_date,
+                        @RequestParam("page") Optional<Integer> page,
+                        @RequestParam("size") Optional<Integer> size) {
+                Long branchId;
+                if (branch_id.isPresent()) {
+                        if (branch_id.get().toString() != "") {
+                                branchId = branch_id.get();
+                        } else {
+                                branchId = null;
+                        }
+                } else {
+                        branchId = null;
+                }
+                String fullname;
+                if (name.isPresent()) {
+                        if (name.get().toString() != "") {
+                                fullname = name.get();
+                        } else {
+                                fullname = null;
+                        }
+                } else {
+                        fullname = null;
+                }
+                Date startDate;
+                if (start_date.isPresent()) {
+                        if (start_date.get().toString() != "") {
+                                startDate = start_date.get();
+                        } else {
+                                startDate = null;
+                        }
+                } else {
+                        startDate = null;
+                }
+                Date endDate;
+                if (end_date.isPresent()) {
+                        if (end_date.get().toString() != "") {
+                                endDate = end_date.get();
+                        } else {
+                                endDate = null;
+                        }
+                } else {
+                        endDate = null;
+                }
+                GlobalResponse response = service.getAll(fullname,branchId,page.orElse(0), size.orElse(10), startDate,endDate);
+                return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(),
+                                response.getStatus(),
+                                response.getError());
+        }
 
-    @GetMapping("{id}")
-    public ResponseEntity<Object> getOne(
-            @PathVariable("id") Long id) {
-        GlobalResponse response = service.getOne(id);
-        return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(),
-                response.getError());
-    }
+        @GetMapping("{id}")
+        public ResponseEntity<Object> getOne(
+                        @PathVariable("id") Long id) {
+                GlobalResponse response = service.getOne(id);
+                return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(),
+                                response.getStatus(),
+                                response.getError());
+        }
 
-    @GetMapping("/file/{fileName}")
-    public ResponseEntity<InputStreamResource> getFileName(@PathVariable("fileName") String fileName)
-            throws IOException {
-        FollowUp response = service.downloadFile(fileName);
-        String path = response.getFilePath();
-        File file = new File(path);
-        InputStream inputStream = new FileInputStream(file);
-        InputStreamResource isr = new InputStreamResource(inputStream);
+        @GetMapping("/file/{fileName}")
+        public ResponseEntity<InputStreamResource> getFileName(@PathVariable("fileName") String fileName)
+                        throws IOException {
+                FollowUp response = service.downloadFile(fileName);
+                String path = response.getFilePath();
+                File file = new File(path);
+                InputStream inputStream = new FileInputStream(file);
+                InputStreamResource isr = new InputStreamResource(inputStream);
 
-        HttpHeaders httpHeaders = new HttpHeaders();
+                HttpHeaders httpHeaders = new HttpHeaders();
 
-        httpHeaders.setContentType(MediaType.valueOf("application/pdf"));
-        httpHeaders.set("Content-Disposition", "inline; filename=" + response.getFilename());
+                httpHeaders.setContentType(MediaType.valueOf("application/pdf"));
+                httpHeaders.set("Content-Disposition", "inline; filename=" + response.getFilename());
 
-        return new ResponseEntity<InputStreamResource>(isr, httpHeaders, HttpStatus.OK);
-    }
+                return new ResponseEntity<InputStreamResource>(isr, httpHeaders, HttpStatus.OK);
+        }
 
-    @GetMapping("/download/{fileName}")
-    public ResponseEntity<InputStreamResource> download(@PathVariable("fileName") String fileName)
-            throws IOException {
-        FollowUp response = service.downloadFile(fileName);
-        String path = response.getFilePath();
-        File file = new File(path);
-        InputStream inputStream = new FileInputStream(file);
-        InputStreamResource isr = new InputStreamResource(inputStream);
+        @GetMapping("/download/{fileName}")
+        public ResponseEntity<InputStreamResource> download(@PathVariable("fileName") String fileName)
+                        throws IOException {
+                FollowUp response = service.downloadFile(fileName);
+                String path = response.getFilePath();
+                File file = new File(path);
+                InputStream inputStream = new FileInputStream(file);
+                InputStreamResource isr = new InputStreamResource(inputStream);
 
-        HttpHeaders httpHeaders = new HttpHeaders();
+                HttpHeaders httpHeaders = new HttpHeaders();
 
-        httpHeaders.setContentType(MediaType.valueOf("application/pdf"));
-        httpHeaders.set("Content-Disposition", "attachment; filename=" + response.getFilename());
+                httpHeaders.setContentType(MediaType.valueOf("application/pdf"));
+                httpHeaders.set("Content-Disposition", "attachment; filename=" + response.getFilename());
 
-        return ResponseEntity.ok()
-                .headers(httpHeaders)
-                .contentLength(file.length())
-                .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                .body(isr);
-    }
+                return ResponseEntity.ok()
+                                .headers(httpHeaders)
+                                .contentLength(file.length())
+                                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                                .body(isr);
+        }
 
-    @PostMapping
-    public ResponseEntity<Object> save(@RequestBody FollowUpDTO dto) {
-        GlobalResponse response = service.save(dto);
-        return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(), response.getError());
-    }
-    
+        @PostMapping
+        public ResponseEntity<Object> save(@RequestBody FollowUpDTO dto) {
+                GlobalResponse response = service.save(dto);
+                return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(),
+                                response.getStatus(), response.getError());
+        }
 
-    @PostMapping(value = "/file")
-    public ResponseEntity<Object> upload(@RequestParam(value = "file", required = false) MultipartFile file,
-            @ModelAttribute("id") Long id) {
-        GlobalResponse response = service.uploadFile(file, id);
-        return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(),
-                response.getError());
-    }
+        @PostMapping(value = "/file")
+        public ResponseEntity<Object> upload(@RequestParam(value = "file", required = false) MultipartFile file,
+                        @ModelAttribute("id") Long id) {
+                GlobalResponse response = service.uploadFile(file, id);
+                return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(),
+                                response.getStatus(),
+                                response.getError());
+        }
 
 }

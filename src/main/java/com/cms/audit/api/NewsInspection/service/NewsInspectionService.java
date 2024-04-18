@@ -1,6 +1,5 @@
 package com.cms.audit.api.NewsInspection.service;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashMap;
@@ -8,24 +7,23 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.apache.coyote.BadRequestException;
 import org.apache.tomcat.util.http.fileupload.impl.IOFileUploadException;
 import org.hibernate.exception.DataException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.cms.audit.api.Clarifications.repository.ClarificationRepository;
 import com.cms.audit.api.Common.constant.FileStorageBAP;
-import com.cms.audit.api.Common.constant.FileStorageService;
 import com.cms.audit.api.Common.constant.FolderPath;
 import com.cms.audit.api.Common.constant.convertDateToRoman;
-import com.cms.audit.api.Common.constant.randomValueNumber;
-import com.cms.audit.api.Common.exception.ResourceNotFoundException;
 import com.cms.audit.api.Common.response.GlobalResponse;
+import com.cms.audit.api.Management.User.models.User;
 import com.cms.audit.api.NewsInspection.models.NewsInspection;
 import com.cms.audit.api.NewsInspection.repository.NewsInspectionRepository;
 import com.cms.audit.api.NewsInspection.repository.PagNewsInspection;
@@ -43,20 +41,40 @@ public class NewsInspectionService {
     private NewsInspectionRepository repository;
 
     @Autowired
-    private ClarificationRepository clarificationRepository;
-
-    @Autowired
     private PagNewsInspection pag;
 
     private final String FOLDER_PATH = FolderPath.FOLDER_PATH_UPLOAD_BAP;
 
-    public GlobalResponse getAll(int page, int size, Date start_date, Date end_date) {
+    public GlobalResponse getAll(String name, Long branch, int page, int size, Date start_date, Date end_date) {
         try {
-            Page<NewsInspection> response;
-            if (start_date == null || end_date == null) {
-                response = pag.findAll(PageRequest.of(page, size));
-            } else {
+            User getUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            Page<NewsInspection> response = null;
+            if (name != null && branch != null && start_date != null && end_date != null) {
+                if (getUser.getLevel().getId() == 1) {
+                    response = pag.findBAPInAllFilter(name, branch, start_date, end_date, PageRequest.of(page, size));
+                } else if (getUser.getLevel().getId() == 2) {
+                    response = pag.findBAPInAllFilter(name, branch, start_date, end_date, PageRequest.of(page, size));
+                } else if (getUser.getLevel().getId() == 3) {
+                    response = pag.findBAPInUserid(getUser.getId(),  PageRequest.of(page, size));
+                }
+            } else if (name != null) {
+                if (branch != null) {
+                    response = pag.findBAPInNameAndBranch(name, branch, PageRequest.of(page, size));
+                } else if (start_date != null && end_date != null) {
+                    response = pag.findBAPInNameAndDate(name, start_date, end_date, PageRequest.of(page, size));
+                } else {
+                    response = pag.findBAPInName(name, PageRequest.of(page, size));
+                }
+            } else if (branch != null) {
+                if (start_date != null && end_date != null) {
+                    response = pag.findBAPInBranchAndDate(branch, start_date, end_date, PageRequest.of(page, size));
+                } else {
+                    response = pag.findBAPInBranch(branch, PageRequest.of(page, size));
+                }
+            } else if (start_date != null && end_date != null) {
                 response = pag.findBAPInDateRange(start_date, end_date, PageRequest.of(page, size));
+            } else {
+                response = pag.findAll(PageRequest.of(page, size));
             }
             List<Object> listBAP = new ArrayList<>();
             for (int i = 0; i < response.getContent().size(); i++) {
@@ -134,6 +152,10 @@ public class NewsInspectionService {
     public GlobalResponse getOneById(Long id) {
         try {
             Optional<NewsInspection> response = repository.findById(id);
+            if (!response.isPresent()) {
+                return GlobalResponse.builder().message("BAP with id:" + id + " is not foudn")
+                        .status(HttpStatus.BAD_REQUEST).build();
+            }
             NewsInspection bap = response.get();
             Map<String, Object> kkaMap = new LinkedHashMap<>();
             kkaMap.put("id", bap.getId());
@@ -193,7 +215,7 @@ public class NewsInspectionService {
     public GlobalResponse uploadFile(MultipartFile file, Long id) {
         try {
             NewsInspection getBAP = repository.findById(id)
-                    .orElseThrow(() -> new ResourceNotFoundException("BAP with id: " + id + " is undefined"));
+                    .orElseThrow(() -> new BadRequestException("BAP with id: " + id + " is undefined"));
 
             // String fileName = randomValueNumber.randomNumberGenerator() + "-" +
             // file.getOriginalFilename();
@@ -238,7 +260,7 @@ public class NewsInspectionService {
 
     public NewsInspection downloadFile(String fileName) throws java.io.IOException, IOFileUploadException {
         NewsInspection response = repository.findByFileName(fileName)
-                .orElseThrow(() -> new ResourceNotFoundException("File not found with name: " + fileName));
+                .orElseThrow(() -> new BadRequestException("File not found with name: " + fileName));
         return response;
     }
 

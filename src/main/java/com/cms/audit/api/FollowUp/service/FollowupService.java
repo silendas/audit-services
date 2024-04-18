@@ -7,6 +7,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.coyote.BadRequestException;
 import org.apache.tomcat.util.http.fileupload.impl.IOFileUploadException;
 import org.hibernate.exception.DataException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,14 +18,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.cms.audit.api.AuditWorkingPaper.models.AuditWorkingPaper;
-import com.cms.audit.api.Clarifications.models.Clarification;
 import com.cms.audit.api.Common.constant.FileStorageFU;
-import com.cms.audit.api.Common.constant.FileStorageService;
 import com.cms.audit.api.Common.constant.FolderPath;
 import com.cms.audit.api.Common.constant.convertDateToRoman;
-import com.cms.audit.api.Common.constant.randomValueNumber;
-import com.cms.audit.api.Common.exception.ResourceNotFoundException;
 import com.cms.audit.api.Common.pdf.GeneratePdf;
 import com.cms.audit.api.Common.response.GlobalResponse;
 import com.cms.audit.api.Common.response.PDFResponse;
@@ -33,10 +29,10 @@ import com.cms.audit.api.FollowUp.models.EStatusFollowup;
 import com.cms.audit.api.FollowUp.models.FollowUp;
 import com.cms.audit.api.FollowUp.repository.FollowUpRepository;
 import com.cms.audit.api.FollowUp.repository.PagFollowup;
+import com.cms.audit.api.Management.Office.BranchOffice.models.Branch;
+import com.cms.audit.api.Management.Office.BranchOffice.repository.BranchRepository;
 import com.cms.audit.api.Management.Penalty.models.Penalty;
 import com.cms.audit.api.Management.Penalty.repository.PenaltyRepository;
-import com.cms.audit.api.NewsInspection.models.NewsInspection;
-import com.cms.audit.api.FollowUp.models.FollowUp;
 
 import jakarta.transaction.Transactional;
 
@@ -50,6 +46,9 @@ public class FollowupService {
     private FileStorageFU fileStorageService;
 
     @Autowired
+    private BranchRepository branchRepository;
+
+    @Autowired
     private PagFollowup pagination;
 
     @Autowired
@@ -57,13 +56,29 @@ public class FollowupService {
 
     private final String FOLDER_PATH = FolderPath.FOLDER_PATH_UPLOAD_FOLLOW_UP;
 
-    public GlobalResponse getAll(int page, int size, Date start_date, Date end_date) {
+    public GlobalResponse getAll(String name, Long branch, int page, int size, Date start_date, Date end_date) {
         try {
-            Page<FollowUp> response;
-            if (start_date == null || end_date == null) {
-                response = pagination.findAll(PageRequest.of(page, size));
-            } else {
+            Page<FollowUp> response = null;
+            if ( name !=null && branch != null && start_date != null && end_date != null) {
+                response = pagination.findFollowUpInAllFilter(name, branch, start_date, end_date, PageRequest.of(page, size));
+            } else if (name != null) {
+                if (branch != null) {
+                    response = pagination.findFollowUpInNameAndBranch(name, branch,PageRequest.of(page, size));
+                } else if (start_date != null && end_date != null) {
+                    response = pagination.findFollowUpInNameAndDate(name, start_date, end_date, PageRequest.of(page, size));
+                } else {
+                    response =  pagination.findFollowUpInName(name, PageRequest.of(page, size));
+                }
+            } else if (branch != null) {
+                if (start_date != null && end_date != null) {
+                    response = pagination.findFollowUpInBranchAndDateRange(branch, start_date, end_date, PageRequest.of(page, size));
+                } else {
+                    response =  pagination.findFollowUpInBranch(branch, PageRequest.of(page, size));
+                }
+            } else if (start_date != null || end_date != null) {
                 response = pagination.findFollowUpInDateRange(start_date, end_date, PageRequest.of(page, size));
+            } else {
+                response = pagination.findAll(PageRequest.of(page, size));
             }
             List<Object> listFU = new ArrayList<>();
             for (int i = 0; i < response.getContent().size(); i++) {
@@ -141,7 +156,7 @@ public class FollowupService {
     public GlobalResponse getOne(Long id) {
         try {
             FollowUp response = repository.findById(id)
-                    .orElseThrow(() -> new ResourceNotFoundException("Followup with id: " + id + " not found "));
+                    .orElseThrow(() -> new BadRequestException("Followup with id: " + id + " not found "));
             FollowUp fu = response;
             Map<String, Object> fuMap = new LinkedHashMap<>();
             fuMap.put("id", fu.getId());
@@ -192,15 +207,19 @@ public class FollowupService {
 
     public GlobalResponse save(FollowUpDTO dto) {
         try {
-            FollowUp get = repository.findById(dto.getFollowup_id()).orElseThrow(() -> new ResourceNotFoundException(
+            FollowUp get = repository.findById(dto.getFollowup_id()).orElseThrow(() -> new BadRequestException(
                     "Follow up with id: " + dto.getFollowup_id() + " is not found"));
 
+            Branch branch = branchRepository.findById(dto.getBranch_id())
+                    .orElseThrow(() -> new BadRequestException(
+                            "Branch with id: " + dto.getBranch_id() + " is not found"));
             Penalty penalty = penaltyRepository.findById(dto.getPenalty_id())
-                    .orElseThrow(() -> new ResourceNotFoundException(
+                    .orElseThrow(() -> new BadRequestException(
                             "Follow up with id: " + dto.getFollowup_id() + " is not found"));
 
             FollowUp followUp = get;
             followUp.setPenalty(penalty);
+            followUp.setBranch(branch);
             followUp.setDescription(dto.getDescription());
             followUp.setFilename(null);
             followUp.setFilePath(null);
@@ -239,7 +258,7 @@ public class FollowupService {
     public GlobalResponse uploadFile(MultipartFile file, Long id) {
         try {
             FollowUp getFollowUp = repository.findById(id)
-                    .orElseThrow(() -> new ResourceNotFoundException("followUp with id: " + id + " is undefined"));
+                    .orElseThrow(() -> new BadRequestException("followUp with id: " + id + " is undefined"));
 
             // String fileName = randomValueNumber.randomNumberGenerator() + "-" +
             // file.getOriginalFilename();
@@ -284,7 +303,7 @@ public class FollowupService {
 
     public FollowUp downloadFile(String fileName) throws java.io.IOException, IOFileUploadException {
         FollowUp response = repository.findByFilename(fileName)
-                .orElseThrow(() -> new ResourceNotFoundException("File not found with name: " + fileName));
+                .orElseThrow(() -> new BadRequestException("File not found with name: " + fileName));
         return response;
     }
 }

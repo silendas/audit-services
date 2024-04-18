@@ -24,6 +24,7 @@ import com.cms.audit.api.AuditDailyReport.repository.AuditDailyReportDetailRepos
 import com.cms.audit.api.AuditDailyReport.repository.AuditDailyReportRepository;
 import com.cms.audit.api.AuditWorkingPaper.models.AuditWorkingPaper;
 import com.cms.audit.api.AuditWorkingPaper.repository.AuditWorkingPaperRepository;
+import com.cms.audit.api.Common.constant.convertDateToRoman;
 import com.cms.audit.api.Common.exception.ResourceNotFoundException;
 import com.cms.audit.api.Common.response.GlobalResponse;
 import com.cms.audit.api.InspectionSchedule.dto.EditScheduleDTO;
@@ -70,6 +71,67 @@ public class ScheduleService {
 
         @Autowired
         private ScheduleTrxRepo scheduleTrxRepo;
+
+        public GlobalResponse getReschedule(String name, Long branch_id, int page, int size, Date start_date,
+                        Date end_date, String status) {
+                try {
+                        Page<Schedule> response = null;
+                        if (branch_id != null && name != null && start_date != null && end_date != null) {
+                                response = pagSchedule.findOneScheduleByStatusAndFilterAll(status, name, start_date,
+                                                end_date, branch_id, PageRequest.of(page, size));
+                        } else if (name != null) {
+                                String likeName = name;
+                                if (start_date != null && end_date != null) {
+                                        response = pagSchedule.findOneScheduleByStatusAndNameAndDate(status, likeName,
+                                                        start_date, end_date, PageRequest.of(page, size));
+                                } else if (branch_id != null) {
+                                        response = pagSchedule.findOneScheduleByStatusAndBranchId(likeName, branch_id,
+                                                        PageRequest.of(page, size));
+                                } else {
+                                        response = pagSchedule.findOneScheduleByStatusAndName(status, likeName,
+                                                        PageRequest.of(page, size));
+                                }
+                        } else if (branch_id != null) {
+                                if (start_date != null && end_date != null) {
+                                        response = pagSchedule.findOneScheduleByStatusAndDateAndBranch(status,
+                                                        branch_id, start_date, end_date, PageRequest.of(page, size));
+                                } else {
+                                        response = pagSchedule.findOneScheduleByStatusAndBranchId(status, branch_id,
+                                                        PageRequest.of(page, size));
+                                }
+                        } else if (start_date != null && end_date != null) {
+                                response = pagSchedule.findOneScheduleByStatusAndDate(status, start_date, end_date,
+                                                PageRequest.of(page, size));
+                        } else {
+                                response = pagSchedule.findOneScheduleByStatus(status, PageRequest.of(page, size));
+                        }
+                        if (response.isEmpty()) {
+                                return GlobalResponse
+                                                .builder()
+                                                .message("Data not found")
+                                                .data(null)
+                                                .status(HttpStatus.OK)
+                                                .build();
+                        }
+                        return GlobalResponse
+                                        .builder()
+                                        .message("Success")
+                                        .data(mappingPageSchedule(response))
+                                        .status(HttpStatus.OK)
+                                        .build();
+                } catch (DataException e) {
+                        return GlobalResponse.builder()
+                                        .error(e)
+                                        .status(HttpStatus.UNPROCESSABLE_ENTITY)
+                                        .build();
+                } catch (Exception e) {
+                        return GlobalResponse.builder()
+                                        .error(e)
+                                        .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                                        .build();
+                }
+
+        }
 
         public GlobalResponse get(String name, Long branch_id, int page, int size, Date start_date, Date end_date,
                         String category) {
@@ -229,7 +291,7 @@ public class ScheduleService {
                                 return getByUserId(user.getId(), "REGULAR", page, size, start_date, end_date);
                         } else if (user.getLevel().getId() == 2) {
                                 if (branch_id != null && name != null && start_date != null && end_date != null) {
-                                        String likeName =name;
+                                        String likeName = name;
                                         Page<Schedule> response = pagSchedule.findAllScheduleByAllFilter(likeName,
                                                         branch_id, "REGULAR", start_date, end_date,
                                                         PageRequest.of(page, size));
@@ -246,8 +308,9 @@ public class ScheduleService {
                                                         getSchedule = repository.findScheduleInDateRangeByUserId(
                                                                         getUser.get(i).getId(), "REGULAR", start_date,
                                                                         end_date);
-                                                } else if(branch_id != null){
-                                                        getSchedule = repository.findAllScheduleByFUllenameAndBranch(name, branch_id, "REGULAR");
+                                                } else if (branch_id != null) {
+                                                        getSchedule = repository.findAllScheduleByFUllenameAndBranch(
+                                                                        name, branch_id, "REGULAR");
                                                 } else {
                                                         getSchedule = repository.findAllScheduleByUserId(
                                                                         getUser.get(i).getId(), "REGULAR");
@@ -279,7 +342,8 @@ public class ScheduleService {
                                                                 .build();
                                         }
                                 } else if (branch_id != null) {
-                                        return getByBranchIdInDate(branch_id, "REGULAR", page, size, start_date,end_date);
+                                        return getByBranchIdInDate(branch_id, "REGULAR", page, size, start_date,
+                                                        end_date);
                                 } else if (start_date != null && end_date != null) {
                                         Page<Schedule> response = pagSchedule.findAllScheduleByAllFilter(name,
                                                         branch_id,
@@ -340,8 +404,9 @@ public class ScheduleService {
                                                         getSchedule = repository.findScheduleInDateRangeByUserId(
                                                                         getUser.get(i).getId(), "SPECIAL", start_date,
                                                                         end_date);
-                                                }else if(branch_id != null){
-                                                        getSchedule = repository.findAllScheduleByFUllenameAndBranch(name, branch_id, "SPECIAL");
+                                                } else if (branch_id != null) {
+                                                        getSchedule = repository.findAllScheduleByFUllenameAndBranch(
+                                                                        name, branch_id, "SPECIAL");
                                                 } else {
                                                         getSchedule = repository.findAllScheduleByUserId(
                                                                         getUser.get(i).getId(), "SPECIAL");
@@ -445,13 +510,13 @@ public class ScheduleService {
 
         }
 
-        public List<Schedule> getByRegionId(Long id, String category, int page, int size, Date start_date,
+        public List<Schedule> getByRegionId(String name,Long branchId,Long regionId, String category, int page, int size, Date start_date,
                         Date end_date) {
                 List<Schedule> response;
-                if (start_date == null || end_date == null) {
-                        response = repository.findByRegionId(id, category);
+                if (start_date != null || end_date != null) {
+                        response = repository.findByRegionId(regionId, category);
                 } else {
-                        response = repository.findScheduleInDateRangeByRegionId(id, category, start_date,
+                        response = repository.findScheduleInDateRangeByRegionId(regionId, category, start_date,
                                         end_date);
                 }
                 return response;
@@ -469,7 +534,7 @@ public class ScheduleService {
                                                 .build();
                         }
                         Map<String, Object> response = new LinkedHashMap<>();
-                        response.put("schedule", mappingSchedule(getSchedule.orElse(null)));
+                        response.put("schedule", mappingSchedule(getSchedule.get()));
 
                         List<AuditDailyReport> getLha = auditDailyReportRepository.findByScheduleId(id);
                         List<Object> listLha = new ArrayList<>();
@@ -534,44 +599,19 @@ public class ScheduleService {
                 }
         }
 
-        public GlobalResponse getByStatus(String name,Long branchId,Date startDate,Date endDate,int page, int size) {
-                try {
-                        User getUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        public GlobalResponse getByStatus(String name, Long branchId, Date startDate, Date endDate, int page,
+                        int size) {
+                User getUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-                        Page<Schedule> response;
-                        if (getUser.getLevel().getId() == 1) {
-                                response = pagSchedule.findOneScheduleByStatus("PENDING",
-                                PageRequest.of(page, size));
-                        } else if (getUser.getLevel().getId() == 2) {
-                                response = pagSchedule.findOneScheduleByStatus("PENDING",
-                                                PageRequest.of(page, size));
-                        } else {
-                                response = null;
-                        }
-                        if (response.isEmpty()) {
-                                return GlobalResponse
-                                                .builder()
-                                                .message("Data not found")
-                                                .data(null)
-                                                .status(HttpStatus.OK)
-                                                .build();
-                        }
-                        return GlobalResponse
-                                        .builder()
-                                        .message("Success")
-                                        .data(mappingPageSchedule(response))
-                                        .status(HttpStatus.OK)
-                                        .build();
-                } catch (DataException e) {
-                        return GlobalResponse.builder()
-                                        .error(e)
-                                        .status(HttpStatus.UNPROCESSABLE_ENTITY)
-                                        .build();
-                } catch (Exception e) {
-                        return GlobalResponse.builder()
-                                        .error(e)
-                                        .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                                        .build();
+                if (getUser.getLevel().getId() == 1) {
+                        return getReschedule(name, branchId, page, size, startDate, endDate, "REQUEST");
+                        // response = pagSchedule.findOneScheduleByStatus("PENDING",
+                        // PageRequest.of(page, size));
+                } else if (getUser.getLevel().getId() == 2) {
+                        return getReschedule(name, branchId, page, size, startDate, endDate, "PENDING");
+                } else {
+                        return GlobalResponse.builder().message("Audit wilayah tidak dapat mengakses").data(null)
+                                        .status(HttpStatus.OK).build();
                 }
 
         }
@@ -599,12 +639,22 @@ public class ScheduleService {
                         mapParent.put("status", response.get(i).getStatus());
                         mapParent.put("category", response.get(i).getCategory());
                         mapParent.put("start_date",
-                                        response.get(i).getStart_date());
+                                        convertDateToRoman.convertDateHehe(response.get(i).getStart_date()));
                         mapParent.put("end_date",
-                                        response.get(i).getEnd_date());
-                        mapParent.put("start_date_realization",
-                                        response.get(i).getStart_date_realization());
-                        mapParent.put("end_date_realization", response.get(i).getEnd_date_realization());
+                                        convertDateToRoman.convertDateHehe(response.get(i).getEnd_date()));
+                        if (response.get(i).getStart_date_realization() == null) {
+                                mapParent.put("start_date_realization", null);
+                        } else {
+                                mapParent.put("start_date_realization",
+                                                convertDateToRoman.convertDateHehe(response.get(i)
+                                                                .getStart_date_realization()));
+                        }
+                        if (response.get(i).getEnd_date_realization() == null) {
+                                mapParent.put("end_date_realization", null);
+                        } else {
+                                mapParent.put("end_date_realization", convertDateToRoman.convertDateHehe(
+                                                response.get(i).getEnd_date_realization()));
+                        }
 
                         listSchedule.add(mapParent);
                 }
@@ -612,32 +662,42 @@ public class ScheduleService {
         }
 
         public Map<String, Object> mappingSchedule(Schedule response) {
-                Map<String, Object> mapParent = new LinkedHashMap<>();
+                Map<String, Object> map = new LinkedHashMap<>();
                 UserResponseOther setUser = new UserResponseOther();
 
-                mapParent.put("id", response.getId());
+                map.put("id", response.getId());
 
                 setUser.setId(response.getUser().getId());
                 setUser.setEmail(response.getUser().getEmail());
                 setUser.setFullname(response.getUser().getFullname());
                 setUser.setInitial_name(response.getUser().getInitial_name());
                 setUser.setNip(response.getUser().getNip());
-                mapParent.put("user", setUser);
+                map.put("user", setUser);
 
                 Map<String, Object> mapBranch = new LinkedHashMap<>();
                 mapBranch.put("id", response.getBranch().getId());
                 mapBranch.put("name", response.getBranch().getName());
-                mapParent.put("branch", mapBranch);
+                map.put("branch", mapBranch);
 
-                mapParent.put("description", response.getDescription());
-                mapParent.put("status", response.getStatus());
-                mapParent.put("category", response.getCategory());
-                mapParent.put("start_date", response.getStart_date());
-                mapParent.put("end_date", response.getEnd_date());
-                mapParent.put("start_date_realization", response.getStart_date_realization());
-                mapParent.put("end_date_realization", response.getEnd_date_realization());
+                map.put("description", response.getDescription());
+                map.put("status", response.getStatus());
+                map.put("category", response.getCategory());
+                map.put("start_date", convertDateToRoman.convertDateHehe(response.getStart_date()));
+                map.put("end_date", convertDateToRoman.convertDateHehe(response.getEnd_date()));
+                if (response.getStart_date_realization() == null) {
+                        map.put("start_date_realization", null);
+                } else {
+                        map.put("start_date_realization",
+                                        convertDateToRoman.convertDateHehe(response.getStart_date_realization()));
+                }
+                if (response.getEnd_date_realization() == null) {
+                        map.put("end_date_realization", null);
+                } else {
+                        map.put("end_date_realization",
+                                        convertDateToRoman.convertDateHehe(response.getEnd_date_realization()));
+                }
 
-                return mapParent;
+                return map;
         }
 
         public Map<String, Object> mappingPageSchedule(Page<Schedule> response) {
@@ -663,11 +723,23 @@ public class ScheduleService {
                         map.put("description", response.getContent().get(i).getDescription());
                         map.put("status", response.getContent().get(i).getStatus());
                         map.put("category", response.getContent().get(i).getCategory());
-                        map.put("start_date", response.getContent().get(i).getStart_date());
-                        map.put("end_date", response.getContent().get(i).getEnd_date());
-                        map.put("start_date_realization",
-                                        response.getContent().get(i).getStart_date_realization());
-                        map.put("end_date_realization", response.getContent().get(i).getEnd_date_realization());
+                        map.put("start_date", convertDateToRoman
+                                        .convertDateHehe(response.getContent().get(i).getStart_date()));
+                        map.put("end_date",
+                                        convertDateToRoman.convertDateHehe(response.getContent().get(i).getEnd_date()));
+                        if (response.getContent().get(i).getStart_date_realization() == null) {
+                                map.put("start_date_realization", null);
+                        } else {
+                                map.put("start_date_realization",
+                                                convertDateToRoman.convertDateHehe(response.getContent().get(i)
+                                                                .getStart_date_realization()));
+                        }
+                        if (response.getContent().get(i).getEnd_date_realization() == null) {
+                                map.put("end_date_realization", null);
+                        } else {
+                                map.put("end_date_realization", convertDateToRoman.convertDateHehe(
+                                                response.getContent().get(i).getEnd_date_realization()));
+                        }
 
                         listSchedule.add(map);
                 }

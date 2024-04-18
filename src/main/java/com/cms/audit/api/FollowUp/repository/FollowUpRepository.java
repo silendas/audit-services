@@ -9,8 +9,6 @@ import org.springframework.stereotype.Repository;
 
 import com.cms.audit.api.Clarifications.dto.response.NumberClarificationInterface;
 import com.cms.audit.api.FollowUp.models.FollowUp;
-import java.util.List;
-
 
 @Repository
 public interface FollowUpRepository extends JpaRepository<FollowUp, Long> {

@@ -1,7 +1,13 @@
 package com.cms.audit.api.AuditDailyReport.service;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
+import org.apache.coyote.BadRequestException;
 import org.hibernate.exception.DataException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -130,30 +136,55 @@ public class AuditDailyReportDetailService {
 
     public GlobalResponse getById(Long id) {
         try {
-            AuditDailyReportDetail response = repository.findOneByLHADetailId(id)
-                    .orElseThrow(() -> new IllegalStateException(
-                            "lha with id " + id + " does now exist"));
-            Map<String,Object> builder = new LinkedHashMap<>();
-            builder.put("id",response.getId());
+            Optional<Revision> checkRevision = revisionRepo.findByDetailId(id);
+            Map<String, Object> builder = new LinkedHashMap<>();
+            if (checkRevision.isPresent()) {
+                builder.put("id", id);
+                builder.put("revision_id", checkRevision.get().getId());
 
-            Map<String,Object> cases = new LinkedHashMap<>();
-            cases.put("id", response.getCases().getId());
-            cases.put("name", response.getCases().getName());
-            cases.put("code", response.getCases().getCode());
-            builder.put("case",cases);
+                Map<String, Object> cases = new LinkedHashMap<>();
+                cases.put("id", checkRevision.get().getCases().getId());
+                cases.put("name", checkRevision.get().getCases().getName());
+                cases.put("code", checkRevision.get().getCases().getCode());
+                builder.put("case", cases);
 
-            Map<String,Object> caseCategory = new LinkedHashMap<>();
-            caseCategory.put("id", response.getCaseCategory().getId());
-            caseCategory.put("name", response.getCaseCategory().getName());
-            builder.put("case_category",caseCategory);
+                Map<String, Object> caseCategory = new LinkedHashMap<>();
+                caseCategory.put("id", checkRevision.get().getCaseCategory().getId());
+                caseCategory.put("name", checkRevision.get().getCaseCategory().getName());
+                builder.put("case_category", caseCategory);
 
-            builder.put("description",response.getDescription());
-            builder.put(
-                    "permanent_recommendation",response.getPermanent_recommendations());
-            builder.put(
-                    "temporary_recommendation",response.getTemporary_recommendations());
-            builder.put("suggestion",response.getSuggestion());
-            builder.put("is_research",response.getIs_research());
+                builder.put("description", checkRevision.get().getDescription());
+                builder.put(
+                        "permanent_recommendation", checkRevision.get().getPermanent_recommendations());
+                builder.put(
+                        "temporary_recommendation", checkRevision.get().getTemporary_recommendations());
+                builder.put("suggestion", checkRevision.get().getSuggestion());
+                builder.put("is_research", checkRevision.get().getIs_research());
+            } else {
+                AuditDailyReportDetail response = repository.findOneByLHADetailId(id)
+                        .orElseThrow(() -> new BadRequestException(
+                                "lha with id " + id + " does now exist"));
+                builder.put("id", response.getId());
+
+                Map<String, Object> cases = new LinkedHashMap<>();
+                cases.put("id", response.getCases().getId());
+                cases.put("name", response.getCases().getName());
+                cases.put("code", response.getCases().getCode());
+                builder.put("case", cases);
+
+                Map<String, Object> caseCategory = new LinkedHashMap<>();
+                caseCategory.put("id", response.getCaseCategory().getId());
+                caseCategory.put("name", response.getCaseCategory().getName());
+                builder.put("case_category", caseCategory);
+
+                builder.put("description", response.getDescription());
+                builder.put(
+                        "permanent_recommendation", response.getPermanent_recommendations());
+                builder.put(
+                        "temporary_recommendation", response.getTemporary_recommendations());
+                builder.put("suggestion", response.getSuggestion());
+                builder.put("is_research", response.getIs_research());
+            }
             return GlobalResponse
                     .builder()
                     .message("Success")
@@ -260,16 +291,17 @@ public class AuditDailyReportDetailService {
             User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
             Optional<AuditDailyReport> setId = lhaReportsitory.findById(dto.getAudit_daily_report_id());
-            if(!setId.isPresent()){
+            if (!setId.isPresent()) {
                 return GlobalResponse.builder().message("Lha id not found").status(HttpStatus.BAD_REQUEST).build();
             }
             Optional<Case> setCaseId = caseRepository.findById(dto.getCase_id());
-            if(!setCaseId.isPresent()){
+            if (!setCaseId.isPresent()) {
                 return GlobalResponse.builder().message("Case not found").status(HttpStatus.BAD_REQUEST).build();
             }
             Optional<CaseCategory> setCCId = ccRepository.findById(dto.getCase_category_id());
-            if(!setCCId.isPresent()){
-                return GlobalResponse.builder().message("Case Category not found").status(HttpStatus.BAD_REQUEST).build();
+            if (!setCCId.isPresent()) {
+                return GlobalResponse.builder().message("Case Category not found").status(HttpStatus.BAD_REQUEST)
+                        .build();
             }
 
             AuditDailyReportDetail auditDailyReport = new AuditDailyReportDetail(
@@ -330,12 +362,13 @@ public class AuditDailyReportDetailService {
             }
 
             Optional<Case> setCaseId = caseRepository.findById(dto.getCase_id());
-            if(!setCaseId.isPresent()){
+            if (!setCaseId.isPresent()) {
                 return GlobalResponse.builder().message("Case not found").status(HttpStatus.BAD_REQUEST).build();
             }
             Optional<CaseCategory> setCCId = ccRepository.findById(dto.getCase_category_id());
-            if(!setCCId.isPresent()){
-                return GlobalResponse.builder().message("Case Category not found").status(HttpStatus.BAD_REQUEST).build();
+            if (!setCCId.isPresent()) {
+                return GlobalResponse.builder().message("Case Category not found").status(HttpStatus.BAD_REQUEST)
+                        .build();
             }
 
             AuditDailyReportDetail auditDailyReport = new AuditDailyReportDetail(

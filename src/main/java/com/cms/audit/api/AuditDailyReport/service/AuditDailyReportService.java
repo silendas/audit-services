@@ -95,8 +95,16 @@ public class AuditDailyReportService {
 
                         Page<AuditDailyReport> response = null;
                         if (getUser.getLevel().getId() == 3) {
-                                response = pagAuditDailyReport.findByUserId(getUser.getId(),
-                                                PageRequest.of(page, size));
+                                if (startDate != null && endDate != null) {
+                                        response = pagAuditDailyReport.findLHAByUserInDateRange(getUser.getId(),
+                                                        startDate, endDate, PageRequest.of(page, size));
+                                } else if (shcedule_id != null) {
+                                        response = pagAuditDailyReport.findByUserIdAndSchedule(shcedule_id, branch_id,
+                                                        PageRequest.of(page, size));
+                                } else {
+                                        response = pagAuditDailyReport.findByUserId(getUser.getId(),
+                                                        PageRequest.of(page, size));
+                                }
                         } else {
                                 if (name != null && branch_id != null && startDate != null && endDate != null) {
                                         response = pagAuditDailyReport.findLHAByAll(branch_id, name, startDate, endDate,
@@ -106,27 +114,61 @@ public class AuditDailyReportService {
                                                         PageRequest.of(page, size));
                                 } else if (branch_id != null && startDate != null && endDate != null) {
                                         response = pagAuditDailyReport.findAllLHAByBranchAndDateRange(branch_id,
-                                                        startDate,
-                                                        endDate, PageRequest.of(page, size));
+                                                        startDate, endDate, PageRequest.of(page, size));
                                 } else if (name != null) {
                                         response = pagAuditDailyReport.findLHAName(name, PageRequest.of(page, size));
                                 } else if (branch_id != null) {
                                         response = pagAuditDailyReport.findAllLHAByBranch(branch_id,
                                                         PageRequest.of(page, size));
-                                } else if (startDate != null || endDate != null) {
-                                        response = pagAuditDailyReport.findLHAInDateRange(startDate, endDate,
-                                                        PageRequest.of(page, size));
                                 } else if (shcedule_id != null) {
                                         response = pagAuditDailyReport.findByScheduleId(shcedule_id,
                                                         PageRequest.of(page, size));
                                 } else {
-                                        response = pagAuditDailyReport.findAllLHA(PageRequest.of(page, size));
+                                        if (getUser.getLevel().getId() == 2) {
+                                                Pageable pageable = PageRequest.of(page, size);
+                                                List<AuditDailyReport> lhaList = new ArrayList<>();
+                                                for (int i = 0; i < getUser.getRegionId().size(); i++) {
+                                                        List<AuditDailyReport> lhaAgain = auditDailyReportRepository
+                                                                        .findByRegionId(
+                                                                                        getUser.getRegionId().get(i));
+                                                        if (!lhaAgain.isEmpty()) {
+                                                                for (int u = 0; u < lhaAgain.size(); u++) {
+                                                                        lhaList.add(lhaAgain.get(u));
+                                                                }
+                                                        }
+                                                }
+                                                try {
+                                                        int start = (int) pageable.getOffset();
+                                                        int end = Math.min((start + pageable.getPageSize()),
+                                                                        lhaList.size());
+                                                        List<AuditDailyReport> pageContent = lhaList.subList(start, end);
+                                                        Page<AuditDailyReport> response2 = new PageImpl<>(pageContent, pageable,
+                                                                        lhaList.size());
+                                                        response = response2;
+                                                } catch (Exception e) {
+                                                        return GlobalResponse
+                                                                        .builder()
+                                                                        .error(e)
+                                                                        .status(HttpStatus.BAD_REQUEST)
+                                                                        .build();
+                                                }
+                                        } else if (getUser.getLevel().getId() == 1) {
+                                                if (startDate != null || endDate != null) {
+                                                        response = pagAuditDailyReport.findLHAInDateRange(startDate,
+                                                                        endDate,
+                                                                        PageRequest.of(page, size));
+                                                } else {
+                                                        response = pagAuditDailyReport
+                                                                        .findAllLHA(PageRequest.of(page, size));
+                                                }
+                                        }
                                 }
                         }
                         if (response.isEmpty()) {
                                 return GlobalResponse
                                                 .builder()
                                                 .message("Data not found")
+                                                .data(null)
                                                 .status(HttpStatus.OK)
                                                 .build();
                         }
@@ -172,7 +214,8 @@ public class AuditDailyReportService {
                                 schedule.put("end_date", response.getContent().get(i).getSchedule().getEnd_date());
                                 responseS.put("schedule", schedule);
 
-                                responseS.put("is_research", flag);
+                                responseS.put("is_research", response.getContent().get(i).getIs_research());
+                                responseS.put("is_flag", flag);
                                 listLha.add(responseS);
                         }
                         Map<String, Object> parent = new LinkedHashMap<>();
@@ -253,7 +296,7 @@ public class AuditDailyReportService {
                                         details.add(builder);
                                 } else {
                                         DetailResponse builder = new DetailResponse();
-                                        builder.setId(getRevision.get().getId());
+                                        builder.setId(getDetail.get(i).getId());
                                         builder.setCases(getRevision.get().getCases().getName());
                                         builder.setCaseCategory(getRevision.get().getCaseCategory().getName());
                                         builder.setDescription(getRevision.get().getDescription());

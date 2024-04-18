@@ -43,7 +43,7 @@ public class SecurityConfiguration {
 
         http
                 .csrf(AbstractHttpConfigurer::disable)
-                .cors(Customizer.withDefaults())
+                //.cors(Customizer.withDefaults())
                 .exceptionHandling(exception -> exception.authenticationEntryPoint(jwtException))
                 .authorizeHttpRequests(requests -> requests
                         .requestMatchers("/api/auth/**")

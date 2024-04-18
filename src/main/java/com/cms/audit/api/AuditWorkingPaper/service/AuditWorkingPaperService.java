@@ -1,18 +1,19 @@
 package com.cms.audit.api.AuditWorkingPaper.service;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.coyote.BadRequestException;
 import org.apache.tomcat.util.http.fileupload.impl.IOFileUploadException;
 import org.hibernate.exception.DataException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
@@ -21,15 +22,13 @@ import com.cms.audit.api.AuditWorkingPaper.models.AuditWorkingPaper;
 import com.cms.audit.api.AuditWorkingPaper.repository.AuditWorkingPaperRepository;
 import com.cms.audit.api.AuditWorkingPaper.repository.PagAuditWorkingPaper;
 import com.cms.audit.api.Common.constant.FileStorageKKA;
-import com.cms.audit.api.Common.constant.FileStorageService;
 import com.cms.audit.api.Common.constant.FolderPath;
 import com.cms.audit.api.Common.constant.convertDateToRoman;
-import com.cms.audit.api.Common.constant.randomValueNumber;
-import com.cms.audit.api.Common.exception.ResourceNotFoundException;
 import com.cms.audit.api.Common.response.GlobalResponse;
 import com.cms.audit.api.InspectionSchedule.models.EStatus;
 import com.cms.audit.api.InspectionSchedule.models.Schedule;
 import com.cms.audit.api.InspectionSchedule.repository.ScheduleRepository;
+import com.cms.audit.api.Management.User.models.User;
 
 import jakarta.transaction.Transactional;
 
@@ -51,17 +50,53 @@ public class AuditWorkingPaperService {
 
     private final String FOLDER_PATH = FolderPath.FOLDER_PATH_UPLOAD_WORKING_PAPER;
 
-    public GlobalResponse getAll(Long schedule_id, int page, int size, Date start_date, Date end_date) {
+    public GlobalResponse getAll(String name, Long branchId, Long schedule_id, int page, int size, Date start_date,
+            Date end_date) {
         try {
-            Page<AuditWorkingPaper> response;
+            User getUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+            Page<AuditWorkingPaper> response = null;
             if (schedule_id != null) {
                 return GlobalResponse.builder().data(repository.findByScheduleId(schedule_id)).message("Success")
                         .status(HttpStatus.OK).build();
-            }
-            if (start_date == null || end_date == null) {
-                response = pag.findAll(PageRequest.of(page, size));
+            } else if (name != null && branchId != null && start_date != null && end_date != null) {
+                response = pag.findWorkingPaperByAllFilter(name, schedule_id, start_date, end_date,
+                        PageRequest.of(page, size));
+            } else if (name != null) {
+                if (branchId != null) {
+                    response = pag.findWorkingPaperByNameAndBranch(name, schedule_id, PageRequest.of(page, size));
+                } else if (start_date != null && end_date != null) {
+                    response = pag.findWorkingPaperByNameAndDate(name, start_date, end_date,
+                            PageRequest.of(page, size));
+                } else {
+                    response = pag.findWorkingPaperByName(name, PageRequest.of(page, size));
+                }
+            } else if (branchId != null) {
+                if (start_date != null && end_date != null) {
+                    response = pag.findWorkingPaperByBranchAndDate(branchId, start_date, end_date,
+                            PageRequest.of(page, size));
+                } else {
+                    response = pag.findWorkingPaperByBranch(branchId, PageRequest.of(page, size));
+                }
             } else {
-                response = pag.findWorkingPaperInDateRange(start_date, end_date, PageRequest.of(page, size));
+                if (getUser.getLevel().getId() == 1) {
+                    if (start_date != null && end_date != null) {
+                        response = pag.findWorkingPaperInDateRange(start_date, end_date, PageRequest.of(page, size));
+                    } else {
+                        response = pag.findAllWorkingPaper(PageRequest.of(page, size));
+                    }
+                } else if (getUser.getLevel().getId() == 2) {
+
+                } else if (getUser.getLevel().getId() == 3) {
+                    if (start_date != null && end_date != null) {
+                        response = pag.findAllWorkingPaperByUserIdAndDate(getUser.getId(), start_date, end_date,
+                                PageRequest.of(page, size));
+                    } else {
+                        response = pag.findAllWorkingPaperByUserId(getUser.getId(), PageRequest.of(page, size));
+                    }
+                } else {
+                    return GlobalResponse.builder().message("Cannot Access").status(HttpStatus.UNAUTHORIZED).build();
+                }
             }
             List<Object> listKka = new ArrayList<>();
             for (int i = 0; i < response.getContent().size(); i++) {
@@ -129,7 +164,7 @@ public class AuditWorkingPaperService {
     public GlobalResponse getOneById(Long id) {
         try {
             AuditWorkingPaper response = repository.findById(id)
-                    .orElseThrow(() -> new ResourceNotFoundException("LHA with id: " + id + " is undefined"));
+                    .orElseThrow(() -> new BadRequestException("LHA with id: " + id + " is undefined"));
 
             Map<String, Object> kkaMap = new LinkedHashMap<>();
             kkaMap.put("id", response.getId());
@@ -180,9 +215,10 @@ public class AuditWorkingPaperService {
     public GlobalResponse uploadFile(MultipartFile file, Long id) {
         try {
             Schedule getSchedule = scheduleRepository.findById(id)
-                    .orElseThrow(() -> new ResourceNotFoundException("Schedule with id: " + id + " is undefined"));
+                    .orElseThrow(() -> new BadRequestException("Schedule with id: " + id + " is undefined"));
 
-            //String name = randomValueNumber.randomNumberGenerator() + file.getOriginalFilename();
+            // String name = randomValueNumber.randomNumberGenerator() +
+            // file.getOriginalFilename();
 
             String fileName = fileStorageService.storeFile(file);
             String path = FOLDER_PATH + fileName;
@@ -201,7 +237,7 @@ public class AuditWorkingPaperService {
 
             repository.save(kka);
 
-            //file.transferTo(new File(filePath));
+            // file.transferTo(new File(filePath));
 
             Schedule schedule = getSchedule;
             schedule.setStatus(EStatus.DONE);
@@ -237,7 +273,7 @@ public class AuditWorkingPaperService {
 
     public AuditWorkingPaper downloadFile(String fileName) throws java.io.IOException, IOFileUploadException {
         AuditWorkingPaper response = repository.findByFilenameis(fileName)
-                .orElseThrow(() -> new ResourceNotFoundException("File not found with name: " + fileName));
+                .orElseThrow(() -> new BadRequestException("File not found with name: " + fileName));
         return response;
     }
 

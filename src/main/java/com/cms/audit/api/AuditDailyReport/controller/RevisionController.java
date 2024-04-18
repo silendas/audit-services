@@ -28,7 +28,9 @@ public class RevisionController {
     private RevisionService service;
 
     @GetMapping
-    public ResponseEntity<Object> getByDetailId(@RequestParam("lha_detail_id") Optional<Long> id) {
+    public ResponseEntity<Object> getByDetailId(
+        @RequestParam("lha_detail_id") Optional<Long> id
+        ) {
         GlobalResponse response = service.getAll(id.orElse(null));
         return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(), response.getError());
     }

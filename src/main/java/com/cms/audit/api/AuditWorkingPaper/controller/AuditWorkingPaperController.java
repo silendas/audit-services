@@ -40,11 +40,23 @@ public class AuditWorkingPaperController {
 
         @GetMapping
         public ResponseEntity<Object> get(
+                        @RequestParam(required = false) Optional<String> name,
+                        @RequestParam(required = false) Optional<Long> branch_id,
                         @RequestParam("schedule_id") Optional<Long> schedule_id,
                         @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Optional<Date> start_date,
                         @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Optional<Date> end_date,
                         @RequestParam("page") Optional<Integer> page,
                         @RequestParam("size") Optional<Integer> size) {
+                Long branchId;
+                if (branch_id.isPresent()) {
+                        if (branch_id.get().toString() != "") {
+                                branchId = branch_id.get();
+                        } else {
+                                branchId = null;
+                        }
+                } else {
+                        branchId = null;
+                }
                 Long scheduleId;
                 if (schedule_id.isPresent()) {
                         if (schedule_id.get().toString() != "") {
@@ -54,6 +66,16 @@ public class AuditWorkingPaperController {
                         }
                 } else {
                         scheduleId = null;
+                }
+                String fullname;
+                if (name.isPresent()) {
+                        if (name.get().toString() != "") {
+                                fullname = name.get();
+                        } else {
+                                fullname = null;
+                        }
+                } else {
+                        fullname = null;
                 }
                 Date startDate;
                 if (start_date.isPresent()) {
@@ -75,7 +97,7 @@ public class AuditWorkingPaperController {
                 } else {
                         endDate = null;
                 }
-                GlobalResponse response = service.getAll(scheduleId, page.orElse(0), size.orElse(10),
+                GlobalResponse response = service.getAll(fullname,branchId,scheduleId, page.orElse(0), size.orElse(10),
                                 startDate,
                                 endDate);
                 return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(),
