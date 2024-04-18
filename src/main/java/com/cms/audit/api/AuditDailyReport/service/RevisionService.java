@@ -13,9 +13,7 @@ import com.cms.audit.api.AuditDailyReport.models.Revision;
 import com.cms.audit.api.AuditDailyReport.repository.AuditDailyReportDetailRepository;
 import com.cms.audit.api.AuditDailyReport.repository.RevisionRepository;
 import com.cms.audit.api.Common.response.GlobalResponse;
-import com.cms.audit.api.Management.Case.models.Case;
 import com.cms.audit.api.Management.Case.repository.CaseRepository;
-import com.cms.audit.api.Management.CaseCategory.models.CaseCategory;
 import com.cms.audit.api.Management.CaseCategory.repository.CaseCategoryRepository;
 import com.cms.audit.api.Management.User.models.User;
 

@@ -107,7 +107,6 @@ public class DropdownController {
                             if (userAgain.get(u).getRegionId().size() == 0 || userAgain.get(u).getRegionId() == null) {
                                 if (userAgain.get(u).getBranchId() != null
                                         || userAgain.get(u).getBranchId().size() != 0) {
-
                                     for (int e = 0; e < userAgain.get(u).getBranchId()
                                             .size(); e++) {
                                         Optional<Branch> branchAgain = branchRepository
@@ -120,12 +119,15 @@ public class DropdownController {
                                             builder.setFullname(userAgain.get(u).getFullname());
                                             builder.setId(userAgain.get(u).getId());
                                             builder.setInitial_name(userAgain.get(u).getInitial_name());
-                                            user.add(builder);
+                                            if (!user.contains(builder)) {
+                                                user.add(builder);
+                                            }
                                         }
 
                                     }
                                 }
                             } else {
+
                                 for (int o = 0; o < userAgain.get(u).getRegionId()
                                         .size(); o++) {
                                     if (region_id == userAgain.get(u).getRegionId().get(o)) {
@@ -133,7 +135,9 @@ public class DropdownController {
                                         builder.setFullname(userAgain.get(u).getFullname());
                                         builder.setId(userAgain.get(u).getId());
                                         builder.setInitial_name(userAgain.get(u).getInitial_name());
-                                        user.add(builder);
+                                        if (!user.contains(builder)) {
+                                            user.add(builder);
+                                        }
                                     }
                                 }
                             }
@@ -146,7 +150,7 @@ public class DropdownController {
             }
         }
         return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(),
-                    response.getError());
+                response.getError());
     }
 
     @GetMapping("/schedule-status")
@@ -253,13 +257,13 @@ public class DropdownController {
 
     @GetMapping("/branch")
     public ResponseEntity<Object> getBranch(
-        @Nullable @RequestParam("name") String name,
+            @Nullable @RequestParam("name") String name,
             @Nullable @RequestParam("areaId") Long areaId,
             @Nullable @RequestParam("regionId") Long regionId) {
         GlobalResponse response;
         if (name != null) {
             response = branchService.findSpecificByName(name);
-        }else if (areaId != null) {
+        } else if (areaId != null) {
             response = branchService.findSpecificByAreaId(areaId);
         } else if (regionId != null) {
             response = branchService.findSpecificByRegionId(regionId);

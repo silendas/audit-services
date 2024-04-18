@@ -1,7 +1,16 @@
 HELP.md
 target/
+
+# uploaded/bap/*
+# uploaded/clarification/*
+# uploaded/followup/*
+# uploaded/kka/*
+# uploaded/report/*
+
+!image/
 !.mvn/wrapper/maven-wrapper.jar
 !*/src/main/*/target/
 !*/src/test/*/target/
 !**/src/main/resources/application.properties
-.vscode
+
+.vscode/

@@ -25,6 +25,9 @@ public interface PagClarification extends PagingAndSortingRepository<Clarificati
     Page<Clarification> findByBranchIdByDate(@Param("id") Long id,@Param("start_date") Date start_date,
     @Param("end_date") Date end_date, Pageable pageable);
 
+    @Query(value = "SELECT * FROM clarification u INNER JOIN users us ON us.id = u.user_id WHERE us.fullname LIKE :name AND u.branch_id = :id ORDER BY u.id DESC ;", nativeQuery = true)
+    Page<Clarification> findByFullnameLikeAndBranch(@Param("name") String name,@Param("id") Long id, Pageable pageable);
+
     @Query(value = "SELECT * FROM clarification u INNER JOIN users us ON us.id = u.user_id WHERE us.fullname LIKE :name ORDER BY u.id DESC ;", nativeQuery = true)
     Page<Clarification> findByFullnameLike(@Param("name") String name, Pageable pageable);
 

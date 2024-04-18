@@ -7,11 +7,15 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
 import com.cms.audit.api.AuditDailyReport.models.AuditDailyReport;
-import com.cms.audit.api.InspectionSchedule.models.Schedule;
 
+@Repository
 public interface AuditDailyReportRepository extends JpaRepository<AuditDailyReport, Long> {
+
+        @Query(value = "SELECT u.* FROM audit_daily_report u INNER JOIN branch_office bo ON u.branch_id=bo.id INNER JOIN area_office ao ON bo.area_id=ao.id INNER JOIN region_office ro ON ao.region_id=ro.id WHERE ro.id = :regionId ",nativeQuery=true)
+        List<AuditDailyReport> findByRegionId(@Param("regionId")Long id);
 
         @Query(value = "SELECT * FROM audit_daily_report u WHERE u.created_at BETWEEN CURRENT_DATE AND CURRENT_TIMESTAMP AND u.schedule_id = :scheduleId AND u.is_delete <> 1;", nativeQuery = true)
         List<AuditDailyReport> findByCurrentDay(@Param("scheduleId") Long id);

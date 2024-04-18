@@ -1,8 +1,6 @@
 package com.cms.audit.api.AuditDailyReport.repository;
 
 import java.util.Date;
-import java.util.List;
-import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -25,18 +23,25 @@ public interface pagAuditDailyReport extends PagingAndSortingRepository<AuditDai
     @Query(value = "SELECT * FROM audit_daily_report u WHERE u.user_id = :id AND u.is_delete <> 1", nativeQuery = true)
     Page<AuditDailyReport> findByUserId(@Param("id") Long id, Pageable pageable);
 
-    @Query(value = "SELECT * FROM audit_daily_report u WHERE u.created_at BETWEEN :start_date AND :end_date ", nativeQuery = true)
+    @Query(value = "SELECT * FROM audit_daily_report u WHERE u.user_id = :userid AND u.schedule_id = :id  AND u.is_delete <> 1", nativeQuery = true)
+    Page<AuditDailyReport> findByUserIdAndSchedule(@Param("userid") Long userid,@Param("id") Long id, Pageable pageable);
+
+    @Query(value = "SELECT * FROM audit_daily_report u WHERE u.user_id = :id AND (u.created_at BETWEEN :start_date AND :end_date) AND u.is_delete <> 1", nativeQuery = true)
+    Page<AuditDailyReport> findLHAByUserInDateRange(@Param("id")Long id,@Param("start_date") Date start_date,
+            @Param("end_date") Date end_date, Pageable pageable);    
+
+    @Query(value = "SELECT * FROM audit_daily_report u WHERE (u.created_at BETWEEN :start_date AND :end_date) AND u.is_delete <> 1", nativeQuery = true)
     Page<AuditDailyReport> findLHAInDateRange(@Param("start_date") Date start_date,
             @Param("end_date") Date end_date, Pageable pageable);
 
-    @Query(value = "SELECT * FROM audit_daily_report u INNER JOIN users us ON u.user_id = us.id WHERE us.fullname LIKE '% :name %' AND u.created_at BETWEEN :start_date AND :end_date ", nativeQuery = true)
+    @Query(value = "SELECT u.* FROM audit_daily_report u INNER JOIN users us ON u.user_id = us.id WHERE us.fullname LIKE %:name% AND (u.created_at BETWEEN :start_date AND :end_date) AND u.is_delete <> 1", nativeQuery = true)
     Page<AuditDailyReport> findLHANameInDateRange(@Param("name") String name, @Param("start_date") Date start_date,
             @Param("end_date") Date end_date, Pageable pageable);
 
-    @Query(value = "SELECT * FROM audit_daily_report u INNER JOIN users us ON u.user_id = us.id WHERE us.fullname LIKE '% :name %'", nativeQuery = true)
+    @Query(value = "SELECT u.* FROM audit_daily_report u INNER JOIN users us ON u.user_id = us.id WHERE us.fullname LIKE %:name% AND u.is_delete <> 1", nativeQuery = true)
     Page<AuditDailyReport> findLHAName(@Param("name") String name, Pageable pageable);
 
-    @Query(value = "SELECT u.* FROM audit_daily_report u INNER JOIN branch_office bo ON u.branch_id = bo.id INNER JOIN area_office ao ON bo.area_id = ao.id INNER JOIN region_office ro ON ao.region_id=ro.id WHERE ro.id = :id AND u.created_at BETWEEN :start_date AND :end_date;", nativeQuery = true)
+    @Query(value = "SELECT u.* FROM audit_daily_report u INNER JOIN branch_office bo ON u.branch_id = bo.id INNER JOIN area_office ao ON bo.area_id = ao.id INNER JOIN region_office ro ON ao.region_id=ro.id WHERE ro.id = :id AND (u.created_at BETWEEN :start_date AND :end_date) AND u.is_delete <> 1;", nativeQuery = true)
     Page<AuditDailyReport> findLHAByRegionInDateRange(@Param("id") Long area_id,
             @Param("start_date") Date start_date,
             @Param("end_date") Date end_date, Pageable pageable);
@@ -44,7 +49,7 @@ public interface pagAuditDailyReport extends PagingAndSortingRepository<AuditDai
     @Query(value = "SELECT u.* FROM audit_daily_report u INNER JOIN branch_office bo ON u.branch_id = bo.id INNER JOIN area_office ao ON bo.area_id = ao.id INNER JOIN region_office ro ON ao.region_id=ro.id WHERE ro.id = :id  AND u.is_delete <> 1;", nativeQuery = true)
     Page<AuditDailyReport> findLHAByRegion(@Param("id") Long area_id, Pageable pageable);
 
-    @Query(value = "SELECT u.* FROM audit_daily_report u INNER JOIN users us ON u.user_id = us.id INNER JOIN branch_office bo ON u.branch_id = bo.id INNER JOIN area_office ao ON bo.area_id = ao.id INNER JOIN region_office ro ON ao.region_id=ro.id WHERE us.fullname LIKE '% :name %' AND ro.id = :id AND u.created_at BETWEEN :start_date AND :end_date;", nativeQuery = true)
+    @Query(value = "SELECT u.* FROM audit_daily_report u INNER JOIN users us ON u.user_id = us.id INNER JOIN branch_office bo ON u.branch_id = bo.id INNER JOIN area_office ao ON bo.area_id = ao.id INNER JOIN region_office ro ON ao.region_id=ro.id WHERE us.fullname LIKE %:name% AND ro.id = :id AND (u.created_at BETWEEN :start_date AND :end_date) AND u.is_delete <> 1;", nativeQuery = true)
     Page<AuditDailyReport> findLHAByAll(
             @Param("id") Long area_id,
             @Param("name") String name,
@@ -57,7 +62,7 @@ public interface pagAuditDailyReport extends PagingAndSortingRepository<AuditDai
     @Query(value = "SELECT * FROM audit_daily_report u WHERE u.branch_id = :id AND u.is_delete <> 1", nativeQuery = true)
     Page<AuditDailyReport> findAllLHAByBranch(@Param("id") Long id, Pageable pageable);
 
-    @Query(value = "SELECT * FROM audit_daily_report u WHERE u.branch_id = :id AND u.created_at BETWEEN :start_date AND :end_date AND u.is_delete <> 1", nativeQuery = true)
+    @Query(value = "SELECT * FROM audit_daily_report u WHERE u.branch_id = :id AND (u.created_at BETWEEN :start_date AND :end_date) AND u.is_delete <> 1", nativeQuery = true)
     Page<AuditDailyReport> findAllLHAByBranchAndDateRange(@Param("id") Long id, @Param("start_date") Date start_date,
             @Param("end_date") Date end_date, Pageable pageable);
 

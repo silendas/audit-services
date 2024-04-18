@@ -3,6 +3,7 @@ package com.cms.audit.api.FollowUp.models;
 import java.util.Date;
 
 import com.cms.audit.api.Clarifications.models.Clarification;
+import com.cms.audit.api.Management.Office.BranchOffice.models.Branch;
 import com.cms.audit.api.Management.Penalty.models.Penalty;
 import com.cms.audit.api.Management.ReportType.models.ReportType;
 import com.cms.audit.api.Management.User.models.User;
@@ -39,6 +40,10 @@ public class FollowUp {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
+
+    @ManyToOne
+    @JoinColumn(name = "branch_id")
+    private Branch branch;
 
     @ManyToOne
     @JoinColumn(name = "penalty_id")
