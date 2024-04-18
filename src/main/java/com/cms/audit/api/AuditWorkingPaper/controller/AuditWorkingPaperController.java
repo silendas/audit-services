@@ -97,7 +97,8 @@ public class AuditWorkingPaperController {
                 } else {
                         endDate = null;
                 }
-                GlobalResponse response = service.getAll(fullname,branchId,scheduleId, page.orElse(0), size.orElse(10),
+                GlobalResponse response = service.getAll(fullname, branchId, scheduleId, page.orElse(0),
+                                size.orElse(10),
                                 startDate,
                                 endDate);
                 return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(),
@@ -114,21 +115,38 @@ public class AuditWorkingPaperController {
         }
 
         @GetMapping("/download/{fileName}")
-        public ResponseEntity<InputStreamResource> getFileName(@PathVariable("fileName") String fileName)
+        public ResponseEntity<byte[]> getFileName(@PathVariable("fileName") String fileName)
                         throws IOException {
-                AuditWorkingPaper response = service.downloadFile(fileName);
-                String path = response.getFile_path();
-                File file = new File(path);
-                InputStream inputStream = new FileInputStream(file);
-                InputStreamResource isr = new InputStreamResource(inputStream);
+                try {
+                        AuditWorkingPaper response = service.downloadFile(fileName);
 
-                HttpHeaders httpHeaders = new HttpHeaders();
+                        File file = new File("uploaded/kka/" + response.getFilename());
+                        InputStream inputStream = new FileInputStream(file);
 
-                httpHeaders.setContentType(
-                                MediaType.valueOf("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
-                httpHeaders.set("Content-Disposition", "attachment; filename=" + response.getFilename());
+                        byte[] out = org.apache.commons.io.IOUtils.toByteArray(inputStream);
 
-                return new ResponseEntity<InputStreamResource>(isr, httpHeaders, HttpStatus.ACCEPTED);
+                        HttpHeaders responseHeaders = new HttpHeaders();
+                        responseHeaders.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+                        responseHeaders.setContentLength(out.length);
+                        responseHeaders.setContentDispositionFormData("attachment", fileName);
+
+                        return new ResponseEntity<>(out, responseHeaders, HttpStatus.OK);
+                } catch (IOException e) {
+                        e.printStackTrace();
+                        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+                }
+                // String path = "uploaded/kka/" + response.getFilename();
+                // File file = new File(path);
+                // InputStream inputStream = new FileInputStream(file);
+                // InputStreamResource isr = new InputStreamResource(inputStream);
+
+                // HttpHeaders httpHeaders = new HttpHeaders();
+
+                // httpHeaders.setContentType(
+                //                 MediaType.valueOf("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
+                // httpHeaders.set("Content-Disposition", "attachment; filename=" + response.getFilename());
+
+                // return new ResponseEntity<InputStreamResource>(isr, httpHeaders, HttpStatus.OK);
         }
 
         @PostMapping(value = "/upload")

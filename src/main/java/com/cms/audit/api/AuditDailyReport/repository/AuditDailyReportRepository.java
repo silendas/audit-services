@@ -17,6 +17,9 @@ public interface AuditDailyReportRepository extends JpaRepository<AuditDailyRepo
         @Query(value = "SELECT u.* FROM audit_daily_report u INNER JOIN branch_office bo ON u.branch_id=bo.id INNER JOIN area_office ao ON bo.area_id=ao.id INNER JOIN region_office ro ON ao.region_id=ro.id WHERE ro.id = :regionId ",nativeQuery=true)
         List<AuditDailyReport> findByRegionId(@Param("regionId")Long id);
 
+        @Query(value = "SELECT u.* FROM audit_daily_report u INNER JOIN branch_office bo ON u.branch_id=bo.id INNER JOIN area_office ao ON bo.area_id=ao.id INNER JOIN region_office ro ON ao.region_id=ro.id WHERE ro.id = :regionId AND u.created_at BETWEEN :start_date AND :end_date ",nativeQuery=true)
+        List<AuditDailyReport> findByRegionIdAndDate(@Param("regionId")Long id, @Param("start_date") Date start_date,@Param("end_date") Date end_date);
+
         @Query(value = "SELECT * FROM audit_daily_report u WHERE u.created_at BETWEEN CURRENT_DATE AND CURRENT_TIMESTAMP AND u.schedule_id = :scheduleId AND u.is_delete <> 1;", nativeQuery = true)
         List<AuditDailyReport> findByCurrentDay(@Param("scheduleId") Long id);
 

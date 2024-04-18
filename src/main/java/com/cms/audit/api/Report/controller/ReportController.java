@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.Optional;
 
+import javax.naming.NameNotFoundException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.format.annotation.DateTimeFormat;

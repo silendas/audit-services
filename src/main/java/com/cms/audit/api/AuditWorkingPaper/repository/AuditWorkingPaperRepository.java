@@ -12,8 +12,11 @@ import com.cms.audit.api.AuditWorkingPaper.models.AuditWorkingPaper;
 @Repository
 public interface AuditWorkingPaperRepository extends JpaRepository<AuditWorkingPaper, Long>{
 
-    @Query(value = "SELECT * FROM audit_working_paper u WHERE u.file_name = :filename ;", nativeQuery = true)
-    Optional<AuditWorkingPaper> findByFilenameis(String filename);
+    @Query(value = "SELECT u.* FROM audit_working_paper u INNER JOIN branch_office bo ON u.branch_id=bo.id INNER JOIN area_office ao ON bo.area_id=ao.id INNER JOIN region_office ro ON ao.region_id=ro.id WHERE ro.id = :regionId ",nativeQuery=true)
+    List<AuditWorkingPaper> findByRegionId(@Param("regionId")Long id);
+
+    @Query(value = "SELECT * FROM audit_working_paper u WHERE u.file_name = :filename", nativeQuery = true)
+    Optional<AuditWorkingPaper> findByFilenameString(@Param("filename") String filename);
 
     @Query(value = "SELECT * FROM audit_working_paper u WHERE u.schedule_id = :id ;", nativeQuery = true)
     Optional<AuditWorkingPaper> findByScheduleId(@Param("id") Long id);

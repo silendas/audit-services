@@ -162,8 +162,7 @@ public class ScheduleService {
                                                         PageRequest.of(page, size));
                                 }
                         } else if (start_date != null && end_date != null) {
-                                response = pagSchedule.findAllScheduleByDateRange(category, start_date, end_date,
-                                                PageRequest.of(page, size));
+                                response = pagSchedule.findAllScheduleByDateRange(category, start_date, end_date,PageRequest.of(page, size));
                         } else {
                                 response = pagSchedule.findAll(PageRequest.of(page, size));
                         }
@@ -510,7 +509,8 @@ public class ScheduleService {
 
         }
 
-        public List<Schedule> getByRegionId(String name,Long branchId,Long regionId, String category, int page, int size, Date start_date,
+        public List<Schedule> getByRegionId(String name, Long branchId, Long regionId, String category, int page,
+                        int size, Date start_date,
                         Date end_date) {
                 List<Schedule> response;
                 if (start_date != null || end_date != null) {
@@ -638,10 +638,18 @@ public class ScheduleService {
                         mapParent.put("description", response.get(i).getDescription());
                         mapParent.put("status", response.get(i).getStatus());
                         mapParent.put("category", response.get(i).getCategory());
-                        mapParent.put("start_date",
-                                        convertDateToRoman.convertDateHehe(response.get(i).getStart_date()));
-                        mapParent.put("end_date",
-                                        convertDateToRoman.convertDateHehe(response.get(i).getEnd_date()));
+                        if (response.get(i).getStart_date() == null) {
+                                mapParent.put("start_date", null);
+                        } else {
+                                mapParent.put("start_date", convertDateToRoman
+                                                .convertDateHehe(response.get(i).getStart_date()));
+                        }
+                        if (response.get(i).getEnd_date() == null) {
+                                mapParent.put("end_date", null);
+                        } else {
+                                mapParent.put("end_date", convertDateToRoman
+                                                .convertDateHehe(response.get(i).getEnd_date()));
+                        }
                         if (response.get(i).getStart_date_realization() == null) {
                                 mapParent.put("start_date_realization", null);
                         } else {
@@ -682,8 +690,18 @@ public class ScheduleService {
                 map.put("description", response.getDescription());
                 map.put("status", response.getStatus());
                 map.put("category", response.getCategory());
-                map.put("start_date", convertDateToRoman.convertDateHehe(response.getStart_date()));
-                map.put("end_date", convertDateToRoman.convertDateHehe(response.getEnd_date()));
+                if (response.getStart_date() == null) {
+                        map.put("start_date", null);
+                } else {
+                        map.put("start_date", convertDateToRoman
+                                        .convertDateHehe(response.getStart_date()));
+                }
+                if (response.getEnd_date() == null) {
+                        map.put("end_date", null);
+                } else {
+                        map.put("end_date", convertDateToRoman
+                                        .convertDateHehe(response.getEnd_date()));
+                }
                 if (response.getStart_date_realization() == null) {
                         map.put("start_date_realization", null);
                 } else {
@@ -723,10 +741,18 @@ public class ScheduleService {
                         map.put("description", response.getContent().get(i).getDescription());
                         map.put("status", response.getContent().get(i).getStatus());
                         map.put("category", response.getContent().get(i).getCategory());
-                        map.put("start_date", convertDateToRoman
-                                        .convertDateHehe(response.getContent().get(i).getStart_date()));
-                        map.put("end_date",
-                                        convertDateToRoman.convertDateHehe(response.getContent().get(i).getEnd_date()));
+                        if (response.getContent().get(i).getStart_date() == null) {
+                                map.put("start_date", null);
+                        } else {
+                                map.put("start_date", convertDateToRoman
+                                                .convertDateHehe(response.getContent().get(i).getStart_date()));
+                        }
+                        if (response.getContent().get(i).getEnd_date() == null) {
+                                map.put("end_date", null);
+                        } else {
+                                map.put("end_date", convertDateToRoman
+                                                .convertDateHehe(response.getContent().get(i).getEnd_date()));
+                        }
                         if (response.getContent().get(i).getStart_date_realization() == null) {
                                 map.put("start_date_realization", null);
                         } else {
@@ -765,8 +791,7 @@ public class ScheduleService {
                                 response = pagSchedule.findAllScheduleByUserId(id, category,
                                                 PageRequest.of(page, size));
                         } else {
-                                response = pagSchedule.findScheduleInDateRangeByUserId(id, category, start_date,
-                                                end_date, PageRequest.of(page, size));
+                                response = pagSchedule.findScheduleInDateRangeByUserId(id, category, start_date,end_date, PageRequest.of(page, size));
                         }
                         if (response.isEmpty()) {
                                 return GlobalResponse
