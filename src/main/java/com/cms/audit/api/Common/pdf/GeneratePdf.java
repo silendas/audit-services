@@ -317,7 +317,18 @@ public class GeneratePdf {
                 body5.addCell(new Cell().add(nestedbody6).setMargin(0).setPadding(0).setBorder(Border.NO_BORDER));
 
                 String imagePath2 = "image\\checklist.png";
-                ImageData imageData2 = ImageDataFactory.create(imagePath2);
+                File imageFile2 = new File(imagePath);
+
+                // Mengecek apakah file gambar ada
+                if (!imageFile2.exists()) {
+                        throw new FileNotFoundException("File gambar tidak ditemukan: " + imagePath2);
+                }
+
+                // Menggunakan Path dari File untuk mendapatkan path absolut
+                String absoluteImagePath2 = imageFile.getAbsolutePath();
+
+                // Membuat ImageData dari path gambar absolut
+                ImageData imageData2 = ImageDataFactory.create(absoluteImagePath2);
                 Image image2 = new Image(imageData2);
                 image2.scaleAbsolute(50, 30);
                 body5.addCell(new Cell().add(image2).setBorderTop(Border.NO_BORDER).setBorderBottom(Border.NO_BORDER)
