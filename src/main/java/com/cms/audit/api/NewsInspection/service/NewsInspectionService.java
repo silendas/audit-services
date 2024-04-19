@@ -7,11 +7,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.springframework.data.domain.Pageable;
 import org.apache.coyote.BadRequestException;
 import org.apache.tomcat.util.http.fileupload.impl.IOFileUploadException;
 import org.hibernate.exception.DataException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -19,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.cms.audit.api.Clarifications.models.Clarification;
 import com.cms.audit.api.Common.constant.FileStorageBAP;
 import com.cms.audit.api.Common.constant.FolderPath;
 import com.cms.audit.api.Common.constant.convertDateToRoman;
@@ -50,13 +53,7 @@ public class NewsInspectionService {
             User getUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             Page<NewsInspection> response = null;
             if (name != null && branch != null && start_date != null && end_date != null) {
-                if (getUser.getLevel().getId() == 1) {
-                    response = pag.findBAPInAllFilter(name, branch, start_date, end_date, PageRequest.of(page, size));
-                } else if (getUser.getLevel().getId() == 2) {
-                    response = pag.findBAPInAllFilter(name, branch, start_date, end_date, PageRequest.of(page, size));
-                } else if (getUser.getLevel().getId() == 3) {
-                    response = pag.findBAPInUserid(getUser.getId(),  PageRequest.of(page, size));
-                }
+                response = pag.findBAPInAllFilter(name, branch, start_date, end_date, PageRequest.of(page, size));
             } else if (name != null) {
                 if (branch != null) {
                     response = pag.findBAPInNameAndBranch(name, branch, PageRequest.of(page, size));
@@ -74,7 +71,38 @@ public class NewsInspectionService {
             } else if (start_date != null && end_date != null) {
                 response = pag.findBAPInDateRange(start_date, end_date, PageRequest.of(page, size));
             } else {
-                response = pag.findAll(PageRequest.of(page, size));
+                if (getUser.getLevel().getId() == 3) {
+                    response = pag.findBAPInUserid(getUser.getId(), PageRequest.of(page, size));
+            } else if (getUser.getLevel().getId() == 2) {
+                    Pageable pageable = PageRequest.of(page, size);
+                    List<NewsInspection> lhaList = new ArrayList<>();
+                    for (int i = 0; i < getUser.getRegionId().size(); i++) {
+                            List<NewsInspection> clAgain = new ArrayList<>();
+                            clAgain = repository.findByRegionId(getUser.getRegionId().get(i));
+                            if (!clAgain.isEmpty()) {
+                                    for (int u = 0; u < clAgain.size(); u++) {
+                                            lhaList.add(clAgain.get(u));
+                                    }
+                            }
+                    }
+                    try {
+                            int start = (int) pageable.getOffset();
+                            int end = Math.min((start + pageable.getPageSize()),
+                                            lhaList.size());
+                            List<NewsInspection> pageContent = lhaList.subList(start, end);
+                            Page<NewsInspection> response2 = new PageImpl<>(pageContent, pageable,
+                                            lhaList.size());
+                            response = response2;
+                    } catch (Exception e) {
+                            return GlobalResponse
+                                            .builder()
+                                            .error(e)
+                                            .status(HttpStatus.BAD_REQUEST)
+                                            .build();
+                    }
+            } else if (getUser.getLevel().getId() == 1) {
+                    response = pag.findAll(PageRequest.of(page, size));
+            }
             }
             List<Object> listBAP = new ArrayList<>();
             for (int i = 0; i < response.getContent().size(); i++) {

@@ -37,6 +37,9 @@ public interface PagNewsInspection extends PagingAndSortingRepository<NewsInspec
     @Query(value = "SELECT u.* FROM news_inspection u WHERE u.branch_id = :branchId ", nativeQuery = true)
     Page<NewsInspection> findBAPInBranch(@Param("branchId")Long id, Pageable pageable);
 
+    @Query(value = "SELECT u.* FROM news_inspection u WHERE u.user_id = :branchId ", nativeQuery = true)
+    Page<NewsInspection> findBAPInUser(@Param("branchId")Long id, Pageable pageable);
+
     @Query(value = "SELECT * FROM news_inspection u WHERE u.created_at BETWEEN :start_date AND :end_date ", nativeQuery = true)
     Page<NewsInspection> findBAPInDateRange(@Param("start_date") Date start_date,
             @Param("end_date") Date end_date, Pageable pageable);

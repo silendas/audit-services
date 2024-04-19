@@ -18,6 +18,9 @@ public interface PagClarification extends PagingAndSortingRepository<Clarificati
     @Query(value = "SELECT * FROM clarification u ORDER BY u.id DESC ;", nativeQuery = true)
     Page<Clarification> findAllLHADetail(Pageable pageable);
 
+    @Query(value = "SELECT * FROM clarification u WHERE u.user_id = :id ORDER BY u.id DESC ;", nativeQuery = true)
+    Page<Clarification> findByUserId(@Param("id") Long id, Pageable pageable);
+
     @Query(value = "SELECT * FROM clarification u WHERE u.branch_id = :id ORDER BY u.id DESC ;", nativeQuery = true)
     Page<Clarification> findByBranchId(@Param("id") Long id, Pageable pageable);
 
