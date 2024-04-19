@@ -786,8 +786,8 @@ public class ScheduleService {
         public GlobalResponse getByUserId(Long id, String category, int page, int size, Date start_date,
                         Date end_date) {
                 try {
-                        Page<Schedule> response;
-                        if (start_date == null || end_date == null) {
+                        Page<Schedule> response = null;
+                        if (start_date == null && end_date == null) {
                                 response = pagSchedule.findAllScheduleByUserId(id, category,
                                                 PageRequest.of(page, size));
                         } else {
