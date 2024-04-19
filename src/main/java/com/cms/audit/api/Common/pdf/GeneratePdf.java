@@ -31,7 +31,7 @@ public class GeneratePdf {
         @SuppressWarnings("resource")
         public static PDFResponse generateClarificationPDF(Clarification response, String formulir)
                         throws FileNotFoundException, MalformedURLException {
-                String fileName = randomValueNumber.randomNumberGenerator() + response.getUser().getInitial_name() + "-"
+                String fileName = randomValueNumber.randomNumberGenerator() + "-" + response.getUser().getInitial_name() + "-"
                                 + response.getReport_number() + "-clarification.pdf";
                 String path = FolderPath.FOLDER_PATH_CLARIFICATION + fileName;
                 PdfWriter pdfWriter = new PdfWriter(path);
@@ -317,7 +317,7 @@ public class GeneratePdf {
                 body5.addCell(new Cell().add(nestedbody6).setMargin(0).setPadding(0).setBorder(Border.NO_BORDER));
 
                 String imagePath2 = "image\\checklist.png";
-                File imageFile2 = new File(imagePath);
+                File imageFile2 = new File(imagePath2);
 
                 // Mengecek apakah file gambar ada
                 if (!imageFile2.exists()) {
@@ -377,7 +377,7 @@ public class GeneratePdf {
 
         public static PDFResponse generateFollowUpPDF(FollowUp response)
                         throws FileNotFoundException, MalformedURLException {
-                String fileName = randomValueNumber.randomNumberGenerator()
+                String fileName = randomValueNumber.randomNumberGenerator() + "-"
                                 + response.getClarification().getUser().getInitial_name()
                                 + "-followup.pdf";
                 String path = FolderPath.FOLDER_PATH_UPLOAD_FOLLOW_UP + fileName;

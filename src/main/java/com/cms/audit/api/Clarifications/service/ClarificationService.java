@@ -7,10 +7,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.springframework.data.domain.Pageable;
 import org.apache.tomcat.util.http.fileupload.impl.IOFileUploadException;
 import org.hibernate.exception.DataException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -18,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.cms.audit.api.AuditWorkingPaper.models.AuditWorkingPaper;
 import com.cms.audit.api.Clarifications.dto.GenerateCKDTO;
 import com.cms.audit.api.Clarifications.dto.IdentificationDTO;
 import com.cms.audit.api.Clarifications.dto.InputClarificationDTO;
@@ -78,15 +81,20 @@ public class ClarificationService {
 
         public GlobalResponse getAll(String name, Long branchId, int page, int size, Date start_date, Date end_date) {
                 try {
-                        Page<Clarification> response;
+                        User getUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+                        Page<Clarification> response = null;
                         if (branchId != null && name != null && start_date != null && end_date != null) {
                                 String likeName = name;
-                                response = pag.findByAllFilter(likeName, start_date, end_date, PageRequest.of(page, size));
+                                response = pag.findByAllFilter(likeName, start_date, end_date,
+                                                PageRequest.of(page, size));
                         } else if (branchId != null) {
                                 if (start_date != null && end_date != null) {
-                                        response = pag.findByBranchIdByDate(branchId, start_date, end_date, PageRequest.of(page, size));
-                                } else if(name != null){
-                                        response = pag.findByFullnameLikeAndBranch(name, branchId, PageRequest.of(page, size));
+                                        response = pag.findByBranchIdByDate(branchId, start_date, end_date,
+                                                        PageRequest.of(page, size));
+                                } else if (name != null) {
+                                        response = pag.findByFullnameLikeAndBranch(name, branchId,
+                                                        PageRequest.of(page, size));
                                 } else {
                                         response = pag.findByBranchId(branchId,
                                                         PageRequest.of(page, size));
@@ -94,7 +102,8 @@ public class ClarificationService {
                         } else if (name != null) {
                                 String likeName = name;
                                 if (start_date != null && end_date != null) {
-                                        response = pag.findByFullnameLikeByDate(likeName, start_date, end_date, PageRequest.of(page, size));
+                                        response = pag.findByFullnameLikeByDate(likeName, start_date, end_date,
+                                                        PageRequest.of(page, size));
                                 } else {
                                         response = pag.findByFullnameLike(likeName,
                                                         PageRequest.of(page, size));
@@ -103,7 +112,38 @@ public class ClarificationService {
                                 response = pag.findClarificationInDateRange(start_date, end_date,
                                                 PageRequest.of(page, size));
                         } else {
-                                response = pag.findAll(PageRequest.of(page, size));
+                                if (getUser.getLevel().getId() == 3) {
+                                        response = pag.findByUserId(getUser.getId(), PageRequest.of(page, size));
+                                } else if (getUser.getLevel().getId() == 2) {
+                                        Pageable pageable = PageRequest.of(page, size);
+                                        List<Clarification> lhaList = new ArrayList<>();
+                                        for (int i = 0; i < getUser.getRegionId().size(); i++) {
+                                                List<Clarification> clAgain = new ArrayList<>();
+                                                clAgain = repository.findByRegionId(getUser.getRegionId().get(i));
+                                                if (!clAgain.isEmpty()) {
+                                                        for (int u = 0; u < clAgain.size(); u++) {
+                                                                lhaList.add(clAgain.get(u));
+                                                        }
+                                                }
+                                        }
+                                        try {
+                                                int start = (int) pageable.getOffset();
+                                                int end = Math.min((start + pageable.getPageSize()),
+                                                                lhaList.size());
+                                                List<Clarification> pageContent = lhaList.subList(start, end);
+                                                Page<Clarification> response2 = new PageImpl<>(pageContent, pageable,
+                                                                lhaList.size());
+                                                response = response2;
+                                        } catch (Exception e) {
+                                                return GlobalResponse
+                                                                .builder()
+                                                                .error(e)
+                                                                .status(HttpStatus.BAD_REQUEST)
+                                                                .build();
+                                        }
+                                } else if (getUser.getLevel().getId() == 1) {
+                                        response = pag.findAll(PageRequest.of(page, size));
+                                }
                         }
                         List<Object> listCl = new ArrayList<>();
                         for (int i = 0; i < response.getContent().size(); i++) {
@@ -191,7 +231,6 @@ public class ClarificationService {
                         Map<String, Object> clarification = new LinkedHashMap<>();
                         clarification.put("id", response.getId());
 
-
                         Map<String, Object> user = new LinkedHashMap<>();
                         user.put("id", response.getUser().getId());
                         user.put("fullname", response.getUser().getFullname());
@@ -227,11 +266,12 @@ public class ClarificationService {
                         clarification.put("evaluation", response.getEvaluation());
                         clarification.put("status", response.getStatus());
                         clarification.put("nominal_loss", response.getNominal_loss());
-                        if(response.getEvaluation_limitation() == null){
-                                clarification.put("evaluation_limitation",null);
+                        if (response.getEvaluation_limitation() == null) {
+                                clarification.put("evaluation_limitation", null);
                         } else {
                                 clarification.put("evaluation_limitation",
-                                        convertDateToRoman.convertDateToString(response.getEvaluation_limitation()));
+                                                convertDateToRoman.convertDateToString(
+                                                                response.getEvaluation_limitation()));
                         }
                         clarification.put("is_follow_up", response.getIs_follow_up());
                         if (response.getFilename() == null) {
@@ -462,13 +502,13 @@ public class ClarificationService {
 
                         Clarification getResponse = repository.save(clarification2);
 
-                        Map<String,Object> returnResponse = new LinkedHashMap<>();
-                        Map<String,Object> mappingRes = new LinkedHashMap<>();
-                        mappingRes.put("id", getResponse.getId()); 
-                        mappingRes.put("file_name", getResponse.getFilename()); 
-                        mappingRes.put("file_path", getResponse.getFile_path()); 
+                        Map<String, Object> returnResponse = new LinkedHashMap<>();
+                        Map<String, Object> mappingRes = new LinkedHashMap<>();
+                        mappingRes.put("id", getResponse.getId());
+                        mappingRes.put("file_name", getResponse.getFilename());
+                        mappingRes.put("file_path", getResponse.getFile_path());
 
-                        returnResponse.put("clarification", mappingRes); 
+                        returnResponse.put("clarification", mappingRes);
 
                         return GlobalResponse
                                         .builder()
@@ -537,8 +577,8 @@ public class ClarificationService {
 
                         Long reportNumber = null;
                         String rptNum = null;
-                        
-                        Map<String,Object> returnResponse = new LinkedHashMap<>();
+
+                        Map<String, Object> returnResponse = new LinkedHashMap<>();
 
                         if (!dto.getNominal_loss().isEmpty() || dto.getNominal_loss() != "") {
 
@@ -595,11 +635,11 @@ public class ClarificationService {
 
                                 NewsInspection getResponse = newsInspectionRepository.save(newsInspection);
 
-                                Map<String,Object> mappingFU = new LinkedHashMap<>();
-                                mappingFU.put("id", getResponse.getId()); 
-                                mappingFU.put("code", getResponse.getCode()); 
+                                Map<String, Object> mappingFU = new LinkedHashMap<>();
+                                mappingFU.put("id", getResponse.getId());
+                                mappingFU.put("code", getResponse.getCode());
 
-                                returnResponse.put("bap", mappingFU); 
+                                returnResponse.put("bap", mappingFU);
                         }
 
                         if (dto.getIs_followup() != 0 || dto.getIs_followup() != null

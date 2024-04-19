@@ -60,6 +60,8 @@ public class ResponseEntittyHandler {
             map.put("status", status.value());
             if(data !=null){
                 map.put("data", data);
+            }else{
+                map.put("data", null);
             }
         }
 

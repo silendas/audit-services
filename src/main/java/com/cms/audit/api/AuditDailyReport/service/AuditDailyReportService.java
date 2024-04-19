@@ -128,9 +128,12 @@ public class AuditDailyReportService {
                                                 Pageable pageable = PageRequest.of(page, size);
                                                 List<AuditDailyReport> lhaList = new ArrayList<>();
                                                 for (int i = 0; i < getUser.getRegionId().size(); i++) {
-                                                        List<AuditDailyReport> lhaAgain = auditDailyReportRepository
-                                                                        .findByRegionId(
-                                                                                        getUser.getRegionId().get(i));
+                                                        List<AuditDailyReport> lhaAgain = new ArrayList<>();
+                                                        if (startDate != null && endDate != null) {
+                                                                lhaAgain = auditDailyReportRepository.findByRegionIdAndDate(branch_id, startDate, endDate);
+                                                        } else {
+                                                                lhaAgain = auditDailyReportRepository.findByRegionId(getUser.getRegionId().get(i));
+                                                        }
                                                         if (!lhaAgain.isEmpty()) {
                                                                 for (int u = 0; u < lhaAgain.size(); u++) {
                                                                         lhaList.add(lhaAgain.get(u));
@@ -141,8 +144,10 @@ public class AuditDailyReportService {
                                                         int start = (int) pageable.getOffset();
                                                         int end = Math.min((start + pageable.getPageSize()),
                                                                         lhaList.size());
-                                                        List<AuditDailyReport> pageContent = lhaList.subList(start, end);
-                                                        Page<AuditDailyReport> response2 = new PageImpl<>(pageContent, pageable,
+                                                        List<AuditDailyReport> pageContent = lhaList.subList(start,
+                                                                        end);
+                                                        Page<AuditDailyReport> response2 = new PageImpl<>(pageContent,
+                                                                        pageable,
                                                                         lhaList.size());
                                                         response = response2;
                                                 } catch (Exception e) {

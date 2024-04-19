@@ -5,12 +5,16 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+
+import org.springframework.data.domain.Pageable;
 
 import org.apache.coyote.BadRequestException;
 import org.apache.tomcat.util.http.fileupload.impl.IOFileUploadException;
 import org.hibernate.exception.DataException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -24,6 +28,7 @@ import com.cms.audit.api.AuditWorkingPaper.repository.PagAuditWorkingPaper;
 import com.cms.audit.api.Common.constant.FileStorageKKA;
 import com.cms.audit.api.Common.constant.FolderPath;
 import com.cms.audit.api.Common.constant.convertDateToRoman;
+import com.cms.audit.api.Common.exception.ResourceNotFoundException;
 import com.cms.audit.api.Common.response.GlobalResponse;
 import com.cms.audit.api.InspectionSchedule.models.EStatus;
 import com.cms.audit.api.InspectionSchedule.models.Schedule;
@@ -86,7 +91,32 @@ public class AuditWorkingPaperService {
                         response = pag.findAllWorkingPaper(PageRequest.of(page, size));
                     }
                 } else if (getUser.getLevel().getId() == 2) {
-
+                    Pageable pageable = PageRequest.of(page, size);
+                    List<AuditWorkingPaper> lhaList = new ArrayList<>();
+                    for (int i = 0; i < getUser.getRegionId().size(); i++) {
+                        List<AuditWorkingPaper> kkaAgain = new ArrayList<>();
+                            kkaAgain = repository.findByRegionId(getUser.getRegionId().get(i));
+                            if (!kkaAgain.isEmpty()) {
+                                    for (int u = 0; u < kkaAgain.size(); u++) {
+                                            lhaList.add(kkaAgain.get(u));
+                                    }
+                            }
+                    }
+                    try {
+                            int start = (int) pageable.getOffset();
+                            int end = Math.min((start + pageable.getPageSize()),
+                                            lhaList.size());
+                            List<AuditWorkingPaper> pageContent = lhaList.subList(start, end);
+                            Page<AuditWorkingPaper> response2 = new PageImpl<>(pageContent, pageable,
+                                            lhaList.size());
+                            response = response2;
+                    } catch (Exception e) {
+                            return GlobalResponse
+                                            .builder()
+                                            .error(e)
+                                            .status(HttpStatus.BAD_REQUEST)
+                                            .build();
+                    }
                 } else if (getUser.getLevel().getId() == 3) {
                     if (start_date != null && end_date != null) {
                         response = pag.findAllWorkingPaperByUserIdAndDate(getUser.getId(), start_date, end_date,
@@ -214,32 +244,32 @@ public class AuditWorkingPaperService {
 
     public GlobalResponse uploadFile(MultipartFile file, Long id) {
         try {
-            Schedule getSchedule = scheduleRepository.findById(id)
-                    .orElseThrow(() -> new BadRequestException("Schedule with id: " + id + " is undefined"));
+            Optional<Schedule> getSchedule = scheduleRepository.findById(id);
 
-            // String name = randomValueNumber.randomNumberGenerator() +
-            // file.getOriginalFilename();
+            if(!getSchedule.isPresent()){
+                return GlobalResponse.builder().message("Schedule with id:" + id + " is not found").build();
+            }
 
             String fileName = fileStorageService.storeFile(file);
             String path = FOLDER_PATH + fileName;
 
             AuditWorkingPaper kka = new AuditWorkingPaper();
-            kka.setUser(getSchedule.getUser());
-            kka.setBranch(getSchedule.getBranch());
-            kka.setSchedule(getSchedule);
-            kka.setStart_date(getSchedule.getStart_date());
+            kka.setUser(getSchedule.get().getUser());
+            kka.setBranch(getSchedule.get().getBranch());
+            kka.setSchedule(getSchedule.get());
+            kka.setStart_date(getSchedule.get().getStart_date());
             kka.setEnd_date(new Date());
             kka.setFilename(fileName);
             kka.setFile_path(path);
             kka.setIs_delete(0);
-            kka.setCreated_by(getSchedule.getCreatedBy());
+            kka.setCreated_by(getSchedule.get().getCreatedBy());
             kka.setCreated_at(new Date());
 
             repository.save(kka);
 
             // file.transferTo(new File(filePath));
 
-            Schedule schedule = getSchedule;
+            Schedule schedule = getSchedule.get();
             schedule.setStatus(EStatus.DONE);
             schedule.setEnd_date_realization(new Date());
 
@@ -272,7 +302,7 @@ public class AuditWorkingPaperService {
     }
 
     public AuditWorkingPaper downloadFile(String fileName) throws java.io.IOException, IOFileUploadException {
-        AuditWorkingPaper response = repository.findByFilenameis(fileName)
+        AuditWorkingPaper response = repository.findByFilenameString(fileName)
                 .orElseThrow(() -> new BadRequestException("File not found with name: " + fileName));
         return response;
     }
