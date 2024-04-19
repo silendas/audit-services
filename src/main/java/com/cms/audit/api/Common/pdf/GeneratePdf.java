@@ -316,7 +316,7 @@ public class GeneratePdf {
                                 .setMargin(0).setPadding(2));
                 body5.addCell(new Cell().add(nestedbody6).setMargin(0).setPadding(0).setBorder(Border.NO_BORDER));
 
-                String imagePath2 = "image\\checklist.png";
+                String imagePath2 = "image/checklist.png";
                 File imageFile2 = new File(imagePath2);
 
                 // Mengecek apakah file gambar ada
