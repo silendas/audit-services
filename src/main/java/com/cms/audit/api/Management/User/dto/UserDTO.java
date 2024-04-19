@@ -1,7 +1,6 @@
 package com.cms.audit.api.Management.User.dto;
 
 import java.util.List;
-import java.util.Optional;
 
 import javax.validation.constraints.Size;
 

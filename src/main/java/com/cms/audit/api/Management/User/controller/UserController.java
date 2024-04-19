@@ -2,8 +2,6 @@ package com.cms.audit.api.Management.User.controller;
 
 import java.util.*;
 
-import javax.validation.Valid;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;

@@ -13,8 +13,6 @@ import com.cms.audit.api.AuditDailyReport.models.Revision;
 import com.cms.audit.api.AuditDailyReport.repository.AuditDailyReportDetailRepository;
 import com.cms.audit.api.AuditDailyReport.repository.RevisionRepository;
 import com.cms.audit.api.Common.response.GlobalResponse;
-import com.cms.audit.api.Management.Case.repository.CaseRepository;
-import com.cms.audit.api.Management.CaseCategory.repository.CaseCategoryRepository;
 import com.cms.audit.api.Management.User.models.User;
 
 import jakarta.transaction.Transactional;
@@ -28,12 +26,6 @@ public class RevisionService {
 
     @Autowired
     private AuditDailyReportDetailRepository auditDailyReportDetailRepository;
-
-    @Autowired
-    private CaseRepository caseRepository;
-
-    @Autowired
-    private CaseCategoryRepository caseCategoryRepository;
 
     public GlobalResponse getAll(Long detaild) {
         try {

@@ -20,7 +20,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.cms.audit.api.AuditWorkingPaper.models.AuditWorkingPaper;
 import com.cms.audit.api.Clarifications.dto.GenerateCKDTO;
 import com.cms.audit.api.Clarifications.dto.IdentificationDTO;
 import com.cms.audit.api.Clarifications.dto.InputClarificationDTO;

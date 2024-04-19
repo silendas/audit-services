@@ -2,7 +2,6 @@ package com.cms.audit.api.Management.ReportType.models;
 
 import java.util.Date;
 
-import com.cms.audit.api.Management.User.models.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.*;

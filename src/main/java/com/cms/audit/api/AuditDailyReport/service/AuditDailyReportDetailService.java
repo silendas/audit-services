@@ -387,7 +387,7 @@ public class AuditDailyReportDetailService {
                     getBefore.get().getCreated_at(),
                     new Date());
 
-            AuditDailyReportDetail response = repository.save(auditDailyReport);
+            repository.save(auditDailyReport);
             return GlobalResponse
                     .builder()
                     .message("Success")
@@ -432,7 +432,7 @@ public class AuditDailyReportDetailService {
             auditDailyReport.setUpdated_by(user.getId());
             auditDailyReport.setUpdate_at(new Date());
 
-            AuditDailyReportDetail response = repository.save(auditDailyReport);
+             repository.save(auditDailyReport);
 
             return GlobalResponse
                     .builder()

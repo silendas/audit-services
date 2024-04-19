@@ -19,7 +19,6 @@ import com.cms.audit.api.Management.CaseCategory.dto.response.CaseCategoryInterf
 import com.cms.audit.api.Management.CaseCategory.models.CaseCategory;
 import com.cms.audit.api.Management.CaseCategory.repository.CaseCategoryRepository;
 import com.cms.audit.api.Management.CaseCategory.repository.PagCaseCategory;
-import com.cms.audit.api.Management.Office.AreaOffice.models.Area;
 
 import jakarta.transaction.Transactional;
 

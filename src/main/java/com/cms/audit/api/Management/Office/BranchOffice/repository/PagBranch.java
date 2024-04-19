@@ -1,7 +1,5 @@
 package com.cms.audit.api.Management.Office.BranchOffice.repository;
 
-import java.util.List;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;

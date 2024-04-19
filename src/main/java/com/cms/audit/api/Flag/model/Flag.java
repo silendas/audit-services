@@ -2,7 +2,6 @@ package com.cms.audit.api.Flag.model;
 
 import java.util.Date;
 
-import com.cms.audit.api.AuditDailyReport.models.AuditDailyReport;
 import com.cms.audit.api.AuditDailyReport.models.AuditDailyReportDetail;
 import com.cms.audit.api.Clarifications.models.Clarification;
 

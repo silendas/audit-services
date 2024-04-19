@@ -2,7 +2,6 @@ package com.cms.audit.api.Config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -13,7 +12,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.cms.audit.api.Management.User.repository.UserRepository;
-import com.fasterxml.jackson.annotation.JsonInclude;
 
 //import com.cms.audit.config.jwt.JwtBlacklist;
 
