@@ -7,7 +7,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import com.cms.audit.api.AuditDailyReport.models.AuditDailyReport;
 import com.cms.audit.api.Clarifications.dto.response.NumberClarificationInterface;
 import com.cms.audit.api.Clarifications.models.Clarification;
 

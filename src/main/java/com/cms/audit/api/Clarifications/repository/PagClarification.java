@@ -1,7 +1,6 @@
 package com.cms.audit.api.Clarifications.repository;
 
 import java.util.Date;
-import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -28,17 +27,17 @@ public interface PagClarification extends PagingAndSortingRepository<Clarificati
     Page<Clarification> findByBranchIdByDate(@Param("id") Long id,@Param("start_date") Date start_date,
     @Param("end_date") Date end_date, Pageable pageable);
 
-    @Query(value = "SELECT * FROM clarification u INNER JOIN users us ON us.id = u.user_id WHERE us.fullname LIKE :name AND u.branch_id = :id ORDER BY u.id DESC ;", nativeQuery = true)
+    @Query(value = "SELECT u.* FROM clarification u INNER JOIN users us ON us.id = u.user_id WHERE us.fullname LIKE :name AND u.branch_id = :id ORDER BY u.id DESC ;", nativeQuery = true)
     Page<Clarification> findByFullnameLikeAndBranch(@Param("name") String name,@Param("id") Long id, Pageable pageable);
 
-    @Query(value = "SELECT * FROM clarification u INNER JOIN users us ON us.id = u.user_id WHERE us.fullname LIKE :name ORDER BY u.id DESC ;", nativeQuery = true)
+    @Query(value = "SELECT u.* FROM clarification u INNER JOIN users us ON us.id = u.user_id WHERE us.fullname LIKE :name ORDER BY u.id DESC ;", nativeQuery = true)
     Page<Clarification> findByFullnameLike(@Param("name") String name, Pageable pageable);
 
-    @Query(value = "SELECT * FROM clarification u INNER JOIN users us ON us.id = u.user_id WHERE us.fullname LIKE :name AND u.created_at BETWEEN :start_date AND :end_date ORDER BY u.id DESC ;", nativeQuery = true)
+    @Query(value = "SELECT u.* FROM clarification u INNER JOIN users us ON us.id = u.user_id WHERE us.fullname LIKE :name AND u.created_at BETWEEN :start_date AND :end_date ORDER BY u.id DESC ;", nativeQuery = true)
     Page<Clarification> findByFullnameLikeByDate(@Param("name") String name, @Param("start_date") Date start_date,
     @Param("end_date") Date end_date, Pageable pageable);
 
-    @Query(value = "SELECT * FROM clarification u INNER JOIN users us ON us.id = u.user_id WHERE us.fullname LIKE :name AND u.branch_id = :id AND u.created_at BETWEEN :start_date AND :end_date ORDER BY u.id DESC ;", nativeQuery = true)
+    @Query(value = "SELECT u.* FROM clarification u INNER JOIN users us ON us.id = u.user_id WHERE us.fullname LIKE :name AND u.branch_id = :id AND u.created_at BETWEEN :start_date AND :end_date ORDER BY u.id DESC ;", nativeQuery = true)
     Page<Clarification> findByAllFilter(@Param("name") String name, @Param("start_date") Date start_date,
     @Param("end_date") Date end_date, Pageable pageable);
 

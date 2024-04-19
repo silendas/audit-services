@@ -23,7 +23,6 @@ import com.cms.audit.api.Management.Office.BranchOffice.dto.response.BranchInter
 import com.cms.audit.api.Management.Office.BranchOffice.models.Branch;
 import com.cms.audit.api.Management.Office.BranchOffice.repository.BranchRepository;
 import com.cms.audit.api.Management.Office.BranchOffice.repository.PagBranch;
-import com.cms.audit.api.Management.Office.RegionOffice.models.Region;
 import com.cms.audit.api.Management.User.models.User;
 
 import jakarta.transaction.Transactional;

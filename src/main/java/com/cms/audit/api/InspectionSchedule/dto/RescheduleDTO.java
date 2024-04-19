@@ -2,7 +2,6 @@ package com.cms.audit.api.InspectionSchedule.dto;
 
 import java.util.Date;
 
-import com.cms.audit.api.InspectionSchedule.models.EStatus;
 
 import lombok.Data;
 import lombok.Getter;

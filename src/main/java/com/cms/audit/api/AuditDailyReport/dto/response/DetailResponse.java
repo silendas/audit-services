@@ -1,7 +1,5 @@
 package com.cms.audit.api.AuditDailyReport.dto.response;
 
-import com.cms.audit.api.Management.Case.models.Case;
-import com.cms.audit.api.Management.CaseCategory.models.CaseCategory;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

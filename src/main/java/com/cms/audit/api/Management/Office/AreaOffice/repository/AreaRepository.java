@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import com.cms.audit.api.Management.Level.models.Level;
+
 import com.cms.audit.api.Management.Office.AreaOffice.dto.response.AreaInterface;
 import com.cms.audit.api.Management.Office.AreaOffice.models.Area;
 

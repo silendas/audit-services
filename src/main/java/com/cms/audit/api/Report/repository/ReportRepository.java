@@ -2,9 +2,6 @@ package com.cms.audit.api.Report.repository;
 
 import java.util.*;
 
-import org.hibernate.validator.constraints.ParameterScriptAssert;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

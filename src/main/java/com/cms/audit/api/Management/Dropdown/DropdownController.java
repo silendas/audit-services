@@ -32,7 +32,6 @@ import com.cms.audit.api.Management.Penalty.services.PenaltyService;
 import com.cms.audit.api.Management.ReportType.services.ReportTypeService;
 import com.cms.audit.api.Management.Role.services.RoleService;
 import com.cms.audit.api.Management.User.dto.DropDownUserDTO;
-import com.cms.audit.api.Management.User.dto.response.DropDownUser;
 import com.cms.audit.api.Management.User.models.User;
 import com.cms.audit.api.Management.User.repository.UserRepository;
 import com.cms.audit.api.Management.User.services.UserService;
