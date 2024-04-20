@@ -18,7 +18,7 @@ public class FileStorageKKA {
 
     @Autowired
     public FileStorageKKA(Environment env) {
-        this.fileStorageLocation = Paths.get(env.getProperty("app.file.upload-dir-kka", "./uploads/kka"))
+        this.fileStorageLocation = Paths.get(env.getProperty("app.file.upload-dir-kka", "./uploaded/kka"))
                 .toAbsolutePath().normalize();
 
         try {

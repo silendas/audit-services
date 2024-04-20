@@ -160,7 +160,7 @@ public class GeneratePdf {
                                                 .setBackgroundColor(Color.LIGHT_GRAY)
                                                 .setTextAlignment(TextAlignment.CENTER));
                 nestedsubheader3
-                                .addCell(new Cell().add("").setFontSize(10).setHeight(30)
+                                .addCell(new Cell().add(response.getCases().getName()).setFontSize(10).setHeight(30)
                                                 .setTextAlignment(TextAlignment.CENTER)
                                                 .setVerticalAlignment(VerticalAlignment.MIDDLE));
                 nestedsubheader3
@@ -325,7 +325,7 @@ public class GeneratePdf {
                 }
 
                 // Menggunakan Path dari File untuk mendapatkan path absolut
-                String absoluteImagePath2 = imageFile.getAbsolutePath();
+                String absoluteImagePath2 = imageFile2.getAbsolutePath();
 
                 // Membuat ImageData dari path gambar absolut
                 ImageData imageData2 = ImageDataFactory.create(absoluteImagePath2);

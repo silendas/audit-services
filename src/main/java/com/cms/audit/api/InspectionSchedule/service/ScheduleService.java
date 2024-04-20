@@ -38,6 +38,7 @@ import com.cms.audit.api.InspectionSchedule.repository.PagSchedule;
 import com.cms.audit.api.InspectionSchedule.repository.ScheduleRepository;
 import com.cms.audit.api.InspectionSchedule.repository.ScheduleTrxRepo;
 import com.cms.audit.api.Management.Office.BranchOffice.models.Branch;
+import com.cms.audit.api.Management.Office.BranchOffice.repository.BranchRepository;
 import com.cms.audit.api.Management.User.dto.UserResponseOther;
 import com.cms.audit.api.Management.User.models.User;
 import com.cms.audit.api.Management.User.repository.UserRepository;
@@ -65,6 +66,9 @@ public class ScheduleService {
 
         @Autowired
         private AuditWorkingPaperRepository auditWorkingPaperRepository;
+
+        @Autowired
+        private BranchRepository branchRepository;
 
         @Autowired
         private UserRepository userRepository;
@@ -164,7 +168,7 @@ public class ScheduleService {
                         } else if (start_date != null && end_date != null) {
                                 response = pagSchedule.findAllScheduleByDateRange(category, start_date, end_date,PageRequest.of(page, size));
                         } else {
-                                response = pagSchedule.findAll(PageRequest.of(page, size));
+                                response = pagSchedule.findAllSchedule(PageRequest.of(page, size));
                         }
                         if (response.isEmpty()) {
                                 return GlobalResponse
@@ -529,7 +533,7 @@ public class ScheduleService {
                         if (!getSchedule.isPresent()) {
                                 return GlobalResponse
                                                 .builder()
-                                                .message("Data not found of schedule")
+                                                .message("Data schedule with id :" + id + " is undefined")
                                                 .status(HttpStatus.OK)
                                                 .build();
                         }
@@ -550,7 +554,7 @@ public class ScheduleService {
 
                                         List<AuditDailyReportDetail> detail = auditDailyReportDetailRepository
                                                         .findByLHAId(getLha.get(i).getId());
-                                        Integer flag = null;
+                                        Integer flag = 0;
                                         if (!detail.isEmpty()) {
                                                 for (int u = 0; u < detail.size(); u++) {
                                                         if (detail.get(u).getIs_research() == 1) {
@@ -691,25 +695,25 @@ public class ScheduleService {
                 map.put("status", response.getStatus());
                 map.put("category", response.getCategory());
                 if (response.getStart_date() == null) {
-                        map.put("start_date", null);
+                        map.put("start_date", "-");
                 } else {
                         map.put("start_date", convertDateToRoman
                                         .convertDateHehe(response.getStart_date()));
                 }
                 if (response.getEnd_date() == null) {
-                        map.put("end_date", null);
+                        map.put("end_date", "-");
                 } else {
                         map.put("end_date", convertDateToRoman
                                         .convertDateHehe(response.getEnd_date()));
                 }
                 if (response.getStart_date_realization() == null) {
-                        map.put("start_date_realization", null);
+                        map.put("start_date_realization", "-");
                 } else {
                         map.put("start_date_realization",
                                         convertDateToRoman.convertDateHehe(response.getStart_date_realization()));
                 }
                 if (response.getEnd_date_realization() == null) {
-                        map.put("end_date_realization", null);
+                        map.put("end_date_realization", "-");
                 } else {
                         map.put("end_date_realization",
                                         convertDateToRoman.convertDateHehe(response.getEnd_date_realization()));
@@ -866,18 +870,20 @@ public class ScheduleService {
                         User getUser = userRepository.findByUsername(username)
                                         .orElseThrow(() -> new ResourceNotFoundException("user not found"));
                         for (int i = 0; i < scheduleDTO.getSchedules().size(); i++) {
-                                Branch branchId = Branch.builder()
-                                                .id(scheduleDTO.getSchedules().get(i).getBranch_id())
-                                                .build();
+                                Optional<Branch> branchId = branchRepository.findById(scheduleDTO.getSchedules().get(i).getBranch_id());
+                                if(!branchId.isPresent()){
+                                        return GlobalResponse.builder().message("Branch with id: "+scheduleDTO.getSchedules().get(i).getBranch_id()+ " is undefined").build();
+                                }
 
-                                User userId = User.builder()
-                                                .id(scheduleDTO.getSchedules().get(i).getUser_id())
-                                                .build();
+                                Optional<User> userId = userRepository.findById(scheduleDTO.getSchedules().get(i).getUser_id());
+                                if(!userId.isPresent()){
+                                        return GlobalResponse.builder().message("User with id: "+scheduleDTO.getSchedules().get(i).getUser_id()+ " is undefined").build();
+                                }
                                 Schedule schedule = new Schedule(
                                                 null,
                                                 null,
-                                                userId,
-                                                branchId,
+                                                userId.get(),
+                                                branchId.get(),
                                                 scheduleDTO.getSchedules().get(i).getDescription(),
                                                 scheduleDTO.getSchedules().get(i).getStart_date(),
                                                 scheduleDTO.getSchedules().get(i).getEnd_date(),

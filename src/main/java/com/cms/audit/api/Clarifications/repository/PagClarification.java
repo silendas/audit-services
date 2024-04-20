@@ -41,7 +41,7 @@ public interface PagClarification extends PagingAndSortingRepository<Clarificati
     Page<Clarification> findByAllFilter(@Param("name") String name, @Param("start_date") Date start_date,
     @Param("end_date") Date end_date, Pageable pageable);
 
-    @Query(value = "SELECT * FROM clarification u WHERE u.created_at BETWEEN :start_date AND :end_date ", nativeQuery = true)
+    @Query(value = "SELECT * FROM clarification u WHERE u.created_at BETWEEN :start_date AND :end_date ORDER BY u.id DESC  ", nativeQuery = true)
     Page<Clarification> findClarificationInDateRange(@Param("start_date") Date start_date,
             @Param("end_date") Date end_date, Pageable pageable);
 }

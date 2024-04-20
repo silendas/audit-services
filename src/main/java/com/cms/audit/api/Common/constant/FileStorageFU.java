@@ -18,7 +18,7 @@ public class FileStorageFU {
 
     @Autowired
     public FileStorageFU(Environment env) {
-        this.fileStorageLocation = Paths.get(env.getProperty("app.file.upload-dir-fu", "./uploads/followup"))
+        this.fileStorageLocation = Paths.get(env.getProperty("app.file.upload-dir-fu", "./uploaded/followup"))
                 .toAbsolutePath().normalize();
 
         try {

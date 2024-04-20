@@ -547,6 +547,10 @@ public class ClarificationService {
                                                 .build();
                         }
 
+                        if(dto.getIs_followup() == null){
+                                dto.setIs_followup(0L);
+                        }
+
                         Clarification clarification = new Clarification(
                                         dto.getClarification_id(),
                                         getBefore.get().getUser(),
@@ -721,43 +725,16 @@ public class ClarificationService {
                                                 .build();
                         }
                         String fileName = fileStorageService.storeFile(file);
+                        System.out.println("File name : " + fileName);
 
                         String path = UPLOAD_FOLDER_PATH + fileName;
+                        System.out.println("File path : " + path);
 
-                        String filePath = path;
-
-                        User setUserId = User.builder().id(getClarification.get().getUser().getId()).build();
-                        Case setCaseId = Case.builder().id(getClarification.get().getCases().getId()).build();
-                        CaseCategory setCaseCaegoryId = CaseCategory.builder()
-                                        .id(getClarification.get().getCaseCategory().getId())
-                                        .build();
-                        ReportType setReportTypeId = ReportType.builder()
-                                        .id(getClarification.get().getReportType().getId())
-                                        .build();
-                        Clarification clarification = new Clarification(
-                                        id,
-                                        setUserId,
-                                        getClarification.get().getBranch(),
-                                        setCaseId,
-                                        setCaseCaegoryId,
-                                        setReportTypeId,
-                                        getClarification.get().getReport_number(),
-                                        getClarification.get().getCode(),
-                                        getClarification.get().getNominal_loss(),
-                                        getClarification.get().getEvaluation_limitation(),
-                                        getClarification.get().getLocation(),
-                                        getClarification.get().getAuditee(),
-                                        getClarification.get().getAuditee_leader(),
-                                        fileName,
-                                        filePath,
-                                        getClarification.get().getDescription(),
-                                        getClarification.get().getRecomendation(),
-                                        getClarification.get().getPriority(),
-                                        getClarification.get().getEvaluation(),
-                                        getClarification.get().getIs_follow_up(),
-                                        EStatusClarification.IDENTIFICATION,
-                                        new Date(),
-                                        new Date());
+                        Clarification clarification = getClarification.get();
+                        clarification.setFilename(fileName);
+                        clarification.setFile_path(path);
+                        clarification.setStatus(EStatusClarification.IDENTIFICATION);
+                        clarification.setUpdated_at(new Date());
                         repository.save(clarification);
 
                         // file.transferTo(new File(filePath));
@@ -792,6 +769,20 @@ public class ClarificationService {
                 Clarification response = repository.findByFilename(fileName)
                                 .orElseThrow(() -> new ResourceNotFoundException(
                                                 "File not found with name: " + fileName));
+
+                Clarification clarification = response;
+                clarification.setStatus(EStatusClarification.UPLOAD);
+                clarification.setUpdated_at(new Date());
+                repository.save(clarification);
+                
+                return response;
+        }
+
+        public Clarification getFile(String fileName) throws java.io.IOException, IOFileUploadException {
+                Clarification response = repository.findByFilename(fileName)
+                                .orElseThrow(() -> new ResourceNotFoundException(
+                                                "File not found with name: " + fileName));
+                
                 return response;
         }
 
