@@ -53,7 +53,7 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
         List<Schedule> findScheduleInDateRangeByRegionId(@Param("regionId") Long regionId, @Param("category") String ucategory,@Param("start_date") Date start_date,
         @Param("end_date") Date end_date);
 
-        @Query(value = "SELECT * FROM inspection_schedule u WHERE u.id = :scheduleId AND u.is_delete = 0 ", nativeQuery = true)
+        @Query(value = "SELECT * FROM inspection_schedule u WHERE u.id = :scheduleId ", nativeQuery = true)
         public Optional<Schedule> findOneScheduleById(@Param("scheduleId") Long scheduleId);
 
         @Query(value = "SELECT * FROM inspection_schedule u WHERE u.status = :status AND u.is_delete = 0 ", nativeQuery = true)

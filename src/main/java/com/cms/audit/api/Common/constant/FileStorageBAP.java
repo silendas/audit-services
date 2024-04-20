@@ -18,7 +18,7 @@ public class FileStorageBAP {
 
     @Autowired
     public FileStorageBAP(Environment env) {
-        this.fileStorageLocation = Paths.get(env.getProperty("app.file.upload-dir-ba", "./uploads/bap"))
+        this.fileStorageLocation = Paths.get(env.getProperty("app.file.upload-dir-ba", "./uploaded/bap"))
                 .toAbsolutePath().normalize();
 
         try {

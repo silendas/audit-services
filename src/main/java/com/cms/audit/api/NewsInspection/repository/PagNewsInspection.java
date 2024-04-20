@@ -16,31 +16,31 @@ public interface PagNewsInspection extends PagingAndSortingRepository<NewsInspec
 
     Page<NewsInspection> findAll(Pageable pageable);
 
-    @Query(value = "SELECT u.* FROM news_inspection u WHERE u.user_id = :userId ", nativeQuery = true)
+    @Query(value = "SELECT u.* FROM news_inspection u WHERE u.user_id = :userId ORDER BY u.id DESC ", nativeQuery = true)
     Page<NewsInspection> findBAPInUserid(@Param("userId")Long id, Pageable pageable);
 
-    @Query(value = "SELECT u.* FROM news_inspection u INNER JOIN users us ON u.user_id = us.id WHERE us.fullname LIKE %:name% AND u.branch_id = :branchId AND u.created_at BETWEEN :start_date AND :end_date ", nativeQuery = true)
+    @Query(value = "SELECT u.* FROM news_inspection u INNER JOIN users us ON u.user_id = us.id WHERE us.fullname LIKE %:name% AND u.branch_id = :branchId AND u.created_at BETWEEN :start_date AND :end_date ORDER BY u.id DESC ", nativeQuery = true)
     Page<NewsInspection> findBAPInAllFilter(@Param("name") String name, @Param("branchId")Long id,@Param("start_date") Date start_date,@Param("end_date") Date end_date, Pageable pageable);
 
-    @Query(value = "SELECT u.* FROM news_inspection u INNER JOIN users us ON u.user_id = us.id WHERE us.fullname LIKE %:name% AND u.created_at BETWEEN :start_date AND :end_date ", nativeQuery = true)
+    @Query(value = "SELECT u.* FROM news_inspection u INNER JOIN users us ON u.user_id = us.id WHERE us.fullname LIKE %:name% AND u.created_at BETWEEN :start_date AND :end_date ORDER BY u.id DESC ", nativeQuery = true)
     Page<NewsInspection> findBAPInNameAndDate(@Param("name") String name, @Param("start_date") Date start_date,@Param("end_date") Date end_date, Pageable pageable);
 
-    @Query(value = "SELECT u.* FROM news_inspection u INNER JOIN users us ON u.user_id = us.id WHERE us.fullname LIKE %:name% ", nativeQuery = true)
+    @Query(value = "SELECT u.* FROM news_inspection u INNER JOIN users us ON u.user_id = us.id WHERE us.fullname LIKE %:name% ORDER BY u.id DESC ", nativeQuery = true)
     Page<NewsInspection> findBAPInName(@Param("name") String name, Pageable pageable);
 
-    @Query(value = "SELECT u.* FROM news_inspection u INNER JOIN users us ON u.user_id = us.id WHERE us.fullname LIKE %:name% AND u.branch_id = :branchId ", nativeQuery = true)
+    @Query(value = "SELECT u.* FROM news_inspection u INNER JOIN users us ON u.user_id = us.id WHERE us.fullname LIKE %:name% AND u.branch_id = :branchId ORDER BY u.id DESC ", nativeQuery = true)
     Page<NewsInspection> findBAPInNameAndBranch(@Param("name") String name, @Param("branchId")Long id,Pageable pageable);
 
-    @Query(value = "SELECT u.* FROM news_inspection u WHERE u.branch_id = :branchId AND u.created_at BETWEEN :start_date AND :end_date ", nativeQuery = true)
+    @Query(value = "SELECT u.* FROM news_inspection u WHERE u.branch_id = :branchId AND u.created_at BETWEEN :start_date AND :end_date ORDER BY u.id DESC ", nativeQuery = true)
     Page<NewsInspection> findBAPInBranchAndDate(@Param("branchId")Long id,@Param("start_date") Date start_date,@Param("end_date") Date end_date, Pageable pageable);
 
-    @Query(value = "SELECT u.* FROM news_inspection u WHERE u.branch_id = :branchId ", nativeQuery = true)
+    @Query(value = "SELECT u.* FROM news_inspection u WHERE u.branch_id = :branchId ORDER BY u.id DESC ", nativeQuery = true)
     Page<NewsInspection> findBAPInBranch(@Param("branchId")Long id, Pageable pageable);
 
-    @Query(value = "SELECT u.* FROM news_inspection u WHERE u.user_id = :branchId ", nativeQuery = true)
+    @Query(value = "SELECT u.* FROM news_inspection u WHERE u.user_id = :branchId ORDER BY u.id DESC ", nativeQuery = true)
     Page<NewsInspection> findBAPInUser(@Param("branchId")Long id, Pageable pageable);
 
-    @Query(value = "SELECT * FROM news_inspection u WHERE u.created_at BETWEEN :start_date AND :end_date ", nativeQuery = true)
+    @Query(value = "SELECT * FROM news_inspection u WHERE u.created_at BETWEEN :start_date AND :end_date ORDER BY u.id DESC ", nativeQuery = true)
     Page<NewsInspection> findBAPInDateRange(@Param("start_date") Date start_date,
             @Param("end_date") Date end_date, Pageable pageable);
 }

@@ -16,6 +16,10 @@ import com.cms.audit.api.Management.User.models.User;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
+
+    @Query("SELECT u FROM User u WHERE u.is_delete <> 1 AND u.id <> 1")
+    List<User> findAllUser();
+
     @Query("SELECT u FROM User u where (u.email = ?1 or u.username = ?2) AND u.is_active = 1")
     Optional<User> findOneUsersByEmailOrUsername(String email, String username);
 
@@ -45,7 +49,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query(value = "SELECT * FROM users u where u.area_id = :id AND u.is_delete <> 1", nativeQuery = true)
     List<User> findUserByArea(@Param("id") Long id);
 
-    @Query(value = "SELECT u.id, u.fullname, u.initial_name FROM users u where u.is_delete <> 1;", nativeQuery = true)
+    @Query(value = "SELECT u.id, u.fullname, u.initial_name FROM users u where u.is_delete <> 1 AND u.id <> 1;", nativeQuery = true)
     List<DropDownUser> findDropDown();
 
     @Query(value = "SELECT r.user_id FROM users r WHERE r.region_id = :id", nativeQuery = true)

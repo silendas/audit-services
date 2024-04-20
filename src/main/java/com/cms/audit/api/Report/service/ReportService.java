@@ -282,21 +282,28 @@ public class ReportService {
             response = lhaRepository.findAllLHAByUserId(user_id);
         } else if (areaId != null) {
             response = lhaRepository.findLHAByRegion(areaId);
-        } else if (start_date != null && end_date != null) {
-            response = lhaRepository.findLHAInDateRange(start_date, end_date);
         } else {
             if (getUser.getLevel().getId() == 2) {
                 for (int i = 0; i < getUser.getRegionId().size(); i++) {
-                    List<AuditDailyReport> listLHA = lhaRepository
-                            .findLHAByRegion(getUser.getRegionId().get(i));
+                    List<AuditDailyReport> listLHA;
+                    if (start_date != null && end_date != null) {
+                        listLHA = lhaRepository.findLHAInDateRangeAndRegion(areaId, start_date, end_date);
+                    } else {
+                        listLHA = lhaRepository
+                                .findLHAByRegion(getUser.getRegionId().get(i));
+                    }
                     for (int u = 0; u < listLHA.size(); u++) {
                         response.add(listLHA.get(u));
                     }
                 }
             } else if (getUser.getLevel().getId() == 3) {
                 for (int i = 0; i < getUser.getBranchId().size(); i++) {
-                    List<AuditDailyReport> listLHA = lhaRepository
-                            .findLHAByBranch(getUser.getBranchId().get(i));
+                    List<AuditDailyReport> listLHA;
+                    if (start_date != null && end_date != null) {
+                        listLHA = lhaRepository.findAllLHAByUserIdInDateRange(getUser.getId(), start_date, end_date);
+                    } else {
+                        listLHA = lhaRepository.findAllLHAByUserId(getUser.getId());
+                    } 
                     for (int u = 0; u < listLHA.size(); u++) {
                         response.add(listLHA.get(u));
                     }
@@ -317,11 +324,34 @@ public class ReportService {
             for (int i = 0; i < response.size(); i++) {
                 String fullName = response.get(i).getUser().getFullname();
                 List<AuditDailyReportDetail> detail = lhaDetailRepository.findByLHAId(response.get(i).getId());
-
                 boolean found = false;
                 for (int j = 0; j < list.size(); j++) {
                     if (fullName.equals(list.get(j).getFullname())) {
-                        list.get(j).getDetails().addAll(detail);
+                        List<AuditDailyReportDetail> listOfDetail = new ArrayList<>();
+                        for (int d = 0; d < detail.size(); d++) {
+                            Optional<Revision> check = revisionRepository.findByDetailId(detail.get(d).getId());
+                            if (check.isPresent()) {
+                                AuditDailyReportDetail makeDto = new AuditDailyReportDetail();
+                                makeDto.setAuditDailyReport(detail.get(d).getAuditDailyReport());
+                                makeDto.setCaseCategory(check.get().getCaseCategory());
+                                makeDto.setCases(check.get().getCases());
+                                makeDto.setCreated_at(check.get().getCreated_at());
+                                makeDto.setCreated_by(check.get().getCreated_by());
+                                makeDto.setDescription(check.get().getDescription());
+                                makeDto.setId(check.get().getId());
+                                makeDto.setIs_delete(check.get().getIs_delete());
+                                makeDto.setIs_research(check.get().getIs_research());
+                                makeDto.setPermanent_recommendations(check.get().getPermanent_recommendations());
+                                makeDto.setSuggestion(check.get().getSuggestion());
+                                makeDto.setTemporary_recommendations(check.get().getTemporary_recommendations());
+                                makeDto.setUpdate_at(detail.get(d).getUpdate_at());
+                                makeDto.setUpdated_by(detail.get(d).getUpdated_by());
+                                listOfDetail.add(makeDto);
+                            } else {
+                                listOfDetail.add(detail.get(d));
+                            }
+                        }
+                        list.get(j).getDetails().addAll(listOfDetail);
                         found = true;
                         break;
                     }
@@ -331,7 +361,31 @@ public class ReportService {
                     ListLhaDTO listLha = new ListLhaDTO();
                     listLha.setFullname(fullName);
                     listLha.setBranch(response.get(i).getBranch().getName());
-                    listLha.setDetails(detail);
+                    List<AuditDailyReportDetail> listOfDetail = new ArrayList<>();
+                    for (int d = 0; d < detail.size(); d++) {
+                        Optional<Revision> check = revisionRepository.findByDetailId(detail.get(d).getId());
+                        if (check.isPresent()) {
+                            AuditDailyReportDetail makeDto = new AuditDailyReportDetail();
+                            makeDto.setAuditDailyReport(detail.get(d).getAuditDailyReport());
+                            makeDto.setCaseCategory(check.get().getCaseCategory());
+                            makeDto.setCases(check.get().getCases());
+                            makeDto.setCreated_at(check.get().getCreated_at());
+                            makeDto.setCreated_by(check.get().getCreated_by());
+                            makeDto.setDescription(check.get().getDescription());
+                            makeDto.setId(check.get().getId());
+                            makeDto.setIs_delete(check.get().getIs_delete());
+                            makeDto.setIs_research(check.get().getIs_research());
+                            makeDto.setPermanent_recommendations(check.get().getPermanent_recommendations());
+                            makeDto.setSuggestion(check.get().getSuggestion());
+                            makeDto.setTemporary_recommendations(check.get().getTemporary_recommendations());
+                            makeDto.setUpdate_at(detail.get(d).getUpdate_at());
+                            makeDto.setUpdated_by(detail.get(d).getUpdated_by());
+                            listOfDetail.add(makeDto);
+                        } else {
+                            listOfDetail.add(detail.get(d));
+                        }
+                    }
+                    listLha.setDetails(listOfDetail);
                     list.add(listLha);
                 }
             }
@@ -368,9 +422,11 @@ public class ReportService {
                                         makeDto.setId(check.get().getId());
                                         makeDto.setIs_delete(check.get().getIs_delete());
                                         makeDto.setIs_research(check.get().getIs_research());
-                                        makeDto.setPermanent_recommendations(check.get().getPermanent_recommendations());
+                                        makeDto.setPermanent_recommendations(
+                                                check.get().getPermanent_recommendations());
                                         makeDto.setSuggestion(check.get().getSuggestion());
-                                        makeDto.setTemporary_recommendations(check.get().getTemporary_recommendations());
+                                        makeDto.setTemporary_recommendations(
+                                                check.get().getTemporary_recommendations());
                                         makeDto.setUpdate_at(detail.get(d).getUpdate_at());
                                         makeDto.setUpdated_by(detail.get(d).getUpdated_by());
                                         listOfDetail.add(makeDto);
@@ -452,7 +508,6 @@ public class ReportService {
                         }
                     }
                     lhaDto.setDetails(listOfDetail);
-
                     lhaDetailList.add(lhaDto);
                     reportDto.setLha_detail(lhaDetailList);
                     listAllReport.add(reportDto);

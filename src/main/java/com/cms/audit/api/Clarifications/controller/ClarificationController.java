@@ -107,7 +107,7 @@ public class ClarificationController {
     @GetMapping("/file/{fileName}")
     public ResponseEntity<InputStreamResource> getFileName(@PathVariable("fileName") String fileName)
             throws IOException {
-        Clarification response = service.downloadFile(fileName);
+        Clarification response = service.getFile(fileName);
         String path = response.getFile_path();
         File file = new File(path);
         InputStream inputStream = new FileInputStream(file);

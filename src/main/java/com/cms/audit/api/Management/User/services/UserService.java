@@ -75,7 +75,7 @@ public class UserService {
                 Pageable pageable = PageRequest.of(page, size);
                 List<User> user = new ArrayList<>();
                 if (getUser.getLevel().getId() == 1) {
-                        user = userRepository.findAll();
+                        user = userRepository.findAllUser();
                 } else if (getUser.getLevel().getId() == 2) {
                         if (getUser.getRegionId() != null) {
                                 List<User> userAgain = userRepository.findAll();
@@ -94,7 +94,9 @@ public class UserService {
                                                                                                         .get(e));
                                                                         if (branchAgain.get().getArea().getRegion()
                                                                                         .getId() == regionId) {
-                                                                                user.add(userAgain.get(u));
+                                                                                if (!user.contains(userAgain.get(u))) {
+                                                                                        user.add(userAgain.get(u));
+                                                                                }
                                                                         }
 
                                                                 }
@@ -103,7 +105,9 @@ public class UserService {
                                                         for (int o = 0; o < userAgain.get(u).getRegionId()
                                                                         .size(); o++) {
                                                                 if (regionId == userAgain.get(u).getRegionId().get(o)) {
-                                                                        user.add(userAgain.get(u));
+                                                                        if (!user.contains(userAgain.get(u))) {
+                                                                                user.add(userAgain.get(u));
+                                                                        }
                                                                 }
                                                         }
                                                 }
@@ -131,7 +135,11 @@ public class UserService {
                                                                                 if (regionId == branchAgain.getArea()
                                                                                                 .getRegion().getId()) {
 
-                                                                                        user.add(userAgain.get(u));
+                                                                                        if (!user.contains(userAgain
+                                                                                                        .get(u))) {
+                                                                                                user.add(userAgain.get(
+                                                                                                                u));
+                                                                                        }
                                                                                         break;
                                                                                 }
                                                                         }
@@ -141,7 +149,9 @@ public class UserService {
                                                                                 .size(); o++) {
                                                                         if (regionId == userAgain.get(u).getRegionId()
                                                                                         .get(o)) {
-                                                                                user.add(userAgain.get(u));
+                                                                                if (!user.contains(userAgain.get(u))) {
+                                                                                        user.add(userAgain.get(u));
+                                                                                }
                                                                         }
                                                                 }
                                                         }
@@ -150,6 +160,9 @@ public class UserService {
                                         lastId = regionId;
                                 }
                         }
+                } else if (getUser.getLevel().getId() == 3) {
+                        return GlobalResponse.builder().message("Audit wilayah tidak dapat akses").status(HttpStatus.OK)
+                                        .data(null).build();
                 }
                 try {
                         int start = (int) pageable.getOffset();
@@ -362,7 +375,8 @@ public class UserService {
                 try {
                         List<DropDownUser> response = userRepository.findDropDown();
                         if (response.isEmpty()) {
-                                return GlobalResponse.builder().message("Data not found").data(response).status(HttpStatus.OK)
+                                return GlobalResponse.builder().message("Data not found").data(response)
+                                                .status(HttpStatus.OK)
                                                 .build();
                         }
                         return GlobalResponse
@@ -427,7 +441,8 @@ public class UserService {
                                 }
                         }
                         if (response.isEmpty()) {
-                                return GlobalResponse.builder().message("Data not found").data(response).status(HttpStatus.OK)
+                                return GlobalResponse.builder().message("Data not found").data(response)
+                                                .status(HttpStatus.OK)
                                                 .build();
                         }
                         return GlobalResponse
@@ -737,7 +752,6 @@ public class UserService {
                                         0,
                                         userGet.getCreated_at(),
                                         new Date());
-
                         try {
                                 userRepository.save(user);
                         } catch (DataIntegrityViolationException e) {

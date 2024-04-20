@@ -94,27 +94,27 @@ public class AuditWorkingPaperService {
                     List<AuditWorkingPaper> lhaList = new ArrayList<>();
                     for (int i = 0; i < getUser.getRegionId().size(); i++) {
                         List<AuditWorkingPaper> kkaAgain = new ArrayList<>();
-                            kkaAgain = repository.findByRegionId(getUser.getRegionId().get(i));
-                            if (!kkaAgain.isEmpty()) {
-                                    for (int u = 0; u < kkaAgain.size(); u++) {
-                                            lhaList.add(kkaAgain.get(u));
-                                    }
+                        kkaAgain = repository.findByRegionId(getUser.getRegionId().get(i));
+                        if (!kkaAgain.isEmpty()) {
+                            for (int u = 0; u < kkaAgain.size(); u++) {
+                                lhaList.add(kkaAgain.get(u));
                             }
+                        }
                     }
                     try {
-                            int start = (int) pageable.getOffset();
-                            int end = Math.min((start + pageable.getPageSize()),
-                                            lhaList.size());
-                            List<AuditWorkingPaper> pageContent = lhaList.subList(start, end);
-                            Page<AuditWorkingPaper> response2 = new PageImpl<>(pageContent, pageable,
-                                            lhaList.size());
-                            response = response2;
+                        int start = (int) pageable.getOffset();
+                        int end = Math.min((start + pageable.getPageSize()),
+                                lhaList.size());
+                        List<AuditWorkingPaper> pageContent = lhaList.subList(start, end);
+                        Page<AuditWorkingPaper> response2 = new PageImpl<>(pageContent, pageable,
+                                lhaList.size());
+                        response = response2;
                     } catch (Exception e) {
-                            return GlobalResponse
-                                            .builder()
-                                            .error(e)
-                                            .status(HttpStatus.BAD_REQUEST)
-                                            .build();
+                        return GlobalResponse
+                                .builder()
+                                .error(e)
+                                .status(HttpStatus.BAD_REQUEST)
+                                .build();
                     }
                 } else if (getUser.getLevel().getId() == 3) {
                     if (start_date != null && end_date != null) {
@@ -244,9 +244,13 @@ public class AuditWorkingPaperService {
     public GlobalResponse uploadFile(MultipartFile file, Long id) {
         try {
             Optional<Schedule> getSchedule = scheduleRepository.findById(id);
+            if (!getSchedule.isPresent()) {
+                return GlobalResponse.builder().message("Schedule with id:" + id + " is not found").status(HttpStatus.BAD_REQUEST).build();
+            }
 
-            if(!getSchedule.isPresent()){
-                return GlobalResponse.builder().message("Schedule with id:" + id + " is not found").build();
+            List<AuditWorkingPaper> checkKKA = repository.findListByScheduleId(id);
+            if(!checkKKA.isEmpty()){
+                return GlobalResponse.builder().message("KKA is already exist").status(HttpStatus.FOUND).build();
             }
 
             String fileName = fileStorageService.storeFile(file);

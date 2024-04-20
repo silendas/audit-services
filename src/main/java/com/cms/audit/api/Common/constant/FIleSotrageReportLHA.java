@@ -15,7 +15,7 @@ public class FIleSotrageReportLHA {
 
     @Autowired
     public FIleSotrageReportLHA(Environment env) {
-        this.fileStorageLocation = Paths.get(env.getProperty("app.file.upload-dir-rpt", "./uploads/report"))
+        this.fileStorageLocation = Paths.get(env.getProperty("app.file.upload-dir-rpt", "./uploaded/report"))
                 .toAbsolutePath().normalize();
 
         try {

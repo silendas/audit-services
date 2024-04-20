@@ -12,7 +12,7 @@ import java.util.List;
 
 public interface PagUser extends PagingAndSortingRepository<User, Long>{
     @Query("SELECT u FROM User u WHERE u.is_delete <> 1")
-    Page<User> findAll(Pageable pageable);
+    Page<User> findAllUser(Pageable pageable);
 
     Page<User> findByAreaId(List<Long> areaId,Pageable pageable);
     Page<User> findByBranchId(List<Long> branchId, Pageable pageable);

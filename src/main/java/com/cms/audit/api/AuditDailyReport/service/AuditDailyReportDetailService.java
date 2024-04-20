@@ -83,7 +83,7 @@ public class AuditDailyReportDetailService {
                     details.add(builder);
                 } else {
                     DetailResponse builder = new DetailResponse();
-                    builder.setId(getRevision.get().getId());
+                    builder.setId(response.getContent().get(i).getId());
                     builder.setCases(getRevision.get().getCases().getName());
                     builder.setCaseCategory(getRevision.get().getCaseCategory().getName());
                     builder.setDescription(getRevision.get().getDescription());
@@ -161,29 +161,30 @@ public class AuditDailyReportDetailService {
                 builder.put("suggestion", checkRevision.get().getSuggestion());
                 builder.put("is_research", checkRevision.get().getIs_research());
             } else {
-                AuditDailyReportDetail response = repository.findOneByLHADetailId(id)
-                        .orElseThrow(() -> new BadRequestException(
-                                "lha with id " + id + " does now exist"));
-                builder.put("id", response.getId());
+                Optional<AuditDailyReportDetail> response = repository.findOneByLHADetailId(id);
+                if(!response.isPresent()){
+                    return GlobalResponse.builder().message("LHA with id :"+id+" is undefined").build();
+                }
+                builder.put("id", response.get().getId());
 
                 Map<String, Object> cases = new LinkedHashMap<>();
-                cases.put("id", response.getCases().getId());
-                cases.put("name", response.getCases().getName());
-                cases.put("code", response.getCases().getCode());
+                cases.put("id", response.get().getCases().getId());
+                cases.put("name", response.get().getCases().getName());
+                cases.put("code", response.get().getCases().getCode());
                 builder.put("case", cases);
 
                 Map<String, Object> caseCategory = new LinkedHashMap<>();
-                caseCategory.put("id", response.getCaseCategory().getId());
-                caseCategory.put("name", response.getCaseCategory().getName());
+                caseCategory.put("id", response.get().getCaseCategory().getId());
+                caseCategory.put("name", response.get().getCaseCategory().getName());
                 builder.put("case_category", caseCategory);
 
-                builder.put("description", response.getDescription());
+                builder.put("description", response.get().getDescription());
                 builder.put(
-                        "permanent_recommendation", response.getPermanent_recommendations());
+                        "permanent_recommendation", response.get().getPermanent_recommendations());
                 builder.put(
-                        "temporary_recommendation", response.getTemporary_recommendations());
-                builder.put("suggestion", response.getSuggestion());
-                builder.put("is_research", response.getIs_research());
+                        "temporary_recommendation", response.get().getTemporary_recommendations());
+                builder.put("suggestion", response.get().getSuggestion());
+                builder.put("is_research", response.get().getIs_research());
             }
             return GlobalResponse
                     .builder()

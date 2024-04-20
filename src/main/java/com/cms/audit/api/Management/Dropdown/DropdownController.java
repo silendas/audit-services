@@ -144,7 +144,7 @@ public class DropdownController {
                     }
                     response = GlobalResponse.builder().data(user).message("Success").status(HttpStatus.OK).build();
                 } else {
-                    response = null;
+                    response = GlobalResponse.builder().data(null).message("Tidak dapat akses").status(HttpStatus.OK).build();
                 }
             }
         }

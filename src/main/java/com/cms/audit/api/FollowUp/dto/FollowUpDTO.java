@@ -15,8 +15,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class FollowUpDTO {
     private Long followup_id;
-    private Long branch_id;
     private Long penalty_id;
     private String description;
-    private Long is_penalty;
 }

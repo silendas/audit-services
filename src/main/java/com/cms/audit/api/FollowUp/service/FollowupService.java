@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.apache.coyote.BadRequestException;
 import org.apache.tomcat.util.http.fileupload.impl.IOFileUploadException;
@@ -46,9 +47,6 @@ public class FollowupService {
     private FileStorageFU fileStorageService;
 
     @Autowired
-    private BranchRepository branchRepository;
-
-    @Autowired
     private PagFollowup pagination;
 
     @Autowired
@@ -59,21 +57,24 @@ public class FollowupService {
     public GlobalResponse getAll(String name, Long branch, int page, int size, Date start_date, Date end_date) {
         try {
             Page<FollowUp> response = null;
-            if ( name !=null && branch != null && start_date != null && end_date != null) {
-                response = pagination.findFollowUpInAllFilter(name, branch, start_date, end_date, PageRequest.of(page, size));
+            if (name != null && branch != null && start_date != null && end_date != null) {
+                response = pagination.findFollowUpInAllFilter(name, branch, start_date, end_date,
+                        PageRequest.of(page, size));
             } else if (name != null) {
                 if (branch != null) {
-                    response = pagination.findFollowUpInNameAndBranch(name, branch,PageRequest.of(page, size));
+                    response = pagination.findFollowUpInNameAndBranch(name, branch, PageRequest.of(page, size));
                 } else if (start_date != null && end_date != null) {
-                    response = pagination.findFollowUpInNameAndDate(name, start_date, end_date, PageRequest.of(page, size));
+                    response = pagination.findFollowUpInNameAndDate(name, start_date, end_date,
+                            PageRequest.of(page, size));
                 } else {
-                    response =  pagination.findFollowUpInName(name, PageRequest.of(page, size));
+                    response = pagination.findFollowUpInName(name, PageRequest.of(page, size));
                 }
             } else if (branch != null) {
                 if (start_date != null && end_date != null) {
-                    response = pagination.findFollowUpInBranchAndDateRange(branch, start_date, end_date, PageRequest.of(page, size));
+                    response = pagination.findFollowUpInBranchAndDateRange(branch, start_date, end_date,
+                            PageRequest.of(page, size));
                 } else {
-                    response =  pagination.findFollowUpInBranch(branch, PageRequest.of(page, size));
+                    response = pagination.findFollowUpInBranch(branch, PageRequest.of(page, size));
                 }
             } else if (start_date != null || end_date != null) {
                 response = pagination.findFollowUpInDateRange(start_date, end_date, PageRequest.of(page, size));
@@ -155,9 +156,12 @@ public class FollowupService {
 
     public GlobalResponse getOne(Long id) {
         try {
-            FollowUp response = repository.findById(id)
-                    .orElseThrow(() -> new BadRequestException("Followup with id: " + id + " not found "));
-            FollowUp fu = response;
+            Optional<FollowUp> response = repository.findById(id);
+            if (!response.isPresent()) {
+                return GlobalResponse.builder().message("Followup with id: " + id + " not found ")
+                        .status(HttpStatus.BAD_REQUEST).build();
+            }
+            FollowUp fu = response.get();
             Map<String, Object> fuMap = new LinkedHashMap<>();
             fuMap.put("id", fu.getId());
 
@@ -207,23 +211,30 @@ public class FollowupService {
 
     public GlobalResponse save(FollowUpDTO dto) {
         try {
-            FollowUp get = repository.findById(dto.getFollowup_id()).orElseThrow(() -> new BadRequestException(
-                    "Follow up with id: " + dto.getFollowup_id() + " is not found"));
+            Optional<FollowUp> getFollowUp = repository.findById(dto.getFollowup_id());
+            if (!getFollowUp.isPresent()) {
+                return GlobalResponse.builder().message("Follow Up with id:" + dto.getFollowup_id() + " is not found")
+                        .build();
+            }
+            Optional<Penalty> penalty;
+            if (dto.getPenalty_id() != null) {
+                penalty = penaltyRepository.findById(dto.getPenalty_id());
+                if (!penalty.isPresent()) {
+                    return GlobalResponse.builder().message("Penalty with id:" + dto.getPenalty_id() + " is not foudn")
+                            .build();
+                }
+            } else {
+                penalty = null;
+            }
 
-            Branch branch = branchRepository.findById(dto.getBranch_id())
-                    .orElseThrow(() -> new BadRequestException(
-                            "Branch with id: " + dto.getBranch_id() + " is not found"));
-            Penalty penalty = penaltyRepository.findById(dto.getPenalty_id())
-                    .orElseThrow(() -> new BadRequestException(
-                            "Follow up with id: " + dto.getFollowup_id() + " is not found"));
-
-            FollowUp followUp = get;
-            followUp.setPenalty(penalty);
-            followUp.setBranch(branch);
+            FollowUp followUp = getFollowUp.get();
+            followUp.setPenalty(penalty.get());
             followUp.setDescription(dto.getDescription());
-            followUp.setFilename(null);
-            followUp.setFilePath(null);
-            followUp.setIsPenalty(dto.getIs_penalty());
+            if (dto.getPenalty_id() != null) {
+                followUp.setIsPenalty(1L);
+            } else {
+                followUp.setIsPenalty(0L);
+            }
             followUp.setStatus(EStatusFollowup.PROGRESS);
 
             FollowUp response1 = repository.save(followUp);
@@ -257,8 +268,10 @@ public class FollowupService {
 
     public GlobalResponse uploadFile(MultipartFile file, Long id) {
         try {
-            FollowUp getFollowUp = repository.findById(id)
-                    .orElseThrow(() -> new BadRequestException("followUp with id: " + id + " is undefined"));
+            Optional<FollowUp> getFollowUp = repository.findById(id);
+            if (!getFollowUp.isPresent()) {
+                return GlobalResponse.builder().message("Follow up with id:" + id + " is not found").build();
+            }
 
             // String fileName = randomValueNumber.randomNumberGenerator() + "-" +
             // file.getOriginalFilename();
@@ -267,7 +280,7 @@ public class FollowupService {
             String path = FOLDER_PATH + fileName;
             String filePath = path;
 
-            FollowUp followUp = getFollowUp;
+            FollowUp followUp = getFollowUp.get();
             followUp.setFilename(fileName);
             followUp.setFilePath(filePath);
 
