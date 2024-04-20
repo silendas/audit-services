@@ -264,8 +264,10 @@ public class AuditDailyReportService {
 
         public GlobalResponse getById(Long id) {
                 try {
-                        AuditDailyReport getLha = auditDailyReportRepository.findOneByLHAId(id)
-                                        .orElseThrow(() -> new ResourceNotFoundException("Not found lha"));
+                        Optional<AuditDailyReport> getLha = auditDailyReportRepository.findOneByLHAId(id);
+                        if(!getLha.isPresent()){
+                                return GlobalResponse.builder().message("LHA with id: "+ id+" is undefined").status(HttpStatus.BAD_REQUEST).build();
+                        }
 
                         List<AuditDailyReportDetail> getDetail = auditDailyReportDetailRepository.findByLHAId(id);
                         List<DetailResponse> details = new ArrayList<>();
@@ -330,24 +332,32 @@ public class AuditDailyReportService {
                         }
 
                         Map<String, Object> response = new LinkedHashMap<>();
-                        response.put("id", getLha.getId());
+                        response.put("id", getLha.get().getId());
 
                         Map<String, Object> user = new LinkedHashMap<>();
-                        user.put("id", getLha.getUser().getId());
-                        user.put("fullname", getLha.getUser().getFullname());
-                        user.put("email", getLha.getUser().getEmail());
-                        user.put("initial_name", getLha.getUser().getInitial_name());
+                        user.put("id", getLha.get().getUser().getId());
+                        user.put("fullname", getLha.get().getUser().getFullname());
+                        user.put("email", getLha.get().getUser().getEmail());
+                        user.put("initial_name", getLha.get().getUser().getInitial_name());
                         response.put("user", user);
 
                         Map<String, Object> branch = new LinkedHashMap<>();
-                        branch.put("id", getLha.getBranch().getId());
-                        branch.put("name", getLha.getBranch().getName());
+                        branch.put("id", getLha.get().getBranch().getId());
+                        branch.put("name", getLha.get().getBranch().getName());
                         response.put("branch", branch);
 
                         Map<String, Object> schedule = new LinkedHashMap<>();
-                        schedule.put("id", getLha.getSchedule().getId());
-                        schedule.put("start_date", getLha.getSchedule().getStart_date());
-                        schedule.put("end_date", getLha.getSchedule().getEnd_date());
+                        schedule.put("id", getLha.get().getSchedule().getId());
+                        if(getLha.get().getSchedule().getStart_date() != null){
+                                schedule.put("start_date", convertDateToRoman.convertDateHehe(getLha.get().getSchedule().getStart_date()));
+                        }else{
+                                schedule.put("start_date", null);
+                        }
+                        if(getLha.get().getSchedule().getEnd_date() != null){
+                                schedule.put("end_date", convertDateToRoman.convertDateHehe(getLha.get().getSchedule().getEnd_date()));
+                        }else{
+                                schedule.put("end_date", null);
+                        }
                         response.put("schedule", schedule);
 
                         response.put("is_research", is_flag);

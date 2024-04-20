@@ -79,7 +79,7 @@ public class FollowupService {
             } else if (start_date != null || end_date != null) {
                 response = pagination.findFollowUpInDateRange(start_date, end_date, PageRequest.of(page, size));
             } else {
-                response = pagination.findAll(PageRequest.of(page, size));
+                response = pagination.findFollowUpAll(PageRequest.of(page, size));
             }
             List<Object> listFU = new ArrayList<>();
             for (int i = 0; i < response.getContent().size(); i++) {
@@ -116,6 +116,7 @@ public class FollowupService {
                 fuMap.put("filename", fu.getFilename());
                 fuMap.put("file_path", fu.getFilePath());
                 fuMap.put("is_penalty", fu.getIsPenalty());
+                fuMap.put("created_at", fu.getCreatedAt());
 
                 listFU.add(fuMap);
 
@@ -184,8 +185,12 @@ public class FollowupService {
             Map<String, Object> clarification = new LinkedHashMap<>();
             clarification.put("id", fu.getClarification().getId());
             clarification.put("code", fu.getClarification().getCode());
-            clarification.put("evaluation_limitation",
-                    convertDateToRoman.convertDateToString(fu.getClarification().getEvaluation_limitation()));
+            if (fu.getClarification().getEvaluation_limitation() != null) {
+                clarification.put("evaluation_limitation",
+                        convertDateToRoman.convertDateToString(fu.getClarification().getEvaluation_limitation()));
+            } else {
+                clarification.put("evaluation_limitation", null);
+            }
             fuMap.put("clarification", clarification);
 
             fuMap.put("code", fu.getCode());
@@ -194,6 +199,7 @@ public class FollowupService {
             fuMap.put("filename", fu.getFilename());
             fuMap.put("file_path", fu.getFilePath());
             fuMap.put("is_penalty", fu.getIsPenalty());
+            fuMap.put("created_at", fu.getCreatedAt());
             return GlobalResponse
                     .builder()
                     .data(fuMap)
@@ -248,11 +254,10 @@ public class FollowupService {
 
             try {
                 FollowUp response = repository.save(edit);
-            dataResponse.put("id", response.getId());
-            dataResponse.put("file_name", response.getFilename());
-            dataResponse.put("file_path", response.getFilePath());
-            dataResponse.put("code", response.getCode());
-
+                dataResponse.put("id", response.getId());
+                dataResponse.put("file_name", response.getFilename());
+                dataResponse.put("file_path", response.getFilePath());
+                dataResponse.put("code", response.getCode());
 
             } catch (Exception e) {
                 return GlobalResponse

@@ -107,18 +107,29 @@ public class ClarificationService {
                                         response = pag.findByFullnameLike(likeName,
                                                         PageRequest.of(page, size));
                                 }
-                        } else if (start_date != null && end_date != null) {
-                                response = pag.findClarificationInDateRange(start_date, end_date,
-                                                PageRequest.of(page, size));
                         } else {
                                 if (getUser.getLevel().getId() == 3) {
-                                        response = pag.findByUserId(getUser.getId(), PageRequest.of(page, size));
+                                        if (start_date != null && end_date != null) {
+                                                response = pag.findClarificationInDateRangeAndUser(getUser.getId(),
+                                                                start_date, end_date,
+                                                                PageRequest.of(page, size));
+                                        } else {
+                                                response = pag.findByUserId(getUser.getId(),
+                                                                PageRequest.of(page, size));
+                                        }
                                 } else if (getUser.getLevel().getId() == 2) {
                                         Pageable pageable = PageRequest.of(page, size);
                                         List<Clarification> lhaList = new ArrayList<>();
                                         for (int i = 0; i < getUser.getRegionId().size(); i++) {
                                                 List<Clarification> clAgain = new ArrayList<>();
-                                                clAgain = repository.findByRegionId(getUser.getRegionId().get(i));
+                                                if (start_date != null && end_date != null) {
+                                                        response = pag.findByRegionIdAndDate(
+                                                                        getUser.getRegionId().get(i), start_date, end_date,
+                                                                        PageRequest.of(page, size));
+                                                } else {
+                                                        clAgain = repository.findByRegionId(getUser.getRegionId().get(i));
+
+                                                }
                                                 if (!clAgain.isEmpty()) {
                                                         for (int u = 0; u < clAgain.size(); u++) {
                                                                 lhaList.add(clAgain.get(u));
@@ -141,7 +152,11 @@ public class ClarificationService {
                                                                 .build();
                                         }
                                 } else if (getUser.getLevel().getId() == 1) {
-                                        response = pag.findAll(PageRequest.of(page, size));
+                                        if (start_date != null && end_date != null) {
+                                                response = pag.findClarificationInDateRange(start_date, end_date, PageRequest.of(page, size));
+                                        }else{
+                                                response = pag.findAllCLDetail(PageRequest.of(page, size));
+                                        }
                                 }
                         }
                         List<Object> listCl = new ArrayList<>();
@@ -184,6 +199,7 @@ public class ClarificationService {
                                 } else {
                                         clarification.put("is_flag", 0);
                                 }
+                                clarification.put("created_at", response.getContent().get(i).getCreated_at());
                                 listCl.add(clarification);
                         }
                         if (response.isEmpty()) {
@@ -547,7 +563,7 @@ public class ClarificationService {
                                                 .build();
                         }
 
-                        if(dto.getIs_followup() == null){
+                        if (dto.getIs_followup() == null) {
                                 dto.setIs_followup(0L);
                         }
 
@@ -725,19 +741,25 @@ public class ClarificationService {
                                                 .build();
                         }
                         String fileName = fileStorageService.storeFile(file);
-                        System.out.println("File name : " + fileName);
 
                         String path = UPLOAD_FOLDER_PATH + fileName;
-                        System.out.println("File path : " + path);
 
                         Clarification clarification = getClarification.get();
                         clarification.setFilename(fileName);
                         clarification.setFile_path(path);
                         clarification.setStatus(EStatusClarification.IDENTIFICATION);
                         clarification.setUpdated_at(new Date());
-                        repository.save(clarification);
+                        Clarification getResponse = repository.save(clarification);
 
                         // file.transferTo(new File(filePath));
+
+                        Map<String, Object> returnResponse = new LinkedHashMap<>();
+                        Map<String, Object> mappingRes = new LinkedHashMap<>();
+                        mappingRes.put("id", getResponse.getId());
+                        mappingRes.put("file_name", getResponse.getFilename());
+                        mappingRes.put("file_path", getResponse.getFile_path());
+
+                        returnResponse.put("clarification", mappingRes);
 
                         return GlobalResponse
                                         .builder()
@@ -774,7 +796,7 @@ public class ClarificationService {
                 clarification.setStatus(EStatusClarification.UPLOAD);
                 clarification.setUpdated_at(new Date());
                 repository.save(clarification);
-                
+
                 return response;
         }
 
@@ -782,7 +804,7 @@ public class ClarificationService {
                 Clarification response = repository.findByFilename(fileName)
                                 .orElseThrow(() -> new ResourceNotFoundException(
                                                 "File not found with name: " + fileName));
-                
+
                 return response;
         }
 
