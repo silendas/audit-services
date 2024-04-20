@@ -14,7 +14,8 @@ import com.cms.audit.api.NewsInspection.models.NewsInspection;
 @Repository
 public interface PagNewsInspection extends PagingAndSortingRepository<NewsInspection, Long> {
 
-    Page<NewsInspection> findAll(Pageable pageable);
+    @Query(value = "SELECT u.* FROM news_inspection u ORDER BY u.id DESC ", nativeQuery = true)
+    Page<NewsInspection> findAllBAP(Pageable pageable);
 
     @Query(value = "SELECT u.* FROM news_inspection u WHERE u.user_id = :userId ORDER BY u.id DESC ", nativeQuery = true)
     Page<NewsInspection> findBAPInUserid(@Param("userId")Long id, Pageable pageable);

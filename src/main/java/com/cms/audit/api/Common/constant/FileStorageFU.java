@@ -50,7 +50,7 @@ public class FileStorageFU {
             }
 
             Path targetLocation = this.fileStorageLocation.resolve(fileName);
-            Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
+            Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.COPY_ATTRIBUTES);
 
             return fileName;
         } catch (IOException ex) {

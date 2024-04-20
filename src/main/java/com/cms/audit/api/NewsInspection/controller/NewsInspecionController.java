@@ -105,7 +105,7 @@ public class NewsInspecionController {
                         throws IOException {
                 NewsInspection response = service.downloadFile(fileName);
                 String path = response.getFile_path();
-                File file = new File(path);
+                File file = new File("uploaded/bap/" + response.getFileName());
                 InputStream inputStream = new FileInputStream(file);
                 InputStreamResource isr = new InputStreamResource(inputStream);
 
@@ -121,8 +121,7 @@ public class NewsInspecionController {
         public ResponseEntity<InputStreamResource> download(@PathVariable("fileName") String fileName)
                         throws IOException {
                 NewsInspection response = service.downloadFile(fileName);
-                String path = response.getFile_path();
-                File file = new File(path);
+                File file = new File("uploaded/bap/" + response.getFileName());
                 InputStream inputStream = new FileInputStream(file);
                 InputStreamResource isr = new InputStreamResource(inputStream);
 

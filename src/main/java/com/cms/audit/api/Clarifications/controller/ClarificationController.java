@@ -108,8 +108,7 @@ public class ClarificationController {
     public ResponseEntity<InputStreamResource> getFileName(@PathVariable("fileName") String fileName)
             throws IOException {
         Clarification response = service.getFile(fileName);
-        String path = response.getFile_path();
-        File file = new File(path);
+        File file = new File("uploaded/clarification/" + response.getFilename());
         InputStream inputStream = new FileInputStream(file);
         InputStreamResource isr = new InputStreamResource(inputStream);
 
@@ -125,8 +124,7 @@ public class ClarificationController {
     public ResponseEntity<InputStreamResource> download(@PathVariable("fileName") String fileName)
             throws IOException {
         Clarification response = service.downloadFile(fileName);
-        String path = response.getFile_path();
-        File file = new File(path);
+        File file = new File("uploaded/clarification/" + response.getFilename());
         InputStream inputStream = new FileInputStream(file);
         InputStreamResource isr = new InputStreamResource(inputStream);
 
