@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -30,7 +31,6 @@ import com.cms.audit.api.Common.response.ResponseEntittyHandler;
 import com.cms.audit.api.FollowUp.dto.FollowUpDTO;
 import com.cms.audit.api.FollowUp.models.FollowUp;
 import com.cms.audit.api.FollowUp.service.FollowupService;
-import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
 @Validated
@@ -88,7 +88,8 @@ public class FollowupController {
                 } else {
                         endDate = null;
                 }
-                GlobalResponse response = service.getAll(fullname,branchId,page.orElse(0), size.orElse(10), startDate,endDate);
+                GlobalResponse response = service.getAll(fullname, branchId, page.orElse(0), size.orElse(10), startDate,
+                                endDate);
                 return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(),
                                 response.getStatus(),
                                 response.getError());
@@ -107,8 +108,7 @@ public class FollowupController {
         public ResponseEntity<InputStreamResource> getFileName(@PathVariable("fileName") String fileName)
                         throws IOException {
                 FollowUp response = service.downloadFile(fileName);
-                String path = response.getFilePath();
-                File file = new File(path);
+                File file = new File("uploaded/followup/" + response.getFilename());
                 InputStream inputStream = new FileInputStream(file);
                 InputStreamResource isr = new InputStreamResource(inputStream);
 
@@ -124,21 +124,23 @@ public class FollowupController {
         public ResponseEntity<InputStreamResource> download(@PathVariable("fileName") String fileName)
                         throws IOException {
                 FollowUp response = service.downloadFile(fileName);
-                String path = response.getFilePath();
-                File file = new File(path);
+                // File file = new File(path);
+                // InputStream inputStream = new FileInputStream(file);
+
+                File file = new File("uploaded/followup/" + response.getFilename());
                 InputStream inputStream = new FileInputStream(file);
                 InputStreamResource isr = new InputStreamResource(inputStream);
-
+        
                 HttpHeaders httpHeaders = new HttpHeaders();
-
+        
                 httpHeaders.setContentType(MediaType.valueOf("application/pdf"));
                 httpHeaders.set("Content-Disposition", "attachment; filename=" + response.getFilename());
-
+        
                 return ResponseEntity.ok()
-                                .headers(httpHeaders)
-                                .contentLength(file.length())
-                                .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                                .body(isr);
+                        .headers(httpHeaders)
+                        .contentLength(file.length())
+                        .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                        .body(isr);
         }
 
         @PostMapping

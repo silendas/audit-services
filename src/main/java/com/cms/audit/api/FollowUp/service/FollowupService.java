@@ -244,9 +244,16 @@ public class FollowupService {
             FollowUp edit = response1;
             edit.setFilename(generate.getFileName());
             edit.setFilePath(generate.getFilePath());
+            Map<String, Object> dataResponse = new LinkedHashMap<>();
 
             try {
-                repository.save(edit);
+                FollowUp response = repository.save(edit);
+            dataResponse.put("id", response.getId());
+            dataResponse.put("file_name", response.getFilename());
+            dataResponse.put("file_path", response.getFilePath());
+            dataResponse.put("code", response.getCode());
+
+
             } catch (Exception e) {
                 return GlobalResponse
                         .builder()
@@ -279,6 +286,7 @@ public class FollowupService {
             String fileName = fileStorageService.storeFile(file);
             String path = FOLDER_PATH + fileName;
             String filePath = path;
+            System.out.println(path);
 
             FollowUp followUp = getFollowUp.get();
             followUp.setFilename(fileName);

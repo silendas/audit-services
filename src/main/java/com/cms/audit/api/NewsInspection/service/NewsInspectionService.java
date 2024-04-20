@@ -100,7 +100,7 @@ public class NewsInspectionService {
                                             .build();
                     }
             } else if (getUser.getLevel().getId() == 1) {
-                    response = pag.findAll(PageRequest.of(page, size));
+                    response = pag.findAllBAP(PageRequest.of(page, size));
             }
             }
             List<Object> listBAP = new ArrayList<>();
