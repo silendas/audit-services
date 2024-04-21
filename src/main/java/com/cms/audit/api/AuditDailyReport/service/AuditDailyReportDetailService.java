@@ -104,8 +104,18 @@ public class AuditDailyReportDetailService {
                         .build();
             }
             Map<String, Object> parent = new LinkedHashMap<>();
-            parent.put("lha_details", details);
             parent.put("pageable", response.getPageable());
+            parent.put("totalPage", response.getTotalPages());
+            parent.put("totalElement", response.getTotalElements());
+            parent.put("size", response.getSize());
+            parent.put("number", response.getNumber());
+            parent.put("last", response.isLast());
+            parent.put("first", response.isFirst());
+            parent.put("numberOfElement", response.getNumberOfElements());
+            parent.put("empty", response.isEmpty());
+            parent.put("sort", response.getSort());
+            parent.put("content", details);
+            //parent.put("lha_details", details);
 
             return GlobalResponse
                     .builder()
@@ -162,8 +172,8 @@ public class AuditDailyReportDetailService {
                 builder.put("is_research", checkRevision.get().getIs_research());
             } else {
                 Optional<AuditDailyReportDetail> response = repository.findOneByLHADetailId(id);
-                if(!response.isPresent()){
-                    return GlobalResponse.builder().message("LHA with id :"+id+" is undefined").build();
+                if (!response.isPresent()) {
+                    return GlobalResponse.builder().message("LHA with id :" + id + " is undefined").build();
                 }
                 builder.put("id", response.get().getId());
 
@@ -433,7 +443,7 @@ public class AuditDailyReportDetailService {
             auditDailyReport.setUpdated_by(user.getId());
             auditDailyReport.setUpdate_at(new Date());
 
-             repository.save(auditDailyReport);
+            repository.save(auditDailyReport);
 
             return GlobalResponse
                     .builder()
