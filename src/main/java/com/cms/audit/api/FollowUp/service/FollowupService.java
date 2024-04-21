@@ -79,7 +79,7 @@ public class FollowupService {
             } else if (start_date != null || end_date != null) {
                 response = pagination.findFollowUpInDateRange(start_date, end_date, PageRequest.of(page, size));
             } else {
-                response = pagination.findAll(PageRequest.of(page, size));
+                response = pagination.findFollowUpAll(PageRequest.of(page, size));
             }
             List<Object> listFU = new ArrayList<>();
             for (int i = 0; i < response.getContent().size(); i++) {
@@ -116,6 +116,7 @@ public class FollowupService {
                 fuMap.put("filename", fu.getFilename());
                 fuMap.put("file_path", fu.getFilePath());
                 fuMap.put("is_penalty", fu.getIsPenalty());
+                fuMap.put("created_at", fu.getCreatedAt());
 
                 listFU.add(fuMap);
 
@@ -184,8 +185,12 @@ public class FollowupService {
             Map<String, Object> clarification = new LinkedHashMap<>();
             clarification.put("id", fu.getClarification().getId());
             clarification.put("code", fu.getClarification().getCode());
-            clarification.put("evaluation_limitation",
-                    convertDateToRoman.convertDateToString(fu.getClarification().getEvaluation_limitation()));
+            if (fu.getClarification().getEvaluation_limitation() != null) {
+                clarification.put("evaluation_limitation",
+                        convertDateToRoman.convertDateToString(fu.getClarification().getEvaluation_limitation()));
+            } else {
+                clarification.put("evaluation_limitation", null);
+            }
             fuMap.put("clarification", clarification);
 
             fuMap.put("code", fu.getCode());
@@ -194,6 +199,7 @@ public class FollowupService {
             fuMap.put("filename", fu.getFilename());
             fuMap.put("file_path", fu.getFilePath());
             fuMap.put("is_penalty", fu.getIsPenalty());
+            fuMap.put("created_at", fu.getCreatedAt());
             return GlobalResponse
                     .builder()
                     .data(fuMap)
@@ -247,12 +253,14 @@ public class FollowupService {
             Map<String, Object> dataResponse = new LinkedHashMap<>();
 
             try {
-                FollowUp response = repository.save(edit);
-            dataResponse.put("id", response.getId());
-            dataResponse.put("file_name", response.getFilename());
-            dataResponse.put("file_path", response.getFilePath());
-            dataResponse.put("code", response.getCode());
+                FollowUp getResponse = repository.save(edit);
 
+                Map<String, Object> mappingRes = new LinkedHashMap<>();
+                mappingRes.put("id", getResponse.getId());
+                mappingRes.put("file_name", getResponse.getFilename());
+                mappingRes.put("file_path", getResponse.getFilePath());
+
+                dataResponse.put("followup", mappingRes);
 
             } catch (Exception e) {
                 return GlobalResponse
@@ -262,7 +270,7 @@ public class FollowupService {
                         .build();
             }
 
-            return GlobalResponse.builder().message("Success").status(HttpStatus.OK).build();
+            return GlobalResponse.builder().message("Success").data(dataResponse).status(HttpStatus.OK).build();
 
         } catch (Exception e) {
             return GlobalResponse
@@ -292,13 +300,22 @@ public class FollowupService {
             followUp.setFilename(fileName);
             followUp.setFilePath(filePath);
 
-            repository.save(followUp);
+            FollowUp getResponse = repository.save(followUp);
 
             file.transferTo(new File(filePath));
+
+            Map<String, Object> returnResponse = new LinkedHashMap<>();
+            Map<String, Object> mappingRes = new LinkedHashMap<>();
+            mappingRes.put("id", getResponse.getId());
+            mappingRes.put("file_name", getResponse.getFilename());
+            mappingRes.put("file_path", getResponse.getFilePath());
+
+            returnResponse.put("followup", mappingRes);
 
             return GlobalResponse
                     .builder()
                     .message("Success")
+                    .data(returnResponse)
                     .status(HttpStatus.OK)
                     .build();
         } catch (DataException e) {
