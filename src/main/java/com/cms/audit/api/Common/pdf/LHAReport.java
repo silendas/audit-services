@@ -1,7 +1,8 @@
 package com.cms.audit.api.Common.pdf;
 
 import java.util.*;
-
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.net.MalformedURLException;
 
@@ -24,12 +25,10 @@ import com.itextpdf.layout.property.TextAlignment;
 import com.itextpdf.layout.property.VerticalAlignment;
 
 public class LHAReport {
-        public static PDFResponse generateLHAPDF(LhaReportDTO dto)
+        public static ByteArrayInputStream generateLHAPDF(LhaReportDTO dto)
                         throws FileNotFoundException, MalformedURLException {
-                String fileName = convertDateToRoman.convertDateHehe(new Date()) + "-"
-                                + randomValueNumber.randomNumberGenerator() + "-lha-report.pdf";
-                String path = FolderPath.FOLDER_PATH_REPORT_CLARIFICATION + fileName;
-                PdfWriter pdfWriter = new PdfWriter(path);
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                PdfWriter pdfWriter = new PdfWriter(baos);
                 PdfDocument pdfDocument = new PdfDocument(pdfWriter);
                 pdfDocument.setDefaultPageSize(PageSize.A4);
                 Document document = new Document(pdfDocument);
@@ -133,15 +132,16 @@ public class LHAReport {
 
                 document.close();
 
-                return PDFResponse.builder().fileName(fileName).filePath(path).build();
+                return new ByteArrayInputStream(baos.toByteArray());
         }
 
-        public static PDFResponse generateAllLHAPDF(List<LhaReportDTO> dto)
+        public static ByteArrayInputStream generateAllLHAPDF(List<LhaReportDTO> dto)
                         throws FileNotFoundException, MalformedURLException {
-                String fileName = convertDateToRoman.convertDateHehe(new Date()) + "-"
-                                + randomValueNumber.randomNumberGenerator() + "-lha-report.pdf";
-                String path = FolderPath.FOLDER_PATH_REPORT_CLARIFICATION + fileName;
-                PdfWriter pdfWriter = new PdfWriter(path);
+                // String fileName = convertDateToRoman.convertDateHehe(new Date()) + "-"
+                // + randomValueNumber.randomNumberGenerator() + "-lha-report.pdf";
+                // String path = FolderPath.FOLDER_PATH_REPORT_CLARIFICATION + fileName;
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                PdfWriter pdfWriter = new PdfWriter(baos);
                 PdfDocument pdfDocument = new PdfDocument(pdfWriter);
                 pdfDocument.setDefaultPageSize(PageSize.A4);
                 Document document = new Document(pdfDocument);
@@ -262,13 +262,13 @@ public class LHAReport {
 
                         document.add(body);
 
-                        if(o < dto.size() && o != dto.size()){
+                        if (o < dto.size() && o != dto.size()) {
                                 document.add(new AreaBreak());
                         }
                 }
 
                 document.close();
 
-                return PDFResponse.builder().fileName(fileName).filePath(path).build();
+                return new ByteArrayInputStream(baos.toByteArray());
         }
 }

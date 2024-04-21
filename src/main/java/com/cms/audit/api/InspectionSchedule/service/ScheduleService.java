@@ -27,6 +27,8 @@ import com.cms.audit.api.AuditWorkingPaper.repository.AuditWorkingPaperRepositor
 import com.cms.audit.api.Common.constant.convertDateToRoman;
 import com.cms.audit.api.Common.exception.ResourceNotFoundException;
 import com.cms.audit.api.Common.response.GlobalResponse;
+import com.cms.audit.api.Flag.model.Flag;
+import com.cms.audit.api.Flag.repository.FlagRepo;
 import com.cms.audit.api.InspectionSchedule.dto.EditScheduleDTO;
 import com.cms.audit.api.InspectionSchedule.dto.RequestReschedule;
 import com.cms.audit.api.InspectionSchedule.dto.ScheduleRequest;
@@ -57,6 +59,9 @@ public class ScheduleService {
 
         @Autowired
         private PagSchedule pagSchedule;
+
+        @Autowired
+        private FlagRepo flagRepo;
 
         @Autowired
         private AuditDailyReportRepository auditDailyReportRepository;
@@ -555,14 +560,22 @@ public class ScheduleService {
                                         List<AuditDailyReportDetail> detail = auditDailyReportDetailRepository
                                                         .findByLHAId(getLha.get(i).getId());
                                         Integer flag = 0;
-                                        if (!detail.isEmpty()) {
-                                                for (int u = 0; u < detail.size(); u++) {
+                                        for (int u = 0; u < detail.size(); u++) {
+                                                if (getLha.get(i).getIs_research() != 1) {
                                                         if (detail.get(u).getIs_research() == 1) {
-                                                                flag = 1;
+                                                                Flag isFlag = flagRepo.findOneByAuditDailyReportDetailId(
+                                                                                detail.get(u).getId()).orElse(null);
+                                                                if (isFlag != null) {
+                                                                        if (isFlag.getClarification().getFilename() == null) {
+                                                                                flag = 1;
+                                                                        } else {
+                                                                                flag = 0;
+                                                                        }
+                                                                } else {
+                                                                        flag = 0;
+                                                                }
                                                         }
                                                 }
-                                        } else {
-                                                flag = 0;
                                         }
                                         lha.put("is_flag", flag);
 

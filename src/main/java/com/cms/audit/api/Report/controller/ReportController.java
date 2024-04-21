@@ -31,8 +31,9 @@ public class ReportController {
 
         @GetMapping("/clarification")
         public ResponseEntity<InputStreamResource> downloadCL(
-                        @RequestParam("name") Optional<String> name,
-                        @RequestParam(required = false) Optional<Long> area_id,
+                        @RequestParam("user_id") Optional<Long> user_id,
+                        @RequestParam(required = false) Optional<Long> branch_id,
+                        @RequestParam(required = false) Optional<Long> region_id,
                         @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date start_date,
                         @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date end_date)
                         throws IOException {
@@ -42,8 +43,8 @@ public class ReportController {
                 } else {
                         fileName = "all-report.xlsx";
                 }
-                ByteArrayInputStream inputStream = service.getDataDownloadClarification(name.orElse(null),
-                                area_id.orElse(null), start_date,
+                ByteArrayInputStream inputStream = service.getDataDownloadClarification(region_id.orElse(null),user_id.orElse(null),
+                                branch_id.orElse(null), start_date,
                                 end_date);
                 InputStreamResource resource = new InputStreamResource(inputStream);
 

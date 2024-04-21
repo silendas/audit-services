@@ -342,6 +342,11 @@ public class FollowupService {
     public FollowUp downloadFile(String fileName) throws java.io.IOException, IOFileUploadException {
         FollowUp response = repository.findByFilename(fileName)
                 .orElseThrow(() -> new BadRequestException("File not found with name: " + fileName));
+
+        FollowUp followUp = response;
+        followUp.setStatus(EStatusFollowup.DONE);
+        repository.save(followUp);
+
         return response;
     }
 }

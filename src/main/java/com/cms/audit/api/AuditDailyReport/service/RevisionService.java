@@ -37,7 +37,7 @@ public class RevisionService {
                 }
                 return GlobalResponse.builder().data(response).message("Success").status(HttpStatus.OK).build();
             } else {
-                Optional<Revision> response = repository.findByDetailId(detaild);
+                List<Revision> response = repository.findByDetailIdAll(detaild);
                 if (response.isEmpty()) {
                     return GlobalResponse.builder().message("Data not found").status(HttpStatus.OK).build();
                 }
