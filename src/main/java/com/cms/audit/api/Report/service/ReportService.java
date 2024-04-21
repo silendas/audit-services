@@ -517,14 +517,14 @@ public class ReportService {
         String filename;
         if (start_date != null && end_date != null) {
             filename = convertDateToRoman.convertDateHehe(start_date) + "-"
-                    + convertDateToRoman.convertDateHehe(end_date) + "-report.xlsx";
+                    + convertDateToRoman.convertDateHehe(end_date) + "-report.pdf";
         } else {
-            filename = "report.xlsx";
+            filename = "report.pdf";
         }
 
         ResponseEntity<InputStreamResource> responses = ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=" + filename)
-                .contentType(MediaType.parseMediaType("application/vnd.ms-excel")).body(isr);
+                .contentType(MediaType.parseMediaType("application/pdf")).body(isr);
         return responses;
     }
 
