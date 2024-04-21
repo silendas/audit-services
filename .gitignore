@@ -1,10 +1,10 @@
 HELP.md
 target/
 
-# uploaded/bap/*
-# uploaded/clarification/*
-# uploaded/followup/*
-# uploaded/kka/*
+!uploaded/bap/*
+!uploaded/clarification/*
+!uploaded/followup/*
+!uploaded/kka/*
 # uploaded/report/*
 
 !image/

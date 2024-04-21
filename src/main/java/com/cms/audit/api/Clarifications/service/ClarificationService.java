@@ -210,8 +210,17 @@ public class ClarificationService {
                                                 .build();
                         }
                         Map<String, Object> parent = new LinkedHashMap<>();
-                        parent.put("content", listCl);
                         parent.put("pageable", response.getPageable());
+                        parent.put("totalPage", response.getTotalPages());
+                        parent.put("totalElement", response.getTotalElements());
+                        parent.put("size", response.getSize());
+                        parent.put("number", response.getNumber());
+                        parent.put("last", response.isLast());
+                        parent.put("first", response.isFirst());
+                        parent.put("numberOfElement", response.getNumberOfElements());
+                        parent.put("empty", response.isEmpty());
+                        parent.put("sort", response.getSort());
+                        parent.put("content", listCl);
                         return GlobalResponse
                                         .builder()
                                         .message("Success")

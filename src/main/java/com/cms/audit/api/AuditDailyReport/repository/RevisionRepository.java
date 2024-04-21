@@ -18,4 +18,7 @@ public interface RevisionRepository extends JpaRepository<Revision, Long>{
     @Query(value = "SELECT * FROM revision u WHERE u.audit_daily_report_detail_id = :id AND u.is_delete <> 1 ORDER BY id DESC LIMIT 1 ;",nativeQuery = true)
     Optional<Revision> findByDetailId(@Param("id")Long id);
 
+    @Query(value = "SELECT * FROM revision u WHERE u.audit_daily_report_detail_id = :id AND u.is_delete <> 1 ORDER BY id DESC ;",nativeQuery = true)
+    List<Revision> findByDetailIdAll(@Param("id")Long id);
+
 }

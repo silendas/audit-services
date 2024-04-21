@@ -1,11 +1,8 @@
 package com.cms.audit.api.Report.service;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -35,7 +32,6 @@ import com.cms.audit.api.Clarifications.models.Clarification;
 import com.cms.audit.api.Common.constant.convertDateToRoman;
 import com.cms.audit.api.Common.pdf.LHAReport;
 import com.cms.audit.api.Common.response.GlobalResponse;
-import com.cms.audit.api.Common.response.PDFResponse;
 import com.cms.audit.api.Common.util.ExcelUtil;
 import com.cms.audit.api.Management.Office.RegionOffice.models.Region;
 import com.cms.audit.api.Management.Office.RegionOffice.repository.RegionRepository;
@@ -73,44 +69,35 @@ public class ReportService {
     @Autowired
     private UserRepository userRepository;
 
-    public GlobalResponse getAll(Long areaId, String name, int page, int size, Date start_date, Date end_date) {
+    public GlobalResponse getAll(Long region_id, Long branchId, Long user_id, int page, int size, Date start_date,
+            Date end_date) {
         try {
             User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
             Page<Clarification> response;
             if (user.getLevel().getId() == 3) {
-                response = pagRepository.findByUserId(user.getId(), PageRequest.of(page, size));
+                if (start_date != null && end_date != null) {
+                    response = pagRepository.findByUserInDateRange(user.getId(), start_date, end_date,
+                            PageRequest.of(page, size));
+                } else {
+                    response = pagRepository.findByUserId(user.getId(), PageRequest.of(page, size));
+                }
             } else if (user.getLevel().getId() == 2 || user.getLevel().getId() == 1) {
-                if (areaId != null && name != null && start_date != null && end_date != null) {
-                    return GlobalResponse.builder().data(pagRepository.findByAllFilter(name, areaId, start_date,
-                            end_date, PageRequest.of(page, size))).status(HttpStatus.OK).message("Success").build();
-                } else if (name != null) {
-                    List<User> getUser = userRepository.findByFullnameLike(name);
-                    Pageable pageable = PageRequest.of(page, size);
-                    List<Clarification> clarificationList = new ArrayList<>();
-                    for (int i = 0; i < getUser.size(); i++) {
-                        clarificationList.add(repository.findByUserId(getUser.get(i).getId()).orElse(null));
+                if (region_id != null && branchId != null && user_id != null && start_date != null
+                        && end_date != null) {
+                    return GlobalResponse.builder()
+                            .data(pagRepository.findByAllFilter(user_id, region_id, branchId, start_date,
+                                    end_date, PageRequest.of(page, size)))
+                            .status(HttpStatus.OK).message("Success").build();
+                } else if (user_id != null) {
+                    if (start_date != null && end_date != null) {
+                        response = pagRepository.findByUserInDateRange(user.getId(), start_date, end_date,
+                                PageRequest.of(page, size));
+                    } else {
+                        response = pagRepository.findByUserId(user.getId(), PageRequest.of(page, size));
                     }
-                    try {
-                        int start = (int) pageable.getOffset();
-                        int end = Math.min((start + pageable.getPageSize()), clarificationList.size());
-                        List<Clarification> pageContent = clarificationList.subList(start, end);
-                        Page<Clarification> response2 = new PageImpl<>(pageContent, pageable, clarificationList.size());
-                        return GlobalResponse
-                                .builder()
-                                .message("Success")
-                                .data(response2)
-                                .status(HttpStatus.OK)
-                                .build();
-                    } catch (Exception e) {
-                        return GlobalResponse
-                                .builder()
-                                .error(e)
-                                .status(HttpStatus.BAD_REQUEST)
-                                .build();
-                    }
-                } else if (areaId != null) {
-                    return getByBranchAllByDate(areaId, start_date, end_date, page, size);
+                } else if (branchId != null) {
+                    return getByBranchAllByDate(branchId, start_date, end_date, page, size);
                 } else {
                     Pageable pageable = PageRequest.of(page, size);
                     List<Clarification> clarificationList = new ArrayList<>();
@@ -198,13 +185,13 @@ public class ReportService {
         }
     }
 
-    public GlobalResponse getByBranchAllByDate(Long areaId, Date start_date, Date end_date, int page, int size) {
+    public GlobalResponse getByBranchAllByDate(Long branchId, Date start_date, Date end_date, int page, int size) {
         try {
             Page<Clarification> response;
             if (start_date == null || end_date == null) {
-                response = pagRepository.findByBranchId(areaId, PageRequest.of(page, size));
+                response = pagRepository.findByBranchId(branchId, PageRequest.of(page, size));
             } else {
-                response = pagRepository.findByBranchInDateRange(areaId, start_date, end_date,
+                response = pagRepository.findByBranchInDateRange(branchId, start_date, end_date,
                         PageRequest.of(page, size));
             }
             if (response.isEmpty()) {
@@ -241,19 +228,24 @@ public class ReportService {
         }
     }
 
-    public ByteArrayInputStream getDataDownloadClarification(String name, Long areaId, Date start_date, Date end_date)
+    public ByteArrayInputStream getDataDownloadClarification(Long region_id,Long user_id, Long branchId, Date start_date,
+            Date end_date)
             throws IOException {
         List<Clarification> response;
-        if (name != null && areaId != null && start_date != null && end_date != null) {
-            response = repository.findByAllFilter(name, areaId, start_date, end_date);
-        } else if (areaId != null && start_date != null && end_date != null) {
-            response = repository.findByBranchInDateRange(areaId, start_date, end_date);
-        } else if (name != null && start_date != null && end_date != null) {
-            response = repository.findByNameInDateRange(name, start_date, end_date);
-        } else if (name != null) {
-            response = repository.findByFullname(name);
-        } else if (areaId != null) {
-            response = repository.findByBranchId(areaId);
+        if (user_id != null && region_id !=null && branchId != null && start_date != null && end_date != null) {
+            response = repository.findByAllFilters(user_id, region_id,branchId, start_date, end_date);
+        }else if (region_id != null && start_date != null && end_date != null) {
+            response = repository.findByRegionIdAndDate(branchId, start_date, end_date);
+        } else if (branchId != null && start_date != null && end_date != null) {
+            response = repository.findByBranchInDateRange(branchId, start_date, end_date);
+        } else if (user_id != null && start_date != null && end_date != null) {
+            response = repository.findByUserInDateRange(user_id, start_date, end_date);
+        } else if (user_id != null) {
+            response = repository.findByUserId(user_id);
+        } else if (branchId != null) {
+            response = repository.findByBranchId(branchId);
+        }else if (region_id != null) {
+            response = repository.findByRegionId(region_id);
         } else if (start_date != null && end_date != null) {
             response = repository.findClarificationInDateRange(start_date, end_date);
         } else {
@@ -263,7 +255,7 @@ public class ReportService {
         return data;
     }
 
-    public ResponseEntity<InputStreamResource> getDataDownloadLHA(Long user_id, Long areaId, Date start_date,
+    public ResponseEntity<InputStreamResource> getDataDownloadLHA(Long user_id, Long branchId, Date start_date,
             Date end_date) throws FileNotFoundException, MalformedURLException {
         User getUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
@@ -272,22 +264,22 @@ public class ReportService {
         List<ListLhaDTO> list = new ArrayList<>();
         List<LhaReportDTO> listAllReport = new ArrayList<>();
 
-        if (user_id != null && areaId != null && start_date != null && end_date != null) {
-            response = lhaRepository.findLHAByAll(areaId, user_id, start_date, end_date);
-        } else if (areaId != null && start_date != null && end_date != null) {
-            response = lhaRepository.findLHAByRegionInDateRange(areaId, start_date, end_date);
+        if (user_id != null && branchId != null && start_date != null && end_date != null) {
+            response = lhaRepository.findLHAByAll(branchId, user_id, start_date, end_date);
+        } else if (branchId != null && start_date != null && end_date != null) {
+            response = lhaRepository.findLHAByRegionInDateRange(branchId, start_date, end_date);
         } else if (user_id != null && start_date != null && end_date != null) {
             response = lhaRepository.findAllLHAByUserIdInDateRange(user_id, start_date, end_date);
         } else if (user_id != null) {
             response = lhaRepository.findAllLHAByUserId(user_id);
-        } else if (areaId != null) {
-            response = lhaRepository.findLHAByRegion(areaId);
+        } else if (branchId != null) {
+            response = lhaRepository.findLHAByRegion(branchId);
         } else {
             if (getUser.getLevel().getId() == 2) {
                 for (int i = 0; i < getUser.getRegionId().size(); i++) {
                     List<AuditDailyReport> listLHA;
                     if (start_date != null && end_date != null) {
-                        listLHA = lhaRepository.findLHAInDateRangeAndRegion(areaId, start_date, end_date);
+                        listLHA = lhaRepository.findLHAInDateRangeAndRegion(branchId, start_date, end_date);
                     } else {
                         listLHA = lhaRepository
                                 .findLHAByRegion(getUser.getRegionId().get(i));
@@ -303,7 +295,7 @@ public class ReportService {
                         listLHA = lhaRepository.findAllLHAByUserIdInDateRange(getUser.getId(), start_date, end_date);
                     } else {
                         listLHA = lhaRepository.findAllLHAByUserId(getUser.getId());
-                    } 
+                    }
                     for (int u = 0; u < listLHA.size(); u++) {
                         response.add(listLHA.get(u));
                     }
@@ -315,18 +307,18 @@ public class ReportService {
         if (response.isEmpty()) {
             return null;
         }
-        PDFResponse pdf;
-        if (areaId != null) {
-            Optional<Region> region = regionRepository.findOneRegionById(areaId);
+        ByteArrayInputStream pdf;
+        if (branchId != null) {
+            Optional<Region> region = regionRepository.findOneRegionById(branchId);
             if (!region.isPresent()) {
                 return null;
             }
             for (int i = 0; i < response.size(); i++) {
-                String fullName = response.get(i).getUser().getFullname();
+                String fulluser_id = response.get(i).getUser().getFullname();
                 List<AuditDailyReportDetail> detail = lhaDetailRepository.findByLHAId(response.get(i).getId());
                 boolean found = false;
                 for (int j = 0; j < list.size(); j++) {
-                    if (fullName.equals(list.get(j).getFullname())) {
+                    if (fulluser_id.equals(list.get(j).getFullname())) {
                         List<AuditDailyReportDetail> listOfDetail = new ArrayList<>();
                         for (int d = 0; d < detail.size(); d++) {
                             Optional<Revision> check = revisionRepository.findByDetailId(detail.get(d).getId());
@@ -359,7 +351,7 @@ public class ReportService {
 
                 if (!found) {
                     ListLhaDTO listLha = new ListLhaDTO();
-                    listLha.setFullname(fullName);
+                    listLha.setFullname(fulluser_id);
                     listLha.setBranch(response.get(i).getBranch().getName());
                     List<AuditDailyReportDetail> listOfDetail = new ArrayList<>();
                     for (int d = 0; d < detail.size(); d++) {
@@ -397,17 +389,17 @@ public class ReportService {
         } else {
             for (int i = 0; i < response.size(); i++) {
                 List<AuditDailyReportDetail> detail = lhaDetailRepository.findByLHAId(response.get(i).getId());
-                String regionName = response.get(i).getBranch().getArea().getRegion().getName();
-                String fullName = response.get(i).getUser().getFullname();
+                String regionuser_id = response.get(i).getBranch().getArea().getRegion().getName();
+                String fulluser_id = response.get(i).getUser().getFullname();
 
                 boolean foundRegion = false;
                 for (int x = 0; x < listAllReport.size(); x++) {
-                    if (regionName.equals(listAllReport.get(x).getArea_name())) {
+                    if (regionuser_id.equals(listAllReport.get(x).getArea_name())) {
                         foundRegion = true;
                         List<ListLhaDTO> lhaDetails = listAllReport.get(x).getLha_detail();
                         boolean foundUser = false;
                         for (int y = 0; y < lhaDetails.size(); y++) {
-                            if (fullName.equals(lhaDetails.get(y).getFullname())) {
+                            if (fulluser_id.equals(lhaDetails.get(y).getFullname())) {
                                 List<AuditDailyReportDetail> listOfDetail = new ArrayList<>();
                                 for (int d = 0; d < detail.size(); d++) {
                                     Optional<Revision> check = revisionRepository.findByDetailId(detail.get(d).getId());
@@ -441,7 +433,7 @@ public class ReportService {
                         }
                         if (!foundUser) {
                             ListLhaDTO lhaDto = new ListLhaDTO();
-                            lhaDto.setFullname(fullName);
+                            lhaDto.setFullname(fulluser_id);
                             lhaDto.setBranch(response.get(i).getBranch().getName());
                             List<AuditDailyReportDetail> listOfDetail = new ArrayList<>();
                             for (int d = 0; d < detail.size(); d++) {
@@ -476,11 +468,11 @@ public class ReportService {
 
                 if (!foundRegion) {
                     LhaReportDTO reportDto = new LhaReportDTO();
-                    reportDto.setArea_name(regionName);
+                    reportDto.setArea_name(regionuser_id);
                     reportDto.setDate(convertDateToRoman.convertDateToString(new Date()));
                     List<ListLhaDTO> lhaDetailList = new ArrayList<>();
                     ListLhaDTO lhaDto = new ListLhaDTO();
-                    lhaDto.setFullname(fullName);
+                    lhaDto.setFullname(fulluser_id);
                     lhaDto.setBranch(response.get(i).getBranch().getName());
 
                     List<AuditDailyReportDetail> listOfDetail = new ArrayList<>();
@@ -515,21 +507,25 @@ public class ReportService {
             }
             pdf = LHAReport.generateAllLHAPDF(listAllReport);
         }
-        String path = pdf.getFilePath();
-        File file = new File(path);
-        InputStream inputStream = new FileInputStream(file);
-        InputStreamResource isr = new InputStreamResource(inputStream);
+        // String path = pdf.getFilePath();
+        // File file = new File(path);
+        // InputStream inputStream = new FileInputStream(file);
+        InputStreamResource isr = new InputStreamResource(pdf);
 
-        HttpHeaders httpHeaders = new HttpHeaders();
+        // HttpHeaders httpHeaders = new HttpHeaders();
 
-        httpHeaders.setContentType(MediaType.valueOf("application/pdf"));
-        httpHeaders.set("Content-Disposition", "inline; filename=" + pdf.getFileName());
+        String filename;
+        if (start_date != null && end_date != null) {
+            filename = convertDateToRoman.convertDateHehe(start_date) + "-"
+                    + convertDateToRoman.convertDateHehe(end_date) + "-report.xlsx";
+        } else {
+            filename = "report.xlsx";
+        }
 
-        return ResponseEntity.ok()
-                .headers(httpHeaders)
-                .contentLength(file.length())
-                .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                .body(isr);
+        ResponseEntity<InputStreamResource> responses = ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=" + filename)
+                .contentType(MediaType.parseMediaType("application/vnd.ms-excel")).body(isr);
+        return responses;
     }
 
 }
