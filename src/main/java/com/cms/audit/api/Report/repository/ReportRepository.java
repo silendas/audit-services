@@ -32,10 +32,10 @@ public interface ReportRepository extends JpaRepository<Clarification, Long> {
         @Query(value = "SELECT u.* FROM clarification u INNER JOIN users us ON u.user_id=us.id WHERE us.fullname LIKE '% :name %'", nativeQuery = true)
         List<Clarification> findByFullname(@Param("name") String name);
 
-        @Query(value = "SELECT u.* FROM clarification u INNER JOIN users us ON u.user_id=us.id WHERE us.fullname LIKE %:name% AND u.branch_id = :branchId AND u.created_at BETWEEN :start_date AND :end_date ;", nativeQuery = true)
-        List<Clarification> findByAllFilter(@Param("name") String name, @Param("branchId") Long branchId,
-                        @Param("start_date") Date start_date,
-                        @Param("end_date") Date end_date);
+        // @Query(value = "SELECT u.* FROM clarification u INNER JOIN users us ON u.user_id=us.id WHERE us.fullname LIKE %:name% AND u.branch_id = :branchId AND u.created_at BETWEEN :start_date AND :end_date ;", nativeQuery = true)
+        // List<Clarification> findByAllFilter(@Param("name") String name, @Param("branchId") Long branchId,
+        //                 @Param("start_date") Date start_date,
+        //                 @Param("end_date") Date end_date);
 
         // @Query(value = "SELECT u.* FROM clarification u INNER JOIN branch_office bo ON u.branch_id=bo.id INNER JOIN area_office ao ON bo.area_id=ao.id INNER JOIN region_office ro ON ao.region_id = ro.id WHERE ro.id = :id AND u.created_at BETWEEN :start_date AND :end_date", nativeQuery = true)
         // List<Clarification> findByRegionIdAndDate(@Param("id") Long id, @Param("start_date") Date start_date,
@@ -63,8 +63,7 @@ public interface ReportRepository extends JpaRepository<Clarification, Long> {
         //                 @Param("end_date") Date end_date);
                         
         @Query(value = "SELECT u.* FROM clarification u INNER JOIN branch_office bo ON u.branch_id=bo.id INNER JOIN area_office ao ON bo.area_id=ao.id INNER JOIN region_office ro ON ao.region_id = ro.id WHERE ro.id = :regionId AND u.user_id = :user_id AND u.branch_id = :branchId AND u.created_at BETWEEN :start_date AND :end_date ;", nativeQuery = true)
-        List<Clarification> findByAllFilterS(@Param("user_id")Long user_id, @Param("region_id")Long regionId,@Param("branchId") Long branchId, @Param("start_date") Date start_date,
-        @Param("end_date") Date end_date);
+        List<Clarification> findByAllFilters(@Param("user_id")Long user_id, @Param("regionId")Long regionId,@Param("branchId") Long branchId, @Param("start_date") Date start_date,@Param("end_date") Date end_date);
 
         @Query(value = "SELECT * FROM clarification u WHERE u.user_id = :id AND u.created_at BETWEEN :start_date AND :end_date ", nativeQuery = true)
         List<Clarification> findByUserInDateRange(@Param("id") Long id, @Param("start_date") Date start_date,

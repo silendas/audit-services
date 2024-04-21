@@ -233,7 +233,7 @@ public class ReportService {
             throws IOException {
         List<Clarification> response;
         if (user_id != null && region_id !=null && branchId != null && start_date != null && end_date != null) {
-            response = repository.findByAllFilterS(user_id, region_id,branchId, start_date, end_date);
+            response = repository.findByAllFilters(user_id, region_id,branchId, start_date, end_date);
         }else if (region_id != null && start_date != null && end_date != null) {
             response = repository.findByRegionIdAndDate(branchId, start_date, end_date);
         } else if (branchId != null && start_date != null && end_date != null) {
