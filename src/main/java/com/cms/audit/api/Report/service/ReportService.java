@@ -527,5 +527,4 @@ public class ReportService {
                 .contentType(MediaType.parseMediaType("application/pdf")).body(isr);
         return responses;
     }
-
 }
