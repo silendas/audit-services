@@ -27,11 +27,21 @@ import com.cms.audit.api.AuditDailyReport.repository.AuditDailyReportDetailRepos
 import com.cms.audit.api.AuditDailyReport.repository.AuditDailyReportRepository;
 import com.cms.audit.api.AuditDailyReport.repository.PagAuditDailyReportDetail;
 import com.cms.audit.api.AuditDailyReport.repository.RevisionRepository;
+import com.cms.audit.api.Clarifications.dto.response.NumberClarificationInterface;
+import com.cms.audit.api.Clarifications.models.Clarification;
+import com.cms.audit.api.Clarifications.models.EStatusClarification;
+import com.cms.audit.api.Clarifications.repository.ClarificationRepository;
+import com.cms.audit.api.Common.constant.convertDateToRoman;
+import com.cms.audit.api.Common.exception.ResourceNotFoundException;
 import com.cms.audit.api.Common.response.GlobalResponse;
+import com.cms.audit.api.Flag.model.Flag;
+import com.cms.audit.api.Flag.repository.FlagRepo;
 import com.cms.audit.api.Management.Case.models.Case;
 import com.cms.audit.api.Management.Case.repository.CaseRepository;
 import com.cms.audit.api.Management.CaseCategory.models.CaseCategory;
 import com.cms.audit.api.Management.CaseCategory.repository.CaseCategoryRepository;
+import com.cms.audit.api.Management.ReportType.models.ReportType;
+import com.cms.audit.api.Management.ReportType.repository.ReportTypeRepository;
 import com.cms.audit.api.Management.User.models.User;
 
 import jakarta.transaction.Transactional;
@@ -43,10 +53,19 @@ public class AuditDailyReportDetailService {
     private AuditDailyReportDetailRepository repository;
 
     @Autowired
+    private ReportTypeRepository reportTypeRepository;
+
+    @Autowired
     private AuditDailyReportRepository lhaReportsitory;
 
     @Autowired
     private CaseRepository caseRepository;
+
+    @Autowired
+    private ClarificationRepository clarificationRepository;
+
+    @Autowired
+    private FlagRepo flagRepo;
 
     @Autowired
     private CaseCategoryRepository ccRepository;
@@ -115,7 +134,7 @@ public class AuditDailyReportDetailService {
             parent.put("empty", response.isEmpty());
             parent.put("sort", response.getSort());
             parent.put("content", details);
-            //parent.put("lha_details", details);
+            // parent.put("lha_details", details);
 
             return GlobalResponse
                     .builder()
@@ -303,15 +322,19 @@ public class AuditDailyReportDetailService {
 
             Optional<AuditDailyReport> setId = lhaReportsitory.findById(dto.getAudit_daily_report_id());
             if (!setId.isPresent()) {
-                return GlobalResponse.builder().message("Lha id not found").status(HttpStatus.BAD_REQUEST).build();
+                return GlobalResponse.builder().message("Lha with id:" + dto.getAudit_daily_report_id() + " not found")
+                        .status(HttpStatus.BAD_REQUEST).build();
             }
             Optional<Case> setCaseId = caseRepository.findById(dto.getCase_id());
             if (!setCaseId.isPresent()) {
-                return GlobalResponse.builder().message("Case not found").status(HttpStatus.BAD_REQUEST).build();
+                return GlobalResponse.builder().message("Case with id:" + dto.getCase_id() + " not found")
+                        .status(HttpStatus.BAD_REQUEST).build();
             }
             Optional<CaseCategory> setCCId = ccRepository.findById(dto.getCase_category_id());
             if (!setCCId.isPresent()) {
-                return GlobalResponse.builder().message("Case Category not found").status(HttpStatus.BAD_REQUEST)
+                return GlobalResponse.builder()
+                        .message("Case Category with id:" + dto.getCase_category_id() + " not found")
+                        .status(HttpStatus.BAD_REQUEST)
                         .build();
             }
 
@@ -331,7 +354,71 @@ public class AuditDailyReportDetailService {
                     new Date(),
                     new Date());
 
-            repository.save(auditDailyReport);
+            AuditDailyReportDetail lhaDetail = repository.save(auditDailyReport);
+
+            if (lhaDetail.getIs_research() == 1) {
+
+                Long reportNumber = null;
+                String rptNum = null;
+
+                Optional<NumberClarificationInterface> checkClBefore = clarificationRepository
+                        .checkNumberClarification(user.getId());
+                if (checkClBefore.isPresent()) {
+                    if (checkClBefore.get().getCreated_Year().longValue() == Long
+                            .valueOf(convertDateToRoman.getIntYear())) {
+                        reportNumber = checkClBefore.get().getReport_Number() + 1;
+                        if (reportNumber < 10) {
+                            rptNum = "00" + reportNumber;
+                        } else if (reportNumber < 100) {
+                            rptNum = "0" + reportNumber;
+                        } else {
+                            rptNum = reportNumber.toString();
+                        }
+                    } else {
+                        rptNum = "001";
+                        reportNumber = Long.valueOf(1);
+                    }
+                } else {
+                    rptNum = "001";
+                    reportNumber = Long.valueOf(1);
+                }
+
+                String branchName = lhaDetail.getAuditDailyReport().getBranch().getName();
+                String initialName = user.getInitial_name();
+                String caseName = lhaDetail.getCases().getName();
+                String lvlCode = user.getLevel().getCode();
+                String romanMonth = convertDateToRoman.getRomanMonth();
+                Integer thisYear = convertDateToRoman.getIntYear();
+
+                ReportType reportType = reportTypeRepository.findByCode("CK")
+                        .orElseThrow(() -> new ResourceNotFoundException(
+                                "Report Type Nt found"));
+
+                String reportCode = rptNum + lvlCode + "/" + initialName + "-" + caseName
+                        + "/" + reportType.getCode() + "/" + branchName + "/"
+                        + romanMonth + "/"
+                        + thisYear;
+
+                Clarification setCL = new Clarification();
+                setCL.setUser(user);
+                setCL.setBranch(lhaDetail.getAuditDailyReport().getBranch());
+                setCL.setCases(lhaDetail.getCases());
+                setCL.setCaseCategory(lhaDetail.getCaseCategory());
+                setCL.setReportType(reportType);
+                setCL.setReport_number(reportNumber);
+                setCL.setCode(reportCode);
+                setCL.setStatus(EStatusClarification.INPUT);
+                setCL.setCreated_at(new Date());
+                setCL.setUpdated_at(new Date());
+
+                Clarification response3 = clarificationRepository.save(setCL);
+
+                Flag flag = new Flag();
+                flag.setAuditDailyReportDetail(lhaDetail);
+                flag.setClarification(response3);
+                flag.setCreatedAt(new Date());
+                flagRepo.save(flag);
+            }
 
             return GlobalResponse
                     .builder()
