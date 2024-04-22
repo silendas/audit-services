@@ -30,6 +30,7 @@ import com.cms.audit.api.AuditDailyReport.repository.AuditDailyReportRepository;
 import com.cms.audit.api.AuditDailyReport.repository.RevisionRepository;
 import com.cms.audit.api.Clarifications.models.Clarification;
 import com.cms.audit.api.Common.constant.convertDateToRoman;
+import com.cms.audit.api.Common.exception.ResourceNotFoundException;
 import com.cms.audit.api.Common.pdf.LHAReport;
 import com.cms.audit.api.Common.response.GlobalResponse;
 import com.cms.audit.api.Common.util.ExcelUtil;
@@ -65,9 +66,6 @@ public class ReportService {
 
     @Autowired
     private AuditDailyReportRepository lhaRepository;
-
-    @Autowired
-    private UserRepository userRepository;
 
     public GlobalResponse getAll(Long region_id, Long branchId, Long user_id, int page, int size, Date start_date,
             Date end_date) {
@@ -228,13 +226,14 @@ public class ReportService {
         }
     }
 
-    public ByteArrayInputStream getDataDownloadClarification(Long region_id,Long user_id, Long branchId, Date start_date,
+    public ByteArrayInputStream getDataDownloadClarification(Long region_id, Long user_id, Long branchId,
+            Date start_date,
             Date end_date)
             throws IOException {
         List<Clarification> response;
-        if (user_id != null && region_id !=null && branchId != null && start_date != null && end_date != null) {
-            response = repository.findByAllFilters(user_id, region_id,branchId, start_date, end_date);
-        }else if (region_id != null && start_date != null && end_date != null) {
+        if (user_id != null && region_id != null && branchId != null && start_date != null && end_date != null) {
+            response = repository.findByAllFilters(user_id, region_id, branchId, start_date, end_date);
+        } else if (region_id != null && start_date != null && end_date != null) {
             response = repository.findByRegionIdAndDate(branchId, start_date, end_date);
         } else if (branchId != null && start_date != null && end_date != null) {
             response = repository.findByBranchInDateRange(branchId, start_date, end_date);
@@ -244,7 +243,7 @@ public class ReportService {
             response = repository.findByUserId(user_id);
         } else if (branchId != null) {
             response = repository.findByBranchId(branchId);
-        }else if (region_id != null) {
+        } else if (region_id != null) {
             response = repository.findByRegionId(region_id);
         } else if (start_date != null && end_date != null) {
             response = repository.findClarificationInDateRange(start_date, end_date);
@@ -275,7 +274,7 @@ public class ReportService {
         } else if (branchId != null) {
             response = lhaRepository.findLHAByRegion(branchId);
         } else {
-            if (getUser.getLevel().getId() == 2) {
+            if (getUser.getLevel().getId() == 2 ) {
                 for (int i = 0; i < getUser.getRegionId().size(); i++) {
                     List<AuditDailyReport> listLHA;
                     if (start_date != null && end_date != null) {
@@ -301,11 +300,23 @@ public class ReportService {
                     }
                 }
             } else {
-                response = lhaRepository.findAll();
+                if (start_date != null && end_date != null) {
+                    response = lhaRepository.findLHAInDateRange(start_date, end_date);
+                }else{
+                    response = lhaRepository.findAll();
+                }
             }
         }
         if (response.isEmpty()) {
-            return null;
+            ByteArrayInputStream pdf = LHAReport.generateIfNoData();
+            InputStreamResource isr = new InputStreamResource(pdf);
+
+            String filename = "No-Data-Report.pdf";
+
+            ResponseEntity<InputStreamResource> responses = ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=" + filename)
+                    .contentType(MediaType.parseMediaType("application/pdf")).body(isr);
+            return responses;
         }
         ByteArrayInputStream pdf;
         if (branchId != null) {
