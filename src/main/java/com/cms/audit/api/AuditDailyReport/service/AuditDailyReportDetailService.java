@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import org.apache.coyote.BadRequestException;
 import org.hibernate.exception.DataException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -98,7 +97,21 @@ public class AuditDailyReportDetailService {
                     builder.setTemporary_recommendations(
                             response.getContent().get(i).getTemporary_recommendations());
                     builder.setSuggestion(response.getContent().get(i).getSuggestion());
-                    builder.setIs_research(response.getContent().get(i).getIs_research());
+                    if (response.getContent().get(i).getIs_research() == 1) {
+                        Flag isFLag = flagRepo
+                                .findOneByAuditDailyReportDetailId(
+                                        response.getContent().get(i).getId())
+                                .orElseThrow(() -> new ResourceNotFoundException(
+                                        "Flag not found"));
+                        if (isFLag.getClarification().getFilename() != null) {
+                            builder.setIs_research(0);
+                        } else {
+                            builder.setIs_research(1);
+                        }
+                    } else {
+                        builder.setIs_research(0);
+                    }
+                    //builder.setIs_research(response.getContent().get(i).getIs_research());
                     details.add(builder);
                 } else {
                     DetailResponse builder = new DetailResponse();
@@ -111,7 +124,21 @@ public class AuditDailyReportDetailService {
                     builder.setTemporary_recommendations(
                             getRevision.get().getTemporary_recommendations());
                     builder.setSuggestion(getRevision.get().getSuggestion());
-                    builder.setIs_research(getRevision.get().getIs_research());
+                    if (response.getContent().get(i).getIs_research() == 1) {
+                        Flag isFLag = flagRepo
+                                .findOneByAuditDailyReportDetailId(
+                                        response.getContent().get(i).getId())
+                                .orElseThrow(() -> new ResourceNotFoundException(
+                                        "Flag not found"));
+                        if (isFLag.getClarification().getFilename() != null) {
+                            builder.setIs_research(0);
+                        } else {
+                            builder.setIs_research(1);
+                        }
+                    } else {
+                        builder.setIs_research(0);
+                    }
+                    //builder.setIs_research(getRevision.get().getIs_research());
                     details.add(builder);
                 }
             }
@@ -188,7 +215,21 @@ public class AuditDailyReportDetailService {
                 builder.put(
                         "temporary_recommendation", checkRevision.get().getTemporary_recommendations());
                 builder.put("suggestion", checkRevision.get().getSuggestion());
-                builder.put("is_research", checkRevision.get().getIs_research());
+                // builder.put("is_research", checkRevision.get().getIs_research());
+                if (checkRevision.get().getIs_research() == 1) {
+                    Flag isFLag = flagRepo
+                            .findOneByAuditDailyReportDetailId(
+                                    id)
+                            .orElseThrow(() -> new ResourceNotFoundException(
+                                    "Flag not found"));
+                    if (isFLag.getClarification().getFilename() != null) {
+                        builder.put("is_research", 0);
+                    } else {
+                        builder.put("is_research", 1);
+                    }
+                } else {
+                    builder.put("is_research", 0);
+                }
             } else {
                 Optional<AuditDailyReportDetail> response = repository.findOneByLHADetailId(id);
                 if (!response.isPresent()) {
@@ -213,7 +254,20 @@ public class AuditDailyReportDetailService {
                 builder.put(
                         "temporary_recommendation", response.get().getTemporary_recommendations());
                 builder.put("suggestion", response.get().getSuggestion());
-                builder.put("is_research", response.get().getIs_research());
+                if (response.get().getIs_research() == 1) {
+                    Flag isFLag = flagRepo
+                            .findOneByAuditDailyReportDetailId(
+                                    response.get().getId())
+                            .orElseThrow(() -> new ResourceNotFoundException(
+                                    "Flag not found"));
+                    if (isFLag.getClarification().getFilename() != null) {
+                        builder.put("is_research", 0);
+                    } else {
+                        builder.put("is_research", 1);
+                    }
+                } else {
+                    builder.put("is_research", 0);
+                }
             }
             return GlobalResponse
                     .builder()
