@@ -12,7 +12,10 @@ import com.cms.audit.api.AuditDailyReport.models.AuditDailyReportDetail;
 import com.cms.audit.api.AuditDailyReport.models.Revision;
 import com.cms.audit.api.AuditDailyReport.repository.AuditDailyReportDetailRepository;
 import com.cms.audit.api.AuditDailyReport.repository.RevisionRepository;
+import com.cms.audit.api.Common.exception.ResourceNotFoundException;
 import com.cms.audit.api.Common.response.GlobalResponse;
+import com.cms.audit.api.Flag.model.Flag;
+import com.cms.audit.api.Flag.repository.FlagRepo;
 import com.cms.audit.api.Management.User.models.User;
 
 import jakarta.transaction.Transactional;
@@ -25,11 +28,13 @@ public class RevisionService {
     private RevisionRepository repository;
 
     @Autowired
+    private FlagRepo flagRepo;
+
+    @Autowired
     private AuditDailyReportDetailRepository auditDailyReportDetailRepository;
 
     public GlobalResponse getAll(Long detaild) {
         try {
-
             if (detaild == null) {
                 List<Revision> response = repository.findAll();
                 if (response.isEmpty()) {
@@ -40,6 +45,22 @@ public class RevisionService {
                 List<Revision> response = repository.findByDetailIdAll(detaild);
                 if (response.isEmpty()) {
                     return GlobalResponse.builder().message("Data not found").status(HttpStatus.OK).build();
+                }
+                for(int i =0; i<response.size();i++){
+                    if (response.get(i).getIs_research() == 1) {
+                        Flag isFLag = flagRepo
+                                .findOneByAuditDailyReportDetailId(
+                                        detaild)
+                                .orElseThrow(() -> new ResourceNotFoundException(
+                                        "Flag not found"));
+                        if (isFLag.getClarification().getFilename() != null) {
+                            response.get(i).setIs_research(0);
+                        } else {
+                            response.get(i).setIs_research(1);
+                        }
+                    } else {
+                        response.get(i).setIs_research(0);
+                    }
                 }
                 return GlobalResponse.builder().data(response).message("Success").status(HttpStatus.OK).build();
             }
@@ -54,6 +75,20 @@ public class RevisionService {
             if(!response.isPresent()){
                 return GlobalResponse.builder().message("Data tidak ditemukan").status(HttpStatus.BAD_REQUEST).build();
             }
+                if (response.get().getIs_research() == 1) {
+                    Flag isFLag = flagRepo
+                            .findOneByAuditDailyReportDetailId(
+                                    response.get().getAuditDailyReportDetail().getId())
+                            .orElseThrow(() -> new ResourceNotFoundException(
+                                    "Flag not found"));
+                    if (isFLag.getClarification().getFilename() != null) {
+                        response.get().setIs_research(0);
+                    } else {
+                        response.get().setIs_research(1);
+                    }
+                } else {
+                    response.get().setIs_research(0);
+                }
             return GlobalResponse.builder().message("Success").data(response).status(HttpStatus.OK).build();
         } catch (Exception e) {
             return GlobalResponse.builder().error(e).status(HttpStatus.INTERNAL_SERVER_ERROR).build();
