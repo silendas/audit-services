@@ -66,7 +66,7 @@ public class RevisionService {
         Optional<AuditDailyReportDetail> detail = auditDailyReportDetailRepository
                 .findById(dto.getAudit_daily_report_detail_id());
         if (!detail.isPresent()) {
-            return GlobalResponse.builder().message("DEtail Not found").status(HttpStatus.BAD_REQUEST).build();
+            return GlobalResponse.builder().message("Detail Not found").status(HttpStatus.BAD_REQUEST).build();
         }
 
         Revision revision = new Revision();
