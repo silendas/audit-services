@@ -685,6 +685,18 @@ public class ScheduleService {
                                                 response.get(i).getEnd_date_realization()));
                         }
 
+                        Optional<AuditWorkingPaper> getKka = auditWorkingPaperRepository
+                                        .findByScheduleId(response.get(i).getId());
+                        Map<String, Object> kka = new LinkedHashMap<>();
+                        if (getKka.isPresent()) {
+                                kka.put("id", getKka.get().getId());
+                                kka.put("filename", getKka.get().getFilename());
+                                kka.put("file_path", getKka.get().getFile_path());
+                                mapParent.put("kka", kka);
+                        } else {
+                                mapParent.put("kka", null);
+                        }
+
                         listSchedule.add(mapParent);
                 }
                 return listSchedule;
