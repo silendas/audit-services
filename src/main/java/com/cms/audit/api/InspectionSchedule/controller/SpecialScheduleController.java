@@ -48,67 +48,67 @@ public class SpecialScheduleController {
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Optional<Date> end_date,
             @RequestParam("page") Optional<Integer> page,
             @RequestParam("size") Optional<Integer> size) {
-                Long branchId;
-            if(branch_id.isPresent()){
-                if(branch_id.get().toString() != ""){
-                    branchId = branch_id.get();
-                } else {
-                    branchId = null;
-                }
+        Long branchId;
+        if (branch_id.isPresent()) {
+            if (branch_id.get().toString() != "") {
+                branchId = branch_id.get();
             } else {
                 branchId = null;
             }
-            String fullname;
-            if(name.isPresent()){
-                if(name.get().toString() != ""){
-                    fullname = name.get();
-                } else {
-                    fullname = null;
-                }
+        } else {
+            branchId = null;
+        }
+        String fullname;
+        if (name.isPresent()) {
+            if (name.get().toString() != "") {
+                fullname = name.get();
             } else {
                 fullname = null;
             }
-            Date startDate;
-            if(start_date.isPresent()){
-                if(start_date.get().toString() != ""){
-                    startDate = start_date.get();
-                } else {
-                    startDate = null;
-                }
+        } else {
+            fullname = null;
+        }
+        Date startDate;
+        if (start_date.isPresent()) {
+            if (start_date.get().toString() != "") {
+                startDate = start_date.get();
             } else {
                 startDate = null;
             }
-            Date endDate;
-            if(end_date.isPresent()){
-                if(end_date.get().toString() != ""){
-                    endDate = end_date.get();
-                } else {
-                    endDate = null;
-                }
+        } else {
+            startDate = null;
+        }
+        Date endDate;
+        if (end_date.isPresent()) {
+            if (end_date.get().toString() != "") {
+                endDate = end_date.get();
             } else {
                 endDate = null;
             }
-            Integer pages;
-            if(page.isPresent()){
-                if(page.get().toString() != ""){
-                    pages = page.get();
-                } else {
-                    pages = 0;
-                }
+        } else {
+            endDate = null;
+        }
+        Integer pages;
+        if (page.isPresent()) {
+            if (page.get().toString() != "") {
+                pages = page.get();
             } else {
                 pages = 0;
             }
-            Integer sizes;
-            if(size.isPresent()){
-                if(size.get().toString() != ""){
-                    sizes = size.get();
-                } else {
-                    sizes = 10;
-                }
+        } else {
+            pages = 0;
+        }
+        Integer sizes;
+        if (size.isPresent()) {
+            if (size.get().toString() != "") {
+                sizes = size.get();
             } else {
                 sizes = 10;
             }
-        GlobalResponse response = scheduleService.getSpecialSchedule(branchId,fullname,pages,sizes,
+        } else {
+            sizes = 10;
+        }
+        GlobalResponse response = scheduleService.getSpecialSchedule(branchId, fullname, pages, sizes,
                 startDate, endDate);
         return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(), null);
     }
@@ -120,7 +120,8 @@ public class SpecialScheduleController {
     }
 
     @PostMapping
-    public ResponseEntity<Object> add(@RequestBody ScheduleRequest scheduleDTO, @Nonnull HttpServletRequest request) {
+    public ResponseEntity<Object> add(@Nonnull @RequestBody ScheduleRequest scheduleDTO,
+            @Nonnull HttpServletRequest request) {
         final String tokenHeader = request.getHeader("Authorization");
         String jwtToken = tokenHeader.substring(7);
         String username = jwtService.extractUsername(jwtToken);

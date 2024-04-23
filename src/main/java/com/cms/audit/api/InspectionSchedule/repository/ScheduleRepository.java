@@ -62,6 +62,10 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
                         @Param("category") String ucategory, @Param("start_date") Date start_date,
                         @Param("end_date") Date end_date);
 
+        @Query(value = "SELECT u.* FROM inspection_schedule u LEFT JOIN audit_working_paper kka ON kka.schedule_id = u.id WHERE u.start_date < :start_date AND u.category = :category AND u.user_id = :user_id  AND (u.status = 'TODO' OR u.status = 'PROGRESS' OR u.status = 'DONE') AND (kka.file_name IS NULL OR kka.file_name <> '') ORDER BY id ASC;", nativeQuery = true)
+        List<Schedule> findForScheduleList(@Param("user_id") Long userId, @Param("start_date") Date start_date,
+                        @Param("category") String category);
+
         @Query(value = "SELECT * FROM inspection_schedule u WHERE u.id = :scheduleId ", nativeQuery = true)
         public Optional<Schedule> findOneScheduleById(@Param("scheduleId") Long scheduleId);
 

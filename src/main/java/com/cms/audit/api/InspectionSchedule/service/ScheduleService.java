@@ -812,6 +812,15 @@ public class ScheduleService {
                                 map.put("kka", null);
                         }
 
+                        List<Schedule> scheduleList = repository.findForScheduleList(
+                                        response.getContent().get(i).getUser().getId(),
+                                        response.getContent().get(i).getStart_date(), "REGULAR");
+                        if (scheduleList.isEmpty()) {
+                                map.put("is_active", 1);
+                        } else {
+                                map.put("is_active", 0);
+                        }
+
                         listSchedule.add(map);
                 }
                 parentMap.put("pageable", response.getPageable());

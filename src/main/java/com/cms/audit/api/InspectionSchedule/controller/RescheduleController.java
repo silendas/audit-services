@@ -23,6 +23,7 @@ import com.cms.audit.api.InspectionSchedule.models.EStatus;
 import com.cms.audit.api.InspectionSchedule.service.ScheduleService;
 
 import io.micrometer.common.lang.NonNull;
+import jakarta.annotation.Nonnull;
 import jakarta.servlet.http.HttpServletRequest;
 
 import org.springframework.web.bind.annotation.GetMapping;
@@ -48,47 +49,48 @@ public class RescheduleController {
             @NonNull HttpServletRequest request,
             @RequestParam("page") Optional<Integer> page,
             @RequestParam("size") Optional<Integer> size) {
-                Long branchId;
-                if(branch_id.isPresent()){
-                    if(branch_id.get().toString() != ""){
-                        branchId = branch_id.get();
-                    } else {
-                        branchId = null;
-                    }
-                } else {
-                    branchId = null;
-                }
-                String fullname;
-                if(name.isPresent()){
-                    if(name.get().toString() != ""){
-                        fullname = name.get();
-                    } else {
-                        fullname = null;
-                    }
-                } else {
-                    fullname = null;
-                }
-                Date startDate;
-                if(start_date.isPresent()){
-                    if(start_date.get().toString() != ""){
-                        startDate = start_date.get();
-                    } else {
-                        startDate = null;
-                    }
-                } else {
-                    startDate = null;
-                }
-                Date endDate;
-                if(end_date.isPresent()){
-                    if(end_date.get().toString() != ""){
-                        endDate = end_date.get();
-                    } else {
-                        endDate = null;
-                    }
-                } else {
-                    endDate = null;
-                }
-        GlobalResponse response = scheduleService.getByStatus(fullname,branchId,startDate,endDate,page.orElse(0), size.orElse(10));
+        Long branchId;
+        if (branch_id.isPresent()) {
+            if (branch_id.get().toString() != "") {
+                branchId = branch_id.get();
+            } else {
+                branchId = null;
+            }
+        } else {
+            branchId = null;
+        }
+        String fullname;
+        if (name.isPresent()) {
+            if (name.get().toString() != "") {
+                fullname = name.get();
+            } else {
+                fullname = null;
+            }
+        } else {
+            fullname = null;
+        }
+        Date startDate;
+        if (start_date.isPresent()) {
+            if (start_date.get().toString() != "") {
+                startDate = start_date.get();
+            } else {
+                startDate = null;
+            }
+        } else {
+            startDate = null;
+        }
+        Date endDate;
+        if (end_date.isPresent()) {
+            if (end_date.get().toString() != "") {
+                endDate = end_date.get();
+            } else {
+                endDate = null;
+            }
+        } else {
+            endDate = null;
+        }
+        GlobalResponse response = scheduleService.getByStatus(fullname, branchId, startDate, endDate, page.orElse(0),
+                size.orElse(10));
         return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(),
                 response.getError());
     }
@@ -101,7 +103,7 @@ public class RescheduleController {
 
     @PostMapping("/request")
     public ResponseEntity<Object> requestReschedule(
-            @RequestBody RequestReschedule dto,
+            @Nonnull @RequestBody RequestReschedule dto,
             @NonNull HttpServletRequest request) {
         final String tokenHeader = request.getHeader("Authorization");
         String jwtToken = tokenHeader.substring(7);
