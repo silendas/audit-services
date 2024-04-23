@@ -130,9 +130,12 @@ public class AuditDailyReportService {
                                                 for (int i = 0; i < getUser.getRegionId().size(); i++) {
                                                         List<AuditDailyReport> lhaAgain = new ArrayList<>();
                                                         if (startDate != null && endDate != null) {
-                                                                lhaAgain = auditDailyReportRepository.findByRegionIdAndDate(branch_id, startDate, endDate);
+                                                                lhaAgain = auditDailyReportRepository
+                                                                                .findByRegionIdAndDate(branch_id,
+                                                                                                startDate, endDate);
                                                         } else {
-                                                                lhaAgain = auditDailyReportRepository.findByRegionId(getUser.getRegionId().get(i));
+                                                                lhaAgain = auditDailyReportRepository.findByRegionId(
+                                                                                getUser.getRegionId().get(i));
                                                         }
                                                         if (!lhaAgain.isEmpty()) {
                                                                 for (int u = 0; u < lhaAgain.size(); u++) {
@@ -265,8 +268,9 @@ public class AuditDailyReportService {
         public GlobalResponse getById(Long id) {
                 try {
                         Optional<AuditDailyReport> getLha = auditDailyReportRepository.findOneByLHAId(id);
-                        if(!getLha.isPresent()){
-                                return GlobalResponse.builder().message("LHA with id: "+ id+" is undefined").status(HttpStatus.BAD_REQUEST).build();
+                        if (!getLha.isPresent()) {
+                                return GlobalResponse.builder().message("LHA with id: " + id + " is undefined")
+                                                .status(HttpStatus.BAD_REQUEST).build();
                         }
 
                         List<AuditDailyReportDetail> getDetail = auditDailyReportDetailRepository.findByLHAId(id);
@@ -348,14 +352,16 @@ public class AuditDailyReportService {
 
                         Map<String, Object> schedule = new LinkedHashMap<>();
                         schedule.put("id", getLha.get().getSchedule().getId());
-                        if(getLha.get().getSchedule().getStart_date() != null){
-                                schedule.put("start_date", convertDateToRoman.convertDateHehe(getLha.get().getSchedule().getStart_date()));
-                        }else{
+                        if (getLha.get().getSchedule().getStart_date() != null) {
+                                schedule.put("start_date", convertDateToRoman
+                                                .convertDateHehe(getLha.get().getSchedule().getStart_date()));
+                        } else {
                                 schedule.put("start_date", null);
                         }
-                        if(getLha.get().getSchedule().getEnd_date() != null){
-                                schedule.put("end_date", convertDateToRoman.convertDateHehe(getLha.get().getSchedule().getEnd_date()));
-                        }else{
+                        if (getLha.get().getSchedule().getEnd_date() != null) {
+                                schedule.put("end_date", convertDateToRoman
+                                                .convertDateHehe(getLha.get().getSchedule().getEnd_date()));
+                        } else {
                                 schedule.put("end_date", null);
                         }
                         response.put("schedule", schedule);
@@ -721,6 +727,7 @@ public class AuditDailyReportService {
                         }
 
                         AuditDailyReport response1 = auditDailyReportRepository.save(auditDailyReport);
+
                         AuditDailyReport setId = AuditDailyReport.builder().id(response1.getId()).build();
 
                         for (int i = 0; i < dto.getLha_detail().size(); i++) {
@@ -745,6 +752,22 @@ public class AuditDailyReportService {
 
                                 AuditDailyReportDetail response2 = auditDailyReportDetailRepository
                                                 .save(auditDailyReportDetail);
+
+                                Revision revision = new Revision();
+                                revision.setAuditDailyReportDetail(response2);
+                                revision.setCases(response2.getCases());
+                                revision.setCaseCategory(response2.getCaseCategory());
+                                revision.setRevisionNumber(0L);
+                                revision.setDescription(response2.getDescription());
+                                revision.setSuggestion(response2.getSuggestion());
+                                revision.setTemporary_recommendations(response2.getTemporary_recommendations());
+                                revision.setPermanent_recommendations(response2.getPermanent_recommendations());
+                                revision.setIs_research(response2.getIs_research());
+                                revision.setIs_delete(response2.getIs_delete());
+                                revision.setCreated_by(response2.getCreated_by());
+                                revision.setCreated_at(response2.getCreated_at());
+
+                                revisionRepo.save(revision);
 
                                 if (dto.getLha_detail().get(i).getIs_research() == 1) {
 
@@ -937,7 +960,7 @@ public class AuditDailyReportService {
                                         getBefore.get().getCreated_at(),
                                         new Date());
 
-                         auditDailyReportRepository.save(auditDailyReport);
+                        auditDailyReportRepository.save(auditDailyReport);
                         return GlobalResponse
                                         .builder()
                                         .message("Success")
