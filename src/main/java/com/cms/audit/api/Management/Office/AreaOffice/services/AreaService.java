@@ -87,15 +87,19 @@ public class AreaService {
             User getUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
             List<AreaInterface> response = new ArrayList<>();
-            if(getUser.getLevel().getId() == 2){
-                for(int i = 0; i<getUser.getRegionId().size(); i++){
-                    List<AreaInterface> getBranch = areaRepository.findSpecificAreaByRegionId(getUser.getRegionId().get(i));
-                    for(int u = 0; u<getBranch.size();u++){
-                    response.add(getBranch.get(u));
+            if (getUser.getLevel().getId() == 2) {
+                for (int i = 0; i < getUser.getRegionId().size(); i++) {
+                    List<AreaInterface> getBranch = areaRepository
+                            .findSpecificAreaByRegionId(getUser.getRegionId().get(i));
+                    for (int u = 0; u < getBranch.size(); u++) {
+                        response.add(getBranch.get(u));
                     }
                 }
-            } else if(getUser.getLevel().getId() == 1 || getUser.getLevel().getId() == 4){
+            } else if (getUser.getLevel().getId() == 1 || getUser.getLevel().getId() == 4) {
                 response = areaRepository.findSpecificArea();
+            } else {
+                return GlobalResponse.builder().message("Selain audit Area, Pusat dan Leader tidak bisa mengakses ini")
+                        .status(HttpStatus.UNAUTHORIZED).build();
             }
             if (response.isEmpty()) {
                 return GlobalResponse

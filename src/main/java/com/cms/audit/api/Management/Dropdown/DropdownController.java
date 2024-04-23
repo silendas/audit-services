@@ -144,7 +144,8 @@ public class DropdownController {
                     }
                     response = GlobalResponse.builder().data(user).message("Success").status(HttpStatus.OK).build();
                 } else {
-                    response = GlobalResponse.builder().data(null).message("Tidak dapat akses").status(HttpStatus.OK).build();
+                    response = GlobalResponse.builder().data(null).message("Tidak dapat akses").status(HttpStatus.OK)
+                            .build();
                 }
             }
         }
@@ -230,7 +231,7 @@ public class DropdownController {
 
     @GetMapping("/region")
     public ResponseEntity<Object> getRegion(
-            @Nullable @RequestParam("mainId") Long id) {
+            @Nullable @RequestParam("main_id") Long id) {
         GlobalResponse response;
         if (id == null) {
             response = regionService.findSpecific();
@@ -243,13 +244,9 @@ public class DropdownController {
 
     @GetMapping("/area")
     public ResponseEntity<Object> getArea(
-            @Nullable @RequestParam("regionId") Long id,
-            @Nullable @RequestParam("user_id") Long userId
-            ) {
+            @Nullable @RequestParam("regionId") Long id) {
         GlobalResponse response;
-        if (userId == null) {
-            response = areaService.findSpecific();
-        }else if (id == null) {
+        if (id == null) {
             response = areaService.findSpecific();
         } else {
             response = areaService.findSpecificByRegionId(id);
@@ -267,7 +264,7 @@ public class DropdownController {
         GlobalResponse response;
         if (userId != null) {
             response = branchService.findSpecificByUserid(userId);
-        }else if (name != null) {
+        } else if (name != null) {
             response = branchService.findSpecificByName(name);
         } else if (areaId != null) {
             response = branchService.findSpecificByAreaId(areaId);

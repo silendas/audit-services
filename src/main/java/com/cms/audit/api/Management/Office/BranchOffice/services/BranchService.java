@@ -289,15 +289,24 @@ public class BranchService {
     public GlobalResponse findSpecificByUserid(Long userId) {
         try {
             Optional<User> getUser = userRepository.findById(userId);
-            if(!getUser.isPresent()){
-                return GlobalResponse.builder().message("User with id:"+userId+ " is undefined").status(HttpStatus.BAD_REQUEST).build();
+            if (!getUser.isPresent()) {
+                return GlobalResponse.builder().message("User with id:" + userId + " is undefined")
+                        .status(HttpStatus.BAD_REQUEST).build();
             }
             List<Branch> getBranch = new ArrayList<>();
-            if(!getUser.get().getBranchId().isEmpty()){
-                for(int i = 0; i<getUser.get().getBranchId().size();i++){
+            if (!getUser.get().getBranchId().isEmpty()) {
+                for (int i = 0; i < getUser.get().getBranchId().size(); i++) {
                     Optional<Branch> getBranchAgain = branchRepository.findById(getUser.get().getBranchId().get(i));
-                    if(getBranchAgain.isPresent()){
+                    if (getBranchAgain.isPresent()) {
                         getBranch.add(getBranchAgain.get());
+                    }
+                }
+            } else {
+                for (int i = 0; i < getUser.get().getRegionId().size(); i++) {
+                    List<Branch> getBranchAgain = branchRepository
+                            .findBranchByRegionId(getUser.get().getRegionId().get(i));
+                    for (int u = 0; u < getBranchAgain.size(); u++) {
+                        getBranch.add(getBranchAgain.get(u));
                     }
                 }
             }
