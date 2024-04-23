@@ -6,6 +6,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 
 import org.hibernate.exception.DataException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -89,15 +92,14 @@ public class ScheduleService {
                                 response = pagSchedule.findOneScheduleByStatusAndFilterAll(status, name, start_date,
                                                 end_date, branch_id, PageRequest.of(page, size));
                         } else if (name != null) {
-                                String likeName = name;
                                 if (start_date != null && end_date != null) {
-                                        response = pagSchedule.findOneScheduleByStatusAndNameAndDate(status, likeName,
+                                        response = pagSchedule.findOneScheduleByStatusAndNameAndDate(status, name,
                                                         start_date, end_date, PageRequest.of(page, size));
                                 } else if (branch_id != null) {
-                                        response = pagSchedule.findOneScheduleByStatusAndBranchId(likeName, branch_id,
+                                        response = pagSchedule.findOneScheduleByStatusAndBranchId(name, branch_id,
                                                         PageRequest.of(page, size));
                                 } else {
-                                        response = pagSchedule.findOneScheduleByStatusAndName(status, likeName,
+                                        response = pagSchedule.findOneScheduleByStatusAndName(status, name,
                                                         PageRequest.of(page, size));
                                 }
                         } else if (branch_id != null) {
@@ -150,16 +152,14 @@ public class ScheduleService {
                                 response = pagSchedule.findAllScheduleByAllFilter(name, branch_id, category, start_date,
                                                 end_date, PageRequest.of(page, size));
                         } else if (name != null) {
-                                String likeName = name;
                                 if (start_date != null && end_date != null) {
-                                        response = pagSchedule.findAllScheduleByFUllenameAndDate(likeName, category,
+                                        response = pagSchedule.findAllScheduleByFUllenameAndDate(name, category,
                                                         start_date, end_date, PageRequest.of(page, size));
                                 } else if (branch_id != null) {
-                                        response = pagSchedule.findAllScheduleByFUllenameAndBranch(likeName, branch_id,
-                                                        category,
-                                                        PageRequest.of(page, size));
+                                        response = pagSchedule.findAllScheduleByFUllenameAndBranch(name, branch_id,
+                                                        category, PageRequest.of(page, size));
                                 } else {
-                                        response = pagSchedule.findAllScheduleByFUllename(likeName, category,
+                                        response = pagSchedule.findAllScheduleByFUllename(name, category,
                                                         PageRequest.of(page, size));
                                 }
                         } else if (branch_id != null) {
@@ -171,9 +171,10 @@ public class ScheduleService {
                                                         PageRequest.of(page, size));
                                 }
                         } else if (start_date != null && end_date != null) {
-                                response = pagSchedule.findAllScheduleByDateRange(category, start_date, end_date,PageRequest.of(page, size));
+                                response = pagSchedule.findAllScheduleByDateRange(category, start_date, end_date,
+                                                PageRequest.of(page, size));
                         } else {
-                                response = pagSchedule.findAllSchedule(PageRequest.of(page, size));
+                                response = pagSchedule.findAllSchedule(category, PageRequest.of(page, size));
                         }
                         if (response.isEmpty()) {
                                 return GlobalResponse
@@ -563,10 +564,13 @@ public class ScheduleService {
                                         for (int u = 0; u < detail.size(); u++) {
                                                 if (getLha.get(i).getIs_research() != 1) {
                                                         if (detail.get(u).getIs_research() == 1) {
-                                                                Flag isFlag = flagRepo.findOneByAuditDailyReportDetailId(
-                                                                                detail.get(u).getId()).orElse(null);
+                                                                Flag isFlag = flagRepo
+                                                                                .findOneByAuditDailyReportDetailId(
+                                                                                                detail.get(u).getId())
+                                                                                .orElse(null);
                                                                 if (isFlag != null) {
-                                                                        if (isFlag.getClarification().getFilename() == null) {
+                                                                        if (isFlag.getClarification()
+                                                                                        .getFilename() == null) {
                                                                                 flag = 1;
                                                                         } else {
                                                                                 flag = 0;
@@ -620,7 +624,7 @@ public class ScheduleService {
                         int size) {
                 User getUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-                if (getUser.getLevel().getId() == 1) {
+                if (getUser.getLevel().getId() == 1 || getUser.getLevel().getId() == 4) {
                         return getReschedule(name, branchId, page, size, startDate, endDate, "REQUEST");
                         // response = pagSchedule.findOneScheduleByStatus("PENDING",
                         // PageRequest.of(page, size));
@@ -679,6 +683,18 @@ public class ScheduleService {
                         } else {
                                 mapParent.put("end_date_realization", convertDateToRoman.convertDateHehe(
                                                 response.get(i).getEnd_date_realization()));
+                        }
+
+                        Optional<AuditWorkingPaper> getKka = auditWorkingPaperRepository
+                                        .findByScheduleId(response.get(i).getId());
+                        Map<String, Object> kka = new LinkedHashMap<>();
+                        if (getKka.isPresent()) {
+                                kka.put("id", getKka.get().getId());
+                                kka.put("filename", getKka.get().getFilename());
+                                kka.put("file_path", getKka.get().getFile_path());
+                                mapParent.put("kka", kka);
+                        } else {
+                                mapParent.put("kka", null);
                         }
 
                         listSchedule.add(mapParent);
@@ -784,6 +800,27 @@ public class ScheduleService {
                                                 response.getContent().get(i).getEnd_date_realization()));
                         }
 
+                        Optional<AuditWorkingPaper> getKka = auditWorkingPaperRepository
+                                        .findByScheduleId(response.getContent().get(i).getId());
+                        Map<String, Object> kka = new LinkedHashMap<>();
+                        if (getKka.isPresent()) {
+                                kka.put("id", getKka.get().getId());
+                                kka.put("filename", getKka.get().getFilename());
+                                kka.put("file_path", getKka.get().getFile_path());
+                                map.put("kka", kka);
+                        } else {
+                                map.put("kka", null);
+                        }
+
+                        List<Schedule> scheduleList = repository.findForScheduleList(
+                                        response.getContent().get(i).getUser().getId(),
+                                        response.getContent().get(i).getStart_date(), "REGULAR");
+                        if (scheduleList.isEmpty()) {
+                                map.put("is_active", 1);
+                        } else {
+                                map.put("is_active", 0);
+                        }
+
                         listSchedule.add(map);
                 }
                 parentMap.put("pageable", response.getPageable());
@@ -808,7 +845,8 @@ public class ScheduleService {
                                 response = pagSchedule.findAllScheduleByUserId(id, category,
                                                 PageRequest.of(page, size));
                         } else {
-                                response = pagSchedule.findScheduleInDateRangeByUserId(id, category, start_date,end_date, PageRequest.of(page, size));
+                                response = pagSchedule.findScheduleInDateRangeByUserId(id, category, start_date,
+                                                end_date, PageRequest.of(page, size));
                         }
                         if (response.isEmpty()) {
                                 return GlobalResponse
@@ -877,20 +915,97 @@ public class ScheduleService {
 
         }
 
+        public Date getDateNow() {
+                Date today = new Date();
+                Calendar todayCal = Calendar.getInstance();
+                todayCal.setTime(today);
+                todayCal.set(Calendar.HOUR_OF_DAY, 0);
+                todayCal.set(Calendar.MINUTE, 0);
+                todayCal.set(Calendar.SECOND, 0);
+                todayCal.set(Calendar.MILLISECOND, 0);
+                Date todayStart = todayCal.getTime();
+                return todayStart;
+        }
+
         @Transactional(value = TxType.REQUIRES_NEW)
         public GlobalResponse insertRegularSchedule(ScheduleRequest scheduleDTO, String username) {
                 try {
                         User getUser = userRepository.findByUsername(username)
                                         .orElseThrow(() -> new ResourceNotFoundException("user not found"));
+
                         for (int i = 0; i < scheduleDTO.getSchedules().size(); i++) {
-                                Optional<Branch> branchId = branchRepository.findById(scheduleDTO.getSchedules().get(i).getBranch_id());
-                                if(!branchId.isPresent()){
-                                        return GlobalResponse.builder().message("Branch with id: "+scheduleDTO.getSchedules().get(i).getBranch_id()+ " is undefined").build();
+                                if (scheduleDTO.getSchedules().get(i).getStart_date().before(getDateNow())
+                                                || scheduleDTO.getSchedules().get(i).getEnd_date()
+                                                                .before(getDateNow())) {
+                                        return GlobalResponse
+                                                        .builder()
+                                                        .message("Tidak bisa menambahkan jadwal kemarin")
+                                                        .status(HttpStatus.OK)
+                                                        .build();
                                 }
 
-                                Optional<User> userId = userRepository.findById(scheduleDTO.getSchedules().get(i).getUser_id());
-                                if(!userId.isPresent()){
-                                        return GlobalResponse.builder().message("User with id: "+scheduleDTO.getSchedules().get(i).getUser_id()+ " is undefined").build();
+                                List<Schedule> checkIfExist = repository.findScheduleInAllCheck(
+                                                scheduleDTO.getSchedules().get(i).getUser_id(),
+                                                scheduleDTO.getSchedules().get(i).getBranch_id(),
+                                                "REGULAR",
+                                                scheduleDTO.getSchedules().get(i).getStart_date(),
+                                                scheduleDTO.getSchedules().get(i).getEnd_date());
+                                if (!checkIfExist.isEmpty()) {
+                                        return GlobalResponse
+                                                        .builder()
+                                                        .message("Tanggal duplikat")
+                                                        .status(HttpStatus.OK)
+                                                        .build();
+                                }
+
+                                if (scheduleDTO.getSchedules().get(i).getStart_date()
+                                                .after(scheduleDTO.getSchedules().get(i).getEnd_date())) {
+                                        return GlobalResponse
+                                                        .builder()
+                                                        .message("Start date lebih besar dari end date")
+                                                        .status(HttpStatus.OK)
+                                                        .build();
+                                }
+
+                                List<Schedule> checkDatefExist = repository.findScheduleInDateRangeByUserId(
+                                                scheduleDTO.getSchedules().get(i).getUser_id(), "REGULAR",
+                                                scheduleDTO.getSchedules().get(i).getStart_date(),
+                                                scheduleDTO.getSchedules().get(i).getEnd_date());
+                                if (!checkDatefExist.isEmpty()) {
+                                        return GlobalResponse
+                                                        .builder()
+                                                        .message("Tanggal dengan start_date:"
+                                                                        + scheduleDTO.getSchedules().get(i)
+                                                                                        .getStart_date()
+                                                                        + " and end_date:"
+                                                                        + scheduleDTO.getSchedules().get(i)
+                                                                                        .getEnd_date()
+                                                                        + ", sudah terbuat sebelumnya")
+                                                        .status(HttpStatus.OK)
+                                                        .build();
+                                }
+                        }
+
+                        for (int i = 0; i < scheduleDTO.getSchedules().size(); i++) {
+                                Optional<Branch> branchId = branchRepository
+                                                .findById(scheduleDTO.getSchedules().get(i).getBranch_id());
+                                if (!branchId.isPresent()) {
+                                        return GlobalResponse.builder()
+                                                        .message("Branch with id: "
+                                                                        + scheduleDTO.getSchedules().get(i)
+                                                                                        .getBranch_id()
+                                                                        + " is undefined")
+                                                        .build();
+                                }
+
+                                Optional<User> userId = userRepository
+                                                .findById(scheduleDTO.getSchedules().get(i).getUser_id());
+                                if (!userId.isPresent()) {
+                                        return GlobalResponse.builder()
+                                                        .message("User with id: "
+                                                                        + scheduleDTO.getSchedules().get(i).getUser_id()
+                                                                        + " is undefined")
+                                                        .build();
                                 }
                                 Schedule schedule = new Schedule(
                                                 null,
@@ -911,17 +1026,6 @@ public class ScheduleService {
                                                 new Date());
 
                                 // check if schedule already exist?
-                                List<Schedule> checkIfExist = repository.findScheduleInDateRangeByUserId(
-                                                scheduleDTO.getSchedules().get(i).getUser_id(), "REGULAR",
-                                                scheduleDTO.getSchedules().get(i).getStart_date(),
-                                                scheduleDTO.getSchedules().get(i).getEnd_date());
-                                if (!checkIfExist.isEmpty()) {
-                                        return GlobalResponse
-                                                        .builder()
-                                                        .message("Start and end date is already exist")
-                                                        .status(HttpStatus.FOUND)
-                                                        .build();
-                                }
 
                                 Schedule response = repository.save(schedule);
                                 if (response == null) {
@@ -962,6 +1066,41 @@ public class ScheduleService {
                 try {
                         User getUser = userRepository.findByUsername(username)
                                         .orElseThrow(() -> new ResourceNotFoundException("user not found"));
+
+                        for (int i = 0; i < scheduleDTO.getSchedules().size(); i++) {
+                                if (scheduleDTO.getSchedules().get(i).getStart_date().before(getDateNow())
+                                                || scheduleDTO.getSchedules().get(i).getEnd_date()
+                                                                .before(getDateNow())) {
+                                        return GlobalResponse
+                                                        .builder()
+                                                        .message("Tidak bisa menambahkan jadwal kemarin")
+                                                        .status(HttpStatus.OK)
+                                                        .build();
+                                }
+
+                                List<Schedule> checkIfExist = repository.findScheduleInAllCheck(
+                                                scheduleDTO.getSchedules().get(i).getUser_id(),
+                                                scheduleDTO.getSchedules().get(i).getBranch_id(),
+                                                "SPECIAL",
+                                                scheduleDTO.getSchedules().get(i).getStart_date(),
+                                                scheduleDTO.getSchedules().get(i).getEnd_date());
+                                if (!checkIfExist.isEmpty()) {
+                                        return GlobalResponse
+                                                        .builder()
+                                                        .message("Tanggal duplikat")
+                                                        .status(HttpStatus.OK)
+                                                        .build();
+                                }
+
+                                if (scheduleDTO.getSchedules().get(i).getStart_date()
+                                                .after(scheduleDTO.getSchedules().get(i).getEnd_date())) {
+                                        return GlobalResponse
+                                                        .builder()
+                                                        .message("Start date lebih besar dari end date")
+                                                        .status(HttpStatus.OK)
+                                                        .build();
+                                }
+                        }
                         for (int i = 0; i < scheduleDTO.getSchedules().size(); i++) {
                                 Branch branchId = Branch.builder()
                                                 .id(scheduleDTO.getSchedules().get(i).getBranch_id())
@@ -994,13 +1133,6 @@ public class ScheduleService {
                                                 getUser.getId(), scheduleDTO.getSchedules().get(i).getStart_date(),
                                                 scheduleDTO.getSchedules().get(i).getEnd_date());
                                 Schedule response = repository.save(schedule);
-                                // if (response == null) {
-                                // return GlobalResponse
-                                // .builder()
-                                // .message("Failed")
-                                // .status(HttpStatus.UNPROCESSABLE_ENTITY)
-                                // .build();
-                                // }
 
                                 logService.save(response.getCreatedBy(), response.getDescription(), response.getId(),
                                                 ECategory.SPECIAL, response.getStatus());
@@ -1029,6 +1161,52 @@ public class ScheduleService {
 
         public GlobalResponse requestSchedule(RequestReschedule dto, String username) {
                 try {
+                        if (dto.getStart_date().before(getDateNow())
+                                        || dto.getEnd_date()
+                                                        .before(getDateNow())) {
+                                return GlobalResponse
+                                                .builder()
+                                                .message("TIdak bisa menambahkan jadwal kemarin")
+                                                .status(HttpStatus.OK)
+                                                .build();
+                        }
+
+                        List<Schedule> checkIfExist = repository.findScheduleInAllCheck(
+                                        dto.getUser_id(),
+                                        dto.getBranch_id(),
+                                        "REGULAR",
+                                        dto.getStart_date(),
+                                        dto.getEnd_date());
+                        if (!checkIfExist.isEmpty()) {
+                                return GlobalResponse
+                                                .builder()
+                                                .message("Jadwal duplikat")
+                                                .status(HttpStatus.OK)
+                                                .build();
+                        }
+                        if (dto.getStart_date().after(dto.getEnd_date())) {
+                                return GlobalResponse
+                                                .builder()
+                                                .message("Start date lebih besar dari end date")
+                                                .status(HttpStatus.OK)
+                                                .build();
+                        }
+
+                        List<Schedule> checkDatefExist = repository.findScheduleInDateRangeByUserId(
+                                        dto.getUser_id(), "REGULAR",
+                                        dto.getStart_date(),
+                                        dto.getEnd_date());
+                        if (!checkDatefExist.isEmpty()) {
+                                return GlobalResponse
+                                                .builder()
+                                                .message("Tanggal dengan start_date:"
+                                                                + dto.getStart_date()
+                                                                + " and end_date:"
+                                                                + dto.getEnd_date()
+                                                                + ", sudah terbuat sebelumnya")
+                                                .status(HttpStatus.OK)
+                                                .build();
+                        }
                         User getUser = userRepository.findByUsername(username)
                                         .orElseThrow(() -> new ResourceNotFoundException("User not found"));
                         Schedule getSchedule = repository.findById(dto.getSchedule_id())
@@ -1131,6 +1309,10 @@ public class ScheduleService {
 
         public GlobalResponse approve(Long id) throws Exception {
                 User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+                if (user.getLevel().getId() != 4) {
+                        return GlobalResponse.builder().message("Selain audit leader tidak dapat akses")
+                                        .status(HttpStatus.UNAUTHORIZED).build();
+                }
                 Schedule getSchedule = repository.findById(id).orElseThrow(() -> new Exception("Not found"));
                 ScheduleTrx getTrx = scheduleTrxRepo.findById(getSchedule.getScheduleTrx().getId())
                                 .orElseThrow(() -> new Exception("Not found"));
@@ -1163,6 +1345,11 @@ public class ScheduleService {
                 try {
                         User getUser = userRepository.findByUsername(username)
                                         .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+                        if (getUser.getLevel().getId() != 4) {
+                                return GlobalResponse.builder().message("Selain audit leader tidak dapat akses")
+                                                .status(HttpStatus.UNAUTHORIZED).build();
+                        }
 
                         Schedule getSchedule = repository.findById(id)
                                         .orElseThrow(() -> new ResourceNotFoundException("Schedule not found"));

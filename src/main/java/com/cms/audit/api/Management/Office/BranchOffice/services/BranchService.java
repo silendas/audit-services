@@ -24,6 +24,7 @@ import com.cms.audit.api.Management.Office.BranchOffice.models.Branch;
 import com.cms.audit.api.Management.Office.BranchOffice.repository.BranchRepository;
 import com.cms.audit.api.Management.Office.BranchOffice.repository.PagBranch;
 import com.cms.audit.api.Management.User.models.User;
+import com.cms.audit.api.Management.User.repository.UserRepository;
 
 import jakarta.transaction.Transactional;
 
@@ -36,6 +37,9 @@ public class BranchService {
 
     @Autowired
     private AreaRepository areaRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @Autowired
     private PagBranch pagBranch;
@@ -99,7 +103,7 @@ public class BranchService {
                             .findSpecificBranchById(getUser.getBranchId().get(i));
                     response.add(getBranch.get());
                 }
-            } else if (getUser.getLevel().getId() == 1) {
+            } else if (getUser.getLevel().getId() == 1 || getUser.getLevel().getId() == 4) {
                 response = branchRepository.findSpecificBranch();
             }
             if (response.isEmpty()) {
@@ -245,6 +249,67 @@ public class BranchService {
     public GlobalResponse findSpecificByName(String name) {
         try {
             List<Branch> getBranch = branchRepository.findByNameContainingIgnoreCase(name);
+            List<Object> response = new ArrayList<>();
+            for (int i = 0; i < getBranch.size(); i++) {
+                Map<String, Object> mapping = new LinkedHashMap<>();
+                mapping.put("id", getBranch.get(i).getId());
+                mapping.put("name", getBranch.get(i).getName());
+                response.add(mapping);
+            }
+            if (response.isEmpty()) {
+                return GlobalResponse
+                        .builder()
+                        .message("Data not found")
+                        .status(HttpStatus.OK)
+                        .data(null)
+                        .build();
+            }
+            return GlobalResponse
+                    .builder()
+                    .message("Success")
+                    .data(response)
+                    .status(HttpStatus.OK)
+                    .build();
+        } catch (DataException e) {
+            return GlobalResponse
+                    .builder()
+                    .message("Exception :" + e.getMessage())
+                    .status(HttpStatus.UNPROCESSABLE_ENTITY)
+                    .build();
+        } catch (Exception e) {
+            return GlobalResponse
+                    .builder()
+                    .message("Exception :" + e.getMessage())
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .build();
+        }
+
+    }
+
+    public GlobalResponse findSpecificByUserid(Long userId) {
+        try {
+            Optional<User> getUser = userRepository.findById(userId);
+            if (!getUser.isPresent()) {
+                return GlobalResponse.builder().message("User with id:" + userId + " is undefined")
+                        .status(HttpStatus.BAD_REQUEST).build();
+            }
+            List<Branch> getBranch = new ArrayList<>();
+            if (!getUser.get().getBranchId().isEmpty()) {
+                for (int i = 0; i < getUser.get().getBranchId().size(); i++) {
+                    Optional<Branch> getBranchAgain = branchRepository.findById(getUser.get().getBranchId().get(i));
+                    if (getBranchAgain.isPresent()) {
+                        getBranch.add(getBranchAgain.get());
+                    }
+                }
+            } else {
+                for (int i = 0; i < getUser.get().getRegionId().size(); i++) {
+                    List<Branch> getBranchAgain = branchRepository
+                            .findBranchByRegionId(getUser.get().getRegionId().get(i));
+                    for (int u = 0; u < getBranchAgain.size(); u++) {
+                        getBranch.add(getBranchAgain.get(u));
+                    }
+                }
+            }
             List<Object> response = new ArrayList<>();
             for (int i = 0; i < getBranch.size(); i++) {
                 Map<String, Object> mapping = new LinkedHashMap<>();

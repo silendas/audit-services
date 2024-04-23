@@ -111,7 +111,7 @@ public class AuditDailyReportDetailService {
                     } else {
                         builder.setIs_research(0);
                     }
-                    //builder.setIs_research(response.getContent().get(i).getIs_research());
+                    // builder.setIs_research(response.getContent().get(i).getIs_research());
                     details.add(builder);
                 } else {
                     DetailResponse builder = new DetailResponse();
@@ -138,7 +138,7 @@ public class AuditDailyReportDetailService {
                     } else {
                         builder.setIs_research(0);
                     }
-                    //builder.setIs_research(getRevision.get().getIs_research());
+                    // builder.setIs_research(getRevision.get().getIs_research());
                     details.add(builder);
                 }
             }
@@ -409,6 +409,21 @@ public class AuditDailyReportDetailService {
                     new Date());
 
             AuditDailyReportDetail lhaDetail = repository.save(auditDailyReport);
+
+            Revision revision = new Revision();
+            revision.setAuditDailyReportDetail(lhaDetail);
+            revision.setCases(lhaDetail.getCases());
+            revision.setCaseCategory(lhaDetail.getCaseCategory());
+            revision.setRevisionNumber(0L);
+            revision.setDescription(lhaDetail.getDescription());
+            revision.setSuggestion(lhaDetail.getSuggestion());
+            revision.setTemporary_recommendations(lhaDetail.getTemporary_recommendations());
+            revision.setPermanent_recommendations(lhaDetail.getPermanent_recommendations());
+            revision.setIs_research(lhaDetail.getIs_research());
+            revision.setIs_delete(lhaDetail.getIs_delete());
+            revision.setCreated_by(lhaDetail.getCreated_by());
+            revision.setCreated_at(lhaDetail.getCreated_at());
+            revisionRepo.save(revision);
 
             if (lhaDetail.getIs_research() == 1) {
 

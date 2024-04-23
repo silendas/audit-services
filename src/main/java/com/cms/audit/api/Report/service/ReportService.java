@@ -30,14 +30,12 @@ import com.cms.audit.api.AuditDailyReport.repository.AuditDailyReportRepository;
 import com.cms.audit.api.AuditDailyReport.repository.RevisionRepository;
 import com.cms.audit.api.Clarifications.models.Clarification;
 import com.cms.audit.api.Common.constant.convertDateToRoman;
-import com.cms.audit.api.Common.exception.ResourceNotFoundException;
 import com.cms.audit.api.Common.pdf.LHAReport;
 import com.cms.audit.api.Common.response.GlobalResponse;
 import com.cms.audit.api.Common.util.ExcelUtil;
 import com.cms.audit.api.Management.Office.RegionOffice.models.Region;
 import com.cms.audit.api.Management.Office.RegionOffice.repository.RegionRepository;
 import com.cms.audit.api.Management.User.models.User;
-import com.cms.audit.api.Management.User.repository.UserRepository;
 import com.cms.audit.api.Report.dto.LhaReportDTO;
 import com.cms.audit.api.Report.dto.ListLhaDTO;
 import com.cms.audit.api.Report.repository.PagReport;
@@ -254,7 +252,7 @@ public class ReportService {
         return data;
     }
 
-    public ResponseEntity<InputStreamResource> getDataDownloadLHA(Long user_id, Long branchId, Date start_date,
+    public ResponseEntity<InputStreamResource> getDataDownloadLHA(Long user_id, Long regionId, Date start_date,
             Date end_date) throws FileNotFoundException, MalformedURLException {
         User getUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
@@ -263,22 +261,22 @@ public class ReportService {
         List<ListLhaDTO> list = new ArrayList<>();
         List<LhaReportDTO> listAllReport = new ArrayList<>();
 
-        if (user_id != null && branchId != null && start_date != null && end_date != null) {
-            response = lhaRepository.findLHAByAll(branchId, user_id, start_date, end_date);
-        } else if (branchId != null && start_date != null && end_date != null) {
-            response = lhaRepository.findLHAByRegionInDateRange(branchId, start_date, end_date);
+        if (user_id != null && regionId != null && start_date != null && end_date != null) {
+            response = lhaRepository.findLHAByAll(regionId, user_id, start_date, end_date);
+        } else if (regionId != null && start_date != null && end_date != null) {
+            response = lhaRepository.findLHAByRegionInDateRange(regionId, start_date, end_date);
         } else if (user_id != null && start_date != null && end_date != null) {
             response = lhaRepository.findAllLHAByUserIdInDateRange(user_id, start_date, end_date);
         } else if (user_id != null) {
             response = lhaRepository.findAllLHAByUserId(user_id);
-        } else if (branchId != null) {
-            response = lhaRepository.findLHAByRegion(branchId);
+        } else if (regionId != null) {
+            response = lhaRepository.findLHAByRegion(regionId);
         } else {
             if (getUser.getLevel().getId() == 2 ) {
                 for (int i = 0; i < getUser.getRegionId().size(); i++) {
                     List<AuditDailyReport> listLHA;
                     if (start_date != null && end_date != null) {
-                        listLHA = lhaRepository.findLHAInDateRangeAndRegion(branchId, start_date, end_date);
+                        listLHA = lhaRepository.findLHAInDateRangeAndRegion(getUser.getRegionId().get(i), start_date, end_date);
                     } else {
                         listLHA = lhaRepository
                                 .findLHAByRegion(getUser.getRegionId().get(i));
@@ -319,8 +317,8 @@ public class ReportService {
             return responses;
         }
         ByteArrayInputStream pdf;
-        if (branchId != null) {
-            Optional<Region> region = regionRepository.findOneRegionById(branchId);
+        if (regionId != null) {
+            Optional<Region> region = regionRepository.findOneRegionById(regionId);
             if (!region.isPresent()) {
                 return null;
             }

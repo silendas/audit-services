@@ -83,7 +83,7 @@ public class AuditWorkingPaperService {
                     response = pag.findWorkingPaperByBranch(branchId, PageRequest.of(page, size));
                 }
             } else {
-                if (getUser.getLevel().getId() == 1) {
+                if (getUser.getLevel().getId() == 1 || getUser.getLevel().getId() == 4) {
                     if (start_date != null && end_date != null) {
                         response = pag.findWorkingPaperInDateRange(start_date, end_date, PageRequest.of(page, size));
                     } else {

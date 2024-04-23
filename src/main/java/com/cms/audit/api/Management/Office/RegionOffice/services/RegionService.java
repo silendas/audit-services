@@ -46,7 +46,7 @@ public class RegionService {
             Page<Region> response;
             if (name != null) {
                 response = pagRegion.findByNameContaining(name, PageRequest.of(page, size));
-            } else if(mainId != null) {
+            } else if (mainId != null) {
                 response = pagRegion.findRegionByMainId(mainId, PageRequest.of(page, size));
             } else {
                 response = pagRegion.findAllRegion(PageRequest.of(page, size));
@@ -86,15 +86,22 @@ public class RegionService {
             User getUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
             List<RegionInterface> response = regionRepository.findSpecificRegion();
-            if(getUser.getLevel().getId() == 2){
-                for(int i = 0; i<getUser.getRegionId().size(); i++){
-                    List<RegionInterface> getBranch = regionRepository.findSpecificRegionById(getUser.getRegionId().get(i));
-                    for(int u = 0; u<getBranch.size();u++){
-                    response.add(getBranch.get(u));
+            if (getUser.getLevel().getId() == 2) {
+                for (int i = 0; i < getUser.getRegionId().size(); i++) {
+                    List<RegionInterface> getBranch = regionRepository
+                            .findSpecificRegionById(getUser.getRegionId().get(i));
+                    for (int u = 0; u < getBranch.size(); u++) {
+                        response.add(getBranch.get(u));
                     }
                 }
-            } else if(getUser.getLevel().getId() == 1){
+            } else if (getUser.getLevel().getId() == 1 || getUser.getLevel().getId() == 4) {
                 response = regionRepository.findSpecificRegion();
+            } else {
+                return GlobalResponse
+                        .builder()
+                        .message("User selain Area, Pusat dan Leader tidak bisa akses")
+                        .status(HttpStatus.UNAUTHORIZED)
+                        .build();
             }
             if (response.isEmpty()) {
                 return GlobalResponse
@@ -196,7 +203,7 @@ public class RegionService {
         try {
 
             Optional<Main> mainId = mainRepository.findById(dto.getMain_id());
-            if(!mainId.isPresent()){
+            if (!mainId.isPresent()) {
                 return GlobalResponse.builder().message("Data main not found").status(HttpStatus.BAD_REQUEST).build();
             }
 
@@ -242,7 +249,7 @@ public class RegionService {
             Region regionGet = regionRepository.findById(id).get();
 
             Optional<Main> mainId = mainRepository.findById(dto.getMain_id());
-            if(!mainId.isPresent()){
+            if (!mainId.isPresent()) {
                 return GlobalResponse.builder().message("Data main not found").status(HttpStatus.BAD_REQUEST).build();
             }
 
@@ -287,12 +294,12 @@ public class RegionService {
             Region regionGet = regionRepository.findById(id).get();
 
             GlobalResponse area = areaService.findSpecificByRegionId(id);
-            if(area.getData() !=null){
+            if (area.getData() != null) {
                 return GlobalResponse
-                    .builder()
-                    .message("Cannot delete because relation")
-                    .status(HttpStatus.BAD_REQUEST)
-                    .build();
+                        .builder()
+                        .message("Cannot delete because relation")
+                        .status(HttpStatus.BAD_REQUEST)
+                        .build();
             }
 
             Region region = regionGet;

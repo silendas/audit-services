@@ -74,7 +74,7 @@ public class UserService {
                                                 "user with username " + username + " is undefined"));
                 Pageable pageable = PageRequest.of(page, size);
                 List<User> user = new ArrayList<>();
-                if (getUser.getLevel().getId() == 1) {
+                if (getUser.getLevel().getId() == 1 || getUser.getLevel().getId() == 4) {
                         user = userRepository.findAllUser();
                 } else if (getUser.getLevel().getId() == 2) {
                         if (getUser.getRegionId() != null) {
@@ -565,17 +565,15 @@ public class UserService {
 
                         List<Long> region = new ArrayList<>();
                         if (userDTO.getRegion_id() != null) {
-                                for (int i = 0; i < userDTO.getRegion_id().size(); i++) {
-                                        Optional<Region> getRegion = regionRepository
-                                                        .findById(userDTO.getRegion_id().get(i));
-                                        if (!getRegion.isPresent()) {
-                                                return GlobalResponse.builder()
-                                                                .message("Region with id:" + getRegion.get().getId()
-                                                                                + " is not found")
-                                                                .status(HttpStatus.BAD_REQUEST).build();
-                                        } else {
-                                                region.add(getRegion.get().getId());
-                                        }
+                                Optional<Region> getRegion = regionRepository
+                                                .findById(userDTO.getRegion_id());
+                                if (!getRegion.isPresent()) {
+                                        return GlobalResponse.builder()
+                                                        .message("Region with id:" + getRegion.get().getId()
+                                                                        + " is not found")
+                                                        .status(HttpStatus.BAD_REQUEST).build();
+                                } else {
+                                        region.add(getRegion.get().getId());
                                 }
                         }
                         List<Long> area = new ArrayList<>();
@@ -699,14 +697,15 @@ public class UserService {
 
                         List<Long> region = new ArrayList<>();
                         if (userDTO.getRegion_id() != null) {
-                                for (int i = 0; i < userDTO.getRegion_id().size(); i++) {
-                                        Region getRegion = regionRepository
-                                                        .findById(userDTO.getRegion_id().get(i))
-                                                        .orElseThrow(() -> new ResourceNotFoundException(
-                                                                        "Region not found"));
-                                        if (getRegion != null) {
-                                                region.add(getRegion.getId());
-                                        }
+                                Optional<Region> getRegion = regionRepository
+                                                .findById(userDTO.getRegion_id());
+                                if (!getRegion.isPresent()) {
+                                        return GlobalResponse.builder()
+                                                        .message("Region with id:" + getRegion.get().getId()
+                                                                        + " is not found")
+                                                        .status(HttpStatus.BAD_REQUEST).build();
+                                } else {
+                                        region.add(getRegion.get().getId());
                                 }
                         }
                         List<Long> area = new ArrayList<>();

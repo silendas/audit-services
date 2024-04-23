@@ -19,7 +19,7 @@ public class UserDTO {
     private Long role_id;
     private Long level_id;
     private Long main_id = null;
-    private List<Long> region_id = null;
+    private Long region_id = null;
     private List<Long> area_id = null;
     private List<Long> branch_id = null;
     

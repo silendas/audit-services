@@ -46,7 +46,7 @@ public class RevisionService {
                 if (response.isEmpty()) {
                     return GlobalResponse.builder().message("Data not found").status(HttpStatus.OK).build();
                 }
-                for(int i =0; i<response.size();i++){
+                for (int i = 0; i < response.size(); i++) {
                     if (response.get(i).getIs_research() == 1) {
                         Flag isFLag = flagRepo
                                 .findOneByAuditDailyReportDetailId(
@@ -72,23 +72,23 @@ public class RevisionService {
     public GlobalResponse getOne(Long id) {
         try {
             Optional<Revision> response = repository.findById(id);
-            if(!response.isPresent()){
+            if (!response.isPresent()) {
                 return GlobalResponse.builder().message("Data tidak ditemukan").status(HttpStatus.BAD_REQUEST).build();
             }
-                if (response.get().getIs_research() == 1) {
-                    Flag isFLag = flagRepo
-                            .findOneByAuditDailyReportDetailId(
-                                    response.get().getAuditDailyReportDetail().getId())
-                            .orElseThrow(() -> new ResourceNotFoundException(
-                                    "Flag not found"));
-                    if (isFLag.getClarification().getFilename() != null) {
-                        response.get().setIs_research(0);
-                    } else {
-                        response.get().setIs_research(1);
-                    }
-                } else {
+            if (response.get().getIs_research() == 1) {
+                Flag isFLag = flagRepo
+                        .findOneByAuditDailyReportDetailId(
+                                response.get().getAuditDailyReportDetail().getId())
+                        .orElseThrow(() -> new ResourceNotFoundException(
+                                "Flag not found"));
+                if (isFLag.getClarification().getFilename() != null) {
                     response.get().setIs_research(0);
+                } else {
+                    response.get().setIs_research(1);
                 }
+            } else {
+                response.get().setIs_research(0);
+            }
             return GlobalResponse.builder().message("Success").data(response).status(HttpStatus.OK).build();
         } catch (Exception e) {
             return GlobalResponse.builder().error(e).status(HttpStatus.INTERNAL_SERVER_ERROR).build();
@@ -103,6 +103,21 @@ public class RevisionService {
         if (!detail.isPresent()) {
             return GlobalResponse.builder().message("Detail Not found").status(HttpStatus.BAD_REQUEST).build();
         }
+
+        AuditDailyReportDetail auditDailyReportDetail = new AuditDailyReportDetail();
+        auditDailyReportDetail.setId(dto.getAudit_daily_report_detail_id());
+        auditDailyReportDetail.setCases(detail.get().getCases());
+        auditDailyReportDetail.setCaseCategory(detail.get().getCaseCategory());
+        auditDailyReportDetail.setDescription(dto.getDescription());
+        auditDailyReportDetail.setIs_delete(0);
+        auditDailyReportDetail.setPermanent_recommendations(dto.getPermanent_recommendations());
+        auditDailyReportDetail.setTemporary_recommendations(dto.getTemporary_recommendations());
+        auditDailyReportDetail.setSuggestion(dto.getSuggestion());
+        auditDailyReportDetail.setUpdated_by(user.getId());
+        auditDailyReportDetail.setIs_research(detail.get().getIs_research());
+        auditDailyReportDetail.setUpdate_at(new Date());
+
+        auditDailyReportDetailRepository.save(auditDailyReportDetail);
 
         Revision revision = new Revision();
         revision.setAuditDailyReportDetail(detail.get());

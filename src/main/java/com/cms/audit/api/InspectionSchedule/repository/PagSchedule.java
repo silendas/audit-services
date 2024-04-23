@@ -48,6 +48,9 @@ public interface PagSchedule extends PagingAndSortingRepository<Schedule, Long> 
         @Query(value = "SELECT * FROM inspection_schedule u WHERE u.is_delete = 0 ORDER BY u.id DESC ", nativeQuery = true)
         Page<Schedule> findAllSchedule( Pageable pageable);
 
+        @Query(value = "SELECT * FROM inspection_schedule u WHERE u.category = :category AND u.is_delete = 0 ORDER BY u.id DESC ", nativeQuery = true)
+        Page<Schedule> findAllSchedule(@Param("category") String ucategory, Pageable pageable);
+
         @Query(value = "SELECT * FROM inspection_schedule u WHERE u.branch_id = :branchId AND u.category = :category AND (u.start_date BETWEEN :start_date AND :end_date OR u.end_date BETWEEN :start_date AND :end_date) AND u.is_delete = 0 ORDER BY u.id DESC ", nativeQuery = true)
         Page<Schedule> findAllScheduleByBranchAndDateRange(@Param("branchId") Long branch,
                         @Param("category") String ucategory,

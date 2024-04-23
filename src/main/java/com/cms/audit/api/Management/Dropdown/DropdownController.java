@@ -94,7 +94,7 @@ public class DropdownController {
         } else if (mainId != null) {
             response = userService.dropDown();
         } else {
-            if (getUser.getLevel().getId() == 1) {
+            if (getUser.getLevel().getId() == 1 || getUser.getLevel().getId() == 4) {
                 response = userService.dropDown();
             } else if (getUser.getLevel().getId() == 2) {
                 List<DropDownUserDTO> user = new ArrayList<>();
@@ -144,7 +144,8 @@ public class DropdownController {
                     }
                     response = GlobalResponse.builder().data(user).message("Success").status(HttpStatus.OK).build();
                 } else {
-                    response = GlobalResponse.builder().data(null).message("Tidak dapat akses").status(HttpStatus.OK).build();
+                    response = GlobalResponse.builder().data(null).message("Tidak dapat akses").status(HttpStatus.OK)
+                            .build();
                 }
             }
         }
@@ -230,7 +231,7 @@ public class DropdownController {
 
     @GetMapping("/region")
     public ResponseEntity<Object> getRegion(
-            @Nullable @RequestParam("mainId") Long id) {
+            @Nullable @RequestParam("main_id") Long id) {
         GlobalResponse response;
         if (id == null) {
             response = regionService.findSpecific();
@@ -258,9 +259,12 @@ public class DropdownController {
     public ResponseEntity<Object> getBranch(
             @Nullable @RequestParam("name") String name,
             @Nullable @RequestParam("areaId") Long areaId,
-            @Nullable @RequestParam("regionId") Long regionId) {
+            @Nullable @RequestParam("user_id") Long userId,
+            @Nullable @RequestParam("region_id") Long regionId) {
         GlobalResponse response;
-        if (name != null) {
+        if (userId != null) {
+            response = branchService.findSpecificByUserid(userId);
+        } else if (name != null) {
             response = branchService.findSpecificByName(name);
         } else if (areaId != null) {
             response = branchService.findSpecificByAreaId(areaId);
