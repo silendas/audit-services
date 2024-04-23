@@ -706,6 +706,13 @@ public class AuditDailyReportService {
                                                 .status(HttpStatus.BAD_REQUEST).build();
                         }
 
+                        List<Schedule> scheduleList = scheduleRepository.findForScheduleList(
+                                        getschedule.get().getUser().getId(),
+                                        getschedule.get().getStart_date(), getschedule.get().getStatus().toString());
+                        if (!scheduleList.isEmpty()) {
+                                return GlobalResponse.builder().message("Tidak bisa memproses jadwal & LHA karena sebelumnya belum membuat KKA").status(HttpStatus.OK).build();
+                        }
+
                         AuditDailyReport auditDailyReport = new AuditDailyReport(
                                         null,
                                         getschedule.get(),
