@@ -1,6 +1,7 @@
 package com.cms.audit.api.Management.Level.services;
 
-import java.util.*;
+import java.util.Date;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,6 +25,14 @@ public class InsertDefaultLevel {
         if (!response.isEmpty()) {
             return;
         }
+        Level levelleader = new Level(
+            null,
+            "Leader",
+            "A",
+            0,
+            new Date(),
+            new Date());
+        repository.save(levelleader);
         Level level1 = new Level(
                 null,
                 "PUSAT",

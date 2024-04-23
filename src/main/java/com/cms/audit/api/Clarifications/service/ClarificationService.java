@@ -507,7 +507,7 @@ public class ClarificationService {
 
                         Clarification response = repository.save(clarification);
 
-                        String reportNumber = null;
+                        String reportNumber = "";
                         if (response.getReport_number() < 10) {
                                 reportNumber = "00" + reportNumber;
                         } else if (response.getReport_number() < 100) {

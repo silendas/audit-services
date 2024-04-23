@@ -156,8 +156,7 @@ public class ScheduleService {
                                                         start_date, end_date, PageRequest.of(page, size));
                                 } else if (branch_id != null) {
                                         response = pagSchedule.findAllScheduleByFUllenameAndBranch(likeName, branch_id,
-                                                        category,
-                                                        PageRequest.of(page, size));
+                                                        category,PageRequest.of(page, size));
                                 } else {
                                         response = pagSchedule.findAllScheduleByFUllename(likeName, category,
                                                         PageRequest.of(page, size));
@@ -173,7 +172,8 @@ public class ScheduleService {
                         } else if (start_date != null && end_date != null) {
                                 response = pagSchedule.findAllScheduleByDateRange(category, start_date, end_date,PageRequest.of(page, size));
                         } else {
-                                response = pagSchedule.findAllSchedule(PageRequest.of(page, size));
+                                //ini salah harus ada category
+                                response = pagSchedule.findAllSchedule(category, PageRequest.of(page, size));
                         }
                         if (response.isEmpty()) {
                                 return GlobalResponse
