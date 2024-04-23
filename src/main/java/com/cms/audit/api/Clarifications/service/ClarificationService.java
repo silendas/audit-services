@@ -151,7 +151,7 @@ public class ClarificationService {
                                                                 .status(HttpStatus.BAD_REQUEST)
                                                                 .build();
                                         }
-                                } else if (getUser.getLevel().getId() == 1) {
+                                } else if (getUser.getLevel().getId() == 1 || getUser.getLevel().getId() == 4) {
                                         if (start_date != null && end_date != null) {
                                                 response = pag.findClarificationInDateRange(start_date, end_date, PageRequest.of(page, size));
                                         }else{

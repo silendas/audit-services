@@ -25,14 +25,6 @@ public class InsertDefaultLevel {
         if (!response.isEmpty()) {
             return;
         }
-        Level levelleader = new Level(
-            null,
-            "Leader",
-            "A",
-            0,
-            new Date(),
-            new Date());
-        repository.save(levelleader);
         Level level1 = new Level(
                 null,
                 "PUSAT",
@@ -57,6 +49,14 @@ public class InsertDefaultLevel {
                 new Date(),
                 new Date());
         repository.save(level3);
+        Level levelleader = new Level(
+            null,
+            "Leader",
+            "A",
+            0,
+            new Date(),
+            new Date());
+        repository.save(levelleader);
     }
 
 }

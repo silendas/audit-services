@@ -620,7 +620,7 @@ public class ScheduleService {
                         int size) {
                 User getUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-                if (getUser.getLevel().getId() == 1) {
+                if (getUser.getLevel().getId() == 1 || getUser.getLevel().getId() == 4) {
                         return getReschedule(name, branchId, page, size, startDate, endDate, "REQUEST");
                         // response = pagSchedule.findOneScheduleByStatus("PENDING",
                         // PageRequest.of(page, size));

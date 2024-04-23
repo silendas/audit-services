@@ -14,7 +14,7 @@ import com.cms.audit.api.Management.Level.models.Level;
 @Repository
 public interface LevelRepository extends JpaRepository<Level, Long> {
 
-    @Query(value = "SELECT * FROM level u WHERE u.is_delete <> 1", nativeQuery = true)
+    @Query(value = "SELECT * FROM level u WHERE u.is_delete <> 1 ORDER BY u.code ASC", nativeQuery = true)
     public List<Level> findAllLevel();
 
     @Query(value = "SELECT u.id,u.name,u.code FROM level u WHERE u.is_delete <> 1", nativeQuery = true)

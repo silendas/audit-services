@@ -94,7 +94,7 @@ public class AreaService {
                     response.add(getBranch.get(u));
                     }
                 }
-            } else if(getUser.getLevel().getId() == 1){
+            } else if(getUser.getLevel().getId() == 1 || getUser.getLevel().getId() == 4){
                 response = areaRepository.findSpecificArea();
             }
             if (response.isEmpty()) {

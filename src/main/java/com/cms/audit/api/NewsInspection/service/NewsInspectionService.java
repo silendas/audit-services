@@ -99,7 +99,7 @@ public class NewsInspectionService {
                                             .status(HttpStatus.BAD_REQUEST)
                                             .build();
                     }
-            } else if (getUser.getLevel().getId() == 1) {
+            } else if (getUser.getLevel().getId() == 1 || getUser.getLevel().getId() == 4) {
                     response = pag.findAllBAP(PageRequest.of(page, size));
             }
             }

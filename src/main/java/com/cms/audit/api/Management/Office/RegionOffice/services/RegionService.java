@@ -93,7 +93,7 @@ public class RegionService {
                     response.add(getBranch.get(u));
                     }
                 }
-            } else if(getUser.getLevel().getId() == 1){
+            } else if(getUser.getLevel().getId() == 1 || getUser.getLevel().getId() == 4){
                 response = regionRepository.findSpecificRegion();
             }
             if (response.isEmpty()) {
