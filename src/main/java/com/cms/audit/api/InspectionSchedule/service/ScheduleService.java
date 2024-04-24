@@ -625,11 +625,11 @@ public class ScheduleService {
                         int size) {
                 User getUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-                if (getUser.getLevel().getId() == 1 || getUser.getLevel().getId() == 4) {
+                if (getUser.getLevel().getCode().equals("A")  || getUser.getLevel().getCode().equals("A") ) {
                         return getReschedule(name, branchId, page, size, startDate, endDate, "REQUEST");
                         // response = pagSchedule.findOneScheduleByStatus("PENDING",
                         // PageRequest.of(page, size));
-                } else if (getUser.getLevel().getId() == 2) {
+                } else if (getUser.getLevel().getCode().equals("B") ) {
                         return getReschedule(name, branchId, page, size, startDate, endDate, "PENDING");
                 } else {
                         return GlobalResponse.builder().message("Audit wilayah tidak dapat mengakses").data(null)
@@ -1384,7 +1384,7 @@ public class ScheduleService {
 
         public GlobalResponse approve(Long id) throws Exception {
                 User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-                if (user.getLevel().getId() != 4) {
+                if (user.getLevel().getName() == "LEAD" ) {
                         return GlobalResponse.builder().message("Selain audit leader tidak dapat akses")
                                         .status(HttpStatus.UNAUTHORIZED).build();
                 }
@@ -1421,7 +1421,7 @@ public class ScheduleService {
                         User getUser = userRepository.findByUsername(username)
                                         .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
-                        if (getUser.getLevel().getId() != 4) {
+                        if (getUser.getLevel().getCode().equals("A") ) {
                                 return GlobalResponse.builder().message("Selain audit leader tidak dapat akses")
                                                 .status(HttpStatus.UNAUTHORIZED).build();
                         }

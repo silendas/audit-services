@@ -272,7 +272,7 @@ public class ReportService {
         } else if (regionId != null) {
             response = lhaRepository.findLHAByRegion(regionId);
         } else {
-            if (getUser.getLevel().getId() == 2 ) {
+            if (getUser.getLevel().getCode().equals("B")  ) {
                 for (int i = 0; i < getUser.getRegionId().size(); i++) {
                     List<AuditDailyReport> listLHA;
                     if (start_date != null && end_date != null) {
@@ -285,7 +285,7 @@ public class ReportService {
                         response.add(listLHA.get(u));
                     }
                 }
-            } else if (getUser.getLevel().getId() == 3) {
+            } else if (getUser.getLevel().getCode().equals("C") ) {
                 for (int i = 0; i < getUser.getBranchId().size(); i++) {
                     List<AuditDailyReport> listLHA;
                     if (start_date != null && end_date != null) {
@@ -297,12 +297,14 @@ public class ReportService {
                         response.add(listLHA.get(u));
                     }
                 }
-            } else {
+            } else if (getUser.getLevel().getCode().equals("A") ){
                 if (start_date != null && end_date != null) {
                     response = lhaRepository.findLHAInDateRange(start_date, end_date);
                 }else{
                     response = lhaRepository.findAll();
                 }
+            } else {
+
             }
         }
         if (response.isEmpty()) {

@@ -92,7 +92,7 @@ public class AreaService {
             User getUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
             List<AreaInterface> response = new ArrayList<>();
-            if (getUser.getLevel().getId() == 2) {
+            if (getUser.getLevel().getCode().equals("B") ) {
                 for (int i = 0; i < getUser.getRegionId().size(); i++) {
                     List<AreaInterface> getBranch = areaRepository
                             .findSpecificAreaByRegionId(getUser.getRegionId().get(i));
@@ -100,7 +100,7 @@ public class AreaService {
                         response.add(getBranch.get(u));
                     }
                 }
-            } else if (getUser.getLevel().getId() == 1 || getUser.getLevel().getId() == 4) {
+            } else if (getUser.getLevel().getCode().equals("A")  || getUser.getLevel().getCode().equals("A") ) {
                 response = areaRepository.findSpecificArea();
             } else {
                 return GlobalResponse.builder().message("Selain audit Area, Pusat dan Leader tidak bisa mengakses ini")

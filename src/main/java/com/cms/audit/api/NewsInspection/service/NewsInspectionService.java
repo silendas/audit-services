@@ -70,9 +70,9 @@ public class NewsInspectionService {
             } else if (start_date != null && end_date != null) {
                 response = pag.findBAPInDateRange(start_date, end_date, PageRequest.of(page, size));
             } else {
-                if (getUser.getLevel().getId() == 3) {
+                if (getUser.getLevel().getCode().equals("C") ) {
                     response = pag.findBAPInUserid(getUser.getId(), PageRequest.of(page, size));
-            } else if (getUser.getLevel().getId() == 2) {
+            } else if (getUser.getLevel().getCode().equals("B") ) {
                     Pageable pageable = PageRequest.of(page, size);
                     List<NewsInspection> lhaList = new ArrayList<>();
                     for (int i = 0; i < getUser.getRegionId().size(); i++) {
@@ -99,7 +99,7 @@ public class NewsInspectionService {
                                             .status(HttpStatus.BAD_REQUEST)
                                             .build();
                     }
-            } else if (getUser.getLevel().getId() == 1 || getUser.getLevel().getId() == 4) {
+            } else if (getUser.getLevel().getCode().equals("A")  || getUser.getLevel().getCode().equals("A") ) {
                     response = pag.findAllBAP(PageRequest.of(page, size));
             }
             }

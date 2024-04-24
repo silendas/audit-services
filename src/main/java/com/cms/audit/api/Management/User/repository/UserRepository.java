@@ -20,6 +20,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query("SELECT u FROM User u WHERE u.is_delete <> 1 AND u.id <> 1")
     List<User> findAllUser();
 
+    @Query(value="SELECT * FROM users u WHERE u.is_delete <> 1 AND u.id <> 1 AND u.level_id <> 2 AND u.level_id <> 1 AND u.level_id <> 4", nativeQuery=true)
+    List<User> findAllUserIIfArea();
+
     @Query("SELECT u FROM User u where (u.email = ?1 or u.username = ?2) AND u.is_active = 1")
     Optional<User> findOneUsersByEmailOrUsername(String email, String username);
 
