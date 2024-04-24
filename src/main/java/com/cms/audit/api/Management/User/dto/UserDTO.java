@@ -18,7 +18,7 @@ public class UserDTO {
     private String initial_name;
     private Long level_id;
     private Long main_id = null;
-    private Long region_id = null;
+    private List<Long> region_id = null;
     private List<Long> area_id = null;
     private List<Long> branch_id = null;
     

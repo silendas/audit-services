@@ -98,7 +98,7 @@ public class DropdownController {
                 response = userService.dropDown();
             } else if (getUser.getLevel().getId() == 2) {
                 List<DropDownUserDTO> user = new ArrayList<>();
-                if (getUser.getRegionId() != null) {
+                if (!getUser.getRegionId().isEmpty()) {
                     List<User> userAgain = userRepository.findAll();
                     for (int u = 0; u < userAgain.size(); u++) {
                         for (int i = 0; i < getUser.getRegionId().size(); i++) {
@@ -126,7 +126,6 @@ public class DropdownController {
                                     }
                                 }
                             } else {
-
                                 for (int o = 0; o < userAgain.get(u).getRegionId()
                                         .size(); o++) {
                                     if (region_id == userAgain.get(u).getRegionId().get(o)) {
@@ -147,6 +146,9 @@ public class DropdownController {
                     response = GlobalResponse.builder().data(null).message("Tidak dapat akses").status(HttpStatus.OK)
                             .build();
                 }
+            }else{
+                response = GlobalResponse.builder().data(null).message("Tidak dapat akses").status(HttpStatus.OK)
+                .build();
             }
         }
         return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(),

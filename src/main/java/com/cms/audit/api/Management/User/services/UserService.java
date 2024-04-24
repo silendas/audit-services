@@ -538,15 +538,15 @@ public class UserService {
 
                         List<Long> region = new ArrayList<>();
                         if (userDTO.getRegion_id() != null) {
-                                Optional<Region> getRegion = regionRepository
-                                                .findById(userDTO.getRegion_id());
-                                if (!getRegion.isPresent()) {
-                                        return GlobalResponse.builder()
-                                                        .message("Region with id:" + getRegion.get().getId()
-                                                                        + " is not found")
-                                                        .status(HttpStatus.BAD_REQUEST).build();
-                                } else {
-                                        region.add(getRegion.get().getId());
+                                for (int i = 0; i < userDTO.getRegion_id().size(); i++) {
+                                        Area getArea = areaRepository
+                                                        .findById(userDTO.getRegion_id().get(i))
+                                                        .orElseThrow(
+                                                                        () -> new ResourceNotFoundException(
+                                                                                        "Region not found"));
+                                        if (getArea != null) {
+                                                region.add(getArea.getId());
+                                        }
                                 }
                         }
                         List<Long> area = new ArrayList<>();
@@ -670,15 +670,15 @@ public class UserService {
 
                         List<Long> region = new ArrayList<>();
                         if (userDTO.getRegion_id() != null) {
-                                Optional<Region> getRegion = regionRepository
-                                                .findById(userDTO.getRegion_id());
-                                if (!getRegion.isPresent()) {
-                                        return GlobalResponse.builder()
-                                                        .message("Region with id:" + getRegion.get().getId()
-                                                                        + " is not found")
-                                                        .status(HttpStatus.BAD_REQUEST).build();
-                                } else {
-                                        region.add(getRegion.get().getId());
+                                for (int i = 0; i < userDTO.getRegion_id().size(); i++) {
+                                        Area getArea = areaRepository
+                                                        .findById(userDTO.getRegion_id().get(i))
+                                                        .orElseThrow(
+                                                                        () -> new ResourceNotFoundException(
+                                                                                        "Region not found"));
+                                        if (getArea != null) {
+                                                region.add(getArea.getId());
+                                        }
                                 }
                         }
                         List<Long> area = new ArrayList<>();
