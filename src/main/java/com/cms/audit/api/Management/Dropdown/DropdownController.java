@@ -244,7 +244,7 @@ public class DropdownController {
 
     @GetMapping("/area")
     public ResponseEntity<Object> getArea(
-            @Nullable @RequestParam("regionId") Long id) {
+            @Nullable @RequestParam("region_id") Long id) {
         GlobalResponse response;
         if (id == null) {
             response = areaService.findSpecific();
@@ -258,7 +258,7 @@ public class DropdownController {
     @GetMapping("/branch")
     public ResponseEntity<Object> getBranch(
             @Nullable @RequestParam("name") String name,
-            @Nullable @RequestParam("areaId") Long areaId,
+            @Nullable @RequestParam("area_id") Long areaId,
             @Nullable @RequestParam("user_id") Long userId,
             @Nullable @RequestParam("region_id") Long regionId) {
         GlobalResponse response;

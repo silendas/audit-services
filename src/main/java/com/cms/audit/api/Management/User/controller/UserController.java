@@ -19,6 +19,7 @@ import com.cms.audit.api.Common.constant.BasePath;
 import com.cms.audit.api.Common.response.GlobalResponse;
 import com.cms.audit.api.Common.response.ResponseEntittyHandler;
 import com.cms.audit.api.Config.Jwt.JwtService;
+import com.cms.audit.api.Management.User.dto.EditUserDTO;
 import com.cms.audit.api.Management.User.dto.UserDTO;
 import com.cms.audit.api.Management.User.services.UserService;
 
@@ -67,7 +68,7 @@ public class UserController {
 
     @PutMapping("/{id}")
     public ResponseEntity<Object> editProfile(
-            @RequestBody UserDTO userDTO,
+            @RequestBody EditUserDTO userDTO,
             @PathVariable("id") Long id) {
         GlobalResponse response = userService.edit(userDTO, id);
         if (response.getError() != null) {
