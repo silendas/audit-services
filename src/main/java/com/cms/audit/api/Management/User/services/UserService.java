@@ -338,40 +338,6 @@ public class UserService {
                 }
         }
 
-        // public GlobalResponse findOneByRegionId(Long id, int page, int size) {
-        // try {
-        // Optional<Region> set = regionRepository.findById(id);
-        // if (!set.isPresent()) {
-        // return GlobalResponse
-        // .builder()
-        // .message("Data not found")
-        // .status(HttpStatus.OK)
-        // .build();
-        // }
-        // Page<User> response = pagUser.findByRegion(set.get(), PageRequest.of(page,
-        // size));
-        // if (response.isEmpty()) {
-        // return GlobalResponse.builder().message("Data not
-        // found").status(HttpStatus.OK)
-        // .build();
-        // }
-        // return GlobalResponse
-        // .builder()
-        // .message("Success")
-        // .data(response)
-        // .status(HttpStatus.OK)
-        // .build();
-        // } catch (DataException e) {
-        // throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Data
-        // error");
-
-        // } catch (Exception e) {
-        // throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Server
-        // error");
-        // }
-
-        // }
-
         public GlobalResponse dropDown() {
                 try {
                         List<DropDownUser> response = userRepository.findDropDown();
@@ -497,7 +463,10 @@ public class UserService {
                                         return GlobalResponse.builder().message("Main id tidak boleh kosong")
                                                         .status(HttpStatus.BAD_REQUEST).build();
                                 } else if (userDTO.getRegion_id() != null || userDTO.getArea_id() != null
-                                                || userDTO.getBranch_id() != null) {
+                                                || userDTO.getBranch_id() != null
+                                                || !userDTO.getRegion_id().isEmpty()
+                                                || !userDTO.getBranch_id().isEmpty()
+                                                || !userDTO.getArea_id().isEmpty()) {
                                         return GlobalResponse.builder().message("Hanya input Main id saja")
                                                         .status(HttpStatus.BAD_REQUEST).build();
                                 }
@@ -506,7 +475,9 @@ public class UserService {
                                         return GlobalResponse.builder().message("Region id tidak boleh kosong")
                                                         .status(HttpStatus.BAD_REQUEST).build();
                                 } else if (userDTO.getMain_id() != null || userDTO.getArea_id() != null
-                                                || userDTO.getBranch_id() != null) {
+                                                || userDTO.getBranch_id() != null
+                                                || !userDTO.getBranch_id().isEmpty()
+                                                || !userDTO.getArea_id().isEmpty()) {
                                         return GlobalResponse.builder().message("Hanya input Region id saja")
                                                         .status(HttpStatus.BAD_REQUEST).build();
                                 }
@@ -514,8 +485,8 @@ public class UserService {
                                 if (userDTO.getBranch_id() == null) {
                                         return GlobalResponse.builder().message("Region id tidak boleh kosong")
                                                         .status(HttpStatus.BAD_REQUEST).build();
-                                } else if (userDTO.getMain_id() != null || userDTO.getArea_id() != null
-                                                || userDTO.getRegion_id() != null) {
+                                } else if (userDTO.getMain_id() != null || userDTO.getRegion_id() != null
+                                                || !userDTO.getRegion_id().isEmpty()) {
                                         return GlobalResponse.builder().message("Hanya input Region id saja")
                                                         .status(HttpStatus.BAD_REQUEST).build();
                                 }
