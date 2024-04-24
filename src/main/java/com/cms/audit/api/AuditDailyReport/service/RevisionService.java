@@ -109,6 +109,7 @@ public class RevisionService {
         auditDailyReportDetail.setPermanent_recommendations(dto.getPermanent_recommendations());
         auditDailyReportDetail.setTemporary_recommendations(dto.getTemporary_recommendations());
         auditDailyReportDetail.setSuggestion(dto.getSuggestion());
+        auditDailyReportDetail.setStatus_flow(1);
         auditDailyReportDetail.setUpdated_by(user.getId());
         auditDailyReportDetail.setUpdate_at(new Date());
 

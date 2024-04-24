@@ -61,6 +61,12 @@ public class AuditDailyReportDetail {
     @Column(name = "is_research")
     private Integer is_research;
 
+    @Column(name = "status_flow")
+    private Integer status_flow;
+
+    @Column(name = "status_parsing")
+    private Integer status_parsing;
+
     @JsonIgnore
     @Column(name = "is_delete", length = 2, nullable = true)
     private Integer is_delete;

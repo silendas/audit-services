@@ -88,7 +88,8 @@ public class AuditDailyReportService {
         @Autowired
         private pagAuditDailyReport pagAuditDailyReport;
 
-        public GlobalResponse get(int page, int size, Date startDate, Date endDate, Long shcedule_id, Long branch_id,
+        public GlobalResponse get(int page, int size, Date startDate, Date endDate, Long shcedule_id,
+                        Long branch_id,
                         String name) {
                 try {
                         User getUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -222,6 +223,7 @@ public class AuditDailyReportService {
                                 schedule.put("end_date", response.getContent().get(i).getSchedule().getEnd_date());
                                 responseS.put("schedule", schedule);
 
+                                responseS.put("created_at", response.getContent().get(i).getCreated_at());
                                 responseS.put("is_research", response.getContent().get(i).getIs_research());
                                 responseS.put("is_flag", flag);
                                 listLha.add(responseS);
@@ -710,7 +712,9 @@ public class AuditDailyReportService {
                                         getschedule.get().getUser().getId(),
                                         getschedule.get().getStart_date(), getschedule.get().getStatus().toString());
                         if (!scheduleList.isEmpty()) {
-                                return GlobalResponse.builder().message("Tidak bisa memproses jadwal & LHA karena sebelumnya belum membuat KKA").status(HttpStatus.OK).build();
+                                return GlobalResponse.builder().message(
+                                                "Tidak bisa memproses jadwal & LHA karena sebelumnya belum membuat KKA")
+                                                .status(HttpStatus.OK).build();
                         }
 
                         AuditDailyReport auditDailyReport = new AuditDailyReport(
@@ -751,6 +755,8 @@ public class AuditDailyReportService {
                                                 dto.getLha_detail().get(i).getTemporary_recommendations(),
                                                 dto.getLha_detail().get(i).getPermanent_recommendations(),
                                                 dto.getLha_detail().get(i).getIs_research(),
+                                                0,
+                                                0,
                                                 0,
                                                 user.getId(),
                                                 user.getId(),

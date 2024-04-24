@@ -9,9 +9,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -21,6 +21,7 @@ import com.cms.audit.api.AuditDailyReport.dto.AuditDailyReportDTO;
 import com.cms.audit.api.AuditDailyReport.dto.EditAuditDailyReportDTO;
 import com.cms.audit.api.AuditDailyReport.service.AuditDailyReportService;
 import com.cms.audit.api.Common.constant.BasePath;
+import com.cms.audit.api.Common.constant.convertDateToRoman;
 import com.cms.audit.api.Common.response.GlobalResponse;
 import com.cms.audit.api.Common.response.ResponseEntittyHandler;
 
@@ -81,6 +82,9 @@ public class AuditDailyReportController {
                 } else {
                         startDate = null;
                 }
+                if (startDate != null) {
+                        startDate = convertDateToRoman.setTimeToZero(startDate);
+                }
                 Date endDate;
                 if (end_date.isPresent()) {
                         if (end_date.get().toString() != "") {
@@ -90,6 +94,9 @@ public class AuditDailyReportController {
                         }
                 } else {
                         endDate = null;
+                }
+                if (endDate != null) {
+                        endDate = convertDateToRoman.setTimeToLastSecond(endDate);
                 }
                 GlobalResponse response = auditDailyReportService.get(page.orElse(0), size.orElse(10),
                                 startDate, endDate, scheduleId,
@@ -129,7 +136,7 @@ public class AuditDailyReportController {
                                 response.getError());
         }
 
-        @PutMapping("/{id}")
+        @PatchMapping("/{id}")
         public ResponseEntity<Object> put(@RequestBody EditAuditDailyReportDTO dto, @PathVariable("id") Long id) {
                 GlobalResponse response = auditDailyReportService.edit(dto, id);
                 return ResponseEntittyHandler.allHandler(null, response.getMessage(), response.getStatus(),

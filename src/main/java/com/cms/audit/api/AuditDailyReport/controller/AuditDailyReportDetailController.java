@@ -1,8 +1,10 @@
 package com.cms.audit.api.AuditDailyReport.controller;
 
+import java.util.Date;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -32,10 +34,12 @@ public class AuditDailyReportDetailController {
 
     @GetMapping
     public ResponseEntity<Object> get(
-        @RequestParam("lha_id") Optional<Long> lha_id,
-        @RequestParam("page") Optional<Integer> page,
-        @RequestParam("size") Optional<Integer> size) {
-        GlobalResponse response = service.get(page.orElse(0), size.orElse(10),lha_id.orElse(null));
+            @RequestParam("lha_id") Optional<Long> lha_id,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Optional<Date> start_date,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Optional<Date> end_date,
+            @RequestParam("page") Optional<Integer> page,
+            @RequestParam("size") Optional<Integer> size) {
+        GlobalResponse response = service.get(page.orElse(0), size.orElse(10), lha_id.orElse(null));
         return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(),
                 response.getError());
     }
