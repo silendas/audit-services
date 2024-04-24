@@ -163,14 +163,14 @@ public class AuditDailyReportService {
                                                                         .status(HttpStatus.BAD_REQUEST)
                                                                         .build();
                                                 }
-                                        } else if (getUser.getLevel().getCode().equals("A")  || getUser.getLevel().getCode().equals("A") ) {
+                                        } else if (getUser.getLevel().getCode().equals("A") ) {
                                                 if (startDate != null || endDate != null) {
-                                                        response = pagAuditDailyReport.findLHAInDateRange(startDate,
+                                                        response = pagAuditDailyReport.findLHAInDateRangeForLeader(startDate,
                                                                         endDate,
                                                                         PageRequest.of(page, size));
                                                 } else {
                                                         response = pagAuditDailyReport
-                                                                        .findAllLHA(PageRequest.of(page, size));
+                                                                        .findAllLHAForLeader(PageRequest.of(page, size));
                                                 }
                                         }
                                 }

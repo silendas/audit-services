@@ -17,4 +17,6 @@ public class DetailResponse {
     String temporary_recommendations;
     String permanent_recommendations;
     Integer is_research;
+    Integer status_flow;
+    Integer status_parsing;
 }

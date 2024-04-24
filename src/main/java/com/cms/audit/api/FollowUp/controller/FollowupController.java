@@ -106,9 +106,13 @@ public class FollowupController {
         public ResponseEntity<Object> getOne(
                         @PathVariable("id") Long id) {
                 GlobalResponse response = service.getOne(id);
-                return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(),
+                if(response.getStatus().equals(HttpStatus.BAD_REQUEST)){
+                        return ResponseEntittyHandler.errorResponse(response.getErrorMessage(), response.getMessage(), response.getStatus());
+                }else{
+                        return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(),
                                 response.getStatus(),
                                 response.getError());
+                }
         }
 
         @GetMapping("/file/{fileName}")

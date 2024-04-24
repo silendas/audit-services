@@ -2,6 +2,7 @@ package com.cms.audit.api.Management.User.controller;
 
 import java.util.Optional;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -61,17 +62,17 @@ public class UserController {
     public ResponseEntity<Object> save(
             @RequestBody UserDTO userDTO) {
         if (userDTO.getRegion_id() != null) {
-            if (userDTO.getRegion_id().size() == 0) {
+            if (CollectionUtils.isEmpty(userDTO.getRegion_id())) {
                 userDTO.setRegion_id(null);
             }
         }
         if (userDTO.getBranch_id() != null) {
-            if (userDTO.getBranch_id().isEmpty()) {
+            if (CollectionUtils.isEmpty(userDTO.getBranch_id())) {
                 userDTO.setBranch_id(null);
             }
         }
         if (userDTO.getArea_id() != null) {
-            if (userDTO.getArea_id().isEmpty()) {
+            if (CollectionUtils.isEmpty(userDTO.getArea_id())) {
                 userDTO.setArea_id(null);
             }
         }
@@ -91,25 +92,28 @@ public class UserController {
             @RequestBody EditUserDTO userDTO,
             @PathVariable("id") Long id) {
         if (userDTO.getRegion_id() != null) {
-            if (userDTO.getRegion_id().size() == 0) {
+            if (CollectionUtils.isEmpty(userDTO.getRegion_id())) {
                 userDTO.setRegion_id(null);
             }
         }
         if (userDTO.getBranch_id() != null) {
-            if (userDTO.getBranch_id().isEmpty()) {
+            if (CollectionUtils.isEmpty(userDTO.getBranch_id())) {
                 userDTO.setBranch_id(null);
             }
         }
         if (userDTO.getArea_id() != null) {
-            if (userDTO.getArea_id().isEmpty()) {
+            if (CollectionUtils.isEmpty(userDTO.getArea_id())) {
                 userDTO.setArea_id(null);
             }
         }
         GlobalResponse response = userService.edit(userDTO, id);
-        if (response.getError() != null) {
-            return ResponseEntittyHandler.allHandler(null, null, response.getStatus(), response.getError());
+        if (response.getStatus().equals(HttpStatus.BAD_REQUEST)) {
+            return ResponseEntittyHandler.errorResponse(response.getErrorMessage(), response.getMessage(),
+                    response.getStatus());
+        } else {
+            return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(),
+                    response.getError());
         }
-        return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(), null);
     }
 
     @DeleteMapping("/{id}")

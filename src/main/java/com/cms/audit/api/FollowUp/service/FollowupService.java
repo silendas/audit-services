@@ -106,8 +106,12 @@ public class FollowupService {
                 Map<String, Object> clarification = new LinkedHashMap<>();
                 clarification.put("id", fu.getClarification().getId());
                 clarification.put("code", fu.getClarification().getCode());
-                clarification.put("evaluation_limitation",
+                if(fu.getClarification().getEvaluation_limitation() != null){
+                    clarification.put("evaluation_limitation",
                         convertDateToRoman.convertDateToString(fu.getClarification().getEvaluation_limitation()));
+                }else{
+                    clarification.put("evaluation_limitation","-");
+                }
                 fuMap.put("clarification", clarification);
 
                 fuMap.put("code", fu.getCode());
@@ -159,7 +163,7 @@ public class FollowupService {
         try {
             Optional<FollowUp> response = repository.findById(id);
             if (!response.isPresent()) {
-                return GlobalResponse.builder().message("Followup with id: " + id + " not found ")
+                return GlobalResponse.builder().message("failed").errorMessage("Followup with id: " + id + " not found ")
                         .status(HttpStatus.BAD_REQUEST).build();
             }
             FollowUp fu = response.get();
