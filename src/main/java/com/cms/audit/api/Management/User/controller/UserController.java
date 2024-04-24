@@ -1,8 +1,9 @@
 package com.cms.audit.api.Management.User.controller;
 
-import java.util.*;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -59,17 +60,51 @@ public class UserController {
     @PostMapping
     public ResponseEntity<Object> save(
             @RequestBody UserDTO userDTO) {
+        if (userDTO.getRegion_id() != null) {
+            if (userDTO.getRegion_id().size() == 0) {
+                userDTO.setRegion_id(null);
+            }
+        }
+        if (userDTO.getBranch_id() != null) {
+            if (userDTO.getBranch_id().isEmpty()) {
+                userDTO.setBranch_id(null);
+            }
+        }
+        if (userDTO.getArea_id() != null) {
+            if (userDTO.getArea_id().isEmpty()) {
+                userDTO.setArea_id(null);
+            }
+        }
         GlobalResponse response = userService.save(
-                userDTO
-        );
-        return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(),
-                response.getError());
+                userDTO);
+        if (response.getStatus().equals(HttpStatus.BAD_REQUEST)) {
+            return ResponseEntittyHandler.errorResponse(response.getErrorMessage(), response.getMessage(),
+                    response.getStatus());
+        } else {
+            return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(),
+                    response.getError());
+        }
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Object> editProfile(
             @RequestBody EditUserDTO userDTO,
             @PathVariable("id") Long id) {
+        if (userDTO.getRegion_id() != null) {
+            if (userDTO.getRegion_id().size() == 0) {
+                userDTO.setRegion_id(null);
+            }
+        }
+        if (userDTO.getBranch_id() != null) {
+            if (userDTO.getBranch_id().isEmpty()) {
+                userDTO.setBranch_id(null);
+            }
+        }
+        if (userDTO.getArea_id() != null) {
+            if (userDTO.getArea_id().isEmpty()) {
+                userDTO.setArea_id(null);
+            }
+        }
         GlobalResponse response = userService.edit(userDTO, id);
         if (response.getError() != null) {
             return ResponseEntittyHandler.allHandler(null, null, response.getStatus(), response.getError());

@@ -83,13 +83,13 @@ public class AuditWorkingPaperService {
                     response = pag.findWorkingPaperByBranch(branchId, PageRequest.of(page, size));
                 }
             } else {
-                if (getUser.getLevel().getId() == 1 || getUser.getLevel().getId() == 4) {
+                if (getUser.getLevel().getCode().equals("A")  || getUser.getLevel().getCode().equals("A") ) {
                     if (start_date != null && end_date != null) {
                         response = pag.findWorkingPaperInDateRange(start_date, end_date, PageRequest.of(page, size));
                     } else {
                         response = pag.findAllWorkingPaper(PageRequest.of(page, size));
                     }
-                } else if (getUser.getLevel().getId() == 2) {
+                } else if (getUser.getLevel().getCode().equals("B") ) {
                     Pageable pageable = PageRequest.of(page, size);
                     List<AuditWorkingPaper> lhaList = new ArrayList<>();
                     for (int i = 0; i < getUser.getRegionId().size(); i++) {
@@ -116,7 +116,7 @@ public class AuditWorkingPaperService {
                                 .status(HttpStatus.BAD_REQUEST)
                                 .build();
                     }
-                } else if (getUser.getLevel().getId() == 3) {
+                } else if (getUser.getLevel().getCode().equals("C") ) {
                     if (start_date != null && end_date != null) {
                         response = pag.findAllWorkingPaperByUserIdAndDate(getUser.getId(), start_date, end_date,
                                 PageRequest.of(page, size));

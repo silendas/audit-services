@@ -86,7 +86,7 @@ public class RegionService {
             User getUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
             List<RegionInterface> response = regionRepository.findSpecificRegion();
-            if (getUser.getLevel().getId() == 2) {
+            if (getUser.getLevel().getCode().equals("B") ) {
                 for (int i = 0; i < getUser.getRegionId().size(); i++) {
                     List<RegionInterface> getBranch = regionRepository
                             .findSpecificRegionById(getUser.getRegionId().get(i));
@@ -94,7 +94,7 @@ public class RegionService {
                         response.add(getBranch.get(u));
                     }
                 }
-            } else if (getUser.getLevel().getId() == 1 || getUser.getLevel().getId() == 4) {
+            } else if (getUser.getLevel().getCode().equals("A")  || getUser.getLevel().getCode().equals("A") ) {
                 response = regionRepository.findSpecificRegion();
             } else {
                 return GlobalResponse

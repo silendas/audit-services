@@ -37,7 +37,7 @@ public interface BranchRepository extends JpaRepository<Branch, Long> {
     @Query(value = "SELECT u.id, u.name FROM branch_office u INNER JOIN area_office ao ON u.area_id = ao.id INNER JOIN region_office ro ON ao.region_id = ro.id WHERE ro.id = :regionId AND u.is_delete <> 1;", nativeQuery = true)
     public List<BranchInterface> findSpecificBranchByRegionId(@Param("regionId") Long regionId);
 
-    @Query(value = "SELECT u.id, u.name FROM branch_office u INNER JOIN area_office ao ON u.area_id = ao.id INNER JOIN region_office ro ON ao.region_id = ro.id WHERE ro.id = :regionId AND u.is_delete <> 1;", nativeQuery = true)
+    @Query(value = "SELECT u.* FROM branch_office u INNER JOIN area_office ao ON u.area_id = ao.id INNER JOIN region_office ro ON ao.region_id = ro.id WHERE ro.id = :regionId AND u.is_delete <> 1;", nativeQuery = true)
     public List<Branch> findBranchByRegionId(@Param("regionId") Long regionId);
 
 }

@@ -95,7 +95,7 @@ public class AuditDailyReportService {
                         User getUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
                         Page<AuditDailyReport> response = null;
-                        if (getUser.getLevel().getId() == 3) {
+                        if (getUser.getLevel().getCode().equals("C") ) {
                                 if (startDate != null && endDate != null) {
                                         response = pagAuditDailyReport.findLHAByUserInDateRange(getUser.getId(),
                                                         startDate, endDate, PageRequest.of(page, size));
@@ -116,6 +116,8 @@ public class AuditDailyReportService {
                                 } else if (branch_id != null && startDate != null && endDate != null) {
                                         response = pagAuditDailyReport.findAllLHAByBranchAndDateRange(branch_id,
                                                         startDate, endDate, PageRequest.of(page, size));
+                                } else if (name != null && branch_id !=null) {
+                                        response = pagAuditDailyReport.findLHANameAndBranch(name, branch_id, PageRequest.of(page, size));
                                 } else if (name != null) {
                                         response = pagAuditDailyReport.findLHAName(name, PageRequest.of(page, size));
                                 } else if (branch_id != null) {
@@ -125,14 +127,14 @@ public class AuditDailyReportService {
                                         response = pagAuditDailyReport.findByScheduleId(shcedule_id,
                                                         PageRequest.of(page, size));
                                 } else {
-                                        if (getUser.getLevel().getId() == 2) {
+                                        if (getUser.getLevel().getCode().equals("B") ) {
                                                 Pageable pageable = PageRequest.of(page, size);
                                                 List<AuditDailyReport> lhaList = new ArrayList<>();
                                                 for (int i = 0; i < getUser.getRegionId().size(); i++) {
                                                         List<AuditDailyReport> lhaAgain = new ArrayList<>();
                                                         if (startDate != null && endDate != null) {
                                                                 lhaAgain = auditDailyReportRepository
-                                                                                .findByRegionIdAndDate(branch_id,
+                                                                                .findByRegionIdAndDate(getUser.getRegionId().get(i),
                                                                                                 startDate, endDate);
                                                         } else {
                                                                 lhaAgain = auditDailyReportRepository.findByRegionId(
@@ -161,7 +163,7 @@ public class AuditDailyReportService {
                                                                         .status(HttpStatus.BAD_REQUEST)
                                                                         .build();
                                                 }
-                                        } else if (getUser.getLevel().getId() == 1 || getUser.getLevel().getId() == 4) {
+                                        } else if (getUser.getLevel().getCode().equals("A")  || getUser.getLevel().getCode().equals("A") ) {
                                                 if (startDate != null || endDate != null) {
                                                         response = pagAuditDailyReport.findLHAInDateRange(startDate,
                                                                         endDate,
@@ -557,7 +559,7 @@ public class AuditDailyReportService {
                 } else if (start_date != null && end_date != null) {
                         response = auditDailyReportRepository.findLHAInDateRange(start_date, end_date);
                 } else {
-                        if (getUser.getLevel().getId() == 2) {
+                        if (getUser.getLevel().getCode().equals("B") ) {
                                 for (int i = 0; i < getUser.getRegionId().size(); i++) {
                                         List<AuditDailyReport> listLHA = auditDailyReportRepository
                                                         .findLHAByRegion(getUser.getRegionId().get(i));
@@ -565,7 +567,7 @@ public class AuditDailyReportService {
                                                 response.add(listLHA.get(u));
                                         }
                                 }
-                        } else if (getUser.getLevel().getId() == 3) {
+                        } else if (getUser.getLevel().getCode().equals("C") ) {
                                 List<AuditDailyReport> listLHA = auditDailyReportRepository
                                                 .findAllLHAByUserId(getUser.getId());
                                 for (int u = 0; u < listLHA.size(); u++) {
@@ -697,14 +699,14 @@ public class AuditDailyReportService {
                         if (!checkLHA.isEmpty()) {
                                 return GlobalResponse
                                                 .builder()
-                                                .message("LHA already exist for today, insert again tommorow")
+                                                .message("failed").errorMessage("LHA already exist for today, insert again tommorow")
                                                 .status(HttpStatus.BAD_REQUEST)
                                                 .build();
                         }
 
                         Optional<Schedule> getschedule = scheduleRepository.findById(dto.getSchedule_id());
                         if (!getschedule.isPresent()) {
-                                return GlobalResponse.builder().message("Data schedule not found")
+                                return GlobalResponse.builder().message("failed").errorMessage("Data schedule not found")
                                                 .status(HttpStatus.BAD_REQUEST).build();
                         }
 
@@ -898,8 +900,8 @@ public class AuditDailyReportService {
                         if (!getBefore.isPresent()) {
                                 return GlobalResponse
                                                 .builder()
-                                                .message("Not Found")
-                                                .status(HttpStatus.NOT_FOUND)
+                                                .message("failed").errorMessage("Not Found")
+                                                .status(HttpStatus.BAD_REQUEST)
                                                 .build();
                         }
 
@@ -952,7 +954,7 @@ public class AuditDailyReportService {
                         if (!getBefore.isPresent()) {
                                 return GlobalResponse
                                                 .builder()
-                                                .message("Not Found")
+                                                .message("failed").errorMessage("Not Found")
                                                 .status(HttpStatus.NOT_FOUND)
                                                 .build();
                         }

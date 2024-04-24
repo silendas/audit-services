@@ -75,7 +75,7 @@ public class AuditDailyReportDetailService {
     @Autowired
     private RevisionRepository revisionRepo;
 
-    public GlobalResponse get(int page, int size, Long lhaId) {
+    public GlobalResponse get(int page, int size, Long lhaId, Date startDate, Date endDate) {
         try {
             Page<AuditDailyReportDetail> response;
             if (lhaId == null) {
@@ -85,62 +85,33 @@ public class AuditDailyReportDetailService {
             }
             List<Object> details = new ArrayList<>();
             for (int i = 0; i < response.getContent().size(); i++) {
-                Optional<Revision> getRevision = revisionRepo.findByDetailId(response.getContent().get(i).getId());
-                if (!getRevision.isPresent()) {
-                    DetailResponse builder = new DetailResponse();
-                    builder.setId(response.getContent().get(i).getId());
-                    builder.setCases(response.getContent().get(i).getCases().getName());
-                    builder.setCaseCategory(response.getContent().get(i).getCaseCategory().getName());
-                    builder.setDescription(response.getContent().get(i).getDescription());
-                    builder.setPermanent_recommendations(
-                            response.getContent().get(i).getPermanent_recommendations());
-                    builder.setTemporary_recommendations(
-                            response.getContent().get(i).getTemporary_recommendations());
-                    builder.setSuggestion(response.getContent().get(i).getSuggestion());
-                    if (response.getContent().get(i).getIs_research() == 1) {
-                        Flag isFLag = flagRepo
-                                .findOneByAuditDailyReportDetailId(
-                                        response.getContent().get(i).getId())
-                                .orElseThrow(() -> new ResourceNotFoundException(
-                                        "Flag not found"));
-                        if (isFLag.getClarification().getFilename() != null) {
-                            builder.setIs_research(0);
-                        } else {
-                            builder.setIs_research(1);
-                        }
-                    } else {
+                DetailResponse builder = new DetailResponse();
+                builder.setId(response.getContent().get(i).getId());
+                builder.setCases(response.getContent().get(i).getCases().getName());
+                builder.setCaseCategory(response.getContent().get(i).getCaseCategory().getName());
+                builder.setDescription(response.getContent().get(i).getDescription());
+                builder.setPermanent_recommendations(
+                        response.getContent().get(i).getPermanent_recommendations());
+                builder.setTemporary_recommendations(
+                        response.getContent().get(i).getTemporary_recommendations());
+                builder.setSuggestion(response.getContent().get(i).getSuggestion());
+                if (response.getContent().get(i).getIs_research() == 1) {
+                    Flag isFLag = flagRepo
+                            .findOneByAuditDailyReportDetailId(
+                                    response.getContent().get(i).getId())
+                            .orElseThrow(() -> new ResourceNotFoundException(
+                                    "Flag not found"));
+                    if (isFLag.getClarification().getFilename() != null) {
                         builder.setIs_research(0);
+                    } else {
+                        builder.setIs_research(1);
                     }
-                    // builder.setIs_research(response.getContent().get(i).getIs_research());
-                    details.add(builder);
                 } else {
-                    DetailResponse builder = new DetailResponse();
-                    builder.setId(response.getContent().get(i).getId());
-                    builder.setCases(getRevision.get().getCases().getName());
-                    builder.setCaseCategory(getRevision.get().getCaseCategory().getName());
-                    builder.setDescription(getRevision.get().getDescription());
-                    builder.setPermanent_recommendations(
-                            getRevision.get().getPermanent_recommendations());
-                    builder.setTemporary_recommendations(
-                            getRevision.get().getTemporary_recommendations());
-                    builder.setSuggestion(getRevision.get().getSuggestion());
-                    if (response.getContent().get(i).getIs_research() == 1) {
-                        Flag isFLag = flagRepo
-                                .findOneByAuditDailyReportDetailId(
-                                        response.getContent().get(i).getId())
-                                .orElseThrow(() -> new ResourceNotFoundException(
-                                        "Flag not found"));
-                        if (isFLag.getClarification().getFilename() != null) {
-                            builder.setIs_research(0);
-                        } else {
-                            builder.setIs_research(1);
-                        }
-                    } else {
-                        builder.setIs_research(0);
-                    }
-                    // builder.setIs_research(getRevision.get().getIs_research());
-                    details.add(builder);
+                    builder.setIs_research(0);
                 }
+                // builder.setIs_research(response.getContent().get(i).getIs_research());
+                details.add(builder);
+
             }
             if (response.isEmpty()) {
                 return GlobalResponse
@@ -161,7 +132,6 @@ public class AuditDailyReportDetailService {
             parent.put("empty", response.isEmpty());
             parent.put("sort", response.getSort());
             parent.put("content", details);
-            // parent.put("lha_details", details);
 
             return GlobalResponse
                     .builder()
@@ -192,82 +162,43 @@ public class AuditDailyReportDetailService {
 
     public GlobalResponse getById(Long id) {
         try {
-            Optional<Revision> checkRevision = revisionRepo.findByDetailId(id);
             Map<String, Object> builder = new LinkedHashMap<>();
-            if (checkRevision.isPresent()) {
-                builder.put("id", id);
-                builder.put("revision_id", checkRevision.get().getId());
+            Optional<AuditDailyReportDetail> response = repository.findOneByLHADetailId(id);
+            if (!response.isPresent()) {
+                return GlobalResponse.builder().message("LHA with id :" + id + " is undefined").build();
+            }
+            builder.put("id", response.get().getId());
 
-                Map<String, Object> cases = new LinkedHashMap<>();
-                cases.put("id", checkRevision.get().getCases().getId());
-                cases.put("name", checkRevision.get().getCases().getName());
-                cases.put("code", checkRevision.get().getCases().getCode());
-                builder.put("case", cases);
+            Map<String, Object> cases = new LinkedHashMap<>();
+            cases.put("id", response.get().getCases().getId());
+            cases.put("name", response.get().getCases().getName());
+            cases.put("code", response.get().getCases().getCode());
+            builder.put("case", cases);
 
-                Map<String, Object> caseCategory = new LinkedHashMap<>();
-                caseCategory.put("id", checkRevision.get().getCaseCategory().getId());
-                caseCategory.put("name", checkRevision.get().getCaseCategory().getName());
-                builder.put("case_category", caseCategory);
+            Map<String, Object> caseCategory = new LinkedHashMap<>();
+            caseCategory.put("id", response.get().getCaseCategory().getId());
+            caseCategory.put("name", response.get().getCaseCategory().getName());
+            builder.put("case_category", caseCategory);
 
-                builder.put("description", checkRevision.get().getDescription());
-                builder.put(
-                        "permanent_recommendation", checkRevision.get().getPermanent_recommendations());
-                builder.put(
-                        "temporary_recommendation", checkRevision.get().getTemporary_recommendations());
-                builder.put("suggestion", checkRevision.get().getSuggestion());
-                // builder.put("is_research", checkRevision.get().getIs_research());
-                if (checkRevision.get().getIs_research() == 1) {
-                    Flag isFLag = flagRepo
-                            .findOneByAuditDailyReportDetailId(
-                                    id)
-                            .orElseThrow(() -> new ResourceNotFoundException(
-                                    "Flag not found"));
-                    if (isFLag.getClarification().getFilename() != null) {
-                        builder.put("is_research", 0);
-                    } else {
-                        builder.put("is_research", 1);
-                    }
-                } else {
+            builder.put("description", response.get().getDescription());
+            builder.put(
+                    "permanent_recommendation", response.get().getPermanent_recommendations());
+            builder.put(
+                    "temporary_recommendation", response.get().getTemporary_recommendations());
+            builder.put("suggestion", response.get().getSuggestion());
+            if (response.get().getIs_research() == 1) {
+                Flag isFLag = flagRepo
+                        .findOneByAuditDailyReportDetailId(
+                                response.get().getId())
+                        .orElseThrow(() -> new ResourceNotFoundException(
+                                "Flag not found"));
+                if (isFLag.getClarification().getFilename() != null) {
                     builder.put("is_research", 0);
+                } else {
+                    builder.put("is_research", 1);
                 }
             } else {
-                Optional<AuditDailyReportDetail> response = repository.findOneByLHADetailId(id);
-                if (!response.isPresent()) {
-                    return GlobalResponse.builder().message("LHA with id :" + id + " is undefined").build();
-                }
-                builder.put("id", response.get().getId());
-
-                Map<String, Object> cases = new LinkedHashMap<>();
-                cases.put("id", response.get().getCases().getId());
-                cases.put("name", response.get().getCases().getName());
-                cases.put("code", response.get().getCases().getCode());
-                builder.put("case", cases);
-
-                Map<String, Object> caseCategory = new LinkedHashMap<>();
-                caseCategory.put("id", response.get().getCaseCategory().getId());
-                caseCategory.put("name", response.get().getCaseCategory().getName());
-                builder.put("case_category", caseCategory);
-
-                builder.put("description", response.get().getDescription());
-                builder.put(
-                        "permanent_recommendation", response.get().getPermanent_recommendations());
-                builder.put(
-                        "temporary_recommendation", response.get().getTemporary_recommendations());
-                builder.put("suggestion", response.get().getSuggestion());
-                if (response.get().getIs_research() == 1) {
-                    Flag isFLag = flagRepo
-                            .findOneByAuditDailyReportDetailId(
-                                    response.get().getId())
-                            .orElseThrow(() -> new ResourceNotFoundException(
-                                    "Flag not found"));
-                    if (isFLag.getClarification().getFilename() != null) {
-                        builder.put("is_research", 0);
-                    } else {
-                        builder.put("is_research", 1);
-                    }
-                } else {
-                    builder.put("is_research", 0);
-                }
+                builder.put("is_research", 0);
             }
             return GlobalResponse
                     .builder()
@@ -376,18 +307,18 @@ public class AuditDailyReportDetailService {
 
             Optional<AuditDailyReport> setId = lhaReportsitory.findById(dto.getAudit_daily_report_id());
             if (!setId.isPresent()) {
-                return GlobalResponse.builder().message("Lha with id:" + dto.getAudit_daily_report_id() + " not found")
+                return GlobalResponse.builder().message("failed").errorMessage("Lha with id:" + dto.getAudit_daily_report_id() + " not found")
                         .status(HttpStatus.BAD_REQUEST).build();
             }
             Optional<Case> setCaseId = caseRepository.findById(dto.getCase_id());
             if (!setCaseId.isPresent()) {
-                return GlobalResponse.builder().message("Case with id:" + dto.getCase_id() + " not found")
+                return GlobalResponse.builder().message("failed").errorMessage("Case with id:" + dto.getCase_id() + " not found")
                         .status(HttpStatus.BAD_REQUEST).build();
             }
             Optional<CaseCategory> setCCId = ccRepository.findById(dto.getCase_category_id());
             if (!setCCId.isPresent()) {
                 return GlobalResponse.builder()
-                        .message("Case Category with id:" + dto.getCase_category_id() + " not found")
+                .message("failed").errorMessage("Case Category with id:" + dto.getCase_category_id() + " not found")
                         .status(HttpStatus.BAD_REQUEST)
                         .build();
             }
@@ -525,18 +456,18 @@ public class AuditDailyReportDetailService {
             if (!getBefore.isPresent()) {
                 return GlobalResponse
                         .builder()
-                        .message("LHA not found")
+                        .message("failed").errorMessage("LHA not found")
                         .status(HttpStatus.BAD_REQUEST)
                         .build();
             }
 
             Optional<Case> setCaseId = caseRepository.findById(dto.getCase_id());
             if (!setCaseId.isPresent()) {
-                return GlobalResponse.builder().message("Case not found").status(HttpStatus.BAD_REQUEST).build();
+                return GlobalResponse.builder().message("failed").errorMessage("Case not found").status(HttpStatus.BAD_REQUEST).build();
             }
             Optional<CaseCategory> setCCId = ccRepository.findById(dto.getCase_category_id());
             if (!setCCId.isPresent()) {
-                return GlobalResponse.builder().message("Case Category not found").status(HttpStatus.BAD_REQUEST)
+                return GlobalResponse.builder().message("failed").errorMessage("Case Category not found").status(HttpStatus.BAD_REQUEST)
                         .build();
             }
 
@@ -550,8 +481,8 @@ public class AuditDailyReportDetailService {
                     dto.getTemporary_recommendations(),
                     dto.getPermanent_recommendations(),
                     dto.getIs_research(),
-                    getBefore.get().getStatus_flow(),
-                    getBefore.get().getStatus_parsing(),
+                    dto.getStatus_flow(),
+                    dto.getStatus_parsing(),
                     0,
                     getBefore.get().getCreated_by(),
                     user.getId(),
@@ -593,7 +524,7 @@ public class AuditDailyReportDetailService {
             if (!getBefore.isPresent()) {
                 return GlobalResponse
                         .builder()
-                        .message("Not Found")
+                        .message("failed").errorMessage("Not Found")
                         .status(HttpStatus.NOT_FOUND)
                         .build();
             }

@@ -94,12 +94,12 @@ public class DropdownController {
         } else if (mainId != null) {
             response = userService.dropDown();
         } else {
-            if (getUser.getLevel().getId() == 1 || getUser.getLevel().getId() == 4) {
+            if (getUser.getLevel().getCode().equals("A")  || getUser.getLevel().getCode().equals("A") ) {
                 response = userService.dropDown();
-            } else if (getUser.getLevel().getId() == 2) {
+            } else if (getUser.getLevel().getCode().equals("B") ) {
                 List<DropDownUserDTO> user = new ArrayList<>();
                 if (!getUser.getRegionId().isEmpty()) {
-                    List<User> userAgain = userRepository.findAll();
+                    List<User> userAgain = userRepository.findAllUserIIfArea();
                     for (int u = 0; u < userAgain.size(); u++) {
                         for (int i = 0; i < getUser.getRegionId().size(); i++) {
                             Long region_id = getUser.getRegionId().get(i);
@@ -263,7 +263,6 @@ public class DropdownController {
             @Nullable @RequestParam("area_id") List<Long> areaId,
             @Nullable @RequestParam("user_id") Long userId,
             @Nullable @RequestParam("region_id") Long regionId) {
-        System.out.println("Area Id :" + areaId);
         GlobalResponse response;
         if (userId != null) {
             response = branchService.findSpecificByUserid(userId);
@@ -276,8 +275,12 @@ public class DropdownController {
         } else {
             response = branchService.findSpecific();
         }
-        return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(),
+        if(response.getStatus().equals(HttpStatus.BAD_REQUEST)){
+            return  ResponseEntittyHandler.errorResponse(response.getErrorMessage(), response.getMessage(), response.getStatus());
+        }else{
+            return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(),
                 response.getError());
+        }
     }
 
     @GetMapping("/priority")

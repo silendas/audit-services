@@ -41,6 +41,9 @@ public interface pagAuditDailyReport extends PagingAndSortingRepository<AuditDai
     @Query(value = "SELECT u.* FROM audit_daily_report u INNER JOIN users us ON u.user_id = us.id WHERE us.fullname LIKE %:name% AND u.is_delete <> 1 ORDER BY u.id DESC", nativeQuery = true)
     Page<AuditDailyReport> findLHAName(@Param("name") String name, Pageable pageable);
 
+    @Query(value = "SELECT u.* FROM audit_daily_report u INNER JOIN users us ON u.user_id = us.id WHERE us.fullname LIKE %:name% AND u.branch_id = :id AND u.is_delete <> 1 ORDER BY u.id DESC", nativeQuery = true)
+    Page<AuditDailyReport> findLHANameAndBranch(@Param("name") String name, @Param("id") Long id,Pageable pageable);
+
     @Query(value = "SELECT u.* FROM audit_daily_report u INNER JOIN branch_office bo ON u.branch_id = bo.id INNER JOIN area_office ao ON bo.area_id = ao.id INNER JOIN region_office ro ON ao.region_id=ro.id WHERE ro.id = :id AND (u.created_at BETWEEN :start_date AND :end_date) AND u.is_delete <> 1 ORDER BY u.id DESC;", nativeQuery = true)
     Page<AuditDailyReport> findLHAByRegionInDateRange(@Param("id") Long area_id,
             @Param("start_date") Date start_date,

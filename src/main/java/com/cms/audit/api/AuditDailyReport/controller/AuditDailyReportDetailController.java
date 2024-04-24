@@ -5,7 +5,9 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,6 +23,7 @@ import com.cms.audit.api.AuditDailyReport.dto.AuditDailyReportDetailDTO;
 import com.cms.audit.api.AuditDailyReport.dto.EditAuditDailyReportDetailDTO;
 import com.cms.audit.api.AuditDailyReport.service.AuditDailyReportDetailService;
 import com.cms.audit.api.Common.constant.BasePath;
+import com.cms.audit.api.Common.constant.convertDateToRoman;
 import com.cms.audit.api.Common.response.GlobalResponse;
 import com.cms.audit.api.Common.response.ResponseEntittyHandler;
 
@@ -39,7 +42,33 @@ public class AuditDailyReportDetailController {
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Optional<Date> end_date,
             @RequestParam("page") Optional<Integer> page,
             @RequestParam("size") Optional<Integer> size) {
-        GlobalResponse response = service.get(page.orElse(0), size.orElse(10), lha_id.orElse(null));
+        Date startDate;
+        if (start_date.isPresent()) {
+            if (start_date.get().toString() != "") {
+                startDate = start_date.get();
+            } else {
+                startDate = null;
+            }
+        } else {
+            startDate = null;
+        }
+        if (startDate != null) {
+            startDate = convertDateToRoman.setTimeToZero(startDate);
+        }
+        Date endDate;
+        if (end_date.isPresent()) {
+            if (end_date.get().toString() != "") {
+                endDate = end_date.get();
+            } else {
+                endDate = null;
+            }
+        } else {
+            endDate = null;
+        }
+        if (endDate != null) {
+            endDate = convertDateToRoman.setTimeToLastSecond(endDate);
+        }
+        GlobalResponse response = service.get(page.orElse(0), size.orElse(10), lha_id.orElse(null),startDate,endDate);
         return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(),
                 response.getError());
     }
@@ -54,22 +83,34 @@ public class AuditDailyReportDetailController {
     @PostMapping
     public ResponseEntity<Object> post(@RequestBody AuditDailyReportDetailDTO dto) {
         GlobalResponse response = service.save(dto);
-        return ResponseEntittyHandler.allHandler(null, response.getMessage(), response.getStatus(),
+        if(response.getStatus().value() == 400){
+            return ResponseEntittyHandler.errorResponse(response.getErrorMessage(), response.getMessage(), response.getStatus());
+        }else{
+            return ResponseEntittyHandler.allHandler(null, response.getMessage(), response.getStatus(),
                 response.getError());
+        }
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Object> put(@RequestBody EditAuditDailyReportDetailDTO dto, @PathVariable("id") Long id) {
         GlobalResponse response = service.edit(dto, id);
-        return ResponseEntittyHandler.allHandler(null, response.getMessage(), response.getStatus(),
+        if(response.getStatus().value() == 400){
+            return ResponseEntittyHandler.errorResponse(response.getErrorMessage(), response.getMessage(), response.getStatus());
+        }else{
+            return ResponseEntittyHandler.allHandler(null, response.getMessage(), response.getStatus(),
                 response.getError());
+        }
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Object> delete(@PathVariable("id") Long id) {
         GlobalResponse response = service.delete(id);
-        return ResponseEntittyHandler.allHandler(null, response.getMessage(), response.getStatus(),
-                response.getError());
+        if (response.getStatus().value() == 400) {
+            return ResponseEntittyHandler.errorResponse(response.getErrorMessage(), response.getMessage(), response.getStatus());
+    } else {
+            return ResponseEntittyHandler.allHandler(null, response.getMessage(), response.getStatus(),
+                            response.getError());
+    }
     }
 
 }

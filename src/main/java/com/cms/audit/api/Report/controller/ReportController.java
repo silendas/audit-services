@@ -85,11 +85,37 @@ public class ReportController {
         @GetMapping("/lha")
         public ResponseEntity<InputStreamResource> downloadLHA(
                         @RequestParam(required = false) Optional<Long> user_id,
-                        @RequestParam(required = false) Optional<Long> area_id,
-                        @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date start_date,
-                        @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date end_date)
+                        @RequestParam(required = false) Optional<Long> region_id,
+                        @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Optional<Date> start_date,
+                        @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Optional<Date> end_date)
                         throws IOException {
-                return service.getDataDownloadLHA(user_id.orElse(null), area_id.orElse(null), start_date, end_date);
+                Date startDate;
+                if (start_date.isPresent()) {
+                        if (start_date.get().toString() != "") {
+                                startDate = start_date.get();
+                        } else {
+                                startDate = null;
+                        }
+                } else {
+                        startDate = null;
+                }
+                if (startDate != null) {
+                        startDate = convertDateToRoman.setTimeToZero(startDate);
+                }
+                Date endDate;
+                if (end_date.isPresent()) {
+                        if (end_date.get().toString() != "") {
+                                endDate = end_date.get();
+                        } else {
+                                endDate = null;
+                        }
+                } else {
+                        endDate = null;
+                }
+                if (endDate != null) {
+                        endDate = convertDateToRoman.setTimeToLastSecond(endDate);
+                }
+                return service.getDataDownloadLHA(user_id.orElse(null), region_id.orElse(null), startDate, endDate);
         }
 
 }

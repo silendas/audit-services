@@ -51,7 +51,7 @@ public class InsertDefaultLevel {
         repository.save(level3);
         Level levelleader = new Level(
             null,
-            "Leader",
+            "LEAD",
             "A",
             0,
             new Date(),

@@ -132,22 +132,34 @@ public class AuditDailyReportController {
         @PostMapping
         public ResponseEntity<Object> post(@RequestBody AuditDailyReportDTO dto) {
                 GlobalResponse response = auditDailyReportService.save(dto);
-                return ResponseEntittyHandler.allHandler(null, response.getMessage(), response.getStatus(),
-                                response.getError());
+                if (response.getStatus().value() == 400) {
+                        return ResponseEntittyHandler.errorResponse(response.getErrorMessage(), response.getMessage(), response.getStatus());
+                } else {
+                        return ResponseEntittyHandler.allHandler(null, response.getMessage(), response.getStatus(),
+                                        response.getError());
+                }
         }
 
         @PatchMapping("/{id}")
         public ResponseEntity<Object> put(@RequestBody EditAuditDailyReportDTO dto, @PathVariable("id") Long id) {
                 GlobalResponse response = auditDailyReportService.edit(dto, id);
-                return ResponseEntittyHandler.allHandler(null, response.getMessage(), response.getStatus(),
-                                response.getError());
+                if (response.getStatus().value() == 400) {
+                        return ResponseEntittyHandler.errorResponse(response.getErrorMessage(), response.getMessage(), response.getStatus());
+                } else {
+                        return ResponseEntittyHandler.allHandler(null, response.getMessage(), response.getStatus(),
+                                        response.getError());
+                }
         }
 
         @DeleteMapping("/{id}")
         public ResponseEntity<Object> delete(@PathVariable("id") Long id) {
                 GlobalResponse response = auditDailyReportService.delete(id);
-                return ResponseEntittyHandler.allHandler(null, response.getMessage(), response.getStatus(),
-                                response.getError());
+                if (response.getStatus().value() == 400) {
+                        return ResponseEntittyHandler.errorResponse(response.getErrorMessage(), response.getMessage(), response.getStatus());
+                } else {
+                        return ResponseEntittyHandler.allHandler(null, response.getMessage(), response.getStatus(),
+                                        response.getError());
+                }
         }
 
 }
