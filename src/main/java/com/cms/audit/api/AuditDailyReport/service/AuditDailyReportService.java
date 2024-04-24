@@ -752,6 +752,8 @@ public class AuditDailyReportService {
                                                 dto.getLha_detail().get(i).getPermanent_recommendations(),
                                                 dto.getLha_detail().get(i).getIs_research(),
                                                 0,
+                                                0,
+                                                0,
                                                 user.getId(),
                                                 user.getId(),
                                                 new Date(),

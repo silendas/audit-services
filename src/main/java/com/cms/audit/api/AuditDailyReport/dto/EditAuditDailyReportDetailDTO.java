@@ -16,4 +16,6 @@ public class EditAuditDailyReportDetailDTO {
     private String temporary_recommendations;
     private String permanent_recommendations;
     private Integer is_research;
+    // private Integer status_parsing;
+    // private Integer status_flow;
 }

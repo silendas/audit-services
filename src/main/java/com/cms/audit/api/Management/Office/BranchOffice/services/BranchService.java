@@ -305,8 +305,12 @@ public class BranchService {
                 for (int i = 0; i < getUser.get().getRegionId().size(); i++) {
                     List<Branch> getBranchAgain = branchRepository
                             .findBranchByRegionId(getUser.get().getRegionId().get(i));
-                    for (int u = 0; u < getBranchAgain.size(); u++) {
-                        getBranch.add(getBranchAgain.get(u));
+                    if(!getBranchAgain.isEmpty()){
+                        for (int u = 0; u < getBranchAgain.size(); u++) {
+                            if(!getBranch.contains(getBranchAgain.get(u))){
+                                getBranch.add(getBranchAgain.get(u));
+                            }
+                        }
                     }
                 }
             }
