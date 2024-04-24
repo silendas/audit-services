@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.cms.audit.api.Common.constant.BasePath;
+import com.cms.audit.api.Common.constant.convertDateToRoman;
 import com.cms.audit.api.Common.response.GlobalResponse;
 import com.cms.audit.api.Common.response.ResponseEntittyHandler;
 import com.cms.audit.api.FollowUp.dto.FollowUpDTO;
@@ -78,6 +79,9 @@ public class FollowupController {
                 } else {
                         startDate = null;
                 }
+                if (startDate != null) {
+                        startDate = convertDateToRoman.setTimeToZero(startDate);
+                }
                 Date endDate;
                 if (end_date.isPresent()) {
                         if (end_date.get().toString() != "") {
@@ -87,6 +91,9 @@ public class FollowupController {
                         }
                 } else {
                         endDate = null;
+                }
+                if (endDate != null) {
+                        endDate = convertDateToRoman.setTimeToLastSecond(endDate);
                 }
                 GlobalResponse response = service.getAll(fullname, branchId, page.orElse(0), size.orElse(10), startDate,
                                 endDate);
@@ -130,17 +137,17 @@ public class FollowupController {
                 File file = new File("uploaded/followup/" + response.getFilename());
                 InputStream inputStream = new FileInputStream(file);
                 InputStreamResource isr = new InputStreamResource(inputStream);
-        
+
                 HttpHeaders httpHeaders = new HttpHeaders();
-        
+
                 httpHeaders.setContentType(MediaType.valueOf("application/pdf"));
                 httpHeaders.set("Content-Disposition", "attachment; filename=" + response.getFilename());
-        
+
                 return ResponseEntity.ok()
-                        .headers(httpHeaders)
-                        .contentLength(file.length())
-                        .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                        .body(isr);
+                                .headers(httpHeaders)
+                                .contentLength(file.length())
+                                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                                .body(isr);
         }
 
         @PostMapping

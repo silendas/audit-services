@@ -482,7 +482,7 @@ public class UserService {
                                                         .status(HttpStatus.BAD_REQUEST).build();
                                 }
                         } else if (userDTO.getLevel_id() == 3) {
-                                if (userDTO.getBranch_id() == null) {
+                                if (userDTO.getBranch_id() == null || userDTO.getArea_id() == null) {
                                         return GlobalResponse.builder().message("Region id tidak boleh kosong")
                                                         .status(HttpStatus.BAD_REQUEST).build();
                                 } else if (userDTO.getMain_id() != null || userDTO.getRegion_id() != null
@@ -629,6 +629,40 @@ public class UserService {
                         Role roleId = Role.builder()
                                         .id(1L)
                                         .build();
+
+                        if (userDTO.getLevel_id() == 1 || userDTO.getLevel_id() == 4) {
+                                if (userDTO.getMain_id() == null) {
+                                        return GlobalResponse.builder().message("Main id tidak boleh kosong")
+                                                        .status(HttpStatus.BAD_REQUEST).build();
+                                } else if (userDTO.getRegion_id() != null || userDTO.getArea_id() != null
+                                                || userDTO.getBranch_id() != null
+                                                || !userDTO.getRegion_id().isEmpty()
+                                                || !userDTO.getBranch_id().isEmpty()
+                                                || !userDTO.getArea_id().isEmpty()) {
+                                        return GlobalResponse.builder().message("Hanya input Main id saja")
+                                                        .status(HttpStatus.BAD_REQUEST).build();
+                                }
+                        } else if (userDTO.getLevel_id() == 2) {
+                                if (userDTO.getRegion_id() == null) {
+                                        return GlobalResponse.builder().message("Region id tidak boleh kosong")
+                                                        .status(HttpStatus.BAD_REQUEST).build();
+                                } else if (userDTO.getMain_id() != null || userDTO.getArea_id() != null
+                                                || userDTO.getBranch_id() != null
+                                                || !userDTO.getBranch_id().isEmpty()
+                                                || !userDTO.getArea_id().isEmpty()) {
+                                        return GlobalResponse.builder().message("Hanya input Region id saja")
+                                                        .status(HttpStatus.BAD_REQUEST).build();
+                                }
+                        } else if (userDTO.getLevel_id() == 3) {
+                                if (userDTO.getBranch_id() == null || userDTO.getArea_id() == null) {
+                                        return GlobalResponse.builder().message("Region id tidak boleh kosong")
+                                                        .status(HttpStatus.BAD_REQUEST).build();
+                                } else if (userDTO.getMain_id() != null || userDTO.getRegion_id() != null
+                                                || !userDTO.getRegion_id().isEmpty()) {
+                                        return GlobalResponse.builder().message("Hanya input Region id saja")
+                                                        .status(HttpStatus.BAD_REQUEST).build();
+                                }
+                        }
 
                         Main mainId = new Main();
                         if (userDTO.getMain_id() != null) {

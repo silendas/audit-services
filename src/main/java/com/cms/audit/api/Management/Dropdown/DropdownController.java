@@ -146,9 +146,9 @@ public class DropdownController {
                     response = GlobalResponse.builder().data(null).message("Tidak dapat akses").status(HttpStatus.OK)
                             .build();
                 }
-            }else{
+            } else {
                 response = GlobalResponse.builder().data(null).message("Tidak dapat akses").status(HttpStatus.OK)
-                .build();
+                        .build();
             }
         }
         return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(),
@@ -260,9 +260,10 @@ public class DropdownController {
     @GetMapping("/branch")
     public ResponseEntity<Object> getBranch(
             @Nullable @RequestParam("name") String name,
-            @Nullable @RequestParam("area_id") Long areaId,
+            @Nullable @RequestParam("area_id") List<Long> areaId,
             @Nullable @RequestParam("user_id") Long userId,
             @Nullable @RequestParam("region_id") Long regionId) {
+        System.out.println("Area Id :" + areaId);
         GlobalResponse response;
         if (userId != null) {
             response = branchService.findSpecificByUserid(userId);

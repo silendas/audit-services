@@ -24,10 +24,30 @@ public class ResponseEntittyHandler {
         map.put("meta", meta);
         map.put("message", message);
         map.put("status", status.value());
-        if(token != null){
+        if (token != null) {
             map.put("data", data);
         }
 
+        return new ResponseEntity<Object>(map, status);
+    }
+
+    public static ResponseEntity<Object> errorResponse(String errors, String message, HttpStatus status) {
+
+        Map<String, Object> meta = new LinkedHashMap<>();
+        meta.put("timestamp", new Date());
+        meta.put("api_version", "0.0.1");
+
+        Map<String, Object> errora = new LinkedHashMap<>();
+        errora.put("error", errors);
+
+        Map<String, Object> map = new LinkedHashMap<>();
+
+        if (message != null) {
+            map.put("meta", meta);
+            map.put("message", message);
+            map.put("status", status.value());
+            map.put("details", errora);
+        }
         return new ResponseEntity<Object>(map, status);
     }
 
@@ -42,9 +62,9 @@ public class ResponseEntittyHandler {
         if (error != null) {
             Map<String, Object> err = new LinkedHashMap<>();
             err.put("name", error.getClass());
-            if(message != null){
+            if (message != null) {
                 err.put("message", message);
-            }else{
+            } else {
                 err.put("message", error.getMessage());
             }
             err.put("cause", error.getStackTrace());
@@ -58,13 +78,16 @@ public class ResponseEntittyHandler {
             map.put("meta", meta);
             map.put("message", message);
             map.put("status", status.value());
-            if(data !=null){
+            if (data != null) {
                 map.put("data", data);
-            }else{
-                map.put("data", null);
+            } else {
+                if (message != "Success") {
+                    map.put("data", null);
+                }
             }
         }
 
         return new ResponseEntity<Object>(map, status);
     }
+
 }

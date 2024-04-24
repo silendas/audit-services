@@ -29,6 +29,7 @@ import com.cms.audit.api.Clarifications.dto.IdentificationDTO;
 import com.cms.audit.api.Clarifications.models.Clarification;
 import com.cms.audit.api.Clarifications.service.ClarificationService;
 import com.cms.audit.api.Common.constant.BasePath;
+import com.cms.audit.api.Common.constant.convertDateToRoman;
 import com.cms.audit.api.Common.response.GlobalResponse;
 import com.cms.audit.api.Common.response.ResponseEntittyHandler;
 
@@ -81,6 +82,9 @@ public class ClarificationController {
         } else {
             startDate = null;
         }
+        if (startDate != null) {
+            startDate = convertDateToRoman.setTimeToZero(startDate);
+        }
         Date endDate;
         if (end_date.isPresent()) {
             if (end_date.get().toString() != "") {
@@ -91,7 +95,10 @@ public class ClarificationController {
         } else {
             endDate = null;
         }
-        GlobalResponse response = service.getAll(fullname,branchId,page.orElse(0), size.orElse(10), startDate,
+        if (endDate != null) {
+            endDate = convertDateToRoman.setTimeToLastSecond(endDate);
+        }
+        GlobalResponse response = service.getAll(fullname, branchId, page.orElse(0), size.orElse(10), startDate,
                 endDate);
         return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(),
                 response.getError());

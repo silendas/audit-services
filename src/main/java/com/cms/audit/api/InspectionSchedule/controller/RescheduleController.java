@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cms.audit.api.Common.constant.BasePath;
+import com.cms.audit.api.Common.constant.convertDateToRoman;
 import com.cms.audit.api.Common.response.GlobalResponse;
 import com.cms.audit.api.Common.response.ResponseEntittyHandler;
 import com.cms.audit.api.Config.Jwt.JwtService;
@@ -79,6 +80,9 @@ public class RescheduleController {
         } else {
             startDate = null;
         }
+        if (startDate != null) {
+            startDate = convertDateToRoman.setTimeToZero(startDate);
+        }
         Date endDate;
         if (end_date.isPresent()) {
             if (end_date.get().toString() != "") {
@@ -88,6 +92,9 @@ public class RescheduleController {
             }
         } else {
             endDate = null;
+        }
+        if (endDate != null) {
+            endDate = convertDateToRoman.setTimeToLastSecond(endDate);
         }
         GlobalResponse response = scheduleService.getByStatus(fullname, branchId, startDate, endDate, page.orElse(0),
                 size.orElse(10));
@@ -109,7 +116,12 @@ public class RescheduleController {
         String jwtToken = tokenHeader.substring(7);
         String username = jwtService.extractUsername(jwtToken);
         GlobalResponse response = scheduleService.requestSchedule(dto, username);
-        return ResponseEntittyHandler.allHandler(null, response.getMessage(), response.getStatus(), null);
+        if (response.getStatus().value() == 400) {
+            return ResponseEntittyHandler.errorResponse(response.getErrorMessage(), response.getMessage(),
+                    response.getStatus());
+        } else {
+            return ResponseEntittyHandler.allHandler(null, response.getMessage(), response.getStatus(), null);
+        }
     }
 
     @PatchMapping("/approve/{id}")
