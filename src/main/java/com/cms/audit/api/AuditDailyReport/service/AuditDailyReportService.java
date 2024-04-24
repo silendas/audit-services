@@ -698,7 +698,7 @@ public class AuditDailyReportService {
                                 return GlobalResponse
                                                 .builder()
                                                 .message("LHA already exist for today, insert again tommorow")
-                                                .status(HttpStatus.FOUND)
+                                                .status(HttpStatus.BAD_REQUEST)
                                                 .build();
                         }
 
@@ -714,7 +714,7 @@ public class AuditDailyReportService {
                         if (!scheduleList.isEmpty()) {
                                 return GlobalResponse.builder().message(
                                                 "Tidak bisa memproses jadwal & LHA karena sebelumnya belum membuat KKA")
-                                                .status(HttpStatus.OK).build();
+                                                .status(HttpStatus.BAD_REQUEST).build();
                         }
 
                         AuditDailyReport auditDailyReport = new AuditDailyReport(

@@ -26,6 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.cms.audit.api.AuditWorkingPaper.models.AuditWorkingPaper;
 import com.cms.audit.api.AuditWorkingPaper.service.AuditWorkingPaperService;
 import com.cms.audit.api.Common.constant.BasePath;
+import com.cms.audit.api.Common.constant.convertDateToRoman;
 import com.cms.audit.api.Common.response.GlobalResponse;
 import com.cms.audit.api.Common.response.ResponseEntittyHandler;
 
@@ -86,6 +87,9 @@ public class AuditWorkingPaperController {
                 } else {
                         startDate = null;
                 }
+                if (startDate != null) {
+                        startDate = convertDateToRoman.setTimeToZero(startDate);
+                }
                 Date endDate;
                 if (end_date.isPresent()) {
                         if (end_date.get().toString() != "") {
@@ -95,6 +99,9 @@ public class AuditWorkingPaperController {
                         }
                 } else {
                         endDate = null;
+                }
+                if (endDate != null) {
+                        endDate = convertDateToRoman.setTimeToLastSecond(endDate);
                 }
                 GlobalResponse response = service.getAll(fullname, branchId, scheduleId, page.orElse(0),
                                 size.orElse(10),
@@ -142,10 +149,12 @@ public class AuditWorkingPaperController {
                 // HttpHeaders httpHeaders = new HttpHeaders();
 
                 // httpHeaders.setContentType(
-                //                 MediaType.valueOf("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
-                // httpHeaders.set("Content-Disposition", "attachment; filename=" + response.getFilename());
+                // MediaType.valueOf("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
+                // httpHeaders.set("Content-Disposition", "attachment; filename=" +
+                // response.getFilename());
 
-                // return new ResponseEntity<InputStreamResource>(isr, httpHeaders, HttpStatus.OK);
+                // return new ResponseEntity<InputStreamResource>(isr, httpHeaders,
+                // HttpStatus.OK);
         }
 
         @PostMapping(value = "/upload")

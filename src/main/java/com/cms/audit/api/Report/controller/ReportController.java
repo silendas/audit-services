@@ -34,18 +34,46 @@ public class ReportController {
                         @RequestParam("user_id") Optional<Long> user_id,
                         @RequestParam(required = false) Optional<Long> branch_id,
                         @RequestParam(required = false) Optional<Long> region_id,
-                        @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date start_date,
-                        @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date end_date)
+                        @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Optional<Date> start_date,
+                        @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Optional<Date> end_date)
                         throws IOException {
                 String fileName;
                 if (start_date != null && end_date != null) {
-                        fileName = convertDateToRoman.convertDateHehe(start_date) + "-" + convertDateToRoman.convertDateHehe(end_date) + "-report.xlsx";
+                        fileName = convertDateToRoman.convertDateHehe(start_date.orElse(null)) + "-"
+                                        + convertDateToRoman.convertDateHehe(end_date.orElse(null)) + "-report.xlsx";
                 } else {
                         fileName = "all-report.xlsx";
                 }
-                ByteArrayInputStream inputStream = service.getDataDownloadClarification(region_id.orElse(null),user_id.orElse(null),
-                                branch_id.orElse(null), start_date,
-                                end_date);
+                Date startDate;
+                if (start_date.isPresent()) {
+                        if (start_date.get().toString() != "") {
+                                startDate = start_date.get();
+                        } else {
+                                startDate = null;
+                        }
+                } else {
+                        startDate = null;
+                }
+                if (startDate != null) {
+                        startDate = convertDateToRoman.setTimeToZero(startDate);
+                }
+                Date endDate;
+                if (end_date.isPresent()) {
+                        if (end_date.get().toString() != "") {
+                                endDate = end_date.get();
+                        } else {
+                                endDate = null;
+                        }
+                } else {
+                        endDate = null;
+                }
+                if (endDate != null) {
+                        endDate = convertDateToRoman.setTimeToLastSecond(endDate);
+                }
+                ByteArrayInputStream inputStream = service.getDataDownloadClarification(region_id.orElse(null),
+                                user_id.orElse(null),
+                                branch_id.orElse(null), startDate,
+                                endDate);
                 InputStreamResource resource = new InputStreamResource(inputStream);
 
                 ResponseEntity<InputStreamResource> response = ResponseEntity.ok()

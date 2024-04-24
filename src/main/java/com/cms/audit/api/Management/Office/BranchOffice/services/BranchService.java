@@ -213,9 +213,32 @@ public class BranchService {
 
     }
 
-    public GlobalResponse findSpecificByAreaId(Long id) {
+    public GlobalResponse findSpecificByAreaId(List<Long> id) {
         try {
-            List<BranchInterface> response = branchRepository.findSpecificBranchByAreaId(id);
+            System.out.println("Area Id :" + id);
+            System.out.println("Area Id :" + id.get(0));
+            System.out.println("Area Id :" + id.get(1));
+
+            List<BranchInterface> response = new ArrayList<>();
+            for (int i = 0; i < id.size(); i++) {
+                System.out.println("Area Id :" + id.get(i));
+                Optional<Area> getArea = areaRepository.findById(id.get(i));
+                if (!getArea.isPresent()) {
+                    throw new Exception("Area with Id=" + id.get(i) + " is not exist");
+                }
+                System.out.println("Kesini 1");
+
+                List<BranchInterface> getBranch = branchRepository.findSpecificBranchByAreaId(id.get(i));
+                if (!getBranch.isEmpty()) {
+                    System.out.println("Kesini OK");
+
+                    for (int u = 0; u < getBranch.size(); u++) {
+                        response.add(getBranch.get(u));
+                    }
+                }
+                System.out.println("Kesini index:" + i);
+
+            }
             if (response.isEmpty()) {
                 return GlobalResponse
                         .builder()
@@ -224,6 +247,7 @@ public class BranchService {
                         .data(null)
                         .build();
             }
+            System.out.println("Kesini success");
             return GlobalResponse
                     .builder()
                     .message("Success")
@@ -305,9 +329,9 @@ public class BranchService {
                 for (int i = 0; i < getUser.get().getRegionId().size(); i++) {
                     List<Branch> getBranchAgain = branchRepository
                             .findBranchByRegionId(getUser.get().getRegionId().get(i));
-                    if(!getBranchAgain.isEmpty()){
+                    if (!getBranchAgain.isEmpty()) {
                         for (int u = 0; u < getBranchAgain.size(); u++) {
-                            if(!getBranch.contains(getBranchAgain.get(u))){
+                            if (!getBranch.contains(getBranchAgain.get(u))) {
                                 getBranch.add(getBranchAgain.get(u));
                             }
                         }

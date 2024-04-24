@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cms.audit.api.Common.constant.BasePath;
+import com.cms.audit.api.Common.constant.convertDateToRoman;
 import com.cms.audit.api.Common.response.GlobalResponse;
 import com.cms.audit.api.Common.response.ResponseEntittyHandler;
 import com.cms.audit.api.Config.Jwt.JwtService;
@@ -78,6 +79,9 @@ public class SpecialScheduleController {
         } else {
             startDate = null;
         }
+        if (startDate != null) {
+            startDate = convertDateToRoman.setTimeToZero(startDate);
+        }
         Date endDate;
         if (end_date.isPresent()) {
             if (end_date.get().toString() != "") {
@@ -87,6 +91,9 @@ public class SpecialScheduleController {
             }
         } else {
             endDate = null;
+        }
+        if (endDate != null) {
+            endDate = convertDateToRoman.setTimeToLastSecond(endDate);
         }
         Integer pages;
         if (page.isPresent()) {
@@ -126,7 +133,12 @@ public class SpecialScheduleController {
         String jwtToken = tokenHeader.substring(7);
         String username = jwtService.extractUsername(jwtToken);
         GlobalResponse response = scheduleService.insertSpecialSchedule(scheduleDTO, username);
-        return ResponseEntittyHandler.allHandler(null, response.getMessage(), response.getStatus(), null);
+        if (response.getStatus().value() == 400) {
+            return ResponseEntittyHandler.errorResponse(response.getErrorMessage(), response.getMessage(),
+                    response.getStatus());
+        } else {
+            return ResponseEntittyHandler.allHandler(null, response.getMessage(), response.getStatus(), null);
+        }
     }
 
     @PutMapping("/{id}")
@@ -136,7 +148,12 @@ public class SpecialScheduleController {
         String jwtToken = tokenHeader.substring(7);
         String username = jwtService.extractUsername(jwtToken);
         GlobalResponse response = scheduleService.editSchedule(scheduleDTO, id, ECategory.SPECIAL, username);
-        return ResponseEntittyHandler.allHandler(null, response.getMessage(), response.getStatus(), null);
+        if (response.getStatus().value() == 400) {
+            return ResponseEntittyHandler.errorResponse(response.getErrorMessage(), response.getMessage(),
+                    response.getStatus());
+        } else {
+            return ResponseEntittyHandler.allHandler(null, response.getMessage(), response.getStatus(), null);
+        }
     }
 
     @DeleteMapping("/{id}")

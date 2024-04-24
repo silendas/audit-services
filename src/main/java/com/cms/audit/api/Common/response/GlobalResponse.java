@@ -21,5 +21,6 @@ public class GlobalResponse {
     private String message;
     private Exception error;
     private Object data;
+    private String errorMessage;
     private HttpStatus status;
 }

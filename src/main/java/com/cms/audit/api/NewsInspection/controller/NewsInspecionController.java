@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.cms.audit.api.Common.constant.BasePath;
+import com.cms.audit.api.Common.constant.convertDateToRoman;
 import com.cms.audit.api.Common.response.GlobalResponse;
 import com.cms.audit.api.Common.response.ResponseEntittyHandler;
 import com.cms.audit.api.NewsInspection.models.NewsInspection;
@@ -76,6 +77,9 @@ public class NewsInspecionController {
                 } else {
                         startDate = null;
                 }
+                if (startDate != null) {
+                        startDate = convertDateToRoman.setTimeToZero(startDate);
+                }
                 Date endDate;
                 if (end_date.isPresent()) {
                         if (end_date.get().toString() != "") {
@@ -86,7 +90,11 @@ public class NewsInspecionController {
                 } else {
                         endDate = null;
                 }
-                GlobalResponse response = service.getAll(fullname,branchId,page.orElse(0), size.orElse(10), startDate,endDate);
+                if (endDate != null) {
+                        endDate = convertDateToRoman.setTimeToLastSecond(endDate);
+                }
+                GlobalResponse response = service.getAll(fullname, branchId, page.orElse(0), size.orElse(10), startDate,
+                                endDate);
                 return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(),
                                 response.getStatus(),
                                 response.getError());

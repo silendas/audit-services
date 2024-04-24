@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cms.audit.api.Common.constant.BasePath;
+import com.cms.audit.api.Common.constant.convertDateToRoman;
 import com.cms.audit.api.Common.response.GlobalResponse;
 import com.cms.audit.api.Common.response.ResponseEntittyHandler;
 import com.cms.audit.api.Config.Jwt.JwtService;
@@ -98,6 +99,9 @@ public class MainScheduleConroller {
         } else {
             startDate = null;
         }
+        if (startDate != null) {
+            startDate = convertDateToRoman.setTimeToZero(startDate);
+        }
         Date endDate;
         if (end_date.isPresent()) {
             if (end_date.get().toString() != "") {
@@ -107,6 +111,9 @@ public class MainScheduleConroller {
             }
         } else {
             endDate = null;
+        }
+        if (endDate != null) {
+            endDate = convertDateToRoman.setTimeToLastSecond(endDate);
         }
         GlobalResponse response = scheduleService.getMainSchedule(branchId, fullname, pages, sizes,
                 startDate, endDate);
@@ -126,7 +133,12 @@ public class MainScheduleConroller {
         String jwtToken = tokenHeader.substring(7);
         String username = jwtService.extractUsername(jwtToken);
         GlobalResponse response = scheduleService.insertRegularSchedule(scheduleDTO, username);
-        return ResponseEntittyHandler.allHandler(null, response.getMessage(), response.getStatus(), null);
+        if (response.getStatus().value() == 400) {
+            return ResponseEntittyHandler.errorResponse(response.getErrorMessage(), response.getMessage(),
+                    response.getStatus());
+        } else {
+            return ResponseEntittyHandler.allHandler(null, response.getMessage(), response.getStatus(), null);
+        }
     }
 
     @PutMapping("/{id}")
@@ -136,7 +148,12 @@ public class MainScheduleConroller {
         String jwtToken = tokenHeader.substring(7);
         String username = jwtService.extractUsername(jwtToken);
         GlobalResponse response = scheduleService.editSchedule(scheduleDTO, id, ECategory.REGULAR, username);
-        return ResponseEntittyHandler.allHandler(null, response.getMessage(), response.getStatus(), null);
+        if (response.getStatus().value() == 400) {
+            return ResponseEntittyHandler.errorResponse(response.getErrorMessage(), response.getMessage(),
+                    response.getStatus());
+        } else {
+            return ResponseEntittyHandler.allHandler(null, response.getMessage(), response.getStatus(), null);
+        }
     }
 
     @DeleteMapping("/{id}")
