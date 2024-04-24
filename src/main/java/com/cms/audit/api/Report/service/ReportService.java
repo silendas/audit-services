@@ -323,7 +323,12 @@ public class ReportService {
                 return null;
             }
             for (int i = 0; i < response.size(); i++) {
-                String fulluser_id = response.get(i).getUser().getFullname();
+                String fulluser_id = "";
+                if(getUser.getFullname() != null){
+                    fulluser_id = response.get(i).getUser().getFullname();
+                }else{
+                    fulluser_id = "-";
+                }
                 List<AuditDailyReportDetail> detail = lhaDetailRepository.findByLHAId(response.get(i).getId());
                 boolean found = false;
                 for (int j = 0; j < list.size(); j++) {

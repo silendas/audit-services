@@ -34,6 +34,7 @@ import com.cms.audit.api.Management.Role.models.Role;
 import com.cms.audit.api.Management.User.dto.ChangePasswordDTO;
 import com.cms.audit.api.Management.User.dto.ChangeProfileDTO;
 import com.cms.audit.api.Management.User.dto.DropDownUserDTO;
+import com.cms.audit.api.Management.User.dto.EditUserDTO;
 import com.cms.audit.api.Management.User.dto.UserDTO;
 import com.cms.audit.api.Management.User.dto.response.DropDownUser;
 import com.cms.audit.api.Management.User.dto.response.UserResponse;
@@ -480,73 +481,45 @@ public class UserService {
                 }
         }
 
-        // public GlobalResponse findOneByAreaId(Long id, int page, int size) {
-        // try {
-        // Area set = areaRepository.findById(id)
-        // .orElseThrow(() -> new ResponseStatusException(HttpStatus.OK));
-        // Page<User> response = pagUser.findByArea(set, PageRequest.of(page, size));
-        // if (response.isEmpty()) {
-        // return GlobalResponse.builder().message("Data not
-        // found").status(HttpStatus.OK)
-        // .build();
-        // }
-        // return GlobalResponse
-        // .builder()
-        // .message("Success")
-        // .data(response)
-        // .status(HttpStatus.OK)
-        // .build();
-        // } catch (DataException e) {
-        // throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Data
-        // error");
-
-        // } catch (Exception e) {
-        // throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Server
-        // error");
-        // }
-
-        // }
-
-        // public GlobalResponse findOneByBranchId(Long id, int page, int size) {
-        // try {
-        // Branch set = branchRepository.findById(id)
-        // .orElseThrow(() -> new ResponseStatusException(HttpStatus.OK));
-        // Page<User> response = pagUser.findByBranch(set, PageRequest.of(page, size));
-        // if (response.isEmpty()) {
-        // return GlobalResponse.builder().message("Data not
-        // found").status(HttpStatus.OK)
-        // .build();
-        // }
-        // return GlobalResponse
-        // .builder()
-        // .message("Success")
-        // .data(response)
-        // .status(HttpStatus.OK)
-        // .build();
-        // } catch (DataException e) {
-        // throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Data
-        // error");
-
-        // } catch (Exception e) {
-        // throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Server
-        // error");
-        // }
-        // }
-
         public GlobalResponse save(
-                        @Valid UserDTO userDTO
-        // List<Long> regionId,
-        // List<Long> areaId,
-        // List<Long> branchId
-        ) {
+                        @Valid UserDTO userDTO) {
                 try {
                         Level levelId = Level.builder()
                                         .id(userDTO.getLevel_id())
                                         .build();
 
                         Role roleId = Role.builder()
-                                        .id(userDTO.getRole_id())
+                                        .id(1L)
                                         .build();
+
+                        if (userDTO.getLevel_id() == 1 || userDTO.getLevel_id() == 4) {
+                                if (userDTO.getMain_id() == null) {
+                                        return GlobalResponse.builder().message("Main id tidak boleh kosong")
+                                                        .status(HttpStatus.BAD_REQUEST).build();
+                                } else if (userDTO.getRegion_id() != null || userDTO.getArea_id() != null
+                                                || userDTO.getBranch_id() != null) {
+                                        return GlobalResponse.builder().message("Hanya input Main id saja")
+                                                        .status(HttpStatus.BAD_REQUEST).build();
+                                }
+                        } else if (userDTO.getLevel_id() == 2) {
+                                if (userDTO.getRegion_id() == null) {
+                                        return GlobalResponse.builder().message("Region id tidak boleh kosong")
+                                                        .status(HttpStatus.BAD_REQUEST).build();
+                                } else if (userDTO.getMain_id() != null || userDTO.getArea_id() != null
+                                                || userDTO.getBranch_id() != null) {
+                                        return GlobalResponse.builder().message("Hanya input Region id saja")
+                                                        .status(HttpStatus.BAD_REQUEST).build();
+                                }
+                        } else if (userDTO.getLevel_id() == 3) {
+                                if (userDTO.getBranch_id() == null) {
+                                        return GlobalResponse.builder().message("Region id tidak boleh kosong")
+                                                        .status(HttpStatus.BAD_REQUEST).build();
+                                } else if (userDTO.getMain_id() != null || userDTO.getArea_id() != null
+                                                || userDTO.getRegion_id() != null) {
+                                        return GlobalResponse.builder().message("Hanya input Region id saja")
+                                                        .status(HttpStatus.BAD_REQUEST).build();
+                                }
+                        }
 
                         Main mainId = new Main();
                         if (userDTO.getMain_id() != null) {
@@ -673,7 +646,7 @@ public class UserService {
                 }
         }
 
-        public GlobalResponse edit(UserDTO userDTO, Long id) {
+        public GlobalResponse edit(EditUserDTO userDTO, Long id) {
                 try {
 
                         User userGet = userRepository.findById(id).get();
@@ -683,7 +656,7 @@ public class UserService {
                                         .build();
 
                         Role roleId = Role.builder()
-                                        .id(userDTO.getRole_id())
+                                        .id(1L)
                                         .build();
 
                         Main mainId = new Main();
@@ -744,7 +717,7 @@ public class UserService {
                                         userDTO.getEmail(),
                                         userDTO.getNip(),
                                         userDTO.getUsername(),
-                                        passwordEncoder.encode(userDTO.getPassword()),
+                                        passwordEncoder.encode(userGet.getPassword()),
                                         userDTO.getFullname(),
                                         userDTO.getInitial_name(),
                                         1,
