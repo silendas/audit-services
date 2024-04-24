@@ -104,17 +104,12 @@ public class RevisionService {
             return GlobalResponse.builder().message("Detail Not found").status(HttpStatus.BAD_REQUEST).build();
         }
 
-        AuditDailyReportDetail auditDailyReportDetail = new AuditDailyReportDetail();
-        auditDailyReportDetail.setId(dto.getAudit_daily_report_detail_id());
-        auditDailyReportDetail.setCases(detail.get().getCases());
-        auditDailyReportDetail.setCaseCategory(detail.get().getCaseCategory());
+        AuditDailyReportDetail auditDailyReportDetail = detail.get();
         auditDailyReportDetail.setDescription(dto.getDescription());
-        auditDailyReportDetail.setIs_delete(0);
         auditDailyReportDetail.setPermanent_recommendations(dto.getPermanent_recommendations());
         auditDailyReportDetail.setTemporary_recommendations(dto.getTemporary_recommendations());
         auditDailyReportDetail.setSuggestion(dto.getSuggestion());
         auditDailyReportDetail.setUpdated_by(user.getId());
-        auditDailyReportDetail.setIs_research(detail.get().getIs_research());
         auditDailyReportDetail.setUpdate_at(new Date());
 
         auditDailyReportDetailRepository.save(auditDailyReportDetail);
