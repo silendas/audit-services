@@ -517,6 +517,50 @@ public class AuditDailyReportDetailService {
         }
     }
 
+    public GlobalResponse ingnoreLhaDetail(Long lhaDetailId){
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        if(!user.getLevel().getCode().equals("B") || !user.getLevel().getCode().equals("A")){
+            return GlobalResponse.builder().message("failed").errorMessage("TIdak dapat mengakses").status(HttpStatus.BAD_REQUEST).build();
+        }
+
+        Optional<AuditDailyReportDetail> response = repository.findOneByLHADetailId(lhaDetailId);
+        if(!response.isPresent()){
+            return GlobalResponse.builder().message("failed").errorMessage("LHA detail with id: "+ lhaDetailId + " tidak ditemukan").status(HttpStatus.BAD_REQUEST).build();
+        }
+
+        AuditDailyReportDetail dto = response.get();
+        dto.setStatus_parsing(1);
+        dto.setUpdated_by(user.getId());
+        dto.setUpdate_at(new Date());
+        repository.save(dto);
+
+        return GlobalResponse.builder().message("Success").status(HttpStatus.OK).build();
+
+    }
+
+    public GlobalResponse sendToLeader(Long lhaDetailId){
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        if(!user.getLevel().getCode().equals("B") || !user.getLevel().getCode().equals("A")){
+            return GlobalResponse.builder().message("failed").errorMessage("TIdak dapat mengakses").status(HttpStatus.BAD_REQUEST).build();
+        }
+
+        Optional<AuditDailyReportDetail> response = repository.findOneByLHADetailId(lhaDetailId);
+        if(!response.isPresent()){
+            return GlobalResponse.builder().message("failed").errorMessage("LHA detail with id: "+ lhaDetailId + " tidak ditemukan").status(HttpStatus.BAD_REQUEST).build();
+        }
+
+        AuditDailyReportDetail dto = response.get();
+        dto.setStatus_flow(1);
+        dto.setUpdated_by(user.getId());
+        dto.setUpdate_at(new Date());
+        repository.save(dto);
+
+        return GlobalResponse.builder().message("Success").status(HttpStatus.OK).build();
+
+    }
+
     public GlobalResponse edit(EditAuditDailyReportDetailDTO dto, Long id) {
         try {
             User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();

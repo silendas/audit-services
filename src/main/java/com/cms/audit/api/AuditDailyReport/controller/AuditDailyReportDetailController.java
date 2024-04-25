@@ -11,6 +11,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -68,7 +69,7 @@ public class AuditDailyReportDetailController {
         if (endDate != null) {
             endDate = convertDateToRoman.setTimeToLastSecond(endDate);
         }
-        GlobalResponse response = service.get(page.orElse(0), size.orElse(10), lha_id.orElse(null),startDate,endDate);
+        GlobalResponse response = service.get(page.orElse(0), size.orElse(10), lha_id.orElse(null), startDate, endDate);
         return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(),
                 response.getError());
     }
@@ -83,22 +84,44 @@ public class AuditDailyReportDetailController {
     @PostMapping
     public ResponseEntity<Object> post(@RequestBody AuditDailyReportDetailDTO dto) {
         GlobalResponse response = service.save(dto);
-        if(response.getStatus().value() == 400){
-            return ResponseEntittyHandler.errorResponse(response.getErrorMessage(), response.getMessage(), response.getStatus());
-        }else{
+        if (response.getStatus().value() == 400) {
+            return ResponseEntittyHandler.errorResponse(response.getErrorMessage(), response.getMessage(),
+                    response.getStatus());
+        } else {
             return ResponseEntittyHandler.allHandler(null, response.getMessage(), response.getStatus(),
-                response.getError());
+                    response.getError());
         }
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Object> put(@RequestBody EditAuditDailyReportDetailDTO dto, @PathVariable("id") Long id) {
         GlobalResponse response = service.edit(dto, id);
-        if(response.getStatus().value() == 400){
-            return ResponseEntittyHandler.errorResponse(response.getErrorMessage(), response.getMessage(), response.getStatus());
-        }else{
+        if (response.getStatus().value() == 400) {
+            return ResponseEntittyHandler.errorResponse(response.getErrorMessage(), response.getMessage(),
+                    response.getStatus());
+        } else {
             return ResponseEntittyHandler.allHandler(null, response.getMessage(), response.getStatus(),
-                response.getError());
+                    response.getError());
+        }
+    }
+
+    @PatchMapping("/send/{id}")
+    public ResponseEntity<Object> send(@PathVariable("id") Long id) throws Exception {
+        GlobalResponse response = service.sendToLeader(id);
+        if (response.getStatus().equals(HttpStatus.BAD_REQUEST)) {
+            return ResponseEntittyHandler.errorResponse(response.getErrorMessage(), response.getMessage(), response.getStatus());
+        } else {
+            return ResponseEntittyHandler.allHandler(null, response.getMessage(), response.getStatus(), null);
+        }
+    }
+
+    @PatchMapping("/ignore/{id}")
+    public ResponseEntity<Object> ignore(@PathVariable("id") Long id) {
+        GlobalResponse response = service.ingnoreLhaDetail(id);
+        if (response.getStatus().equals(HttpStatus.BAD_REQUEST)) {
+            return ResponseEntittyHandler.errorResponse(response.getErrorMessage(), response.getMessage(), response.getStatus());
+        } else {
+            return ResponseEntittyHandler.allHandler(null, response.getMessage(), response.getStatus(), null);
         }
     }
 
@@ -106,11 +129,12 @@ public class AuditDailyReportDetailController {
     public ResponseEntity<Object> delete(@PathVariable("id") Long id) {
         GlobalResponse response = service.delete(id);
         if (response.getStatus().value() == 400) {
-            return ResponseEntittyHandler.errorResponse(response.getErrorMessage(), response.getMessage(), response.getStatus());
-    } else {
+            return ResponseEntittyHandler.errorResponse(response.getErrorMessage(), response.getMessage(),
+                    response.getStatus());
+        } else {
             return ResponseEntittyHandler.allHandler(null, response.getMessage(), response.getStatus(),
-                            response.getError());
-    }
+                    response.getError());
+        }
     }
 
 }
