@@ -34,7 +34,7 @@ public interface pagAuditDailyReport extends PagingAndSortingRepository<AuditDai
     Page<AuditDailyReport> findLHAInDateRange(@Param("start_date") Date start_date,
             @Param("end_date") Date end_date, Pageable pageable);
 
-            @Query(value = "SELECT * FROM audit_daily_report u WHERE (u.created_at BETWEEN :start_date AND :end_date) AND u.status_flow <> 0 AND u.is_delete <> 1 ORDER BY u.id DESC", nativeQuery = true)
+            @Query(value = "SELECT * FROM audit_daily_report u WHERE (u.created_at BETWEEN :start_date AND :end_date) AND u.is_delete <> 1 ORDER BY u.id DESC", nativeQuery = true)
     Page<AuditDailyReport> findLHAInDateRangeForLeader(@Param("start_date") Date start_date,
             @Param("end_date") Date end_date, Pageable pageable);
 
@@ -66,7 +66,7 @@ public interface pagAuditDailyReport extends PagingAndSortingRepository<AuditDai
     @Query(value = "SELECT * FROM audit_daily_report u WHERE u.is_delete <> 1 ORDER BY u.id DESC", nativeQuery = true)
     Page<AuditDailyReport> findAllLHA(Pageable pageable);
 
-    @Query(value = "SELECT * FROM audit_daily_report u WHERE u.status_flow <> 0 AND u.is_delete <> 1 ORDER BY u.id DESC", nativeQuery = true)
+    @Query(value = "SELECT * FROM audit_daily_report u WHERE u.is_delete <> 1 ORDER BY u.id DESC", nativeQuery = true)
     Page<AuditDailyReport> findAllLHAForLeader(Pageable pageable);
 
 

@@ -132,10 +132,9 @@ public class AuditDailyReportDetailService {
                     }
                 } else if (getUser.getLevel().getCode().equals("A")) {
                     if (startDate != null && endDate != null) {
-                        response = pag.findAllLHADetailByDate(startDate, endDate, PageRequest.of(page, size));
+                        response = pag.findAllLHADetailByDateForLeader(startDate, endDate, PageRequest.of(page, size));
                     } else {
-                        response = pag.findAllLHADetail(PageRequest.of(page, size));
-
+                        response = pag.findAllLHADetailForLeader(PageRequest.of(page, size));
                     }
                 }
             }
@@ -175,9 +174,7 @@ public class AuditDailyReportDetailService {
                 } else {
                     builder.setStatus_parsing(0);
                 }
-                // builder.setIs_research(response.getContent().get(i).getIs_research());
                 details.add(builder);
-
             }
             if (response.isEmpty()) {
                 return GlobalResponse
@@ -265,6 +262,16 @@ public class AuditDailyReportDetailService {
                 }
             } else {
                 builder.put("is_research", 0);
+            }
+            if (response.get().getStatus_flow() != null) {
+                builder.put("status_flow",response.get().getStatus_flow());
+            } else {
+                builder.put("status_flow",0);
+            }
+            if (response.get().getStatus_parsing() != null) {
+                builder.put("status_parsing",response.get().getStatus_parsing());
+            } else {
+                builder.put("status_parsing",0);
             }
             return GlobalResponse
                     .builder()
