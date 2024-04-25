@@ -101,7 +101,13 @@ public class RevisionService {
         Optional<AuditDailyReportDetail> detail = auditDailyReportDetailRepository
                 .findById(dto.getAudit_daily_report_detail_id());
         if (!detail.isPresent()) {
-            return GlobalResponse.builder().message("Detail Not found").status(HttpStatus.BAD_REQUEST).build();
+            return GlobalResponse.builder().message("failed").errorMessage("Detail Not found").status(HttpStatus.BAD_REQUEST).build();
+        }
+
+        if(user.getLevel().getCode().equals("B")){
+            if(detail.get().getIs_revision() == 2){
+                return GlobalResponse.builder().message("failed").errorMessage("Tidak bisa merevisi karena sudah direvisi leader").status(HttpStatus.BAD_REQUEST).build();
+            }
         }
 
         AuditDailyReportDetail auditDailyReportDetail = detail.get();
@@ -112,6 +118,16 @@ public class RevisionService {
         auditDailyReportDetail.setStatus_flow(1);
         auditDailyReportDetail.setUpdated_by(user.getId());
         auditDailyReportDetail.setUpdate_at(new Date());
+
+        if(user.getLevel().getCode().equals("A")){
+            if(detail.get().getIs_revision() == null || detail.get().getIs_revision() == 0 || detail.get().getIs_revision() == 1){
+                auditDailyReportDetail.setIs_revision(2);
+            }
+        } else if(user.getLevel().getCode().equals("B")){
+            if(detail.get().getIs_revision() == null || detail.get().getIs_revision() == 0){
+                auditDailyReportDetail.setIs_revision(1);
+            }
+        }
 
         auditDailyReportDetailRepository.save(auditDailyReportDetail);
 

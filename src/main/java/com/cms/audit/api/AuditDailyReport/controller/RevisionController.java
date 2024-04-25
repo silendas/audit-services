@@ -46,7 +46,13 @@ public class RevisionController {
     @PostMapping
     public ResponseEntity<Object> postMethodName(@RequestBody RevisionDTO dto) {
         GlobalResponse response = service.insertNewRevision(dto);
-        return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(), response.getError());
+        if (response.getStatus().value() == 400) {
+            return ResponseEntittyHandler.errorResponse(response.getErrorMessage(), response.getMessage(),
+                    response.getStatus());
+        } else {
+            return ResponseEntittyHandler.allHandler(null, response.getMessage(), response.getStatus(),
+                    response.getError());
+        }
     }
     
 }

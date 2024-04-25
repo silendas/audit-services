@@ -1388,8 +1388,12 @@ public class ScheduleService {
                         return GlobalResponse.builder().message("Selain audit leader tidak dapat akses")
                                         .status(HttpStatus.UNAUTHORIZED).build();
                 }
-                Schedule getSchedule = repository.findById(id).orElseThrow(() -> new Exception("Not found"));
-                ScheduleTrx getTrx = scheduleTrxRepo.findById(getSchedule.getScheduleTrx().getId())
+                Optional<Schedule> getSchedule = repository.findById(id);
+                if(!getSchedule.isPresent()){
+                        return GlobalResponse.builder().errorMessage("Schedule with id : " + id + " is undefined").message("failed").status(HttpStatus.BAD_REQUEST).build();
+                }
+
+                ScheduleTrx getTrx = scheduleTrxRepo.findById(getSchedule.get().getScheduleTrx().getId())
                                 .orElseThrow(() -> new Exception("Not found"));
 
                 Schedule schedule = new Schedule();
@@ -1406,7 +1410,7 @@ public class ScheduleService {
                 schedule.setUpdated_at(new Date());
                 repository.save(schedule);
 
-                Schedule editSchedule = getSchedule;
+                Schedule editSchedule = getSchedule.get();
                 editSchedule.setStatus(EStatus.APPROVE);
                 editSchedule.setUpdatedBy(user.getId());
                 editSchedule.setUpdated_at(new Date());
@@ -1422,9 +1426,12 @@ public class ScheduleService {
                         return GlobalResponse.builder().message("Selain audit leader tidak dapat akses")
                                         .status(HttpStatus.UNAUTHORIZED).build();
                 }
-                Schedule getSchedule = repository.findById(id).orElseThrow(() -> new Exception("Not found"));
+                Optional<Schedule> getSchedule = repository.findById(id);
+                if(!getSchedule.isPresent()){
+                        return GlobalResponse.builder().errorMessage("Schedule with id : " + id + " is undefined").message("failed").status(HttpStatus.BAD_REQUEST).build();
+                }
 
-                Schedule editSchedule = getSchedule;
+                Schedule editSchedule = getSchedule.get();
                 editSchedule.setStatus(EStatus.REJECTED);
                 editSchedule.setUpdatedBy(user.getId());
                 editSchedule.setUpdated_at(new Date());

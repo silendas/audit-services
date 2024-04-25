@@ -412,6 +412,7 @@ public class AuditDailyReportDetailService {
                     0,
                     0,
                     0,
+                    0,
                     user.getId(),
                     user.getId(),
                     new Date(),
@@ -527,7 +528,7 @@ public class AuditDailyReportDetailService {
     public GlobalResponse ingnoreLhaDetail(Long lhaDetailId){
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        if(!user.getLevel().getCode().equals("B") || !user.getLevel().getCode().equals("A")){
+        if(!user.getLevel().getCode().equals("B") && !user.getLevel().getCode().equals("A")){
             return GlobalResponse.builder().message("failed").errorMessage("TIdak dapat mengakses").status(HttpStatus.BAD_REQUEST).build();
         }
 
@@ -549,7 +550,7 @@ public class AuditDailyReportDetailService {
     public GlobalResponse sendToLeader(Long lhaDetailId){
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        if(!user.getLevel().getCode().equals("B") || !user.getLevel().getCode().equals("A")){
+        if(!user.getLevel().getCode().equals("B") && !user.getLevel().getCode().equals("A")){
             return GlobalResponse.builder().message("failed").errorMessage("TIdak dapat mengakses").status(HttpStatus.BAD_REQUEST).build();
         }
 
@@ -581,6 +582,12 @@ public class AuditDailyReportDetailService {
                         .build();
             }
 
+            if(user.getLevel().getCode().equals("C")){
+                if(getBefore.get().getIs_revision() == 1){
+                    return GlobalResponse.builder().message("failed").errorMessage("Tidak bisa mengedit karena sudah direvisi").status(HttpStatus.BAD_REQUEST).build();
+                }
+            }
+
             Optional<Case> setCaseId = caseRepository.findById(dto.getCase_id());
             if (!setCaseId.isPresent()) {
                 return GlobalResponse.builder().message("failed").errorMessage("Case not found")
@@ -605,6 +612,7 @@ public class AuditDailyReportDetailService {
                     dto.getIs_research(),
                     dto.getStatus_flow(),
                     dto.getStatus_parsing(),
+                    getBefore.get().getIs_revision(),
                     0,
                     getBefore.get().getCreated_by(),
                     user.getId(),
