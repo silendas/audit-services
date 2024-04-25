@@ -747,6 +747,7 @@ public class AuditDailyReportService {
                                                 0,
                                                 0,
                                                 0,
+                                                0,
                                                 user.getId(),
                                                 user.getId(),
                                                 new Date(),

@@ -141,20 +141,6 @@ public class AuditWorkingPaperController {
                         e.printStackTrace();
                         return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
                 }
-                // String path = "uploaded/kka/" + response.getFilename();
-                // File file = new File(path);
-                // InputStream inputStream = new FileInputStream(file);
-                // InputStreamResource isr = new InputStreamResource(inputStream);
-
-                // HttpHeaders httpHeaders = new HttpHeaders();
-
-                // httpHeaders.setContentType(
-                // MediaType.valueOf("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
-                // httpHeaders.set("Content-Disposition", "attachment; filename=" +
-                // response.getFilename());
-
-                // return new ResponseEntity<InputStreamResource>(isr, httpHeaders,
-                // HttpStatus.OK);
         }
 
         @PostMapping(value = "/upload")

@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -127,13 +128,21 @@ public class RescheduleController {
     @PatchMapping("/approve/{id}")
     public ResponseEntity<Object> rescheduleApprove(@PathVariable("id") Long id) throws Exception {
         GlobalResponse response = scheduleService.approve(id);
-        return ResponseEntittyHandler.allHandler(null, response.getMessage(), response.getStatus(), null);
+        if(response.getStatus().equals(HttpStatus.BAD_REQUEST)){
+            return ResponseEntittyHandler.errorResponse(response.getErrorMessage(), response.getMessage(), response.getStatus());
+        }else{
+            return ResponseEntittyHandler.allHandler(null, response.getMessage(), response.getStatus(), null);
+        }
     }
 
     @PatchMapping("/reject/{id}")
     public ResponseEntity<Object> rescheduleRejected(@PathVariable("id") Long id) throws Exception {
         GlobalResponse response = scheduleService.rejected(id);
-        return ResponseEntittyHandler.allHandler(null, response.getMessage(), response.getStatus(), null);
+        if(response.getStatus().equals(HttpStatus.BAD_REQUEST)){
+            return ResponseEntittyHandler.errorResponse(response.getErrorMessage(), response.getMessage(), response.getStatus());
+        }else{
+            return ResponseEntittyHandler.allHandler(null, response.getMessage(), response.getStatus(), null);
+        }
     }
 
 }

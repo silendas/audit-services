@@ -308,7 +308,7 @@ public class AuditWorkingPaperService {
             return GlobalResponse
                     .builder()
                     .error(e)
-                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .status(HttpStatus.BAD_REQUEST)
                     .build();
         }
     }
