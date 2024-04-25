@@ -305,7 +305,7 @@ public class ReportService {
                     response = lhaRepository.findAll();
                 }
             } else {
-
+                response = null;
             }
         }
         if (response.isEmpty()) {

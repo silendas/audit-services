@@ -79,7 +79,7 @@ public class UserService {
                         user = userRepository.findAllUser();
                 } else if (getUser.getLevel().getCode().equals("B")) {
                         if (getUser.getRegionId() != null) {
-                                List<User> userAgain = userRepository.findAll();
+                                List<User> userAgain = userRepository.findAllUser();
                                 for (int u = 0; u < userAgain.size(); u++) {
                                         for (int i = 0; i < getUser.getRegionId().size(); i++) {
                                                 Long regionId = getUser.getRegionId().get(i);
@@ -115,7 +115,7 @@ public class UserService {
                                         }
                                 }
                         } else {
-                                List<User> userAgain = userRepository.findAll();
+                                List<User> userAgain = userRepository.findAllUser();
                                 Long lastId = null;
                                 for (int i = 0; i < getUser.getBranchId().size(); i++) {
                                         Branch getBranch = branchRepository
