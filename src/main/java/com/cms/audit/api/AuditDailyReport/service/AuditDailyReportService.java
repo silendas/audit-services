@@ -95,7 +95,7 @@ public class AuditDailyReportService {
                         User getUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
                         Page<AuditDailyReport> response = null;
-                        if (getUser.getLevel().getCode().equals("C") ) {
+                        if (getUser.getLevel().getCode().equals("C")) {
                                 if (startDate != null && endDate != null) {
                                         response = pagAuditDailyReport.findLHAByUserInDateRange(getUser.getId(),
                                                         startDate, endDate, PageRequest.of(page, size));
@@ -116,8 +116,9 @@ public class AuditDailyReportService {
                                 } else if (branch_id != null && startDate != null && endDate != null) {
                                         response = pagAuditDailyReport.findAllLHAByBranchAndDateRange(branch_id,
                                                         startDate, endDate, PageRequest.of(page, size));
-                                } else if (name != null && branch_id !=null) {
-                                        response = pagAuditDailyReport.findLHANameAndBranch(name, branch_id, PageRequest.of(page, size));
+                                } else if (name != null && branch_id != null) {
+                                        response = pagAuditDailyReport.findLHANameAndBranch(name, branch_id,
+                                                        PageRequest.of(page, size));
                                 } else if (name != null) {
                                         response = pagAuditDailyReport.findLHAName(name, PageRequest.of(page, size));
                                 } else if (branch_id != null) {
@@ -127,14 +128,16 @@ public class AuditDailyReportService {
                                         response = pagAuditDailyReport.findByScheduleId(shcedule_id,
                                                         PageRequest.of(page, size));
                                 } else {
-                                        if (getUser.getLevel().getCode().equals("B") ) {
+                                        if (getUser.getLevel().getCode().equals("B")) {
                                                 Pageable pageable = PageRequest.of(page, size);
                                                 List<AuditDailyReport> lhaList = new ArrayList<>();
                                                 for (int i = 0; i < getUser.getRegionId().size(); i++) {
                                                         List<AuditDailyReport> lhaAgain = new ArrayList<>();
                                                         if (startDate != null && endDate != null) {
                                                                 lhaAgain = auditDailyReportRepository
-                                                                                .findByRegionIdAndDate(getUser.getRegionId().get(i),
+                                                                                .findByRegionIdAndDate(
+                                                                                                getUser.getRegionId()
+                                                                                                                .get(i),
                                                                                                 startDate, endDate);
                                                         } else {
                                                                 lhaAgain = auditDailyReportRepository.findByRegionId(
@@ -163,14 +166,16 @@ public class AuditDailyReportService {
                                                                         .status(HttpStatus.BAD_REQUEST)
                                                                         .build();
                                                 }
-                                        } else if (getUser.getLevel().getCode().equals("A")  || getUser.getLevel().getCode().equals("A") ) {
+                                        } else if (getUser.getLevel().getCode().equals("A")) {
                                                 if (startDate != null || endDate != null) {
-                                                        response = pagAuditDailyReport.findLHAInDateRange(startDate,
+                                                        response = pagAuditDailyReport.findLHAInDateRangeForLeader(
+                                                                        startDate,
                                                                         endDate,
                                                                         PageRequest.of(page, size));
                                                 } else {
                                                         response = pagAuditDailyReport
-                                                                        .findAllLHA(PageRequest.of(page, size));
+                                                                        .findAllLHAForLeader(
+                                                                                        PageRequest.of(page, size));
                                                 }
                                         }
                                 }
@@ -281,62 +286,42 @@ public class AuditDailyReportService {
                         List<DetailResponse> details = new ArrayList<>();
                         Integer is_flag = 0;
                         for (int i = 0; i < getDetail.size(); i++) {
-                                Optional<Revision> getRevision = revisionRepo.findByDetailId(getDetail.get(i).getId());
-                                if (!getRevision.isPresent()) {
-                                        DetailResponse builder = new DetailResponse();
-                                        builder.setId(getDetail.get(i).getId());
-                                        builder.setCases(getDetail.get(i).getCases().getName());
-                                        builder.setCaseCategory(getDetail.get(i).getCaseCategory().getName());
-                                        builder.setDescription(getDetail.get(i).getDescription());
-                                        builder.setPermanent_recommendations(
-                                                        getDetail.get(i).getPermanent_recommendations());
-                                        builder.setTemporary_recommendations(
-                                                        getDetail.get(i).getTemporary_recommendations());
-                                        builder.setSuggestion(getDetail.get(i).getSuggestion());
-                                        if (getDetail.get(i).getIs_research() == 1) {
-                                                Flag isFLag = flagRepo
-                                                                .findOneByAuditDailyReportDetailId(
-                                                                                getDetail.get(i).getId())
-                                                                .orElseThrow(() -> new ResourceNotFoundException(
-                                                                                "Flag not found"));
-                                                if (isFLag.getClarification().getFilename() != null) {
-                                                        builder.setIs_research(0);
-                                                } else {
-                                                        builder.setIs_research(1);
-                                                        is_flag = 1;
-                                                }
-                                        } else {
+                                DetailResponse builder = new DetailResponse();
+                                builder.setId(getDetail.get(i).getId());
+                                builder.setCases(getDetail.get(i).getCases().getName());
+                                builder.setCaseCategory(getDetail.get(i).getCaseCategory().getName());
+                                builder.setDescription(getDetail.get(i).getDescription());
+                                builder.setPermanent_recommendations(
+                                                getDetail.get(i).getPermanent_recommendations());
+                                builder.setTemporary_recommendations(
+                                                getDetail.get(i).getTemporary_recommendations());
+                                builder.setSuggestion(getDetail.get(i).getSuggestion());
+                                if (getDetail.get(i).getIs_research() == 1) {
+                                        Flag isFLag = flagRepo
+                                                        .findOneByAuditDailyReportDetailId(
+                                                                        getDetail.get(i).getId())
+                                                        .orElseThrow(() -> new ResourceNotFoundException(
+                                                                        "Flag not found"));
+                                        if (isFLag.getClarification().getFilename() != null) {
                                                 builder.setIs_research(0);
+                                        } else {
+                                                builder.setIs_research(1);
+                                                is_flag = 1;
                                         }
-                                        details.add(builder);
                                 } else {
-                                        DetailResponse builder = new DetailResponse();
-                                        builder.setId(getDetail.get(i).getId());
-                                        builder.setCases(getRevision.get().getCases().getName());
-                                        builder.setCaseCategory(getRevision.get().getCaseCategory().getName());
-                                        builder.setDescription(getRevision.get().getDescription());
-                                        builder.setPermanent_recommendations(
-                                                        getRevision.get().getPermanent_recommendations());
-                                        builder.setTemporary_recommendations(
-                                                        getRevision.get().getTemporary_recommendations());
-                                        builder.setSuggestion(getRevision.get().getSuggestion());
-                                        if (getDetail.get(i).getIs_research() == 1) {
-                                                Flag isFLag = flagRepo
-                                                                .findOneByAuditDailyReportDetailId(
-                                                                                getDetail.get(i).getId())
-                                                                .orElseThrow(() -> new ResourceNotFoundException(
-                                                                                "Flag not found"));
-                                                if (isFLag.getClarification().getFilename() != null) {
-                                                        builder.setIs_research(0);
-                                                } else {
-                                                        builder.setIs_research(1);
-                                                }
-                                        } else {
-                                                builder.setIs_research(0);
-                                        }
-                                        details.add(builder);
+                                        builder.setIs_research(0);
                                 }
-
+                                if(getDetail.get(i).getStatus_flow() != null){
+                                        builder.setStatus_flow(getDetail.get(i).getStatus_flow());
+                                }else{
+                                        builder.setStatus_flow(0);
+                                }
+                                if(getDetail.get(i).getStatus_parsing() != null){
+                                        builder.setStatus_parsing(getDetail.get(i).getStatus_parsing());
+                                }else{
+                                        builder.setStatus_parsing(0);
+                                }
+                                details.add(builder);
                         }
 
                         Map<String, Object> response = new LinkedHashMap<>();
@@ -559,7 +544,7 @@ public class AuditDailyReportService {
                 } else if (start_date != null && end_date != null) {
                         response = auditDailyReportRepository.findLHAInDateRange(start_date, end_date);
                 } else {
-                        if (getUser.getLevel().getCode().equals("B") ) {
+                        if (getUser.getLevel().getCode().equals("B")) {
                                 for (int i = 0; i < getUser.getRegionId().size(); i++) {
                                         List<AuditDailyReport> listLHA = auditDailyReportRepository
                                                         .findLHAByRegion(getUser.getRegionId().get(i));
@@ -567,7 +552,7 @@ public class AuditDailyReportService {
                                                 response.add(listLHA.get(u));
                                         }
                                 }
-                        } else if (getUser.getLevel().getCode().equals("C") ) {
+                        } else if (getUser.getLevel().getCode().equals("C")) {
                                 List<AuditDailyReport> listLHA = auditDailyReportRepository
                                                 .findAllLHAByUserId(getUser.getId());
                                 for (int u = 0; u < listLHA.size(); u++) {
@@ -699,14 +684,16 @@ public class AuditDailyReportService {
                         if (!checkLHA.isEmpty()) {
                                 return GlobalResponse
                                                 .builder()
-                                                .message("failed").errorMessage("LHA already exist for today, insert again tommorow")
+                                                .message("failed")
+                                                .errorMessage("LHA already exist for today, insert again tommorow")
                                                 .status(HttpStatus.BAD_REQUEST)
                                                 .build();
                         }
 
                         Optional<Schedule> getschedule = scheduleRepository.findById(dto.getSchedule_id());
                         if (!getschedule.isPresent()) {
-                                return GlobalResponse.builder().message("failed").errorMessage("Data schedule not found")
+                                return GlobalResponse.builder().message("failed")
+                                                .errorMessage("Data schedule not found")
                                                 .status(HttpStatus.BAD_REQUEST).build();
                         }
 

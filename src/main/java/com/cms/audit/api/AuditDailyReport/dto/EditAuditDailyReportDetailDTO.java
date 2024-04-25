@@ -8,7 +8,6 @@ import lombok.*;
 @Getter
 @NoArgsConstructor
 public class EditAuditDailyReportDetailDTO {
-    private Long daily_report_Id;
     private Long case_id;
     private Long case_category_id;
     private String description;

@@ -319,16 +319,20 @@ public class BranchService {
                     }
                 }
             } else {
-                for (int i = 0; i < getUser.get().getRegionId().size(); i++) {
-                    List<Branch> getBranchAgain = branchRepository
-                            .findBranchByRegionId(getUser.get().getRegionId().get(i));
-                    if (!getBranchAgain.isEmpty()) {
-                        for (int u = 0; u < getBranchAgain.size(); u++) {
-                            if (!getBranch.contains(getBranchAgain.get(u))) {
-                                getBranch.add(getBranchAgain.get(u));
+                if(!getUser.get().getRegionId().isEmpty()){
+                    for (int i = 0; i < getUser.get().getRegionId().size(); i++) {
+                        List<Branch> getBranchAgain = branchRepository
+                                .findBranchByRegionId(getUser.get().getRegionId().get(i));
+                        if (!getBranchAgain.isEmpty()) {
+                            for (int u = 0; u < getBranchAgain.size(); u++) {
+                                if (!getBranch.contains(getBranchAgain.get(u))) {
+                                    getBranch.add(getBranchAgain.get(u));
+                                }
                             }
                         }
                     }
+                } else{
+                    getBranch = branchRepository.findAll();
                 }
             }
             List<Object> response = new ArrayList<>();

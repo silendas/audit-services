@@ -79,7 +79,7 @@ public class UserService {
                         user = userRepository.findAllUser();
                 } else if (getUser.getLevel().getCode().equals("B")) {
                         if (getUser.getRegionId() != null) {
-                                List<User> userAgain = userRepository.findAll();
+                                List<User> userAgain = userRepository.findAllUser();
                                 for (int u = 0; u < userAgain.size(); u++) {
                                         for (int i = 0; i < getUser.getRegionId().size(); i++) {
                                                 Long regionId = getUser.getRegionId().get(i);
@@ -115,7 +115,7 @@ public class UserService {
                                         }
                                 }
                         } else {
-                                List<User> userAgain = userRepository.findAll();
+                                List<User> userAgain = userRepository.findAllUser();
                                 Long lastId = null;
                                 for (int i = 0; i < getUser.getBranchId().size(); i++) {
                                         Branch getBranch = branchRepository
@@ -486,7 +486,7 @@ public class UserService {
                                                         .message("failed")
                                                         .errorMessage("Branch id dan Area id tidak boleh kosong")
                                                         .status(HttpStatus.BAD_REQUEST).build();
-                                } else if (userDTO.getMain_id() != null || userDTO.getArea_id() != null) {
+                                } else if (userDTO.getMain_id() != null || userDTO.getRegion_id() != null) {
                                         return GlobalResponse.builder().message("failed")
                                                         .errorMessage("Hanya branch id dan area id saja yang diisi")
                                                         .status(HttpStatus.BAD_REQUEST).build();
@@ -668,7 +668,7 @@ public class UserService {
                                                         .message("failed")
                                                         .errorMessage("Branch id dan Area id tidak boleh kosong")
                                                         .status(HttpStatus.BAD_REQUEST).build();
-                                } else if (userDTO.getMain_id() != null || userDTO.getArea_id() != null) {
+                                } else if (userDTO.getMain_id() != null || userDTO.getRegion_id() != null) {
                                         return GlobalResponse.builder().message("failed")
                                                         .errorMessage("Hanya branch id dan area id saja yang diisi")
                                                         .status(HttpStatus.BAD_REQUEST).build();

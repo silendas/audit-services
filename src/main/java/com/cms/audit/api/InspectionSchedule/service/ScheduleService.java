@@ -295,11 +295,11 @@ public class ScheduleService {
                         Date end_date) {
                 try {
                         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-                        if (user.getLevel().getId() == 1) {
+                        if (user.getLevel().getCode().equals("A")) {
                                 return get(name, branch_id, page, size, start_date, end_date, "REGULAR");
-                        } else if (user.getLevel().getId() == 3) {
+                        } else if (user.getLevel().getCode().equals("C")) {
                                 return getByUserId(user.getId(), "REGULAR", page, size, start_date, end_date);
-                        } else if (user.getLevel().getId() == 2) {
+                        } else if (user.getLevel().getCode().equals("B")) {
                                 if (branch_id != null && name != null && start_date != null && end_date != null) {
                                         String likeName = name;
                                         Page<Schedule> response = pagSchedule.findAllScheduleByAllFilter(likeName,
@@ -392,11 +392,11 @@ public class ScheduleService {
                 try {
                         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-                        if (user.getLevel().getId() == 1) {
+                        if (user.getLevel().getCode().equals("A")) {
                                 return get(name, branch_id, page, size, start_date, end_date, "SPECIAL");
-                        } else if (user.getLevel().getId() == 3) {
+                        } else if (user.getLevel().getCode().equals("C")) {
                                 return getByUserId(user.getId(), "SPECIAL", page, size, start_date, end_date);
-                        } else if (user.getLevel().getId() == 2) {
+                        } else if (user.getLevel().getCode().equals("B")) {
                                 if (branch_id != null && name != null && start_date != null && end_date != null) {
                                         return GlobalResponse.builder()
                                                         .data(mappingPageSchedule(pagSchedule
