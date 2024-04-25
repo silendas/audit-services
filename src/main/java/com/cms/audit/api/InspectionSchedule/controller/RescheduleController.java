@@ -131,11 +131,8 @@ public class RescheduleController {
     }
 
     @PatchMapping("/reject/{id}")
-    public ResponseEntity<Object> rescheduleRejected(@PathVariable("id") Long id, @NonNull HttpServletRequest request) {
-        final String tokenHeader = request.getHeader("Authorization");
-        String jwtToken = tokenHeader.substring(7);
-        String username = jwtService.extractUsername(jwtToken);
-        GlobalResponse response = scheduleService.editStatus(id, EStatus.REJECTED, username);
+    public ResponseEntity<Object> rescheduleRejected(@PathVariable("id") Long id) throws Exception {
+        GlobalResponse response = scheduleService.rejected(id);
         return ResponseEntittyHandler.allHandler(null, response.getMessage(), response.getStatus(), null);
     }
 

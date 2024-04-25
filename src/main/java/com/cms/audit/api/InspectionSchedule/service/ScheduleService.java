@@ -625,11 +625,11 @@ public class ScheduleService {
                         int size) {
                 User getUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-                if (getUser.getLevel().getCode().equals("A")  || getUser.getLevel().getCode().equals("A") ) {
+                if (getUser.getLevel().getCode().equals("A") || getUser.getLevel().getCode().equals("A")) {
                         return getReschedule(name, branchId, page, size, startDate, endDate, "REQUEST");
                         // response = pagSchedule.findOneScheduleByStatus("PENDING",
                         // PageRequest.of(page, size));
-                } else if (getUser.getLevel().getCode().equals("B") ) {
+                } else if (getUser.getLevel().getCode().equals("B")) {
                         return getReschedule(name, branchId, page, size, startDate, endDate, "PENDING");
                 } else {
                         return GlobalResponse.builder().message("Audit wilayah tidak dapat mengakses").data(null)
@@ -1384,7 +1384,7 @@ public class ScheduleService {
 
         public GlobalResponse approve(Long id) throws Exception {
                 User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-                if (user.getLevel().getName() == "LEAD" ) {
+                if (user.getLevel().getName() == "LEAD") {
                         return GlobalResponse.builder().message("Selain audit leader tidak dapat akses")
                                         .status(HttpStatus.UNAUTHORIZED).build();
                 }
@@ -1416,12 +1416,30 @@ public class ScheduleService {
 
         }
 
+        public GlobalResponse rejected(Long id) throws Exception {
+                User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+                if (user.getLevel().getName() == "LEAD") {
+                        return GlobalResponse.builder().message("Selain audit leader tidak dapat akses")
+                                        .status(HttpStatus.UNAUTHORIZED).build();
+                }
+                Schedule getSchedule = repository.findById(id).orElseThrow(() -> new Exception("Not found"));
+
+                Schedule editSchedule = getSchedule;
+                editSchedule.setStatus(EStatus.REJECTED);
+                editSchedule.setUpdatedBy(user.getId());
+                editSchedule.setUpdated_at(new Date());
+                repository.save(editSchedule);
+
+                return GlobalResponse.builder().message("Success").status(HttpStatus.OK).build();
+
+        }
+
         public GlobalResponse editStatus(Long id, EStatus status, String username) {
                 try {
                         User getUser = userRepository.findByUsername(username)
                                         .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
-                        if (getUser.getLevel().getCode().equals("A") ) {
+                        if (getUser.getLevel().getCode().equals("A")) {
                                 return GlobalResponse.builder().message("Selain audit leader tidak dapat akses")
                                                 .status(HttpStatus.UNAUTHORIZED).build();
                         }
