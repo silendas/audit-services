@@ -101,12 +101,12 @@ public class RevisionService {
         Optional<AuditDailyReportDetail> detail = auditDailyReportDetailRepository
                 .findById(dto.getAudit_daily_report_detail_id());
         if (!detail.isPresent()) {
-            return GlobalResponse.builder().message("failed").errorMessage("Detail Not found").status(HttpStatus.BAD_REQUEST).build();
+            return GlobalResponse.builder().message("failed").message("Detail Not found").status(HttpStatus.BAD_REQUEST).build();
         }
 
         if(user.getLevel().getCode().equals("B")){
             if(detail.get().getIs_revision() == 2){
-                return GlobalResponse.builder().message("failed").errorMessage("Tidak bisa merevisi karena sudah direvisi leader").status(HttpStatus.BAD_REQUEST).build();
+                return GlobalResponse.builder().message("failed").message("Tidak bisa merevisi karena sudah direvisi leader").status(HttpStatus.BAD_REQUEST).build();
             }
         }
 

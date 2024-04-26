@@ -92,10 +92,10 @@ public class DropdownController {
         if (regionId != null) {
             response = userService.dropDownByRegionId(regionId);
         } else if (mainId != null) {
-            response = userService.dropDown();
+            response = userService.dropDown(getUser.getId());
         } else {
             if (getUser.getLevel().getCode().equals("A")  || getUser.getLevel().getCode().equals("A") ) {
-                response = userService.dropDown();
+                response = userService.dropDown(getUser.getId());
             } else if (getUser.getLevel().getCode().equals("B") ) {
                 List<DropDownUserDTO> user = new ArrayList<>();
                 if (!getUser.getRegionId().isEmpty()) {

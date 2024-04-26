@@ -44,7 +44,7 @@ public class ResponseEntittyHandler {
 
         if (message != null) {
             map.put("meta", meta);
-            map.put("message", message);
+            map.put("message", errora);
             map.put("status", status.value());
             map.put("details", errora);
         }

@@ -89,7 +89,7 @@ public class BranchService {
             User getUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
             List<BranchInterface> response = new ArrayList<>();
-            if (getUser.getLevel().getCode().equals("B") ) {
+            if (getUser.getLevel().getCode().equals("B")) {
                 for (int i = 0; i < getUser.getRegionId().size(); i++) {
                     List<BranchInterface> getBranch = branchRepository
                             .findSpecificBranchByRegionId(getUser.getRegionId().get(i));
@@ -97,13 +97,13 @@ public class BranchService {
                         response.add(getBranch.get(u));
                     }
                 }
-            } else if (getUser.getLevel().getCode().equals("C") ) {
+            } else if (getUser.getLevel().getCode().equals("C")) {
                 for (int i = 0; i < getUser.getBranchId().size(); i++) {
                     Optional<BranchInterface> getBranch = branchRepository
                             .findSpecificBranchById(getUser.getBranchId().get(i));
                     response.add(getBranch.get());
                 }
-            } else if (getUser.getLevel().getCode().equals("A")  || getUser.getLevel().getCode().equals("A") ) {
+            } else if (getUser.getLevel().getCode().equals("A") || getUser.getLevel().getCode().equals("A")) {
                 response = branchRepository.findSpecificBranch();
             }
             if (response.isEmpty()) {
@@ -219,8 +219,10 @@ public class BranchService {
             for (int i = 0; i < id.size(); i++) {
                 Optional<Area> getArea = areaRepository.findById(id.get(i));
                 if (!getArea.isPresent()) {
-                    return GlobalResponse.builder().message("failed").errorMessage("Area with id:"+id.get(i)+" is undefined").status(HttpStatus.BAD_REQUEST).data(null)
-                        .build();
+                    return GlobalResponse.builder().message("failed")
+                            .message("Area with id:" + id.get(i) + " is undefined").status(HttpStatus.BAD_REQUEST)
+                            .data(null)
+                            .build();
                 }
 
                 List<BranchInterface> getBranch = branchRepository.findSpecificBranchByAreaId(id.get(i));
@@ -319,7 +321,7 @@ public class BranchService {
                     }
                 }
             } else {
-                if(!getUser.get().getRegionId().isEmpty()){
+                if (!getUser.get().getRegionId().isEmpty()) {
                     for (int i = 0; i < getUser.get().getRegionId().size(); i++) {
                         List<Branch> getBranchAgain = branchRepository
                                 .findBranchByRegionId(getUser.get().getRegionId().get(i));
@@ -331,8 +333,8 @@ public class BranchService {
                             }
                         }
                     }
-                } else{
-                    getBranch = branchRepository.findAll();
+                } else {
+                    return GlobalResponse.builder().message("Not Found").status(HttpStatus.OK).build();
                 }
             }
             List<Object> response = new ArrayList<>();

@@ -49,9 +49,18 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
                         @Param("category") String ucategory, @Param("start_date") Date start_date,
                         @Param("end_date") Date end_date);
 
+        @Query(value = "SELECT * FROM inspection_schedule u WHERE u.user_id = :userId AND (u.start_date BETWEEN :start_date AND :end_date OR u.end_date BETWEEN :start_date AND :end_date) AND u.is_delete = 0 ;", nativeQuery = true)
+        public List<Schedule> findScheduleInDateRangeByUserIdNoCategory(@Param("userId") Long userId,
+                        @Param("start_date") Date start_date,
+                        @Param("end_date") Date end_date);
+
         @Query(value = "SELECT * FROM inspection_schedule u WHERE u.user_id = :userId AND u.branch_id = :branchId AND u.category = :category AND u.start_date = :start_date AND u.end_date = :end_date AND u.is_delete = 0 ;", nativeQuery = true)
         public List<Schedule> findScheduleInAllCheck(@Param("userId") Long userId, @Param("branchId") Long branchId,
                         @Param("category") String ucategory, @Param("start_date") Date start_date,
+                        @Param("end_date") Date end_date);
+
+        @Query(value = "SELECT * FROM inspection_schedule u WHERE u.user_id = :userId AND u.branch_id = :branchId AND u.start_date = :start_date AND u.end_date = :end_date AND u.is_delete = 0 ;", nativeQuery = true)
+        public List<Schedule> findScheduleInAllCheckNoCheck(@Param("userId") Long userId, @Param("branchId") Long branchId, @Param("start_date") Date start_date,
                         @Param("end_date") Date end_date);
 
         @Query(value = "SELECT u.* FROM inspection_schedule u INNER JOIN branch_office bo ON u.branch_id = bo.id INNER JOIN area_office ao ON bo.area_id = ao.id INNER JOIN region_office ro ON ao.region_id = ro.id WHERE ro.id = :regionId AND u.category = :category AND u.is_delete <> 1 ORDER BY u.id DESC ;", nativeQuery = true)

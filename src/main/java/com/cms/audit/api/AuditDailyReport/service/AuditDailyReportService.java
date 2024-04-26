@@ -684,8 +684,8 @@ public class AuditDailyReportService {
                         if (!checkLHA.isEmpty()) {
                                 return GlobalResponse
                                                 .builder()
-                                                .message("failed")
-                                                .errorMessage("LHA already exist for today, insert again tommorow")
+                                                //.message("")
+                                                .message("LHA already exist for today, insert again tommorow")
                                                 .status(HttpStatus.BAD_REQUEST)
                                                 .build();
                         }
@@ -693,7 +693,7 @@ public class AuditDailyReportService {
                         Optional<Schedule> getschedule = scheduleRepository.findById(dto.getSchedule_id());
                         if (!getschedule.isPresent()) {
                                 return GlobalResponse.builder().message("failed")
-                                                .errorMessage("Data schedule not found")
+                                                .message("Data schedule not found")
                                                 .status(HttpStatus.BAD_REQUEST).build();
                         }
 
@@ -888,7 +888,7 @@ public class AuditDailyReportService {
                         if (!getBefore.isPresent()) {
                                 return GlobalResponse
                                                 .builder()
-                                                .message("failed").errorMessage("Not Found")
+                                                .message("failed").message("Not Found")
                                                 .status(HttpStatus.BAD_REQUEST)
                                                 .build();
                         }
@@ -942,7 +942,7 @@ public class AuditDailyReportService {
                         if (!getBefore.isPresent()) {
                                 return GlobalResponse
                                                 .builder()
-                                                .message("failed").errorMessage("Not Found")
+                                                .message("failed").message("Not Found")
                                                 .status(HttpStatus.NOT_FOUND)
                                                 .build();
                         }
