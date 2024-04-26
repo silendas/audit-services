@@ -381,20 +381,20 @@ public class AuditDailyReportDetailService {
             Optional<AuditDailyReport> setId = lhaReportsitory.findById(dto.getAudit_daily_report_id());
             if (!setId.isPresent()) {
                 return GlobalResponse.builder().message("failed")
-                        .errorMessage("Lha with id:" + dto.getAudit_daily_report_id() + " not found")
+                        .message("Lha with id:" + dto.getAudit_daily_report_id() + " not found")
                         .status(HttpStatus.BAD_REQUEST).build();
             }
             Optional<Case> setCaseId = caseRepository.findById(dto.getCase_id());
             if (!setCaseId.isPresent()) {
                 return GlobalResponse.builder().message("failed")
-                        .errorMessage("Case with id:" + dto.getCase_id() + " not found")
+                        .message("Case with id:" + dto.getCase_id() + " not found")
                         .status(HttpStatus.BAD_REQUEST).build();
             }
             Optional<CaseCategory> setCCId = ccRepository.findById(dto.getCase_category_id());
             if (!setCCId.isPresent()) {
                 return GlobalResponse.builder()
                         .message("failed")
-                        .errorMessage("Case Category with id:" + dto.getCase_category_id() + " not found")
+                        .message("Case Category with id:" + dto.getCase_category_id() + " not found")
                         .status(HttpStatus.BAD_REQUEST)
                         .build();
             }
@@ -529,12 +529,12 @@ public class AuditDailyReportDetailService {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         if(!user.getLevel().getCode().equals("B") && !user.getLevel().getCode().equals("A")){
-            return GlobalResponse.builder().message("failed").errorMessage("TIdak dapat mengakses").status(HttpStatus.BAD_REQUEST).build();
+            return GlobalResponse.builder().message("failed").message("TIdak dapat mengakses").status(HttpStatus.BAD_REQUEST).build();
         }
 
         Optional<AuditDailyReportDetail> response = repository.findOneByLHADetailId(lhaDetailId);
         if(!response.isPresent()){
-            return GlobalResponse.builder().message("failed").errorMessage("LHA detail with id: "+ lhaDetailId + " tidak ditemukan").status(HttpStatus.BAD_REQUEST).build();
+            return GlobalResponse.builder().message("failed").message("LHA detail with id: "+ lhaDetailId + " tidak ditemukan").status(HttpStatus.BAD_REQUEST).build();
         }
 
         AuditDailyReportDetail dto = response.get();
@@ -551,12 +551,12 @@ public class AuditDailyReportDetailService {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         if(!user.getLevel().getCode().equals("B") && !user.getLevel().getCode().equals("A")){
-            return GlobalResponse.builder().message("failed").errorMessage("TIdak dapat mengakses").status(HttpStatus.BAD_REQUEST).build();
+            return GlobalResponse.builder().message("failed").message("TIdak dapat mengakses").status(HttpStatus.BAD_REQUEST).build();
         }
 
         Optional<AuditDailyReportDetail> response = repository.findOneByLHADetailId(lhaDetailId);
         if(!response.isPresent()){
-            return GlobalResponse.builder().message("failed").errorMessage("LHA detail with id: "+ lhaDetailId + " tidak ditemukan").status(HttpStatus.BAD_REQUEST).build();
+            return GlobalResponse.builder().message("failed").message("LHA detail with id: "+ lhaDetailId + " tidak ditemukan").status(HttpStatus.BAD_REQUEST).build();
         }
 
         AuditDailyReportDetail dto = response.get();
@@ -577,25 +577,25 @@ public class AuditDailyReportDetailService {
             if (!getBefore.isPresent()) {
                 return GlobalResponse
                         .builder()
-                        .message("failed").errorMessage("LHA not found")
+                        .message("failed").message("LHA not found")
                         .status(HttpStatus.BAD_REQUEST)
                         .build();
             }
 
             if(user.getLevel().getCode().equals("C")){
                 if(getBefore.get().getIs_revision() == 1){
-                    return GlobalResponse.builder().message("failed").errorMessage("Tidak bisa mengedit karena sudah direvisi").status(HttpStatus.BAD_REQUEST).build();
+                    return GlobalResponse.builder().message("failed").message("Tidak bisa mengedit karena sudah direvisi").status(HttpStatus.BAD_REQUEST).build();
                 }
             }
 
             Optional<Case> setCaseId = caseRepository.findById(dto.getCase_id());
             if (!setCaseId.isPresent()) {
-                return GlobalResponse.builder().message("failed").errorMessage("Case not found")
+                return GlobalResponse.builder().message("failed").message("Case not found")
                         .status(HttpStatus.BAD_REQUEST).build();
             }
             Optional<CaseCategory> setCCId = ccRepository.findById(dto.getCase_category_id());
             if (!setCCId.isPresent()) {
-                return GlobalResponse.builder().message("failed").errorMessage("Case Category not found")
+                return GlobalResponse.builder().message("failed").message("Case Category not found")
                         .status(HttpStatus.BAD_REQUEST)
                         .build();
             }
@@ -654,7 +654,7 @@ public class AuditDailyReportDetailService {
             if (!getBefore.isPresent()) {
                 return GlobalResponse
                         .builder()
-                        .message("failed").errorMessage("Not Found")
+                        .message("failed").message("Not Found")
                         .status(HttpStatus.NOT_FOUND)
                         .build();
             }

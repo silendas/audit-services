@@ -338,9 +338,9 @@ public class UserService {
                 }
         }
 
-        public GlobalResponse dropDown() {
+        public GlobalResponse dropDown(Long id) {
                 try {
-                        List<DropDownUser> response = userRepository.findDropDown();
+                        List<DropDownUser> response = userRepository.findDropDown(id);
                         if (response.isEmpty()) {
                                 return GlobalResponse.builder().message("Data not found").data(response)
                                                 .status(HttpStatus.OK)
@@ -461,34 +461,34 @@ public class UserService {
                         if (userDTO.getLevel_id() == 1 || userDTO.getLevel_id() == 4) {
                                 if (userDTO.getMain_id() == null) {
                                         return GlobalResponse.builder().message("failed")
-                                                        .errorMessage("Main id tidak boleh kosong")
+                                                        .message("Main id tidak boleh kosong")
                                                         .status(HttpStatus.BAD_REQUEST).build();
                                 } else if (userDTO.getBranch_id() != null || userDTO.getRegion_id() != null
                                                 || userDTO.getArea_id() != null) {
                                         return GlobalResponse.builder().message("failed")
-                                                        .errorMessage("Hanya main id saja yang diisi")
+                                                        .message("Hanya main id saja yang diisi")
                                                         .status(HttpStatus.BAD_REQUEST).build();
                                 }
                         } else if (userDTO.getLevel_id() == 2) {
                                 if (userDTO.getRegion_id() == null) {
                                         return GlobalResponse.builder().message("failed")
-                                                        .errorMessage("Region id tidak boleh kosong")
+                                                        .message("Region id tidak boleh kosong")
                                                         .status(HttpStatus.BAD_REQUEST).build();
                                 } else if (userDTO.getBranch_id() != null || userDTO.getMain_id() != null
                                                 || userDTO.getArea_id() != null) {
                                         return GlobalResponse.builder().message("failed")
-                                                        .errorMessage("Hanya REgion id saja yang diisi")
+                                                        .message("Hanya REgion id saja yang diisi")
                                                         .status(HttpStatus.BAD_REQUEST).build();
                                 }
                         } else if (userDTO.getLevel_id() == 3) {
                                 if (userDTO.getBranch_id() == null || userDTO.getArea_id() == null) {
                                         return GlobalResponse.builder()
                                                         .message("failed")
-                                                        .errorMessage("Branch id dan Area id tidak boleh kosong")
+                                                        .message("Branch id dan Area id tidak boleh kosong")
                                                         .status(HttpStatus.BAD_REQUEST).build();
                                 } else if (userDTO.getMain_id() != null || userDTO.getRegion_id() != null) {
                                         return GlobalResponse.builder().message("failed")
-                                                        .errorMessage("Hanya branch id dan area id saja yang diisi")
+                                                        .message("Hanya branch id dan area id saja yang diisi")
                                                         .status(HttpStatus.BAD_REQUEST).build();
                                 }
                         }
@@ -498,7 +498,7 @@ public class UserService {
                                 if (!mainGet.isPresent()) {
                                         return GlobalResponse.builder()
                                                         .message("failed")
-                                                        .errorMessage("Main with id:" + mainGet.get().getId()
+                                                        .message("Main with id:" + mainGet.get().getId()
                                                                         + " is not found")
                                                         .status(HttpStatus.BAD_REQUEST).build();
                                 } else {
@@ -511,12 +511,15 @@ public class UserService {
                         List<Long> region = new ArrayList<>();
                         if (userDTO.getRegion_id() != null) {
                                 for (int i = 0; i < userDTO.getRegion_id().size(); i++) {
+                                        if(userDTO.getRegion_id().equals(region)){
+                                                continue;
+                                        }
                                         Optional<Region> getRegion = regionRepository
                                                         .findById(userDTO.getRegion_id().get(i));
                                         if (!getRegion.isPresent()) {
                                                 return GlobalResponse.builder()
                                                                 .message("failed")
-                                                                .errorMessage("Region with id:"
+                                                                .message("Region with id:"
                                                                                 + getRegion.get().getId()
                                                                                 + " is not found")
                                                                 .status(HttpStatus.BAD_REQUEST).build();
@@ -528,33 +531,39 @@ public class UserService {
                         List<Long> area = new ArrayList<>();
                         if (userDTO.getArea_id() != null) {
                                 for (int i = 0; i < userDTO.getArea_id().size(); i++) {
+                                        if(userDTO.getArea_id().equals(area)){
+                                                continue;
+                                        }
                                         Optional<Area> getArea = areaRepository
                                                         .findById(userDTO.getArea_id().get(i));
                                         if (!getArea.isPresent()) {
                                                 return GlobalResponse.builder()
                                                                 .message("failed")
-                                                                .errorMessage("Area with id:" + getArea.get().getId()
+                                                                .message("Area with id:" + getArea.get().getId()
                                                                                 + " is not found")
                                                                 .status(HttpStatus.BAD_REQUEST).build();
                                         } else {
-                                                region.add(getArea.get().getId());
+                                                area.add(getArea.get().getId());
                                         }
                                 }
                         }
                         List<Long> branch = new ArrayList<>();
                         if (userDTO.getBranch_id() != null) {
                                 for (int i = 0; i < userDTO.getBranch_id().size(); i++) {
+                                        if(userDTO.getBranch_id().equals(branch)){
+                                                continue;
+                                        }
                                         Optional<Branch> getBranch = branchRepository
                                                         .findById(userDTO.getBranch_id().get(i));
                                         if (!getBranch.isPresent()) {
                                                 return GlobalResponse.builder()
                                                                 .message("failed")
-                                                                .errorMessage("Branch with id:"
+                                                                .message("Branch with id:"
                                                                                 + getBranch.get().getId()
                                                                                 + " is not found")
                                                                 .status(HttpStatus.BAD_REQUEST).build();
                                         } else {
-                                                region.add(getBranch.get().getId());
+                                                branch.add(getBranch.get().getId());
                                         }
                                 }
                         }
@@ -632,6 +641,13 @@ public class UserService {
 
                         User userGet = userRepository.findById(id).get();
 
+                        String password = null;
+                        if(userDTO.getPassword() != null || !userDTO.getPassword().equals("")){
+                                password = passwordEncoder.encode(userDTO.getPassword());
+                        }else{
+                                password = userGet.getPassword();
+                        }
+
                         Level levelId = Level.builder()
                                         .id(userDTO.getLevel_id())
                                         .build();
@@ -643,34 +659,34 @@ public class UserService {
                         if (userDTO.getLevel_id() == 1 || userDTO.getLevel_id() == 4) {
                                 if (userDTO.getMain_id() == null) {
                                         return GlobalResponse.builder().message("failed")
-                                                        .errorMessage("Main id tidak boleh kosong")
+                                                        .message("Main id tidak boleh kosong")
                                                         .status(HttpStatus.BAD_REQUEST).build();
                                 } else if (userDTO.getBranch_id() != null || userDTO.getRegion_id() != null
                                                 || userDTO.getArea_id() != null) {
                                         return GlobalResponse.builder().message("failed")
-                                                        .errorMessage("Hanya main id saja yang diisi")
+                                                        .message("Hanya main id saja yang diisi")
                                                         .status(HttpStatus.BAD_REQUEST).build();
                                 }
                         } else if (userDTO.getLevel_id() == 2) {
                                 if (userDTO.getRegion_id() == null) {
                                         return GlobalResponse.builder().message("failed")
-                                                        .errorMessage("Region id tidak boleh kosong")
+                                                        .message("Region id tidak boleh kosong")
                                                         .status(HttpStatus.BAD_REQUEST).build();
                                 } else if (userDTO.getBranch_id() != null || userDTO.getMain_id() != null
                                                 || userDTO.getArea_id() != null) {
                                         return GlobalResponse.builder().message("failed")
-                                                        .errorMessage("Hanya REgion id saja yang diisi")
+                                                        .message("Hanya REgion id saja yang diisi")
                                                         .status(HttpStatus.BAD_REQUEST).build();
                                 }
                         } else if (userDTO.getLevel_id() == 3) {
                                 if (userDTO.getBranch_id() == null || userDTO.getArea_id() == null) {
                                         return GlobalResponse.builder()
                                                         .message("failed")
-                                                        .errorMessage("Branch id dan Area id tidak boleh kosong")
+                                                        .message("Branch id dan Area id tidak boleh kosong")
                                                         .status(HttpStatus.BAD_REQUEST).build();
                                 } else if (userDTO.getMain_id() != null || userDTO.getRegion_id() != null) {
                                         return GlobalResponse.builder().message("failed")
-                                                        .errorMessage("Hanya branch id dan area id saja yang diisi")
+                                                        .message("Hanya branch id dan area id saja yang diisi")
                                                         .status(HttpStatus.BAD_REQUEST).build();
                                 }
                         }
@@ -691,7 +707,7 @@ public class UserService {
                                         if (!getRegion.isPresent()) {
                                                 return GlobalResponse.builder()
                                                                 .message("failed")
-                                                                .errorMessage("Region with id:"
+                                                                .message("Region with id:"
                                                                                 + getRegion.get().getId()
                                                                                 + " is not found")
                                                                 .status(HttpStatus.BAD_REQUEST).build();
@@ -736,7 +752,7 @@ public class UserService {
                                         userDTO.getEmail(),
                                         userDTO.getNip(),
                                         userDTO.getUsername(),
-                                        passwordEncoder.encode(userGet.getPassword()),
+                                        password,
                                         userDTO.getFullname(),
                                         userDTO.getInitial_name(),
                                         1,

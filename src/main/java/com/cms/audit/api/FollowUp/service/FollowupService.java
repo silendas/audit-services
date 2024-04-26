@@ -163,7 +163,7 @@ public class FollowupService {
         try {
             Optional<FollowUp> response = repository.findById(id);
             if (!response.isPresent()) {
-                return GlobalResponse.builder().message("failed").errorMessage("Followup with id: " + id + " not found ")
+                return GlobalResponse.builder().message("failed").message("Followup with id: " + id + " not found ")
                         .status(HttpStatus.BAD_REQUEST).build();
             }
             FollowUp fu = response.get();

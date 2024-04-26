@@ -942,23 +942,22 @@ public class ScheduleService {
                                         return GlobalResponse
                                                         .builder()
                                                         .message("failed")
-                                                        .errorMessage("Tidak bisa menambahkan jadwal kemarin")
+                                                        .message("Tidak bisa menambahkan jadwal kemarin")
                                                         .data(err.put("error", "Invalid start or end date"))
                                                         .status(HttpStatus.BAD_REQUEST)
                                                         .build();
                                 }
 
-                                List<Schedule> checkIfExist = repository.findScheduleInAllCheck(
+                                List<Schedule> checkIfExist = repository.findScheduleInAllCheckNoCheck(
                                                 scheduleDTO.getSchedules().get(i).getUser_id(),
                                                 scheduleDTO.getSchedules().get(i).getBranch_id(),
-                                                "REGULAR",
                                                 scheduleDTO.getSchedules().get(i).getStart_date(),
                                                 scheduleDTO.getSchedules().get(i).getEnd_date());
                                 if (!checkIfExist.isEmpty()) {
                                         return GlobalResponse
                                                         .builder()
                                                         .message("failed")
-                                                        .errorMessage("Tanggal duplikat")
+                                                        .message("Tanggal duplikat")
                                                         .data(err.put("error", "Conflict date exists"))
                                                         .status(HttpStatus.BAD_REQUEST)
                                                         .build();
@@ -969,21 +968,21 @@ public class ScheduleService {
                                         return GlobalResponse
                                                         .builder()
                                                         .message("failed")
-                                                        .errorMessage("Start date lebih besar dari end date")
+                                                        .message("Start date lebih besar dari end date")
                                                         .data(err.put("error", "Invalid time range"))
                                                         .status(HttpStatus.BAD_REQUEST)
                                                         .build();
                                 }
 
-                                List<Schedule> checkDatefExist = repository.findScheduleInDateRangeByUserId(
-                                                scheduleDTO.getSchedules().get(i).getUser_id(), "REGULAR",
+                                List<Schedule> checkDatefExist = repository.findScheduleInDateRangeByUserIdNoCategory(
+                                                scheduleDTO.getSchedules().get(i).getUser_id(),
                                                 scheduleDTO.getSchedules().get(i).getStart_date(),
                                                 scheduleDTO.getSchedules().get(i).getEnd_date());
                                 if (!checkDatefExist.isEmpty()) {
                                         return GlobalResponse
                                                         .builder()
                                                         .message("failed")
-                                                        .errorMessage("Tanggal dengan start_date:"
+                                                        .message("Tanggal dengan start_date:"
                                                                         + scheduleDTO.getSchedules().get(i)
                                                                                         .getStart_date()
                                                                         + " and end_date:"
@@ -1002,7 +1001,7 @@ public class ScheduleService {
                                 if (!branchId.isPresent()) {
                                         return GlobalResponse.builder()
                                                         .message("failed")
-                                                        .errorMessage("Branch with id: "
+                                                        .message("Branch with id: "
                                                                         + scheduleDTO.getSchedules().get(i)
                                                                                         .getBranch_id()
                                                                         + " is undefined")
@@ -1016,7 +1015,7 @@ public class ScheduleService {
                                 if (!userId.isPresent()) {
                                         return GlobalResponse.builder()
                                                         .message("failed")
-                                                        .errorMessage("User with id: "
+                                                        .message("User with id: "
                                                                         + scheduleDTO.getSchedules().get(i).getUser_id()
                                                                         + " is undefined")
                                                         .data(err.put("error", "Undefined User Id"))
@@ -1091,23 +1090,22 @@ public class ScheduleService {
                                         return GlobalResponse
                                                         .builder()
                                                         .message("failed")
-                                                        .errorMessage("Tidak bisa menambahkan jadwal kemarin")
+                                                        .message("Tidak bisa menambahkan jadwal kemarin")
                                                         .data(err.put("error", "Date is yesterday"))
                                                         .status(HttpStatus.BAD_REQUEST)
                                                         .build();
                                 }
 
-                                List<Schedule> checkIfExist = repository.findScheduleInAllCheck(
+                                List<Schedule> checkIfExist = repository.findScheduleInAllCheckNoCheck(
                                                 scheduleDTO.getSchedules().get(i).getUser_id(),
                                                 scheduleDTO.getSchedules().get(i).getBranch_id(),
-                                                "SPECIAL",
                                                 scheduleDTO.getSchedules().get(i).getStart_date(),
                                                 scheduleDTO.getSchedules().get(i).getEnd_date());
                                 if (!checkIfExist.isEmpty()) {
                                         return GlobalResponse
                                                         .builder()
                                                         .message("failed")
-                                                        .errorMessage("Tanggal duplikat")
+                                                        .message("Tanggal duplikat")
                                                         .data(err.put("error", "Repeated date"))
                                                         .status(HttpStatus.BAD_REQUEST)
                                                         .build();
@@ -1118,7 +1116,7 @@ public class ScheduleService {
                                         return GlobalResponse
                                                         .builder()
                                                         .message("failed")
-                                                        .errorMessage("Start date lebih besar dari end date")
+                                                        .message("Start date lebih besar dari end date")
                                                         .data(err.put("error", "Invalid start and end date"))
                                                         .status(HttpStatus.BAD_REQUEST)
                                                         .build();
@@ -1130,7 +1128,7 @@ public class ScheduleService {
                                 if (!branchId.isPresent()) {
                                         return GlobalResponse.builder()
                                                         .message("failed")
-                                                        .errorMessage("Branch with id: "
+                                                        .message("Branch with id: "
                                                                         + scheduleDTO.getSchedules().get(i)
                                                                                         .getBranch_id()
                                                                         + " is undefined")
@@ -1144,7 +1142,7 @@ public class ScheduleService {
                                 if (!userId.isPresent()) {
                                         return GlobalResponse.builder()
                                                         .message("failed")
-                                                        .errorMessage("User with id: "
+                                                        .message("User with id: "
                                                                         + scheduleDTO.getSchedules().get(i).getUser_id()
                                                                         + " is undefined")
                                                         .data(err.put("error", "Undefined User Id"))
@@ -1211,23 +1209,22 @@ public class ScheduleService {
                                 return GlobalResponse
                                                 .builder()
                                                 .message("failed")
-                                                .errorMessage("Tidak bisa menambahkan jadwal kemarin")
+                                                .message("Tidak bisa menambahkan jadwal kemarin")
                                                 .data(err.put("error", "Date is yesterday"))
                                                 .status(HttpStatus.BAD_REQUEST)
                                                 .build();
                         }
 
-                        List<Schedule> checkIfExist = repository.findScheduleInAllCheck(
+                        List<Schedule> checkIfExist = repository.findScheduleInAllCheckNoCheck(
                                         dto.getUser_id(),
                                         dto.getBranch_id(),
-                                        "REGULAR",
                                         dto.getStart_date(),
                                         dto.getEnd_date());
                         if (!checkIfExist.isEmpty()) {
                                 return GlobalResponse
                                                 .builder()
                                                 .message("failed")
-                                                .errorMessage("Jadwal duplikat")
+                                                .message("Jadwal duplikat")
                                                 .data(err.put("error", "Duplicate Schedule"))
                                                 .status(HttpStatus.BAD_REQUEST)
                                                 .build();
@@ -1236,21 +1233,21 @@ public class ScheduleService {
                                 return GlobalResponse
                                                 .builder()
                                                 .message("failed")
-                                                .errorMessage("Start date lebih besar dari end date")
+                                                .message("Start date lebih besar dari end date")
                                                 .data(err.put("error", "Invalid Date Range"))
                                                 .status(HttpStatus.BAD_REQUEST)
                                                 .build();
                         }
 
-                        List<Schedule> checkDatefExist = repository.findScheduleInDateRangeByUserId(
-                                        dto.getUser_id(), "REGULAR",
+                        List<Schedule> checkDatefExist = repository.findScheduleInDateRangeByUserIdNoCategory(
+                                        dto.getUser_id(),
                                         dto.getStart_date(),
                                         dto.getEnd_date());
                         if (!checkDatefExist.isEmpty()) {
                                 return GlobalResponse
                                                 .builder()
                                                 .message("Failed")
-                                                .errorMessage("Tanggal dengan start_date:"
+                                                .message("Tanggal dengan start_date:"
                                                                 + dto.getStart_date()
                                                                 + " and end_date:"
                                                                 + dto.getEnd_date()
@@ -1269,7 +1266,7 @@ public class ScheduleService {
                                         .findById(dto.getBranch_id());
                         if (!branchId.isPresent()) {
                                 return GlobalResponse.builder()
-                                                .errorMessage("Branch with id: "
+                                                .message("Branch with id: "
                                                                 + dto
                                                                                 .getBranch_id()
                                                                 + " is undefined")
@@ -1305,6 +1302,8 @@ public class ScheduleService {
 
                         Schedule schedule1 = getSchedule;
                         schedule1.setScheduleTrx(response1);
+                        schedule1.setStart_date(dto.getStart_date());
+                        schedule1.setEnd_date(dto.getEnd_date());
                         schedule1.setStatus(EStatus.REQUEST);
                         schedule1.setUpdatedBy(getUser.getId());
                         schedule1.setUpdated_at(new Date());
@@ -1335,6 +1334,60 @@ public class ScheduleService {
 
         public GlobalResponse editSchedule(EditScheduleDTO dto, Long id, ECategory category, String username) {
                 try {
+                        Map<String, String> err = new LinkedHashMap<>();
+                        if (dto.getStart_date().before(getDateNow())
+                                        || dto.getEnd_date()
+                                                        .before(getDateNow())) {
+                                return GlobalResponse
+                                                .builder()
+                                                .message("failed")
+                                                .message("Tidak bisa menambahkan jadwal kemarin")
+                                                .data(err.put("error", "Date is yesterday"))
+                                                .status(HttpStatus.BAD_REQUEST)
+                                                .build();
+                        }
+
+                        List<Schedule> checkIfExist = repository.findScheduleInAllCheckNoCheck(
+                                        dto.getUser_id(),
+                                        dto.getBranch_id(),
+                                        dto.getStart_date(),
+                                        dto.getEnd_date());
+                        if (!checkIfExist.isEmpty()) {
+                                return GlobalResponse
+                                                .builder()
+                                                .message("failed")
+                                                .message("Jadwal duplikat")
+                                                .data(err.put("error", "Duplicate Schedule"))
+                                                .status(HttpStatus.BAD_REQUEST)
+                                                .build();
+                        }
+                        if (dto.getStart_date().after(dto.getEnd_date())) {
+                                return GlobalResponse
+                                                .builder()
+                                                .message("failed")
+                                                .message("Start date lebih besar dari end date")
+                                                .data(err.put("error", "Invalid Date Range"))
+                                                .status(HttpStatus.BAD_REQUEST)
+                                                .build();
+                        }
+
+                        List<Schedule> checkDatefExist = repository.findScheduleInDateRangeByUserIdNoCategory(
+                                        dto.getUser_id(),
+                                        dto.getStart_date(),
+                                        dto.getEnd_date());
+                        if (!checkDatefExist.isEmpty()) {
+                                return GlobalResponse
+                                                .builder()
+                                                .message("Failed")
+                                                .message("Tanggal dengan start_date:"
+                                                                + dto.getStart_date()
+                                                                + " and end_date:"
+                                                                + dto.getEnd_date()
+                                                                + ", sudah terbuat sebelumnya")
+                                                .data(err.put("error", "Conflict Date Range"))
+                                                .status(HttpStatus.BAD_REQUEST)
+                                                .build();
+                        }
                         User getUser = userRepository.findByUsername(username)
                                         .orElseThrow(() -> new ResourceNotFoundException("user not found"));
                         Schedule getSchedule = repository.findById(id)
@@ -1389,25 +1442,82 @@ public class ScheduleService {
                                         .status(HttpStatus.UNAUTHORIZED).build();
                 }
                 Optional<Schedule> getSchedule = repository.findById(id);
-                if(!getSchedule.isPresent()){
-                        return GlobalResponse.builder().errorMessage("Schedule with id : " + id + " is undefined").message("failed").status(HttpStatus.BAD_REQUEST).build();
+                if (!getSchedule.isPresent()) {
+                        return GlobalResponse.builder().message("Schedule with id : " + id + " is undefined")
+                                        .message("failed").status(HttpStatus.BAD_REQUEST).build();
                 }
 
                 ScheduleTrx getTrx = scheduleTrxRepo.findById(getSchedule.get().getScheduleTrx().getId())
                                 .orElseThrow(() -> new Exception("Not found"));
+
+                Map<String, String> err = new LinkedHashMap<>();
+                if (getTrx.getStart_date().before(getDateNow())
+                                || getTrx.getEnd_date()
+                                                .before(getDateNow())) {
+                        return GlobalResponse
+                                        .builder()
+                                        .message("failed")
+                                        .message("Tidak bisa menambahkan jadwal kemarin")
+                                        .data(err.put("error", "Date is yesterday"))
+                                        .status(HttpStatus.BAD_REQUEST)
+                                        .build();
+                }
+
+                List<Schedule> checkIfExist = repository.findScheduleInAllCheckNoCheck(
+                                getTrx.getUser().getId(),
+                                getTrx.getBranch().getId(),
+                                getTrx.getStart_date(),
+                                getTrx.getEnd_date());
+                if (!checkIfExist.isEmpty()) {
+                        return GlobalResponse
+                                        .builder()
+                                        .message("failed")
+                                        .message("Jadwal duplikat")
+                                        .data(err.put("error", "Duplicate Schedule"))
+                                        .status(HttpStatus.BAD_REQUEST)
+                                        .build();
+                }
+                if (getTrx.getStart_date().after(getTrx.getEnd_date())) {
+                        return GlobalResponse
+                                        .builder()
+                                        .message("failed")
+                                        .message("Start date lebih besar dari end date")
+                                        .data(err.put("error", "Invalid Date Range"))
+                                        .status(HttpStatus.BAD_REQUEST)
+                                        .build();
+                }
+
+                List<Schedule> checkDatefExist = repository.findScheduleInDateRangeByUserIdNoCategory(
+                                getTrx.getUser().getId(),
+                                getTrx.getStart_date(),
+                                getTrx.getEnd_date());
+                if (!checkDatefExist.isEmpty()) {
+                        return GlobalResponse
+                                        .builder()
+                                        .message("Failed")
+                                        .message("Tanggal dengan start_date:"
+                                                        + getTrx.getStart_date()
+                                                        + " and end_date:"
+                                                        + getTrx.getEnd_date()
+                                                        + ", sudah terbuat sebelumnya")
+                                        .data(err.put("error", "Conflict Date Range"))
+                                        .status(HttpStatus.BAD_REQUEST)
+                                        .build();
+                }
 
                 Schedule schedule = new Schedule();
                 schedule.setUser(getTrx.getUser());
                 schedule.setBranch(getTrx.getBranch());
                 schedule.setDescription(getTrx.getDescription());
                 schedule.setStart_date(getTrx.getStart_date());
-                schedule.setStatus(getTrx.getStatus());
+                schedule.setStatus(EStatus.TODO);
                 schedule.setCategory(getTrx.getCategory());
                 schedule.setEnd_date(getTrx.getEnd_date());
                 schedule.setCreatedBy(user.getId());
                 schedule.setUpdatedBy(user.getId());
                 schedule.setCreated_at(new Date());
                 schedule.setUpdated_at(new Date());
+
                 repository.save(schedule);
 
                 Schedule editSchedule = getSchedule.get();
@@ -1427,8 +1537,9 @@ public class ScheduleService {
                                         .status(HttpStatus.UNAUTHORIZED).build();
                 }
                 Optional<Schedule> getSchedule = repository.findById(id);
-                if(!getSchedule.isPresent()){
-                        return GlobalResponse.builder().errorMessage("Schedule with id : " + id + " is undefined").message("failed").status(HttpStatus.BAD_REQUEST).build();
+                if (!getSchedule.isPresent()) {
+                        return GlobalResponse.builder().message("Schedule with id : " + id + " is undefined")
+                                        .message("failed").status(HttpStatus.BAD_REQUEST).build();
                 }
 
                 Schedule editSchedule = getSchedule.get();

@@ -11,6 +11,7 @@ public class EditUserDTO {
     private String username;
     private String fullname;
     private String initial_name;
+    private String password;
     private Long level_id;
     private Long main_id = null;
     private List<Long> region_id = null;
