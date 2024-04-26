@@ -143,11 +143,11 @@ public class DropdownController {
                     }
                     response = GlobalResponse.builder().data(user).message("Success").status(HttpStatus.OK).build();
                 } else {
-                    response = GlobalResponse.builder().data(null).message("Tidak dapat akses").status(HttpStatus.OK)
+                    response = GlobalResponse.builder().data(response).message("Tidak dapat akses").status(HttpStatus.OK)
                             .build();
                 }
             } else {
-                response = GlobalResponse.builder().data(null).message("Tidak dapat akses").status(HttpStatus.OK)
+                response = GlobalResponse.builder().data(response).message("Tidak dapat akses").status(HttpStatus.OK)
                         .build();
             }
         }

@@ -29,7 +29,7 @@ public class LogScheduleService {
                                 return GlobalResponse
                                                 .builder()
                                                 .message("Data not found")
-                                                .status(HttpStatus.OK)
+                                                .status(HttpStatus.BAD_REQUEST).data(response)
                                                 .build();
                         }
                         return GlobalResponse
@@ -59,7 +59,7 @@ public class LogScheduleService {
                                 return GlobalResponse
                                                 .builder()
                                                 .message("Data not found")
-                                                .status(HttpStatus.OK)
+                                                .status(HttpStatus.BAD_REQUEST).data(response)
                                                 .build();
                         }
                         return GlobalResponse

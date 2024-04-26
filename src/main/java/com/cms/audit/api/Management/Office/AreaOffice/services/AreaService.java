@@ -61,7 +61,7 @@ public class AreaService {
                 return GlobalResponse
                         .builder()
                         .message("Data not found")
-                        .status(HttpStatus.OK)
+                        .status(HttpStatus.BAD_REQUEST)
                         .data(response)
                         .build();
             }
@@ -110,7 +110,7 @@ public class AreaService {
                 return GlobalResponse
                         .builder()
                         .message("Data not found")
-                        .status(HttpStatus.OK)
+                        .status(HttpStatus.BAD_REQUEST)
                         .data(response)
                         .build();
             }
@@ -143,7 +143,7 @@ public class AreaService {
                 return GlobalResponse
                         .builder()
                         .message("Data not found")
-                        .status(HttpStatus.OK)
+                        .status(HttpStatus.BAD_REQUEST)
                         .data(response)
                         .build();
             }
@@ -184,7 +184,7 @@ public class AreaService {
                 return GlobalResponse
                         .builder()
                         .message("Data not found")
-                        .status(HttpStatus.OK)
+                        .status(HttpStatus.BAD_REQUEST)
                         .data(response)
                         .build();
             }
@@ -217,8 +217,8 @@ public class AreaService {
                 return GlobalResponse
                         .builder()
                         .message("Data not found")
-                        .status(HttpStatus.OK)
-                        .data(null)
+                        .status(HttpStatus.BAD_REQUEST)
+                        .data(response)
                         .build();
             }
             return GlobalResponse

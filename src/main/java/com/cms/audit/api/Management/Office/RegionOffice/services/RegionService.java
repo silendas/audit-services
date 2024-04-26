@@ -1,6 +1,7 @@
 package com.cms.audit.api.Management.Office.RegionOffice.services;
 
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Optional;
 
@@ -22,6 +23,7 @@ import com.cms.audit.api.Management.Office.RegionOffice.models.Region;
 import com.cms.audit.api.Management.Office.RegionOffice.repository.PagRegion;
 import com.cms.audit.api.Management.Office.RegionOffice.repository.RegionRepository;
 import com.cms.audit.api.Management.User.models.User;
+import com.cms.audit.api.Management.User.repository.UserRepository;
 
 import jakarta.transaction.Transactional;
 
@@ -31,6 +33,9 @@ public class RegionService {
 
     @Autowired
     private RegionRepository regionRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @Autowired
     private MainRepository mainRepository;
@@ -55,7 +60,7 @@ public class RegionService {
                 return GlobalResponse
                         .builder()
                         .message("Data not found")
-                        .status(HttpStatus.OK)
+                        .status(HttpStatus.BAD_REQUEST)
                         .data(response)
                         .build();
             }
@@ -86,7 +91,7 @@ public class RegionService {
             User getUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
             List<RegionInterface> response = regionRepository.findSpecificRegion();
-            if (getUser.getLevel().getCode().equals("B") ) {
+            if (getUser.getLevel().getCode().equals("B")) {
                 for (int i = 0; i < getUser.getRegionId().size(); i++) {
                     List<RegionInterface> getBranch = regionRepository
                             .findSpecificRegionById(getUser.getRegionId().get(i));
@@ -94,7 +99,7 @@ public class RegionService {
                         response.add(getBranch.get(u));
                     }
                 }
-            } else if (getUser.getLevel().getCode().equals("A")  || getUser.getLevel().getCode().equals("A") ) {
+            } else if (getUser.getLevel().getCode().equals("A") || getUser.getLevel().getCode().equals("A")) {
                 response = regionRepository.findSpecificRegion();
             } else {
                 return GlobalResponse
@@ -107,7 +112,7 @@ public class RegionService {
                 return GlobalResponse
                         .builder()
                         .message("Data not found")
-                        .status(HttpStatus.OK)
+                        .status(HttpStatus.BAD_REQUEST)
                         .data(response)
                         .build();
             }
@@ -133,6 +138,23 @@ public class RegionService {
 
     }
 
+    public List<Region> findByUser(Long userId) {
+        List<Region> listRegion = new ArrayList<>();
+        Optional<User> getUser = userRepository.findById(userId);
+        if (!getUser.get().getRegionId().isEmpty()) {
+            for (int i = 0; i < getUser.get().getRegionId().size(); i++) {
+                Optional<Region> getregion = regionRepository.findById(userId);
+                if (!getregion.isPresent()) {
+                    continue;
+                }
+                listRegion.add(getregion.get());
+            }
+            return listRegion;
+        } else {
+            return listRegion;
+        }
+    }
+
     public GlobalResponse findOne(Long id) {
         try {
             Optional<Region> response = regionRepository.findOneRegionById(id);
@@ -140,7 +162,7 @@ public class RegionService {
                 return GlobalResponse
                         .builder()
                         .message("Data not found")
-                        .status(HttpStatus.OK)
+                        .status(HttpStatus.BAD_REQUEST)
                         .data(response)
                         .build();
             }
@@ -174,7 +196,7 @@ public class RegionService {
                         .builder()
                         .message("Data not found")
                         .status(HttpStatus.BAD_REQUEST)
-                        .data(null)
+                        .data(response)
                         .build();
             }
             return GlobalResponse

@@ -42,7 +42,7 @@ public class ResponseEntittyHandler {
 
         Map<String, Object> map = new LinkedHashMap<>();
 
-        if (message != null) {
+        if (errora != null) {
             map.put("meta", meta);
             map.put("message", errora);
             map.put("status", status.value());

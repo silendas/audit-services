@@ -121,7 +121,7 @@ public class ScheduleService {
                                 return GlobalResponse
                                                 .builder()
                                                 .message("Data not found")
-                                                .data(null)
+                                                .data(response)
                                                 .status(HttpStatus.OK)
                                                 .build();
                         }
@@ -181,7 +181,7 @@ public class ScheduleService {
                                 return GlobalResponse
                                                 .builder()
                                                 .message("Data not found")
-                                                .data(null)
+                                                .data(response)
                                                 .status(HttpStatus.OK)
                                                 .build();
                         }
@@ -369,7 +369,6 @@ public class ScheduleService {
                                 return GlobalResponse
                                                 .builder()
                                                 .message("Success")
-                                                .data(null)
                                                 .status(HttpStatus.OK)
                                                 .build();
                         }
@@ -540,7 +539,7 @@ public class ScheduleService {
                         if (!getSchedule.isPresent()) {
                                 return GlobalResponse
                                                 .builder()
-                                                .message("Data schedule with id :" + id + " is undefined")
+                                                .message("Data schedule with id :" + id + " is not found")
                                                 .status(HttpStatus.OK)
                                                 .build();
                         }
@@ -621,18 +620,29 @@ public class ScheduleService {
                 }
         }
 
+        public GlobalResponse getByStatusSchedule(String name, Long branchId, Date startDate, Date endDate, int page,
+                        int size, String status) {
+                User getUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+                if (getUser.getLevel().getCode().equals("A") || getUser.getLevel().getCode().equals("A")) {
+                        return getReschedule(name, branchId, page, size, startDate, endDate, "REQUEST");
+                } else if (getUser.getLevel().getCode().equals("B")) {
+                        return getReschedule(name, branchId, page, size, startDate, endDate, "PENDING");
+                } else {
+                        return null;
+                }
+        }
+
         public GlobalResponse getByStatus(String name, Long branchId, Date startDate, Date endDate, int page,
                         int size) {
                 User getUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
                 if (getUser.getLevel().getCode().equals("A") || getUser.getLevel().getCode().equals("A")) {
                         return getReschedule(name, branchId, page, size, startDate, endDate, "REQUEST");
-                        // response = pagSchedule.findOneScheduleByStatus("PENDING",
-                        // PageRequest.of(page, size));
                 } else if (getUser.getLevel().getCode().equals("B")) {
                         return getReschedule(name, branchId, page, size, startDate, endDate, "PENDING");
                 } else {
-                        return GlobalResponse.builder().message("Audit wilayah tidak dapat mengakses").data(null)
+                        return GlobalResponse.builder().message("Audit wilayah tidak dapat mengakses")
                                         .status(HttpStatus.OK).build();
                 }
 
@@ -660,24 +670,74 @@ public class ScheduleService {
                         mapParent.put("description", response.get(i).getDescription());
                         mapParent.put("status", response.get(i).getStatus());
                         mapParent.put("category", response.get(i).getCategory());
-                        if (response.get(i).getStart_date() == null) {
-                                mapParent.put("start_date", null);
+                        if (response.get(i).getScheduleTrx() != null) {
+                                Optional<ScheduleTrx> trxCheck = scheduleTrxRepo
+                                                .findById(response.get(i).getScheduleTrx().getId());
+                                if (trxCheck.isPresent()) {
+                                        if (trxCheck.get().getStart_date() == null) {
+                                                mapParent.put("new_start_date", null);
+                                        } else {
+                                                mapParent.put("new_start_date", convertDateToRoman
+                                                                .convertDateHehe(trxCheck.get().getStart_date()));
+                                        }
+                                        if (trxCheck.get().getEnd_date() == null) {
+                                                mapParent.put("new_end_date", null);
+                                        } else {
+                                                mapParent.put("new_end_date", convertDateToRoman
+                                                                .convertDateHehe(trxCheck.get().getEnd_date()));
+                                        }
+                                }
+                                if (response.get(i).getStart_date() == null) {
+                                        mapParent.put("start_date", null);
+                                } else {
+                                        mapParent.put("start_date", convertDateToRoman
+                                                        .convertDateHehe(response.get(i).getStart_date()));
+                                }
+                                if (response.get(i).getEnd_date() == null) {
+                                        mapParent.put("end_date", null);
+                                } else {
+                                        mapParent.put("end_date", convertDateToRoman
+                                                        .convertDateHehe(response.get(i).getEnd_date()));
+                                }
+                                if (response.get(i).getStart_date_realization() == null) {
+                                        mapParent.put("start_date_realization", null);
+                                } else {
+                                        mapParent.put("start_date_realization",
+                                                        convertDateToRoman.convertDateHehe(response.get(i)
+                                                                        .getStart_date_realization()));
+                                }
+                                if (response.get(i).getEnd_date_realization() == null) {
+                                        mapParent.put("end_date_realization", null);
+                                } else {
+                                        mapParent.put("end_date_realization", convertDateToRoman.convertDateHehe(
+                                                        response.get(i).getEnd_date_realization()));
+                                }
                         } else {
-                                mapParent.put("start_date", convertDateToRoman
-                                                .convertDateHehe(response.get(i).getStart_date()));
-                        }
-                        if (response.get(i).getEnd_date() == null) {
-                                mapParent.put("end_date", null);
-                        } else {
-                                mapParent.put("end_date", convertDateToRoman
-                                                .convertDateHehe(response.get(i).getEnd_date()));
-                        }
-                        if (response.get(i).getStart_date_realization() == null) {
-                                mapParent.put("start_date_realization", null);
-                        } else {
-                                mapParent.put("start_date_realization",
-                                                convertDateToRoman.convertDateHehe(response.get(i)
-                                                                .getStart_date_realization()));
+                                if (response.get(i).getStart_date() == null) {
+                                        mapParent.put("start_date", null);
+                                } else {
+                                        mapParent.put("start_date", convertDateToRoman
+                                                        .convertDateHehe(response.get(i).getStart_date()));
+                                }
+                                if (response.get(i).getEnd_date() == null) {
+                                        mapParent.put("end_date", null);
+                                } else {
+                                        mapParent.put("end_date", convertDateToRoman
+                                                        .convertDateHehe(response.get(i).getEnd_date()));
+                                }
+                                if (response.get(i).getStart_date_realization() == null) {
+                                        mapParent.put("start_date_realization", null);
+                                } else {
+                                        mapParent.put("start_date_realization",
+                                                        convertDateToRoman.convertDateHehe(response.get(i)
+                                                                        .getStart_date_realization()));
+                                }
+                                if (response.get(i).getEnd_date_realization() == null) {
+                                        mapParent.put("end_date_realization", null);
+                                } else {
+                                        mapParent.put("end_date_realization", convertDateToRoman.convertDateHehe(
+                                                        response.get(i).getEnd_date_realization()));
+                                }
                         }
                         if (response.get(i).getEnd_date_realization() == null) {
                                 mapParent.put("end_date_realization", null);
@@ -724,29 +784,74 @@ public class ScheduleService {
                 map.put("description", response.getDescription());
                 map.put("status", response.getStatus());
                 map.put("category", response.getCategory());
-                if (response.getStart_date() == null) {
-                        map.put("start_date", "-");
+                if (response.getScheduleTrx() != null) {
+                        Optional<ScheduleTrx> trxCheck = scheduleTrxRepo
+                                        .findById(response.getScheduleTrx().getId());
+                        if (trxCheck.isPresent()) {
+                                if (trxCheck.get().getStart_date() == null) {
+                                        map.put("new_start_date", null);
+                                } else {
+                                        map.put("new_start_date", convertDateToRoman
+                                                        .convertDateHehe(trxCheck.get().getStart_date()));
+                                }
+                                if (trxCheck.get().getEnd_date() == null) {
+                                        map.put("new_end_date", null);
+                                } else {
+                                        map.put("new_end_date", convertDateToRoman
+                                                        .convertDateHehe(trxCheck.get().getEnd_date()));
+                                }
+                        }
+                        if (response.getStart_date() == null) {
+                                map.put("start_date", null);
+                        } else {
+                                map.put("start_date", convertDateToRoman
+                                                .convertDateHehe(response.getStart_date()));
+                        }
+                        if (response.getEnd_date() == null) {
+                                map.put("end_date", null);
+                        } else {
+                                map.put("end_date", convertDateToRoman
+                                                .convertDateHehe(response.getEnd_date()));
+                        }
+                        if (response.getStart_date_realization() == null) {
+                                map.put("start_date_realization", null);
+                        } else {
+                                map.put("start_date_realization",
+                                                convertDateToRoman.convertDateHehe(response
+                                                                .getStart_date_realization()));
+                        }
+                        if (response.getEnd_date_realization() == null) {
+                                map.put("end_date_realization", null);
+                        } else {
+                                map.put("end_date_realization", convertDateToRoman.convertDateHehe(
+                                                response.getEnd_date_realization()));
+                        }
                 } else {
-                        map.put("start_date", convertDateToRoman
-                                        .convertDateHehe(response.getStart_date()));
-                }
-                if (response.getEnd_date() == null) {
-                        map.put("end_date", "-");
-                } else {
-                        map.put("end_date", convertDateToRoman
-                                        .convertDateHehe(response.getEnd_date()));
-                }
-                if (response.getStart_date_realization() == null) {
-                        map.put("start_date_realization", "-");
-                } else {
-                        map.put("start_date_realization",
-                                        convertDateToRoman.convertDateHehe(response.getStart_date_realization()));
-                }
-                if (response.getEnd_date_realization() == null) {
-                        map.put("end_date_realization", "-");
-                } else {
-                        map.put("end_date_realization",
-                                        convertDateToRoman.convertDateHehe(response.getEnd_date_realization()));
+                        if (response.getStart_date() == null) {
+                                map.put("start_date", null);
+                        } else {
+                                map.put("start_date", convertDateToRoman
+                                                .convertDateHehe(response.getStart_date()));
+                        }
+                        if (response.getEnd_date() == null) {
+                                map.put("end_date", null);
+                        } else {
+                                map.put("end_date", convertDateToRoman
+                                                .convertDateHehe(response.getEnd_date()));
+                        }
+                        if (response.getStart_date_realization() == null) {
+                                map.put("start_date_realization", null);
+                        } else {
+                                map.put("start_date_realization",
+                                                convertDateToRoman.convertDateHehe(response
+                                                                .getStart_date_realization()));
+                        }
+                        if (response.getEnd_date_realization() == null) {
+                                map.put("end_date_realization", null);
+                        } else {
+                                map.put("end_date_realization", convertDateToRoman.convertDateHehe(
+                                                response.getEnd_date_realization()));
+                        }
                 }
 
                 return map;
@@ -775,30 +880,75 @@ public class ScheduleService {
                         map.put("description", response.getContent().get(i).getDescription());
                         map.put("status", response.getContent().get(i).getStatus());
                         map.put("category", response.getContent().get(i).getCategory());
-                        if (response.getContent().get(i).getStart_date() == null) {
-                                map.put("start_date", null);
+
+                        if (response.getContent().get(i).getScheduleTrx() != null) {
+                                Optional<ScheduleTrx> trxCheck = scheduleTrxRepo
+                                                .findById(response.getContent().get(i).getScheduleTrx().getId());
+                                if (trxCheck.isPresent()) {
+                                        if (trxCheck.get().getStart_date() == null) {
+                                                map.put("new_start_date", null);
+                                        } else {
+                                                map.put("new_start_date", convertDateToRoman
+                                                                .convertDateHehe(trxCheck.get().getStart_date()));
+                                        }
+                                        if (trxCheck.get().getEnd_date() == null) {
+                                                map.put("new_end_date", null);
+                                        } else {
+                                                map.put("new_end_date", convertDateToRoman
+                                                                .convertDateHehe(trxCheck.get().getEnd_date()));
+                                        }
+                                }
+                                if (response.getContent().get(i).getStart_date() == null) {
+                                        map.put("start_date", null);
+                                } else {
+                                        map.put("start_date", convertDateToRoman
+                                                        .convertDateHehe(response.getContent().get(i).getStart_date()));
+                                }
+                                if (response.getContent().get(i).getEnd_date() == null) {
+                                        map.put("end_date", null);
+                                } else {
+                                        map.put("end_date", convertDateToRoman
+                                                        .convertDateHehe(response.getContent().get(i).getEnd_date()));
+                                }
+                                if (response.getContent().get(i).getStart_date_realization() == null) {
+                                        map.put("start_date_realization", null);
+                                } else {
+                                        map.put("start_date_realization",
+                                                        convertDateToRoman.convertDateHehe(response.getContent().get(i)
+                                                                        .getStart_date_realization()));
+                                }
+                                if (response.getContent().get(i).getEnd_date_realization() == null) {
+                                        map.put("end_date_realization", null);
+                                } else {
+                                        map.put("end_date_realization", convertDateToRoman.convertDateHehe(
+                                                        response.getContent().get(i).getEnd_date_realization()));
+                                }
                         } else {
-                                map.put("start_date", convertDateToRoman
-                                                .convertDateHehe(response.getContent().get(i).getStart_date()));
-                        }
-                        if (response.getContent().get(i).getEnd_date() == null) {
-                                map.put("end_date", null);
-                        } else {
-                                map.put("end_date", convertDateToRoman
-                                                .convertDateHehe(response.getContent().get(i).getEnd_date()));
-                        }
-                        if (response.getContent().get(i).getStart_date_realization() == null) {
-                                map.put("start_date_realization", null);
-                        } else {
-                                map.put("start_date_realization",
-                                                convertDateToRoman.convertDateHehe(response.getContent().get(i)
-                                                                .getStart_date_realization()));
-                        }
-                        if (response.getContent().get(i).getEnd_date_realization() == null) {
-                                map.put("end_date_realization", null);
-                        } else {
-                                map.put("end_date_realization", convertDateToRoman.convertDateHehe(
-                                                response.getContent().get(i).getEnd_date_realization()));
+                                if (response.getContent().get(i).getStart_date() == null) {
+                                        map.put("start_date", null);
+                                } else {
+                                        map.put("start_date", convertDateToRoman
+                                                        .convertDateHehe(response.getContent().get(i).getStart_date()));
+                                }
+                                if (response.getContent().get(i).getEnd_date() == null) {
+                                        map.put("end_date", null);
+                                } else {
+                                        map.put("end_date", convertDateToRoman
+                                                        .convertDateHehe(response.getContent().get(i).getEnd_date()));
+                                }
+                                if (response.getContent().get(i).getStart_date_realization() == null) {
+                                        map.put("start_date_realization", null);
+                                } else {
+                                        map.put("start_date_realization",
+                                                        convertDateToRoman.convertDateHehe(response.getContent().get(i)
+                                                                        .getStart_date_realization()));
+                                }
+                                if (response.getContent().get(i).getEnd_date_realization() == null) {
+                                        map.put("end_date_realization", null);
+                                } else {
+                                        map.put("end_date_realization", convertDateToRoman.convertDateHehe(
+                                                        response.getContent().get(i).getEnd_date_realization()));
+                                }
                         }
 
                         Optional<AuditWorkingPaper> getKka = auditWorkingPaperRepository
@@ -853,7 +1003,7 @@ public class ScheduleService {
                                 return GlobalResponse
                                                 .builder()
                                                 .message("Data not found")
-                                                .status(HttpStatus.OK)
+                                                .status(HttpStatus.BAD_REQUEST).data(response)
                                                 .build();
                         }
                         return GlobalResponse
@@ -893,7 +1043,7 @@ public class ScheduleService {
                                 return GlobalResponse
                                                 .builder()
                                                 .message("Data not found")
-                                                .status(HttpStatus.OK)
+                                                .status(HttpStatus.BAD_REQUEST).data(response)
                                                 .build();
                         }
                         return GlobalResponse
@@ -936,6 +1086,7 @@ public class ScheduleService {
                         Map<String, Object> err = new HashMap<>();
 
                         for (int i = 0; i < scheduleDTO.getSchedules().size(); i++) {
+
                                 if (scheduleDTO.getSchedules().get(i).getStart_date().before(getDateNow())
                                                 || scheduleDTO.getSchedules().get(i).getEnd_date()
                                                                 .before(getDateNow())) {
@@ -1004,7 +1155,7 @@ public class ScheduleService {
                                                         .message("Branch with id: "
                                                                         + scheduleDTO.getSchedules().get(i)
                                                                                         .getBranch_id()
-                                                                        + " is undefined")
+                                                                        + " is not found")
                                                         .data(err.put("error", "Undefined Branch Id"))
                                                         .status(HttpStatus.BAD_REQUEST)
                                                         .build();
@@ -1017,7 +1168,7 @@ public class ScheduleService {
                                                         .message("failed")
                                                         .message("User with id: "
                                                                         + scheduleDTO.getSchedules().get(i).getUser_id()
-                                                                        + " is undefined")
+                                                                        + " is not found")
                                                         .data(err.put("error", "Undefined User Id"))
                                                         .status(HttpStatus.BAD_REQUEST)
                                                         .build();
@@ -1131,7 +1282,7 @@ public class ScheduleService {
                                                         .message("Branch with id: "
                                                                         + scheduleDTO.getSchedules().get(i)
                                                                                         .getBranch_id()
-                                                                        + " is undefined")
+                                                                        + " is not found")
                                                         .data(err.put("error", "Undefined Branch Id"))
                                                         .status(HttpStatus.BAD_REQUEST)
                                                         .build();
@@ -1144,7 +1295,7 @@ public class ScheduleService {
                                                         .message("failed")
                                                         .message("User with id: "
                                                                         + scheduleDTO.getSchedules().get(i).getUser_id()
-                                                                        + " is undefined")
+                                                                        + " is not found")
                                                         .data(err.put("error", "Undefined User Id"))
                                                         .status(HttpStatus.BAD_REQUEST)
                                                         .build();
@@ -1260,7 +1411,7 @@ public class ScheduleService {
                                         .orElseThrow(() -> new ResourceNotFoundException("User not found"));
                         Schedule getSchedule = repository.findById(dto.getSchedule_id())
                                         .orElseThrow(() -> new ResourceNotFoundException(
-                                                        "Schedule with id: " + dto.getSchedule_id() + " is undefined"));
+                                                        "Schedule with id: " + dto.getSchedule_id() + " is not found"));
 
                         Optional<Branch> branchId = branchRepository
                                         .findById(dto.getBranch_id());
@@ -1269,7 +1420,7 @@ public class ScheduleService {
                                                 .message("Branch with id: "
                                                                 + dto
                                                                                 .getBranch_id()
-                                                                + " is undefined")
+                                                                + " is not found")
                                                 .data(err.put("error", "Undefined Branch Id"))
                                                 .message("Failed")
                                                 .status(HttpStatus.BAD_REQUEST)
@@ -1282,7 +1433,7 @@ public class ScheduleService {
                                 return GlobalResponse.builder()
                                                 .message("User with id: "
                                                                 + dto.getUser_id()
-                                                                + " is undefined")
+                                                                + " is not found")
                                                 .data(err.put("error", "Undefined User Id"))
                                                 .status(HttpStatus.BAD_REQUEST)
                                                 .build();
@@ -1443,7 +1594,7 @@ public class ScheduleService {
                 }
                 Optional<Schedule> getSchedule = repository.findById(id);
                 if (!getSchedule.isPresent()) {
-                        return GlobalResponse.builder().message("Schedule with id : " + id + " is undefined")
+                        return GlobalResponse.builder().message("Schedule with id : " + id + " is not found")
                                         .message("failed").status(HttpStatus.BAD_REQUEST).build();
                 }
 
@@ -1538,7 +1689,7 @@ public class ScheduleService {
                 }
                 Optional<Schedule> getSchedule = repository.findById(id);
                 if (!getSchedule.isPresent()) {
-                        return GlobalResponse.builder().message("Schedule with id : " + id + " is undefined")
+                        return GlobalResponse.builder().message("Schedule with id : " + id + " is not found")
                                         .message("failed").status(HttpStatus.BAD_REQUEST).build();
                 }
 

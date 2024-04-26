@@ -30,7 +30,7 @@ public class ReportTypeService {
             if (response.isEmpty()) {
                 return GlobalResponse
                         .builder()
-                        .message("Data not found")
+                        .message("Data not found").data(response)
                         .status(HttpStatus.OK)
                         .build();
             }
@@ -62,7 +62,7 @@ public class ReportTypeService {
             if (response.isEmpty()) {
                 return GlobalResponse
                         .builder()
-                        .message("Data not found")
+                        .message("Data not found").data(response)
                         .status(HttpStatus.OK)
                         .build();
             }
@@ -91,11 +91,11 @@ public class ReportTypeService {
     public GlobalResponse findOne(Long id) {
         try {
             Optional<ReportType> response = reportTypeRepository.findOneReportTypeById(id);
-            if (!response.isPresent()) {
+            if(!response.isPresent()) {
                 return GlobalResponse
                         .builder()
-                        .message("Data not found")
-                        .status(HttpStatus.OK)
+                        .message("Data not found").data(response)
+                        .status(HttpStatus.BAD_REQUEST)
                         .build();
             }
             return GlobalResponse

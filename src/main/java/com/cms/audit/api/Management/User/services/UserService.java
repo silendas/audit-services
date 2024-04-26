@@ -2,7 +2,9 @@ package com.cms.audit.api.Management.User.services;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.hibernate.exception.DataException;
@@ -26,6 +28,7 @@ import com.cms.audit.api.Management.Office.AreaOffice.models.Area;
 import com.cms.audit.api.Management.Office.AreaOffice.repository.AreaRepository;
 import com.cms.audit.api.Management.Office.BranchOffice.models.Branch;
 import com.cms.audit.api.Management.Office.BranchOffice.repository.BranchRepository;
+import com.cms.audit.api.Management.Office.BranchOffice.services.BranchService;
 import com.cms.audit.api.Management.Office.MainOffice.models.Main;
 import com.cms.audit.api.Management.Office.MainOffice.repository.MainRepository;
 import com.cms.audit.api.Management.Office.RegionOffice.models.Region;
@@ -64,6 +67,9 @@ public class UserService {
         private BranchRepository branchRepository;
 
         @Autowired
+        private BranchService branchService;
+
+        @Autowired
         private PagUser pagUser;
 
         @Autowired
@@ -72,7 +78,7 @@ public class UserService {
         public GlobalResponse findAll(int page, int size, String username) {
                 User getUser = userRepository.findByUsername(username)
                                 .orElseThrow(() -> new ResourceNotFoundException(
-                                                "user with username " + username + " is undefined"));
+                                                "user with username " + username + " is not found"));
                 Pageable pageable = PageRequest.of(page, size);
                 List<User> user = new ArrayList<>();
                 if (getUser.getLevel().getCode().equals("A") || getUser.getLevel().getCode().equals("A")) {
@@ -162,8 +168,8 @@ public class UserService {
                                 }
                         }
                 } else if (getUser.getLevel().getCode().equals("C")) {
-                        return GlobalResponse.builder().message("Audit wilayah tidak dapat akses").status(HttpStatus.OK)
-                                        .data(null).build();
+                        return GlobalResponse.builder().message("Audit wilayah tidak dapat akses")
+                                        .status(HttpStatus.BAD_REQUEST).build();
                 }
                 try {
                         int start = (int) pageable.getOffset();
@@ -322,7 +328,7 @@ public class UserService {
                         }
                         Page<User> response = pagUser.findByMain(setMain.get(), PageRequest.of(page, size));
                         if (response.isEmpty()) {
-                                return GlobalResponse.builder().message("Data not found").status(HttpStatus.OK).build();
+                                return GlobalResponse.builder().message("Data not found").status(HttpStatus.BAD_REQUEST).data(response).build();
                         }
                         return GlobalResponse
                                         .builder()
@@ -336,6 +342,29 @@ public class UserService {
                 } catch (Exception e) {
                         throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Server error");
                 }
+        }
+
+        public List<Object> listObjectDropdown(List<DropDownUser> dto) {
+                List<Object> response = new ArrayList<>();
+                for (int i = 0; i < dto.size(); i++) {
+                        Map<String, Object> createList = new LinkedHashMap<>();
+                        createList.put("id", dto.get(i).getId());
+                        createList.put("fullname", dto.get(i).getFullname());
+                        createList.put("initial_name", dto.get(i).getInitial_Name());
+                        Optional<User> getUser = userRepository.findById(dto.get(i).getId());
+                        if (getUser.get().getRegionId().isEmpty()) {
+                                // List<Object> getBranch = reg
+                                // if(!getBranch.isEmpty()){
+                                //         createList.put("branch", getBranch);
+                                // }
+                        } else if (getUser.get().getBranchId().isEmpty()) {
+                                List<Object> getBranch = branchService.findByUser(dto.get(i).getId());
+                                if (!getBranch.isEmpty()) {
+                                        createList.put("branch", getBranch);
+                                }
+                        }
+                }
+                return response;
         }
 
         public GlobalResponse dropDown(Long id) {
@@ -511,7 +540,7 @@ public class UserService {
                         List<Long> region = new ArrayList<>();
                         if (userDTO.getRegion_id() != null) {
                                 for (int i = 0; i < userDTO.getRegion_id().size(); i++) {
-                                        if(userDTO.getRegion_id().equals(region)){
+                                        if (userDTO.getRegion_id().equals(region)) {
                                                 continue;
                                         }
                                         Optional<Region> getRegion = regionRepository
@@ -531,7 +560,7 @@ public class UserService {
                         List<Long> area = new ArrayList<>();
                         if (userDTO.getArea_id() != null) {
                                 for (int i = 0; i < userDTO.getArea_id().size(); i++) {
-                                        if(userDTO.getArea_id().equals(area)){
+                                        if (userDTO.getArea_id().equals(area)) {
                                                 continue;
                                         }
                                         Optional<Area> getArea = areaRepository
@@ -550,7 +579,7 @@ public class UserService {
                         List<Long> branch = new ArrayList<>();
                         if (userDTO.getBranch_id() != null) {
                                 for (int i = 0; i < userDTO.getBranch_id().size(); i++) {
-                                        if(userDTO.getBranch_id().equals(branch)){
+                                        if (userDTO.getBranch_id().equals(branch)) {
                                                 continue;
                                         }
                                         Optional<Branch> getBranch = branchRepository
@@ -589,11 +618,27 @@ public class UserService {
 
                         try {
                                 Optional<User> checkEmail = userRepository.findByEmail(userDTO.getEmail());
+                                List<User> checkNip = userRepository.findByNIP(userDTO.getNip());
+                                List<User> checkIN = userRepository.findByInitialName(userDTO.getInitial_name());
                                 Optional<User> checkUsername = userRepository.findByUsername(userDTO.getUsername());
                                 if (checkEmail.isPresent()) {
                                         return GlobalResponse
                                                         .builder()
                                                         .message("Email already exist")
+                                                        .status(HttpStatus.FOUND)
+                                                        .build();
+                                }
+                                if (checkNip.isEmpty()) {
+                                        return GlobalResponse
+                                                        .builder()
+                                                        .message("NIP already exist")
+                                                        .status(HttpStatus.FOUND)
+                                                        .build();
+                                }
+                                if (checkIN.isEmpty()) {
+                                        return GlobalResponse
+                                                        .builder()
+                                                        .message("Initial Name already exist")
                                                         .status(HttpStatus.FOUND)
                                                         .build();
                                 }
@@ -642,9 +687,9 @@ public class UserService {
                         User userGet = userRepository.findById(id).get();
 
                         String password = null;
-                        if(userDTO.getPassword() != null || !userDTO.getPassword().equals("")){
+                        if (userDTO.getPassword() != null || !userDTO.getPassword().equals("")) {
                                 password = passwordEncoder.encode(userDTO.getPassword());
-                        }else{
+                        } else {
                                 password = userGet.getPassword();
                         }
 

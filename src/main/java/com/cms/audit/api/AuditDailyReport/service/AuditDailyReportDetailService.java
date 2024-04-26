@@ -179,7 +179,7 @@ public class AuditDailyReportDetailService {
             if (response.isEmpty()) {
                 return GlobalResponse
                         .builder()
-                        .message("Data not found")
+                        .message("Data not found").data(response)
                         .status(HttpStatus.OK)
                         .build();
             }
@@ -228,7 +228,7 @@ public class AuditDailyReportDetailService {
             Map<String, Object> builder = new LinkedHashMap<>();
             Optional<AuditDailyReportDetail> response = repository.findOneByLHADetailId(id);
             if (!response.isPresent()) {
-                return GlobalResponse.builder().message("LHA with id :" + id + " is undefined").build();
+                return GlobalResponse.builder().message("LHA with id :" + id + " is not found").build();
             }
             builder.put("id", response.get().getId());
 
@@ -306,7 +306,7 @@ public class AuditDailyReportDetailService {
             if (response.isEmpty()) {
                 return GlobalResponse
                         .builder()
-                        .message("Data not found")
+                        .message("Data not found").data(response)
                         .status(HttpStatus.OK)
                         .build();
             }
@@ -340,11 +340,11 @@ public class AuditDailyReportDetailService {
     public GlobalResponse getOneByLHAId(Long id) {
         try {
             Optional<AuditDailyReportDetail> response = repository.findOneByLHAId(id);
-            if (!response.isPresent()) {
+            if(!response.isPresent()) {
                 return GlobalResponse
                         .builder()
-                        .message("Data not found")
-                        .status(HttpStatus.OK)
+                        .message("Data not found").data(response)
+                        .status(HttpStatus.BAD_REQUEST)
                         .build();
             }
             return GlobalResponse

@@ -30,7 +30,7 @@ public class RoleService {
             if (response.isEmpty()) {
                 return GlobalResponse
                         .builder()
-                        .message("Data not found")
+                        .message("Data not found").data(response)
                         .status(HttpStatus.OK)
                         .build();
             }
@@ -62,7 +62,7 @@ public class RoleService {
             if (response.isEmpty()) {
                 return GlobalResponse
                         .builder()
-                        .message("Data not found")
+                        .message("Data not found").data(response)
                         .status(HttpStatus.OK)
                         .build();
             }
@@ -91,11 +91,10 @@ public class RoleService {
     public GlobalResponse findOne(Long id) {
         try {
             Optional<Role> response = roleRepository.findOneRoleById(id);
-            if (!response.isPresent()) {
-                return GlobalResponse
-                        .builder()
-                        .message("Data not found")
-                        .status(HttpStatus.OK)
+            if(!response.isPresent()) {
+                return GlobalResponse.builder().message("Data not found")
+                        .data(response)
+                        .status(HttpStatus.BAD_REQUEST)
                         .build();
             }
             return GlobalResponse
