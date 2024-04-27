@@ -298,7 +298,6 @@ public class FollowupService {
             String fileName = fileStorageService.storeFile(file);
             String path = FOLDER_PATH + fileName;
             String filePath = path;
-            System.out.println(path);
 
             FollowUp followUp = getFollowUp.get();
             followUp.setFilename(fileName);

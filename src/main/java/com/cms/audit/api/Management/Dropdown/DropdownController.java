@@ -268,7 +268,7 @@ public class DropdownController {
             response = branchService.findSpecificByUserid(userId);
         } else if (name != null) {
             response = branchService.findSpecificByName(name);
-        } else if (areaId != null) {
+        } else if (!areaId.isEmpty() ) {
             response = branchService.findSpecificByAreaId(areaId);
         } else if (regionId != null) {
             response = branchService.findSpecificByRegionId(regionId);

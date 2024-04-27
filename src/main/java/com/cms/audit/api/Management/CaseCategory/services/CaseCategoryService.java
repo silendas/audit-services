@@ -217,7 +217,7 @@ public class CaseCategoryService {
 
             Optional<Case> caseId = caseRepository.findById(caseCategoryDTO.getCase_id());
             if (!caseId.isPresent()) {
-                return GlobalResponse.builder().message("Data case not found").status(HttpStatus.BAD_REQUEST).build();
+                return GlobalResponse.builder().message("Data case with id: "+caseCategoryDTO.getCase_id()+" not found").status(HttpStatus.BAD_REQUEST).build();
             }
 
             CaseCategory caseCategoryEntity = new CaseCategory(

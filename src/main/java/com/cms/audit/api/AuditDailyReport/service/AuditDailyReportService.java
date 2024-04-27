@@ -418,7 +418,7 @@ public class AuditDailyReportService {
                                 return GlobalResponse
                                                 .builder()
                                                 .message("Data not found")
-                                                .status(HttpStatus.BAD_REQUEST).data(response)
+                                                .status(HttpStatus.OK).data(response)
                                                 .build();
                         }
                         Map<String, Object> parent = new LinkedHashMap<>();
@@ -669,7 +669,7 @@ public class AuditDailyReportService {
                                 return GlobalResponse
                                                 .builder()
                                                 .message("Data not found")
-                                                .status(HttpStatus.BAD_REQUEST).data(response)
+                                                .status(HttpStatus.OK).data(response)
                                                 .build();
                         }
                 }
@@ -692,8 +692,8 @@ public class AuditDailyReportService {
 
                         Optional<Schedule> getschedule = scheduleRepository.findById(dto.getSchedule_id());
                         if (!getschedule.isPresent()) {
-                                return GlobalResponse.builder().errorMessage("failed")
-                                                .message("Data schedule not found")
+                                return GlobalResponse.builder().message("schedule_id is not found")
+                                                .errorMessage("Data schedule with id : "+ dto.getSchedule_id()+" not found")
                                                 .status(HttpStatus.BAD_REQUEST).build();
                         }
 

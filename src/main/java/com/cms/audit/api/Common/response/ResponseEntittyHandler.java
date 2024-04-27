@@ -38,16 +38,15 @@ public class ResponseEntittyHandler {
         meta.put("api_version", "0.0.1");
 
         Map<String, Object> errora = new LinkedHashMap<>();
-        errora.put("error", errors);
+        errora.put("error", message);
 
         Map<String, Object> map = new LinkedHashMap<>();
 
-        if (errora != null) {
-            map.put("meta", meta);
-            map.put("message", errora);
-            map.put("status", status.value());
-            map.put("details", errora);
-        }
+        map.put("meta", meta);
+        map.put("message", errors);
+        map.put("status", status.value());
+        map.put("details", errora);
+
         return new ResponseEntity<Object>(map, status);
     }
 
@@ -80,10 +79,6 @@ public class ResponseEntittyHandler {
             map.put("status", status.value());
             if (data != null) {
                 map.put("data", data);
-            } else {
-                if (message != "Success") {
-                    map.put("data", null);
-                }
             }
         }
 

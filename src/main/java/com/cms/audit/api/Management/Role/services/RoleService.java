@@ -159,6 +159,14 @@ public class RoleService {
 
     public GlobalResponse edit(RoleDTO roleDTO, Long id) {
         try {
+            if(id == 2 || id == 1){
+                return GlobalResponse
+                        .builder()
+                        .message("karena masalah validasi jadi tidak boleh diubah")
+                        .errorMessage("Role dengan id :" +id+ " tidak boleh diubah")
+                        .status(HttpStatus.BAD_REQUEST)
+                        .build();
+            }
             Role roleGet = roleRepository.findById(id).get();
 
             Role role = new Role(
@@ -198,6 +206,14 @@ public class RoleService {
 
     public GlobalResponse delete(Long id) {
         try {
+            if(id == 2 || id == 1){
+                return GlobalResponse
+                        .builder()
+                        .message("karena masalah validasi jadi tidak boleh dihapus")
+                        .errorMessage("Role dengan id :" +id+ " tidak boleh diubah")
+                        .status(HttpStatus.BAD_REQUEST)
+                        .build();
+            }
             Role roleGet = roleRepository.findById(id).get();
 
             Role role = new Role(

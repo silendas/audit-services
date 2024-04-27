@@ -76,8 +76,7 @@ public class UserController {
                 userDTO.setArea_id(null);
             }
         }
-        GlobalResponse response = userService.save(
-                userDTO);
+        GlobalResponse response = userService.save(userDTO);
         if (response.getStatus().equals(HttpStatus.BAD_REQUEST)) {
             return ResponseEntittyHandler.errorResponse(response.getErrorMessage(), response.getMessage(),
                     response.getStatus());
@@ -119,9 +118,12 @@ public class UserController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Object> delete(@PathVariable("id") Long id) {
         GlobalResponse response = userService.delete(id);
-        if (response.getError() != null) {
-            return ResponseEntittyHandler.allHandler(null, null, response.getStatus(), response.getError());
+        if (response.getStatus().equals(HttpStatus.BAD_REQUEST)) {
+            return ResponseEntittyHandler.errorResponse(response.getErrorMessage(), response.getMessage(),
+                    response.getStatus());
+        } else {
+            return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(),
+                    response.getError());
         }
-        return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(), null);
     }
 }

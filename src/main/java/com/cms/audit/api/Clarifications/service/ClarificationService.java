@@ -206,7 +206,7 @@ public class ClarificationService {
                                 return GlobalResponse
                                                 .builder()
                                                 .message("Data not found")
-                                                .status(HttpStatus.BAD_REQUEST).data(response)
+                                                .status(HttpStatus.OK).data(response)
                                                 .build();
                         }
                         Map<String, Object> parent = new LinkedHashMap<>();

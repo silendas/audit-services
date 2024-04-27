@@ -58,7 +58,7 @@ public class BranchService {
                 return GlobalResponse
                         .builder()
                         .message("Data not found")
-                        .status(HttpStatus.BAD_REQUEST)
+                        .status(HttpStatus.OK)
                         .data(response)
                         .build();
             }
@@ -110,7 +110,7 @@ public class BranchService {
                 return GlobalResponse
                         .builder()
                         .message("Data not found")
-                        .status(HttpStatus.BAD_REQUEST)
+                        .status(HttpStatus.OK)
                         .data(response)
                         .build();
             }
@@ -184,7 +184,7 @@ public class BranchService {
                 return GlobalResponse
                         .builder()
                         .message("Data not found")
-                        .status(HttpStatus.BAD_REQUEST)
+                        .status(HttpStatus.OK)
                         .data(response)
                         .build();
             }
@@ -216,18 +216,24 @@ public class BranchService {
     public GlobalResponse findSpecificByAreaId(List<Long> id) {
         try {
             List<BranchInterface> response = new ArrayList<>();
+            if (id.isEmpty()) {
+                return GlobalResponse.builder().message("Id tidak boleh kosong")
+                        .errorMessage("Id is not found").status(HttpStatus.BAD_REQUEST)
+                        .data(response)
+                        .build();
+            }
             for (int i = 0; i < id.size(); i++) {
+
                 Optional<Area> getArea = areaRepository.findById(id.get(i));
                 if (!getArea.isPresent()) {
-                    return GlobalResponse.builder().message("failed")
-                            .message("Area with id:" + id.get(i) + " is not found").status(HttpStatus.BAD_REQUEST)
+                    return GlobalResponse.builder().message("Area tidak ditemukan")
+                            .errorMessage("Area with id:" + id.get(i) + " is not found").status(HttpStatus.BAD_REQUEST)
                             .data(response)
                             .build();
                 }
 
                 List<BranchInterface> getBranch = branchRepository.findSpecificBranchByAreaId(id.get(i));
                 if (!getBranch.isEmpty()) {
-
                     for (int u = 0; u < getBranch.size(); u++) {
                         response.add(getBranch.get(u));
                     }
@@ -238,11 +244,10 @@ public class BranchService {
                 return GlobalResponse
                         .builder()
                         .message("Data not found")
-                        .status(HttpStatus.BAD_REQUEST)
+                        .status(HttpStatus.OK)
                         .data(response)
                         .build();
             }
-            System.out.println("Kesini success");
             return GlobalResponse
                     .builder()
                     .message("Success")
@@ -279,7 +284,7 @@ public class BranchService {
                 return GlobalResponse
                         .builder()
                         .message("Data not found")
-                        .status(HttpStatus.BAD_REQUEST)
+                        .status(HttpStatus.OK)
                         .data(response)
                         .build();
             }
@@ -305,7 +310,7 @@ public class BranchService {
 
     }
 
-    public List<Object> findByUser(Long userId){
+    public List<Object> findByUser(Long userId) {
         Optional<User> getUser = userRepository.findById(userId);
         if (!getUser.isPresent()) {
             return null;
@@ -377,7 +382,8 @@ public class BranchService {
                         }
                     }
                 } else {
-                    return GlobalResponse.builder().message("Not Found").status(HttpStatus.BAD_REQUEST).data(getBranch).build();
+                    return GlobalResponse.builder().message("Not Found").status(HttpStatus.BAD_REQUEST).data(getBranch)
+                            .build();
                 }
             }
             List<Object> response = new ArrayList<>();
@@ -391,7 +397,7 @@ public class BranchService {
                 return GlobalResponse
                         .builder()
                         .message("Data not found")
-                        .status(HttpStatus.BAD_REQUEST)
+                        .status(HttpStatus.OK)
                         .data(response)
                         .build();
             }
@@ -424,7 +430,7 @@ public class BranchService {
                 return GlobalResponse
                         .builder()
                         .message("Data not found")
-                        .status(HttpStatus.BAD_REQUEST)
+                        .status(HttpStatus.OK)
                         .data(response)
                         .build();
             }
