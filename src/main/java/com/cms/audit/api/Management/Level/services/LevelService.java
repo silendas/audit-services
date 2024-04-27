@@ -30,7 +30,7 @@ public class LevelService {
             if (response.isEmpty()) {
                 return GlobalResponse
                         .builder()
-                        .message("Data not found")
+                        .message("Data not found").data(response)
                         .status(HttpStatus.OK)
                         .build();
             }
@@ -62,7 +62,7 @@ public class LevelService {
             if (response.isEmpty()) {
                 return GlobalResponse
                         .builder()
-                        .message("Data not found")
+                        .message("Data not found").data(response)
                         .status(HttpStatus.OK)
                         .build();
             }
@@ -91,11 +91,11 @@ public class LevelService {
     public GlobalResponse findOne(Long id) {
         try {
             Optional<Level> response = levelRepository.findOneLevelById(id);
-            if (!response.isPresent()) {
+            if(!response.isPresent()) {
                 return GlobalResponse
                         .builder()
-                        .message("Data not found")
-                        .status(HttpStatus.OK)
+                        .message("Data not found").data(response)
+                        .status(HttpStatus.BAD_REQUEST)
                         .build();
             }
             return GlobalResponse
@@ -161,6 +161,14 @@ public class LevelService {
 
     public GlobalResponse edit(LevelDTO dto, Long id) {
         try {
+            if(id == 4 || id == 3 || id == 2 || id == 1){
+                return GlobalResponse
+                        .builder()
+                        .message("karena masalah validasi jadi tidak boleh diubah")
+                        .errorMessage("Level dengan id :" +id+ " tidak boleh diubah")
+                        .status(HttpStatus.BAD_REQUEST)
+                        .build();
+            }
             Level levelGet = levelRepository.findById(id).get();
 
             Level level = new Level(
@@ -201,6 +209,14 @@ public class LevelService {
 
     public GlobalResponse delete(Long id) {
         try {
+            if(id == 4 || id == 3 || id == 2 || id == 1){
+                return GlobalResponse
+                        .builder()
+                        .message("karena masalah validasi jadi tidak boleh dihapus")
+                        .errorMessage("Level dengan id :" +id+ " tidak boleh diubah")
+                        .status(HttpStatus.BAD_REQUEST)
+                        .build();
+            }
             Level dto = levelRepository.findById(id).get();
 
             Level level = new Level(

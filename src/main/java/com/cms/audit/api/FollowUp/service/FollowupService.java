@@ -140,7 +140,7 @@ public class FollowupService {
             if (response.isEmpty()) {
                 return GlobalResponse
                         .builder()
-                        .message("Data not found")
+                        .message("Data not found").data(response)
                         .status(HttpStatus.OK)
                         .build();
             }
@@ -298,7 +298,6 @@ public class FollowupService {
             String fileName = fileStorageService.storeFile(file);
             String path = FOLDER_PATH + fileName;
             String filePath = path;
-            System.out.println(path);
 
             FollowUp followUp = getFollowUp.get();
             followUp.setFilename(fileName);

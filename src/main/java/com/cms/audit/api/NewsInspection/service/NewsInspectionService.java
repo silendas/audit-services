@@ -242,7 +242,7 @@ public class NewsInspectionService {
     public GlobalResponse uploadFile(MultipartFile file, Long id) {
         try {
             NewsInspection getBAP = repository.findById(id)
-                    .orElseThrow(() -> new BadRequestException("BAP with id: " + id + " is undefined"));
+                    .orElseThrow(() -> new BadRequestException("BAP with id: " + id + " is not found"));
 
             // String fileName = randomValueNumber.randomNumberGenerator() + "-" +
             // file.getOriginalFilename();

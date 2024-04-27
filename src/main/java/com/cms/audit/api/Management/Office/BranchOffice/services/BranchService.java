@@ -143,7 +143,7 @@ public class BranchService {
                 return GlobalResponse
                         .builder()
                         .message("Data not found")
-                        .status(HttpStatus.OK)
+                        .status(HttpStatus.BAD_REQUEST)
                         .data(response)
                         .build();
             }
@@ -216,18 +216,24 @@ public class BranchService {
     public GlobalResponse findSpecificByAreaId(List<Long> id) {
         try {
             List<BranchInterface> response = new ArrayList<>();
+            if (id.isEmpty()) {
+                return GlobalResponse.builder().message("Id tidak boleh kosong")
+                        .errorMessage("Id is not found").status(HttpStatus.BAD_REQUEST)
+                        .data(response)
+                        .build();
+            }
             for (int i = 0; i < id.size(); i++) {
+
                 Optional<Area> getArea = areaRepository.findById(id.get(i));
                 if (!getArea.isPresent()) {
-                    return GlobalResponse.builder().message("failed")
-                            .message("Area with id:" + id.get(i) + " is undefined").status(HttpStatus.BAD_REQUEST)
-                            .data(null)
+                    return GlobalResponse.builder().message("Area tidak ditemukan")
+                            .errorMessage("Area with id:" + id.get(i) + " is not found").status(HttpStatus.BAD_REQUEST)
+                            .data(response)
                             .build();
                 }
 
                 List<BranchInterface> getBranch = branchRepository.findSpecificBranchByAreaId(id.get(i));
                 if (!getBranch.isEmpty()) {
-
                     for (int u = 0; u < getBranch.size(); u++) {
                         response.add(getBranch.get(u));
                     }
@@ -239,10 +245,9 @@ public class BranchService {
                         .builder()
                         .message("Data not found")
                         .status(HttpStatus.OK)
-                        .data(null)
+                        .data(response)
                         .build();
             }
-            System.out.println("Kesini success");
             return GlobalResponse
                     .builder()
                     .message("Success")
@@ -280,7 +285,7 @@ public class BranchService {
                         .builder()
                         .message("Data not found")
                         .status(HttpStatus.OK)
-                        .data(null)
+                        .data(response)
                         .build();
             }
             return GlobalResponse
@@ -305,11 +310,54 @@ public class BranchService {
 
     }
 
+    public List<Object> findByUser(Long userId) {
+        Optional<User> getUser = userRepository.findById(userId);
+        if (!getUser.isPresent()) {
+            return null;
+        }
+        List<Branch> getBranch = new ArrayList<>();
+        if (!getUser.get().getBranchId().isEmpty()) {
+            for (int i = 0; i < getUser.get().getBranchId().size(); i++) {
+                Optional<Branch> getBranchAgain = branchRepository.findById(getUser.get().getBranchId().get(i));
+                if (getBranchAgain.isPresent()) {
+                    getBranch.add(getBranchAgain.get());
+                }
+            }
+        } else {
+            if (!getUser.get().getRegionId().isEmpty()) {
+                for (int i = 0; i < getUser.get().getRegionId().size(); i++) {
+                    List<Branch> getBranchAgain = branchRepository
+                            .findBranchByRegionId(getUser.get().getRegionId().get(i));
+                    if (!getBranchAgain.isEmpty()) {
+                        for (int u = 0; u < getBranchAgain.size(); u++) {
+                            if (!getBranch.contains(getBranchAgain.get(u))) {
+                                getBranch.add(getBranchAgain.get(u));
+                            }
+                        }
+                    }
+                }
+            } else {
+                return null;
+            }
+        }
+        List<Object> response = new ArrayList<>();
+        for (int i = 0; i < getBranch.size(); i++) {
+            Map<String, Object> mapping = new LinkedHashMap<>();
+            mapping.put("id", getBranch.get(i).getId());
+            mapping.put("name", getBranch.get(i).getName());
+            response.add(mapping);
+        }
+        if (response.isEmpty()) {
+            return null;
+        }
+        return response;
+    }
+
     public GlobalResponse findSpecificByUserid(Long userId) {
         try {
             Optional<User> getUser = userRepository.findById(userId);
             if (!getUser.isPresent()) {
-                return GlobalResponse.builder().message("User with id:" + userId + " is undefined")
+                return GlobalResponse.builder().message("User with id:" + userId + " is not found")
                         .status(HttpStatus.BAD_REQUEST).build();
             }
             List<Branch> getBranch = new ArrayList<>();
@@ -334,7 +382,8 @@ public class BranchService {
                         }
                     }
                 } else {
-                    return GlobalResponse.builder().message("Not Found").status(HttpStatus.OK).build();
+                    return GlobalResponse.builder().message("Not Found").status(HttpStatus.BAD_REQUEST).data(getBranch)
+                            .build();
                 }
             }
             List<Object> response = new ArrayList<>();
@@ -349,7 +398,7 @@ public class BranchService {
                         .builder()
                         .message("Data not found")
                         .status(HttpStatus.OK)
-                        .data(null)
+                        .data(response)
                         .build();
             }
             return GlobalResponse

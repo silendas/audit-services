@@ -38,13 +38,17 @@ public class RevisionService {
             if (detaild == null) {
                 List<Revision> response = repository.findAll();
                 if (response.isEmpty()) {
-                    return GlobalResponse.builder().message("Data not found").status(HttpStatus.OK).build();
+                    if (response.isEmpty()) {
+                    return GlobalResponse.builder().message("Data not found").status(HttpStatus.OK).data(response).build();
+                }
                 }
                 return GlobalResponse.builder().data(response).message("Success").status(HttpStatus.OK).build();
             } else {
                 List<Revision> response = repository.findByDetailIdAll(detaild);
                 if (response.isEmpty()) {
-                    return GlobalResponse.builder().message("Data not found").status(HttpStatus.OK).build();
+                    if (response.isEmpty()) {
+                    return GlobalResponse.builder().message("Data not found").status(HttpStatus.OK).data(response).build();
+                }
                 }
                 for (int i = 0; i < response.size(); i++) {
                     if (response.get(i).getIs_research() == 1) {

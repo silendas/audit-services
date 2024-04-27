@@ -143,11 +143,11 @@ public class DropdownController {
                     }
                     response = GlobalResponse.builder().data(user).message("Success").status(HttpStatus.OK).build();
                 } else {
-                    response = GlobalResponse.builder().data(null).message("Tidak dapat akses").status(HttpStatus.OK)
+                    response = GlobalResponse.builder().data(response).message("Tidak dapat akses").status(HttpStatus.OK)
                             .build();
                 }
             } else {
-                response = GlobalResponse.builder().data(null).message("Tidak dapat akses").status(HttpStatus.OK)
+                response = GlobalResponse.builder().data(response).message("Tidak dapat akses").status(HttpStatus.OK)
                         .build();
             }
         }
@@ -268,7 +268,7 @@ public class DropdownController {
             response = branchService.findSpecificByUserid(userId);
         } else if (name != null) {
             response = branchService.findSpecificByName(name);
-        } else if (areaId != null) {
+        } else if (!areaId.isEmpty() ) {
             response = branchService.findSpecificByAreaId(areaId);
         } else if (regionId != null) {
             response = branchService.findSpecificByRegionId(regionId);

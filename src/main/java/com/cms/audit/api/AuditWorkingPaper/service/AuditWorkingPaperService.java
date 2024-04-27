@@ -174,7 +174,7 @@ public class AuditWorkingPaperService {
             if (response.isEmpty()) {
                 return GlobalResponse
                         .builder()
-                        .message("Data not found")
+                        .message("Data not found").data(response)
                         .status(HttpStatus.OK)
                         .build();
             }
@@ -202,7 +202,7 @@ public class AuditWorkingPaperService {
     public GlobalResponse getOneById(Long id) {
         try {
             AuditWorkingPaper response = repository.findById(id)
-                    .orElseThrow(() -> new BadRequestException("LHA with id: " + id + " is undefined"));
+                    .orElseThrow(() -> new BadRequestException("LHA with id: " + id + " is not found"));
 
             Map<String, Object> kkaMap = new LinkedHashMap<>();
             kkaMap.put("id", response.getId());

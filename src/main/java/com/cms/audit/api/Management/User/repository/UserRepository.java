@@ -29,6 +29,12 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query(value = "SELECT * FROM users u WHERE u.id IN (SELECT r.user_id FROM user_region r WHERE r.region_id = :id)", nativeQuery = true)
     List<User> findByRegion(@Param("id") Long id);
 
+    @Query(value = "SELECT * FROM users u WHERE u.nip = :id", nativeQuery = true)
+    List<User> findByNIP(@Param("id") String id);
+    
+    @Query(value = "SELECT * FROM users u WHERE u.initial_name = :in", nativeQuery = true)
+    List<User> findByInitialName(@Param("in") String in);
+
     Optional<User> findByEmail(String email);
 
     Optional<User> findByUsername(String username);

@@ -30,12 +30,12 @@ public class FlagService {
     }
 
     public GlobalResponse getOne(Long id){
-        Flag response = repo.findById(id).orElseThrow(()-> new ResourceNotFoundException("Flag with id: " + id + " is undefined"));
+        Flag response = repo.findById(id).orElseThrow(()-> new ResourceNotFoundException("Flag with id: " + id + " is not found"));
         return GlobalResponse.builder().data(response).status(HttpStatus.OK).build();
     }
 
     public GlobalResponse getByDetail(Long detailId){
-        Flag response = repo.findOneByAuditDailyReportDetailId(detailId).orElseThrow(()-> new ResourceNotFoundException("Flag with lha_detail_id: " + detailId + " is undefined"));
+        Flag response = repo.findOneByAuditDailyReportDetailId(detailId).orElseThrow(()-> new ResourceNotFoundException("Flag with lha_detail_id: " + detailId + " is not found"));
         return GlobalResponse.builder().data(response).status(HttpStatus.OK).build();
     }
 

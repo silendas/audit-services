@@ -173,7 +173,13 @@ public class CaseService {
     public GlobalResponse edit(CaseDTO caseDTO, Long id) {
         try {
             Case caseGet = caseRepository.findById(id).get();
-
+            if (caseGet == null) {
+                return GlobalResponse
+                        .builder()
+                        .message("Case with id :" +id+ " no found")
+                        .status(HttpStatus.BAD_REQUEST)
+                        .build();
+            }
             Case caseEntity = new Case(
                     id,
                     caseDTO.getName(),

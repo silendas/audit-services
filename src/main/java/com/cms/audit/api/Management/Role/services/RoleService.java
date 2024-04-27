@@ -30,7 +30,7 @@ public class RoleService {
             if (response.isEmpty()) {
                 return GlobalResponse
                         .builder()
-                        .message("Data not found")
+                        .message("Data not found").data(response)
                         .status(HttpStatus.OK)
                         .build();
             }
@@ -62,7 +62,7 @@ public class RoleService {
             if (response.isEmpty()) {
                 return GlobalResponse
                         .builder()
-                        .message("Data not found")
+                        .message("Data not found").data(response)
                         .status(HttpStatus.OK)
                         .build();
             }
@@ -91,11 +91,10 @@ public class RoleService {
     public GlobalResponse findOne(Long id) {
         try {
             Optional<Role> response = roleRepository.findOneRoleById(id);
-            if (!response.isPresent()) {
-                return GlobalResponse
-                        .builder()
-                        .message("Data not found")
-                        .status(HttpStatus.OK)
+            if(!response.isPresent()) {
+                return GlobalResponse.builder().message("Data not found")
+                        .data(response)
+                        .status(HttpStatus.BAD_REQUEST)
                         .build();
             }
             return GlobalResponse
@@ -160,6 +159,14 @@ public class RoleService {
 
     public GlobalResponse edit(RoleDTO roleDTO, Long id) {
         try {
+            if(id == 2 || id == 1){
+                return GlobalResponse
+                        .builder()
+                        .message("karena masalah validasi jadi tidak boleh diubah")
+                        .errorMessage("Role dengan id :" +id+ " tidak boleh diubah")
+                        .status(HttpStatus.BAD_REQUEST)
+                        .build();
+            }
             Role roleGet = roleRepository.findById(id).get();
 
             Role role = new Role(
@@ -199,6 +206,14 @@ public class RoleService {
 
     public GlobalResponse delete(Long id) {
         try {
+            if(id == 2 || id == 1){
+                return GlobalResponse
+                        .builder()
+                        .message("karena masalah validasi jadi tidak boleh dihapus")
+                        .errorMessage("Role dengan id :" +id+ " tidak boleh diubah")
+                        .status(HttpStatus.BAD_REQUEST)
+                        .build();
+            }
             Role roleGet = roleRepository.findById(id).get();
 
             Role role = new Role(

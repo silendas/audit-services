@@ -45,7 +45,7 @@ public class MainService {
             if (response.isEmpty()) {
                 return GlobalResponse
                         .builder()
-                        .message("Data not found")
+                        .message("Data not found").data(response)
                         .status(HttpStatus.OK)
                         .build();
             }
@@ -107,11 +107,11 @@ public class MainService {
     public GlobalResponse findOne(Long id) {
         try {
             Optional<Main> response = mainRepository.findOneMainById(id);
-            if (!response.isPresent()) {
+            if(!response.isPresent()) {
                 return GlobalResponse
                         .builder()
-                        .message("Data not found")
-                        .status(HttpStatus.OK)
+                        .message("Data not found").data(response)
+                        .status(HttpStatus.BAD_REQUEST)
                         .build();
             }
             return GlobalResponse

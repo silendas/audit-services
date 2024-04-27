@@ -1,6 +1,7 @@
 package com.cms.audit.api.Management.Level.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,54 +21,59 @@ import com.cms.audit.api.Management.Level.services.LevelService;
 @RestController
 @RequestMapping(value = BasePath.BASE_PATH_LEVEL)
 public class LevelController {
-    
+
     @Autowired
     private LevelService levelService;
 
     @GetMapping
-    public ResponseEntity<Object> findAll(){
-        GlobalResponse response = levelService.findAll(); 
-        if(response.getError() != null){
+    public ResponseEntity<Object> findAll() {
+        GlobalResponse response = levelService.findAll();
+        if (response.getError() != null) {
             return ResponseEntittyHandler.allHandler(null, null, response.getStatus(), response.getError());
         }
-        return ResponseEntittyHandler.allHandler(response.getData(),response.getMessage(), response.getStatus(), null);
+        return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(), null);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Object> findOne(@PathVariable("id") Long id){
-        GlobalResponse response = levelService.findOne(id); 
-        if(response.getError() != null){
+    public ResponseEntity<Object> findOne(@PathVariable("id") Long id) {
+        GlobalResponse response = levelService.findOne(id);
+        if (response.getError() != null) {
             return ResponseEntittyHandler.allHandler(null, null, response.getStatus(), response.getError());
         }
-        return ResponseEntittyHandler.allHandler(response.getData(),response.getMessage(), response.getStatus(), null);
+        return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(), null);
     }
 
     @PostMapping
-    public ResponseEntity<Object> save(@RequestBody LevelDTO levelDTO){
-        GlobalResponse response =  levelService.save(levelDTO);
-        if(response.getError() != null){
+    public ResponseEntity<Object> save(@RequestBody LevelDTO levelDTO) {
+        GlobalResponse response = levelService.save(levelDTO);
+        if (response.getError() != null) {
             return ResponseEntittyHandler.allHandler(null, null, response.getStatus(), response.getError());
         }
-        return ResponseEntittyHandler.allHandler(response.getData(),response.getMessage(), response.getStatus(), null);
+        return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(), null);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Object> edit(@RequestBody LevelDTO levelDTO, @PathVariable("id") Long id){
-        GlobalResponse response =  levelService.edit(levelDTO, id);
-        if(response.getError() != null){
-            return ResponseEntittyHandler.allHandler(null, null, response.getStatus(), response.getError());
+    public ResponseEntity<Object> edit(@RequestBody LevelDTO levelDTO, @PathVariable("id") Long id) {
+        GlobalResponse response = levelService.edit(levelDTO, id);
+        if (response.getStatus().equals(HttpStatus.BAD_REQUEST)) {
+            return ResponseEntittyHandler.errorResponse(response.getErrorMessage(), response.getMessage(),
+                    response.getStatus());
+        } else {
+            return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(),
+                    response.getError());
         }
-        return ResponseEntittyHandler.allHandler(response.getData(),response.getMessage(), response.getStatus(), null);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Object> delete(@PathVariable("id") Long id){
-        GlobalResponse response =  levelService.delete(id);
-        if(response.getError() != null){
-            return ResponseEntittyHandler.allHandler(null, null, response.getStatus(), response.getError());
+    public ResponseEntity<Object> delete(@PathVariable("id") Long id) {
+        GlobalResponse response = levelService.delete(id);
+        if (response.getStatus().equals(HttpStatus.BAD_REQUEST)) {
+            return ResponseEntittyHandler.errorResponse(response.getErrorMessage(), response.getMessage(),
+                    response.getStatus());
+        } else {
+            return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(),
+                    response.getError());
         }
-        return ResponseEntittyHandler.allHandler(response.getData(),response.getMessage(), response.getStatus(), null);
     }
-
 
 }

@@ -46,6 +46,7 @@ public class RescheduleController {
     public ResponseEntity<Object> get(
             @RequestParam("branch_id") Optional<Long> branch_id,
             @RequestParam("name") Optional<String> name,
+            @RequestParam("status") Optional<String> status,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Optional<Date> start_date,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Optional<Date> end_date,
             @NonNull HttpServletRequest request,

@@ -143,7 +143,7 @@ public class AreaService {
                 return GlobalResponse
                         .builder()
                         .message("Data not found")
-                        .status(HttpStatus.OK)
+                        .status(HttpStatus.BAD_REQUEST)
                         .data(response)
                         .build();
             }
@@ -218,7 +218,7 @@ public class AreaService {
                         .builder()
                         .message("Data not found")
                         .status(HttpStatus.OK)
-                        .data(null)
+                        .data(response)
                         .build();
             }
             return GlobalResponse

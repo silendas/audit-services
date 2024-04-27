@@ -121,7 +121,7 @@ public class ScheduleService {
                                 return GlobalResponse
                                                 .builder()
                                                 .message("Data not found")
-                                                .data(null)
+                                                .data(response)
                                                 .status(HttpStatus.OK)
                                                 .build();
                         }
@@ -181,7 +181,7 @@ public class ScheduleService {
                                 return GlobalResponse
                                                 .builder()
                                                 .message("Data not found")
-                                                .data(null)
+                                                .data(response)
                                                 .status(HttpStatus.OK)
                                                 .build();
                         }
@@ -369,7 +369,6 @@ public class ScheduleService {
                                 return GlobalResponse
                                                 .builder()
                                                 .message("Success")
-                                                .data(null)
                                                 .status(HttpStatus.OK)
                                                 .build();
                         }
@@ -540,7 +539,7 @@ public class ScheduleService {
                         if (!getSchedule.isPresent()) {
                                 return GlobalResponse
                                                 .builder()
-                                                .message("Data schedule with id :" + id + " is undefined")
+                                                .message("Data schedule with id :" + id + " is not found")
                                                 .status(HttpStatus.OK)
                                                 .build();
                         }
@@ -621,18 +620,29 @@ public class ScheduleService {
                 }
         }
 
+        public GlobalResponse getByStatusSchedule(String name, Long branchId, Date startDate, Date endDate, int page,
+                        int size, String status) {
+                User getUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+                if (getUser.getLevel().getCode().equals("A") || getUser.getLevel().getCode().equals("A")) {
+                        return getReschedule(name, branchId, page, size, startDate, endDate, "REQUEST");
+                } else if (getUser.getLevel().getCode().equals("B")) {
+                        return getReschedule(name, branchId, page, size, startDate, endDate, "PENDING");
+                } else {
+                        return null;
+                }
+        }
+
         public GlobalResponse getByStatus(String name, Long branchId, Date startDate, Date endDate, int page,
                         int size) {
                 User getUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
                 if (getUser.getLevel().getCode().equals("A") || getUser.getLevel().getCode().equals("A")) {
                         return getReschedule(name, branchId, page, size, startDate, endDate, "REQUEST");
-                        // response = pagSchedule.findOneScheduleByStatus("PENDING",
-                        // PageRequest.of(page, size));
                 } else if (getUser.getLevel().getCode().equals("B")) {
                         return getReschedule(name, branchId, page, size, startDate, endDate, "PENDING");
                 } else {
-                        return GlobalResponse.builder().message("Audit wilayah tidak dapat mengakses").data(null)
+                        return GlobalResponse.builder().message("Audit wilayah tidak dapat mengakses")
                                         .status(HttpStatus.OK).build();
                 }
 
@@ -660,24 +670,74 @@ public class ScheduleService {
                         mapParent.put("description", response.get(i).getDescription());
                         mapParent.put("status", response.get(i).getStatus());
                         mapParent.put("category", response.get(i).getCategory());
-                        if (response.get(i).getStart_date() == null) {
-                                mapParent.put("start_date", null);
+                        if (response.get(i).getScheduleTrx() != null) {
+                                Optional<ScheduleTrx> trxCheck = scheduleTrxRepo
+                                                .findById(response.get(i).getScheduleTrx().getId());
+                                if (trxCheck.isPresent()) {
+                                        if (trxCheck.get().getStart_date() == null) {
+                                                mapParent.put("new_start_date", null);
+                                        } else {
+                                                mapParent.put("new_start_date", convertDateToRoman
+                                                                .convertDateHehe(trxCheck.get().getStart_date()));
+                                        }
+                                        if (trxCheck.get().getEnd_date() == null) {
+                                                mapParent.put("new_end_date", null);
+                                        } else {
+                                                mapParent.put("new_end_date", convertDateToRoman
+                                                                .convertDateHehe(trxCheck.get().getEnd_date()));
+                                        }
+                                }
+                                if (response.get(i).getStart_date() == null) {
+                                        mapParent.put("start_date", null);
+                                } else {
+                                        mapParent.put("start_date", convertDateToRoman
+                                                        .convertDateHehe(response.get(i).getStart_date()));
+                                }
+                                if (response.get(i).getEnd_date() == null) {
+                                        mapParent.put("end_date", null);
+                                } else {
+                                        mapParent.put("end_date", convertDateToRoman
+                                                        .convertDateHehe(response.get(i).getEnd_date()));
+                                }
+                                if (response.get(i).getStart_date_realization() == null) {
+                                        mapParent.put("start_date_realization", null);
+                                } else {
+                                        mapParent.put("start_date_realization",
+                                                        convertDateToRoman.convertDateHehe(response.get(i)
+                                                                        .getStart_date_realization()));
+                                }
+                                if (response.get(i).getEnd_date_realization() == null) {
+                                        mapParent.put("end_date_realization", null);
+                                } else {
+                                        mapParent.put("end_date_realization", convertDateToRoman.convertDateHehe(
+                                                        response.get(i).getEnd_date_realization()));
+                                }
                         } else {
-                                mapParent.put("start_date", convertDateToRoman
-                                                .convertDateHehe(response.get(i).getStart_date()));
-                        }
-                        if (response.get(i).getEnd_date() == null) {
-                                mapParent.put("end_date", null);
-                        } else {
-                                mapParent.put("end_date", convertDateToRoman
-                                                .convertDateHehe(response.get(i).getEnd_date()));
-                        }
-                        if (response.get(i).getStart_date_realization() == null) {
-                                mapParent.put("start_date_realization", null);
-                        } else {
-                                mapParent.put("start_date_realization",
-                                                convertDateToRoman.convertDateHehe(response.get(i)
-                                                                .getStart_date_realization()));
+                                if (response.get(i).getStart_date() == null) {
+                                        mapParent.put("start_date", null);
+                                } else {
+                                        mapParent.put("start_date", convertDateToRoman
+                                                        .convertDateHehe(response.get(i).getStart_date()));
+                                }
+                                if (response.get(i).getEnd_date() == null) {
+                                        mapParent.put("end_date", null);
+                                } else {
+                                        mapParent.put("end_date", convertDateToRoman
+                                                        .convertDateHehe(response.get(i).getEnd_date()));
+                                }
+                                if (response.get(i).getStart_date_realization() == null) {
+                                        mapParent.put("start_date_realization", null);
+                                } else {
+                                        mapParent.put("start_date_realization",
+                                                        convertDateToRoman.convertDateHehe(response.get(i)
+                                                                        .getStart_date_realization()));
+                                }
+                                if (response.get(i).getEnd_date_realization() == null) {
+                                        mapParent.put("end_date_realization", null);
+                                } else {
+                                        mapParent.put("end_date_realization", convertDateToRoman.convertDateHehe(
+                                                        response.get(i).getEnd_date_realization()));
+                                }
                         }
                         if (response.get(i).getEnd_date_realization() == null) {
                                 mapParent.put("end_date_realization", null);
@@ -724,29 +784,74 @@ public class ScheduleService {
                 map.put("description", response.getDescription());
                 map.put("status", response.getStatus());
                 map.put("category", response.getCategory());
-                if (response.getStart_date() == null) {
-                        map.put("start_date", "-");
+                if (response.getScheduleTrx() != null) {
+                        Optional<ScheduleTrx> trxCheck = scheduleTrxRepo
+                                        .findById(response.getScheduleTrx().getId());
+                        if (trxCheck.isPresent()) {
+                                if (trxCheck.get().getStart_date() == null) {
+                                        map.put("new_start_date", null);
+                                } else {
+                                        map.put("new_start_date", convertDateToRoman
+                                                        .convertDateHehe(trxCheck.get().getStart_date()));
+                                }
+                                if (trxCheck.get().getEnd_date() == null) {
+                                        map.put("new_end_date", null);
+                                } else {
+                                        map.put("new_end_date", convertDateToRoman
+                                                        .convertDateHehe(trxCheck.get().getEnd_date()));
+                                }
+                        }
+                        if (response.getStart_date() == null) {
+                                map.put("start_date", null);
+                        } else {
+                                map.put("start_date", convertDateToRoman
+                                                .convertDateHehe(response.getStart_date()));
+                        }
+                        if (response.getEnd_date() == null) {
+                                map.put("end_date", null);
+                        } else {
+                                map.put("end_date", convertDateToRoman
+                                                .convertDateHehe(response.getEnd_date()));
+                        }
+                        if (response.getStart_date_realization() == null) {
+                                map.put("start_date_realization", null);
+                        } else {
+                                map.put("start_date_realization",
+                                                convertDateToRoman.convertDateHehe(response
+                                                                .getStart_date_realization()));
+                        }
+                        if (response.getEnd_date_realization() == null) {
+                                map.put("end_date_realization", null);
+                        } else {
+                                map.put("end_date_realization", convertDateToRoman.convertDateHehe(
+                                                response.getEnd_date_realization()));
+                        }
                 } else {
-                        map.put("start_date", convertDateToRoman
-                                        .convertDateHehe(response.getStart_date()));
-                }
-                if (response.getEnd_date() == null) {
-                        map.put("end_date", "-");
-                } else {
-                        map.put("end_date", convertDateToRoman
-                                        .convertDateHehe(response.getEnd_date()));
-                }
-                if (response.getStart_date_realization() == null) {
-                        map.put("start_date_realization", "-");
-                } else {
-                        map.put("start_date_realization",
-                                        convertDateToRoman.convertDateHehe(response.getStart_date_realization()));
-                }
-                if (response.getEnd_date_realization() == null) {
-                        map.put("end_date_realization", "-");
-                } else {
-                        map.put("end_date_realization",
-                                        convertDateToRoman.convertDateHehe(response.getEnd_date_realization()));
+                        if (response.getStart_date() == null) {
+                                map.put("start_date", null);
+                        } else {
+                                map.put("start_date", convertDateToRoman
+                                                .convertDateHehe(response.getStart_date()));
+                        }
+                        if (response.getEnd_date() == null) {
+                                map.put("end_date", null);
+                        } else {
+                                map.put("end_date", convertDateToRoman
+                                                .convertDateHehe(response.getEnd_date()));
+                        }
+                        if (response.getStart_date_realization() == null) {
+                                map.put("start_date_realization", null);
+                        } else {
+                                map.put("start_date_realization",
+                                                convertDateToRoman.convertDateHehe(response
+                                                                .getStart_date_realization()));
+                        }
+                        if (response.getEnd_date_realization() == null) {
+                                map.put("end_date_realization", null);
+                        } else {
+                                map.put("end_date_realization", convertDateToRoman.convertDateHehe(
+                                                response.getEnd_date_realization()));
+                        }
                 }
 
                 return map;
@@ -775,30 +880,75 @@ public class ScheduleService {
                         map.put("description", response.getContent().get(i).getDescription());
                         map.put("status", response.getContent().get(i).getStatus());
                         map.put("category", response.getContent().get(i).getCategory());
-                        if (response.getContent().get(i).getStart_date() == null) {
-                                map.put("start_date", null);
+
+                        if (response.getContent().get(i).getScheduleTrx() != null) {
+                                Optional<ScheduleTrx> trxCheck = scheduleTrxRepo
+                                                .findById(response.getContent().get(i).getScheduleTrx().getId());
+                                if (trxCheck.isPresent()) {
+                                        if (trxCheck.get().getStart_date() == null) {
+                                                map.put("new_start_date", null);
+                                        } else {
+                                                map.put("new_start_date", convertDateToRoman
+                                                                .convertDateHehe(trxCheck.get().getStart_date()));
+                                        }
+                                        if (trxCheck.get().getEnd_date() == null) {
+                                                map.put("new_end_date", null);
+                                        } else {
+                                                map.put("new_end_date", convertDateToRoman
+                                                                .convertDateHehe(trxCheck.get().getEnd_date()));
+                                        }
+                                }
+                                if (response.getContent().get(i).getStart_date() == null) {
+                                        map.put("start_date", null);
+                                } else {
+                                        map.put("start_date", convertDateToRoman
+                                                        .convertDateHehe(response.getContent().get(i).getStart_date()));
+                                }
+                                if (response.getContent().get(i).getEnd_date() == null) {
+                                        map.put("end_date", null);
+                                } else {
+                                        map.put("end_date", convertDateToRoman
+                                                        .convertDateHehe(response.getContent().get(i).getEnd_date()));
+                                }
+                                if (response.getContent().get(i).getStart_date_realization() == null) {
+                                        map.put("start_date_realization", null);
+                                } else {
+                                        map.put("start_date_realization",
+                                                        convertDateToRoman.convertDateHehe(response.getContent().get(i)
+                                                                        .getStart_date_realization()));
+                                }
+                                if (response.getContent().get(i).getEnd_date_realization() == null) {
+                                        map.put("end_date_realization", null);
+                                } else {
+                                        map.put("end_date_realization", convertDateToRoman.convertDateHehe(
+                                                        response.getContent().get(i).getEnd_date_realization()));
+                                }
                         } else {
-                                map.put("start_date", convertDateToRoman
-                                                .convertDateHehe(response.getContent().get(i).getStart_date()));
-                        }
-                        if (response.getContent().get(i).getEnd_date() == null) {
-                                map.put("end_date", null);
-                        } else {
-                                map.put("end_date", convertDateToRoman
-                                                .convertDateHehe(response.getContent().get(i).getEnd_date()));
-                        }
-                        if (response.getContent().get(i).getStart_date_realization() == null) {
-                                map.put("start_date_realization", null);
-                        } else {
-                                map.put("start_date_realization",
-                                                convertDateToRoman.convertDateHehe(response.getContent().get(i)
-                                                                .getStart_date_realization()));
-                        }
-                        if (response.getContent().get(i).getEnd_date_realization() == null) {
-                                map.put("end_date_realization", null);
-                        } else {
-                                map.put("end_date_realization", convertDateToRoman.convertDateHehe(
-                                                response.getContent().get(i).getEnd_date_realization()));
+                                if (response.getContent().get(i).getStart_date() == null) {
+                                        map.put("start_date", null);
+                                } else {
+                                        map.put("start_date", convertDateToRoman
+                                                        .convertDateHehe(response.getContent().get(i).getStart_date()));
+                                }
+                                if (response.getContent().get(i).getEnd_date() == null) {
+                                        map.put("end_date", null);
+                                } else {
+                                        map.put("end_date", convertDateToRoman
+                                                        .convertDateHehe(response.getContent().get(i).getEnd_date()));
+                                }
+                                if (response.getContent().get(i).getStart_date_realization() == null) {
+                                        map.put("start_date_realization", null);
+                                } else {
+                                        map.put("start_date_realization",
+                                                        convertDateToRoman.convertDateHehe(response.getContent().get(i)
+                                                                        .getStart_date_realization()));
+                                }
+                                if (response.getContent().get(i).getEnd_date_realization() == null) {
+                                        map.put("end_date_realization", null);
+                                } else {
+                                        map.put("end_date_realization", convertDateToRoman.convertDateHehe(
+                                                        response.getContent().get(i).getEnd_date_realization()));
+                                }
                         }
 
                         Optional<AuditWorkingPaper> getKka = auditWorkingPaperRepository
@@ -853,7 +1003,7 @@ public class ScheduleService {
                                 return GlobalResponse
                                                 .builder()
                                                 .message("Data not found")
-                                                .status(HttpStatus.OK)
+                                                .status(HttpStatus.OK).data(response)
                                                 .build();
                         }
                         return GlobalResponse
@@ -893,7 +1043,7 @@ public class ScheduleService {
                                 return GlobalResponse
                                                 .builder()
                                                 .message("Data not found")
-                                                .status(HttpStatus.OK)
+                                                .status(HttpStatus.OK).data(response)
                                                 .build();
                         }
                         return GlobalResponse
@@ -936,14 +1086,14 @@ public class ScheduleService {
                         Map<String, Object> err = new HashMap<>();
 
                         for (int i = 0; i < scheduleDTO.getSchedules().size(); i++) {
+
                                 if (scheduleDTO.getSchedules().get(i).getStart_date().before(getDateNow())
                                                 || scheduleDTO.getSchedules().get(i).getEnd_date()
                                                                 .before(getDateNow())) {
                                         return GlobalResponse
                                                         .builder()
-                                                        .message("failed")
-                                                        .message("Tidak bisa menambahkan jadwal kemarin")
-                                                        .data(err.put("error", "Invalid start or end date"))
+                                                        .message("Tidak boleh input jadwal kemarin")
+                                                        .errorMessage("Tidak bisa menambahkan jadwal kemarin")
                                                         .status(HttpStatus.BAD_REQUEST)
                                                         .build();
                                 }
@@ -956,9 +1106,8 @@ public class ScheduleService {
                                 if (!checkIfExist.isEmpty()) {
                                         return GlobalResponse
                                                         .builder()
-                                                        .message("failed")
-                                                        .message("Tanggal duplikat")
-                                                        .data(err.put("error", "Conflict date exists"))
+                                                        .message("Anda menginput tanggal yang sudah ada")
+                                                        .errorMessage("Tanggal duplikat")
                                                         .status(HttpStatus.BAD_REQUEST)
                                                         .build();
                                 }
@@ -967,9 +1116,8 @@ public class ScheduleService {
                                                 .after(scheduleDTO.getSchedules().get(i).getEnd_date())) {
                                         return GlobalResponse
                                                         .builder()
-                                                        .message("failed")
-                                                        .message("Start date lebih besar dari end date")
-                                                        .data(err.put("error", "Invalid time range"))
+                                                        .message("Tanggal mulai lebih besar dari tanggal berakhir")
+                                                        .errorMessage("Start date lebih besar dari end date")
                                                         .status(HttpStatus.BAD_REQUEST)
                                                         .build();
                                 }
@@ -981,15 +1129,14 @@ public class ScheduleService {
                                 if (!checkDatefExist.isEmpty()) {
                                         return GlobalResponse
                                                         .builder()
-                                                        .message("failed")
-                                                        .message("Tanggal dengan start_date:"
+                                                        .message("Tanggal sudah tersedia")
+                                                        .errorMessage("Tanggal dengan start_date:"
                                                                         + scheduleDTO.getSchedules().get(i)
                                                                                         .getStart_date()
                                                                         + " and end_date:"
                                                                         + scheduleDTO.getSchedules().get(i)
                                                                                         .getEnd_date()
                                                                         + ", sudah terbuat sebelumnya")
-                                                        .data(err.put("error", "Conflict date range already exist"))
                                                         .status(HttpStatus.BAD_REQUEST)
                                                         .build();
                                 }
@@ -1000,12 +1147,11 @@ public class ScheduleService {
                                                 .findById(scheduleDTO.getSchedules().get(i).getBranch_id());
                                 if (!branchId.isPresent()) {
                                         return GlobalResponse.builder()
-                                                        .message("failed")
-                                                        .message("Branch with id: "
+                                                        .message("Branch tidak ditemukan")
+                                                        .errorMessage("Branch with id: "
                                                                         + scheduleDTO.getSchedules().get(i)
                                                                                         .getBranch_id()
-                                                                        + " is undefined")
-                                                        .data(err.put("error", "Undefined Branch Id"))
+                                                                        + " is not found")
                                                         .status(HttpStatus.BAD_REQUEST)
                                                         .build();
                                 }
@@ -1014,11 +1160,10 @@ public class ScheduleService {
                                                 .findById(scheduleDTO.getSchedules().get(i).getUser_id());
                                 if (!userId.isPresent()) {
                                         return GlobalResponse.builder()
-                                                        .message("failed")
-                                                        .message("User with id: "
+                                                        .message("User tidak ditemukan")
+                                                        .errorMessage("User with id: "
                                                                         + scheduleDTO.getSchedules().get(i).getUser_id()
-                                                                        + " is undefined")
-                                                        .data(err.put("error", "Undefined User Id"))
+                                                                        + " is not found")
                                                         .status(HttpStatus.BAD_REQUEST)
                                                         .build();
                                 }
@@ -1089,9 +1234,8 @@ public class ScheduleService {
                                                                 .before(getDateNow())) {
                                         return GlobalResponse
                                                         .builder()
-                                                        .message("failed")
-                                                        .message("Tidak bisa menambahkan jadwal kemarin")
-                                                        .data(err.put("error", "Date is yesterday"))
+                                                        .message("Tanggal yang diinput adalah tanggal sebelumnya")
+                                                        .errorMessage("Tidak bisa menambahkan jadwal kemarin")
                                                         .status(HttpStatus.BAD_REQUEST)
                                                         .build();
                                 }
@@ -1104,9 +1248,8 @@ public class ScheduleService {
                                 if (!checkIfExist.isEmpty()) {
                                         return GlobalResponse
                                                         .builder()
-                                                        .message("failed")
-                                                        .message("Tanggal duplikat")
-                                                        .data(err.put("error", "Repeated date"))
+                                                        .message("Tanggal sudah ada")
+                                                        .errorMessage("Tanggal duplikat")
                                                         .status(HttpStatus.BAD_REQUEST)
                                                         .build();
                                 }
@@ -1115,9 +1258,8 @@ public class ScheduleService {
                                                 .after(scheduleDTO.getSchedules().get(i).getEnd_date())) {
                                         return GlobalResponse
                                                         .builder()
-                                                        .message("failed")
-                                                        .message("Start date lebih besar dari end date")
-                                                        .data(err.put("error", "Invalid start and end date"))
+                                                        .message("Tanggal mulai lebih besar dari tanggal berakhir")
+                                                        .errorMessage("Start date lebih besar dari end date")
                                                         .status(HttpStatus.BAD_REQUEST)
                                                         .build();
                                 }
@@ -1127,12 +1269,11 @@ public class ScheduleService {
                                                 .findById(scheduleDTO.getSchedules().get(i).getBranch_id());
                                 if (!branchId.isPresent()) {
                                         return GlobalResponse.builder()
-                                                        .message("failed")
-                                                        .message("Branch with id: "
+                                                        .message("Branch tidak ditemukan")
+                                                        .errorMessage("Branch with id: "
                                                                         + scheduleDTO.getSchedules().get(i)
                                                                                         .getBranch_id()
-                                                                        + " is undefined")
-                                                        .data(err.put("error", "Undefined Branch Id"))
+                                                                        + " is not found")
                                                         .status(HttpStatus.BAD_REQUEST)
                                                         .build();
                                 }
@@ -1141,11 +1282,10 @@ public class ScheduleService {
                                                 .findById(scheduleDTO.getSchedules().get(i).getUser_id());
                                 if (!userId.isPresent()) {
                                         return GlobalResponse.builder()
-                                                        .message("failed")
-                                                        .message("User with id: "
+                                                        .message("User tidak ditemukan")
+                                                        .errorMessage("User with id: "
                                                                         + scheduleDTO.getSchedules().get(i).getUser_id()
-                                                                        + " is undefined")
-                                                        .data(err.put("error", "Undefined User Id"))
+                                                                        + " is not found")
                                                         .status(HttpStatus.BAD_REQUEST)
                                                         .build();
                                 }
@@ -1208,9 +1348,8 @@ public class ScheduleService {
                                                         .before(getDateNow())) {
                                 return GlobalResponse
                                                 .builder()
-                                                .message("failed")
-                                                .message("Tidak bisa menambahkan jadwal kemarin")
-                                                .data(err.put("error", "Date is yesterday"))
+                                                .message("Tanggal yang diinputkan adalah tanggal sebelumnya")
+                                                .errorMessage("Tidak bisa menambahkan jadwal kemarin")
                                                 .status(HttpStatus.BAD_REQUEST)
                                                 .build();
                         }
@@ -1223,18 +1362,16 @@ public class ScheduleService {
                         if (!checkIfExist.isEmpty()) {
                                 return GlobalResponse
                                                 .builder()
-                                                .message("failed")
-                                                .message("Jadwal duplikat")
-                                                .data(err.put("error", "Duplicate Schedule"))
+                                                .message("Jadwal sudah ada")
+                                                .errorMessage("Jadwal duplikat")
                                                 .status(HttpStatus.BAD_REQUEST)
                                                 .build();
                         }
                         if (dto.getStart_date().after(dto.getEnd_date())) {
                                 return GlobalResponse
                                                 .builder()
-                                                .message("failed")
-                                                .message("Start date lebih besar dari end date")
-                                                .data(err.put("error", "Invalid Date Range"))
+                                                .message("Tanggal mulai lebih besar dari tanggal berakhir")
+                                                .errorMessage("Start date lebih besar dari end date")
                                                 .status(HttpStatus.BAD_REQUEST)
                                                 .build();
                         }
@@ -1246,13 +1383,12 @@ public class ScheduleService {
                         if (!checkDatefExist.isEmpty()) {
                                 return GlobalResponse
                                                 .builder()
-                                                .message("Failed")
-                                                .message("Tanggal dengan start_date:"
+                                                .message("Tanggal sudah tersedia")
+                                                .errorMessage("Tanggal dengan start_date:"
                                                                 + dto.getStart_date()
                                                                 + " and end_date:"
                                                                 + dto.getEnd_date()
                                                                 + ", sudah terbuat sebelumnya")
-                                                .data(err.put("error", "Conflict Date Range"))
                                                 .status(HttpStatus.BAD_REQUEST)
                                                 .build();
                         }
@@ -1260,18 +1396,17 @@ public class ScheduleService {
                                         .orElseThrow(() -> new ResourceNotFoundException("User not found"));
                         Schedule getSchedule = repository.findById(dto.getSchedule_id())
                                         .orElseThrow(() -> new ResourceNotFoundException(
-                                                        "Schedule with id: " + dto.getSchedule_id() + " is undefined"));
+                                                        "Schedule with id: " + dto.getSchedule_id() + " is not found"));
 
                         Optional<Branch> branchId = branchRepository
                                         .findById(dto.getBranch_id());
                         if (!branchId.isPresent()) {
                                 return GlobalResponse.builder()
-                                                .message("Branch with id: "
+                                                .errorMessage("Branch with id: "
                                                                 + dto
                                                                                 .getBranch_id()
-                                                                + " is undefined")
-                                                .data(err.put("error", "Undefined Branch Id"))
-                                                .message("Failed")
+                                                                + " is not found")
+                                                .message("Branch tidak ditemukan")
                                                 .status(HttpStatus.BAD_REQUEST)
                                                 .build();
                         }
@@ -1280,10 +1415,10 @@ public class ScheduleService {
                                         .findById(dto.getUser_id());
                         if (!userId.isPresent()) {
                                 return GlobalResponse.builder()
-                                                .message("User with id: "
+                                                .errorMessage("User with id: "
                                                                 + dto.getUser_id()
-                                                                + " is undefined")
-                                                .data(err.put("error", "Undefined User Id"))
+                                                                + " is not found")
+                                                .message("User tidak ditemukan")
                                                 .status(HttpStatus.BAD_REQUEST)
                                                 .build();
                         }
@@ -1302,8 +1437,6 @@ public class ScheduleService {
 
                         Schedule schedule1 = getSchedule;
                         schedule1.setScheduleTrx(response1);
-                        schedule1.setStart_date(dto.getStart_date());
-                        schedule1.setEnd_date(dto.getEnd_date());
                         schedule1.setStatus(EStatus.REQUEST);
                         schedule1.setUpdatedBy(getUser.getId());
                         schedule1.setUpdated_at(new Date());
@@ -1340,9 +1473,8 @@ public class ScheduleService {
                                                         .before(getDateNow())) {
                                 return GlobalResponse
                                                 .builder()
-                                                .message("failed")
-                                                .message("Tidak bisa menambahkan jadwal kemarin")
-                                                .data(err.put("error", "Date is yesterday"))
+                                                .message("Jadwal yang dimasukkan adalah jadwal sebelumnya")
+                                                .errorMessage("Tidak bisa menambahkan jadwal kemarin")
                                                 .status(HttpStatus.BAD_REQUEST)
                                                 .build();
                         }
@@ -1355,18 +1487,16 @@ public class ScheduleService {
                         if (!checkIfExist.isEmpty()) {
                                 return GlobalResponse
                                                 .builder()
-                                                .message("failed")
-                                                .message("Jadwal duplikat")
-                                                .data(err.put("error", "Duplicate Schedule"))
+                                                .message("Jadwal sudah ada ")
+                                                .errorMessage("Jadwal duplikat")
                                                 .status(HttpStatus.BAD_REQUEST)
                                                 .build();
                         }
                         if (dto.getStart_date().after(dto.getEnd_date())) {
                                 return GlobalResponse
                                                 .builder()
-                                                .message("failed")
-                                                .message("Start date lebih besar dari end date")
-                                                .data(err.put("error", "Invalid Date Range"))
+                                                .message("Tanggal mulai lebih besar dari tanggal berakhir")
+                                                .errorMessage("Start date lebih besar dari end date")
                                                 .status(HttpStatus.BAD_REQUEST)
                                                 .build();
                         }
@@ -1378,13 +1508,12 @@ public class ScheduleService {
                         if (!checkDatefExist.isEmpty()) {
                                 return GlobalResponse
                                                 .builder()
-                                                .message("Failed")
-                                                .message("Tanggal dengan start_date:"
+                                                .message("Jadwal sudah ada ")
+                                                .errorMessage("Tanggal dengan start_date:"
                                                                 + dto.getStart_date()
                                                                 + " and end_date:"
                                                                 + dto.getEnd_date()
                                                                 + ", sudah terbuat sebelumnya")
-                                                .data(err.put("error", "Conflict Date Range"))
                                                 .status(HttpStatus.BAD_REQUEST)
                                                 .build();
                         }
@@ -1437,14 +1566,14 @@ public class ScheduleService {
 
         public GlobalResponse approve(Long id) throws Exception {
                 User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-                if (user.getLevel().getName() == "LEAD") {
+                if (user.getLevel().getName() != "LEAD" || !user.getRole().getName().equals("ADMINISTRATOR")) {
                         return GlobalResponse.builder().message("Selain audit leader tidak dapat akses")
                                         .status(HttpStatus.UNAUTHORIZED).build();
                 }
                 Optional<Schedule> getSchedule = repository.findById(id);
                 if (!getSchedule.isPresent()) {
-                        return GlobalResponse.builder().message("Schedule with id : " + id + " is undefined")
-                                        .message("failed").status(HttpStatus.BAD_REQUEST).build();
+                        return GlobalResponse.builder().errorMessage("Schedule with id : " + id + " is not found")
+                                        .message("Jadwal tidak ditemukan").status(HttpStatus.BAD_REQUEST).build();
                 }
 
                 ScheduleTrx getTrx = scheduleTrxRepo.findById(getSchedule.get().getScheduleTrx().getId())
@@ -1456,9 +1585,8 @@ public class ScheduleService {
                                                 .before(getDateNow())) {
                         return GlobalResponse
                                         .builder()
-                                        .message("failed")
-                                        .message("Tidak bisa menambahkan jadwal kemarin")
-                                        .data(err.put("error", "Date is yesterday"))
+                                        .message("Jadwal yang dimasukkan adalah jadwal sebelumnya")
+                                        .errorMessage("Tidak bisa menambahkan jadwal kemarin")
                                         .status(HttpStatus.BAD_REQUEST)
                                         .build();
                 }
@@ -1471,18 +1599,16 @@ public class ScheduleService {
                 if (!checkIfExist.isEmpty()) {
                         return GlobalResponse
                                         .builder()
-                                        .message("failed")
-                                        .message("Jadwal duplikat")
-                                        .data(err.put("error", "Duplicate Schedule"))
+                                        .message("Jadwal sudah ada")
+                                        .errorMessage("Jadwal duplikat")
                                         .status(HttpStatus.BAD_REQUEST)
                                         .build();
                 }
                 if (getTrx.getStart_date().after(getTrx.getEnd_date())) {
                         return GlobalResponse
                                         .builder()
-                                        .message("failed")
-                                        .message("Start date lebih besar dari end date")
-                                        .data(err.put("error", "Invalid Date Range"))
+                                        .message("Tanggal mulai lebih besar dari tanggal berakhir")
+                                        .errorMessage("Start date lebih besar dari end date")
                                         .status(HttpStatus.BAD_REQUEST)
                                         .build();
                 }
@@ -1494,13 +1620,12 @@ public class ScheduleService {
                 if (!checkDatefExist.isEmpty()) {
                         return GlobalResponse
                                         .builder()
-                                        .message("Failed")
-                                        .message("Tanggal dengan start_date:"
+                                        .message("Tanggal sudah ada")
+                                        .errorMessage("Tanggal dengan start_date:"
                                                         + getTrx.getStart_date()
                                                         + " and end_date:"
                                                         + getTrx.getEnd_date()
                                                         + ", sudah terbuat sebelumnya")
-                                        .data(err.put("error", "Conflict Date Range"))
                                         .status(HttpStatus.BAD_REQUEST)
                                         .build();
                 }
@@ -1532,14 +1657,14 @@ public class ScheduleService {
 
         public GlobalResponse rejected(Long id) throws Exception {
                 User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-                if (user.getLevel().getName() == "LEAD") {
+                if (user.getLevel().getName() != "LEAD" || !user.getRole().getName().equals("ADMINISTRATOR")) {
                         return GlobalResponse.builder().message("Selain audit leader tidak dapat akses")
                                         .status(HttpStatus.UNAUTHORIZED).build();
                 }
                 Optional<Schedule> getSchedule = repository.findById(id);
                 if (!getSchedule.isPresent()) {
-                        return GlobalResponse.builder().message("Schedule with id : " + id + " is undefined")
-                                        .message("failed").status(HttpStatus.BAD_REQUEST).build();
+                        return GlobalResponse.builder().errorMessage("Schedule with id : " + id + " is not found")
+                                        .message("Jadwal tidak ditemukan").status(HttpStatus.BAD_REQUEST).build();
                 }
 
                 Schedule editSchedule = getSchedule.get();

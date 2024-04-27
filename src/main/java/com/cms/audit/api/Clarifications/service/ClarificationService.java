@@ -206,7 +206,7 @@ public class ClarificationService {
                                 return GlobalResponse
                                                 .builder()
                                                 .message("Data not found")
-                                                .status(HttpStatus.OK)
+                                                .status(HttpStatus.OK).data(response)
                                                 .build();
                         }
                         Map<String, Object> parent = new LinkedHashMap<>();
@@ -249,7 +249,7 @@ public class ClarificationService {
                                 return GlobalResponse
                                                 .builder()
                                                 .message("Data not found")
-                                                .status(HttpStatus.BAD_REQUEST)
+                                                .status(HttpStatus.BAD_REQUEST).data(response)
                                                 .build();
                         }
                         Map<String, Object> clarification = new LinkedHashMap<>();
@@ -393,7 +393,7 @@ public class ClarificationService {
 
                         Branch branch = branchRepository.findById(dto.getBranch_id())
                                         .orElseThrow(() -> new ResourceNotFoundException(
-                                                        "Branch with id:" + dto.getBranch_id() + " is undefined"));
+                                                        "Branch with id:" + dto.getBranch_id() + " is not found"));
 
                         String branchName = branch.getName();
                         String initialName = user.getInitial_name();
@@ -467,7 +467,7 @@ public class ClarificationService {
                         if (!getClarification.isPresent()) {
                                 return GlobalResponse
                                                 .builder()
-                                                .message("Data not found")
+                                                .message("Clarification with id : "+dto.getClarification_id()+" not found")
                                                 .status(HttpStatus.BAD_REQUEST)
                                                 .build();
                         }
@@ -745,8 +745,8 @@ public class ClarificationService {
                         if (!getClarification.isPresent()) {
                                 return GlobalResponse
                                                 .builder()
-                                                .message("Data not found")
-                                                .status(HttpStatus.OK)
+                                                .message("Clarifcation with id: "+id+ " not found")
+                                                .status(HttpStatus.BAD_REQUEST)
                                                 .build();
                         }
                         String fileName = fileStorageService.storeFile(file);
