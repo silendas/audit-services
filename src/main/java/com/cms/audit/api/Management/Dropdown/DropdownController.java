@@ -94,9 +94,9 @@ public class DropdownController {
         } else if (mainId != null) {
             response = userService.dropDown(getUser.getId());
         } else {
-            if (getUser.getLevel().getCode().equals("A")  || getUser.getLevel().getCode().equals("A") ) {
+            if (getUser.getLevel().getCode().equals("A") || getUser.getLevel().getCode().equals("A")) {
                 response = userService.dropDown(getUser.getId());
-            } else if (getUser.getLevel().getCode().equals("B") ) {
+            } else if (getUser.getLevel().getCode().equals("B")) {
                 List<DropDownUserDTO> user = new ArrayList<>();
                 if (!getUser.getRegionId().isEmpty()) {
                     List<User> userAgain = userRepository.findAllUserIIfArea();
@@ -143,7 +143,8 @@ public class DropdownController {
                     }
                     response = GlobalResponse.builder().data(user).message("Success").status(HttpStatus.OK).build();
                 } else {
-                    response = GlobalResponse.builder().data(response).message("Tidak dapat akses").status(HttpStatus.OK)
+                    response = GlobalResponse.builder().data(response).message("Tidak dapat akses")
+                            .status(HttpStatus.OK)
                             .build();
                 }
             } else {
@@ -268,18 +269,19 @@ public class DropdownController {
             response = branchService.findSpecificByUserid(userId);
         } else if (name != null) {
             response = branchService.findSpecificByName(name);
-        } else if (!areaId.isEmpty() ) {
+        } else if (areaId != null) {
             response = branchService.findSpecificByAreaId(areaId);
         } else if (regionId != null) {
             response = branchService.findSpecificByRegionId(regionId);
         } else {
             response = branchService.findSpecific();
         }
-        if(response.getStatus().equals(HttpStatus.BAD_REQUEST)){
-            return  ResponseEntittyHandler.errorResponse(response.getErrorMessage(), response.getMessage(), response.getStatus());
-        }else{
+        if (response.getStatus().equals(HttpStatus.BAD_REQUEST)) {
+            return ResponseEntittyHandler.errorResponse(response.getErrorMessage(), response.getMessage(),
+                    response.getStatus());
+        } else {
             return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(),
-                response.getError());
+                    response.getError());
         }
     }
 
