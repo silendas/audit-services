@@ -4,4 +4,5 @@ public interface DropDownUser {
     Long getId();
     String getFullname();
     String getInitial_Name();
+    String getName();
 }

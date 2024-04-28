@@ -148,7 +148,7 @@ public class DropdownController {
                             .build();
                 }
             } else {
-                response = GlobalResponse.builder().data(response).message("Tidak dapat akses").status(HttpStatus.OK)
+                response = GlobalResponse.builder().data(response).message("Tidak dapat akses").status(HttpStatus.UNAUTHORIZED)
                         .build();
             }
         }
