@@ -149,9 +149,12 @@ public class NewsInspecionController {
         public ResponseEntity<Object> upload(@RequestParam(value = "file", required = false) MultipartFile file,
                         @ModelAttribute("bap_id") Long id) {
                 GlobalResponse response = service.uploadFile(file, id);
-                return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(),
-                                response.getStatus(),
-                                response.getError());
+                if (response.getStatus().value() == 400) {
+                        return ResponseEntittyHandler.errorResponse(response.getErrorMessage(), response.getMessage(), response.getStatus());
+                } else {
+                        return ResponseEntittyHandler.allHandler(null, response.getMessage(), response.getStatus(),
+                                        response.getError());
+                }
         }
 
 }

@@ -708,7 +708,7 @@ public class AuditDailyReportService {
                                         getschedule.get().getUser().getId(),
                                         getschedule.get().getStart_date());
                         if (!scheduleList.isEmpty()) {
-                                return GlobalResponse.builder().message(
+                                return GlobalResponse.builder().message("tidak bisa memperoses jadwal karena jadwal sebelumnya belum selesai").errorMessage(
                                                 "Tidak bisa memproses jadwal & LHA karena sebelumnya belum membuat KKA")
                                                 .status(HttpStatus.BAD_REQUEST).build();
                         }

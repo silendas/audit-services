@@ -1734,6 +1734,7 @@ public class ScheduleService {
                         if (!getSchedule.isPresent()) {
                                 return GlobalResponse.builder().message(
                                                 "Shcedule with id :" + getSchedule.get().getId() + " is not found")
+                                                .status(HttpStatus.BAD_REQUEST)
                                                 .build();
                         }
                         Schedule schedule = getSchedule.get();

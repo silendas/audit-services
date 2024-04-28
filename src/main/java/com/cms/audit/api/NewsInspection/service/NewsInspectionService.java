@@ -241,8 +241,10 @@ public class NewsInspectionService {
 
     public GlobalResponse uploadFile(MultipartFile file, Long id) {
         try {
-            NewsInspection getBAP = repository.findById(id)
-                    .orElseThrow(() -> new BadRequestException("BAP with id: " + id + " is not found"));
+            Optional<NewsInspection> getBAP = repository.findById(id);
+            if(!getBAP.isPresent()){
+                return GlobalResponse.builder().message("BAP tidak ditemukan").errorMessage("BAP dengna id : "+id+" tidak ditemukan").status(HttpStatus.BAD_REQUEST).build();
+            }
 
             // String fileName = randomValueNumber.randomNumberGenerator() + "-" +
             // file.getOriginalFilename();
@@ -251,7 +253,7 @@ public class NewsInspectionService {
             String path = FOLDER_PATH + fileName;
             String filePath = path;
 
-            NewsInspection bap = getBAP;
+            NewsInspection bap = getBAP.get();
             bap.setFileName(fileName);
             bap.setFile_path(filePath);
 
