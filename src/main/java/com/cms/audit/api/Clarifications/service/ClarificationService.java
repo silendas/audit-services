@@ -467,7 +467,8 @@ public class ClarificationService {
                         if (!getClarification.isPresent()) {
                                 return GlobalResponse
                                                 .builder()
-                                                .message("Clarification with id : "+dto.getClarification_id()+" not found")
+                                                .message("Clarificaiton tidak ditemukan")
+                                                .errorMessage("Clarification with id : "+dto.getClarification_id()+" not found")
                                                 .status(HttpStatus.BAD_REQUEST)
                                                 .build();
                         }
@@ -567,8 +568,9 @@ public class ClarificationService {
                         if (!getBefore.isPresent()) {
                                 return GlobalResponse
                                                 .builder()
-                                                .message("No Contennt")
-                                                .status(HttpStatus.OK)
+                                                .message("Clarification tidak dapat ditemukan")
+                                                .errorMessage("Clarificaion with id :" + dto.getClarification_id() + " Not found")
+                                                .status(HttpStatus.BAD_REQUEST)
                                                 .build();
                         }
 
@@ -745,7 +747,8 @@ public class ClarificationService {
                         if (!getClarification.isPresent()) {
                                 return GlobalResponse
                                                 .builder()
-                                                .message("Clarifcation with id: "+id+ " not found")
+                                                .message("Clarification tidak bisa ditemukan")
+                                                .errorMessage("Clarifcation with id: "+id+ " not found")
                                                 .status(HttpStatus.BAD_REQUEST)
                                                 .build();
                         }

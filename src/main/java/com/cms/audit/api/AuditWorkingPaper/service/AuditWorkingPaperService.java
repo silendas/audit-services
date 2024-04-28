@@ -261,7 +261,7 @@ public class AuditWorkingPaperService {
 
             Optional<Schedule> getSchedule = scheduleRepository.findById(id);
             if (!getSchedule.isPresent()) {
-                return GlobalResponse.builder().message("Schedule with id:" + id + " is not found")
+                return GlobalResponse.builder().message("Jadwal tidak ditemukan").errorMessage("Schedule with id:" + id + " is not found")
                         .status(HttpStatus.BAD_REQUEST).build();
             }
 

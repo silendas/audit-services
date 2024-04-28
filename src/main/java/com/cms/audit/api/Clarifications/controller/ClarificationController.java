@@ -150,30 +150,50 @@ public class ClarificationController {
     @PostMapping
     public ResponseEntity<Object> save(@RequestBody InputClarificationDTO dto) {
         GlobalResponse response = service.inputClarification(dto);
-        return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(),
-                response.getError());
+        if (response.getStatus().value() == 400) {
+            return ResponseEntittyHandler.errorResponse(response.getErrorMessage(), response.getMessage(),
+                    response.getStatus());
+        } else {
+            return ResponseEntittyHandler.allHandler(null, response.getMessage(), response.getStatus(),
+                    response.getError());
+        }
     }
 
     @PostMapping("/identification")
     public ResponseEntity<Object> saveIdentification(@RequestBody IdentificationDTO dto) {
         GlobalResponse response = service.identificationClarification(dto);
-        return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(),
-                response.getError());
+        if (response.getStatus().value() == 400) {
+            return ResponseEntittyHandler.errorResponse(response.getErrorMessage(), response.getMessage(),
+                    response.getStatus());
+        } else {
+            return ResponseEntittyHandler.allHandler(null, response.getMessage(), response.getStatus(),
+                    response.getError());
+        }
     }
 
     @PostMapping("/generate")
     public ResponseEntity<Object> generateNumber(@RequestBody GenerateCKDTO dto) {
         GlobalResponse response = service.generateCK(dto);
-        return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(),
-                response.getError());
+        if (response.getStatus().value() == 400) {
+            return ResponseEntittyHandler.errorResponse(response.getErrorMessage(), response.getMessage(),
+                    response.getStatus());
+        } else {
+            return ResponseEntittyHandler.allHandler(null, response.getMessage(), response.getStatus(),
+                    response.getError());
+        }
     }
 
     @PostMapping(value = "/upload")
     public ResponseEntity<Object> upload(@RequestParam(value = "file", required = false) MultipartFile file,
             @ModelAttribute("clarification_id") Long id) {
         GlobalResponse response = service.uploadFile(file, id);
-        return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(),
-                response.getError());
+        if (response.getStatus().value() == 400) {
+            return ResponseEntittyHandler.errorResponse(response.getErrorMessage(), response.getMessage(),
+                    response.getStatus());
+        } else {
+            return ResponseEntittyHandler.allHandler(null, response.getMessage(), response.getStatus(),
+                    response.getError());
+        }
     }
 
 }

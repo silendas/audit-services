@@ -223,14 +223,14 @@ public class FollowupService {
         try {
             Optional<FollowUp> getFollowUp = repository.findById(dto.getFollowup_id());
             if (!getFollowUp.isPresent()) {
-                return GlobalResponse.builder().message("Follow Up with id:" + dto.getFollowup_id() + " is not found")
+                return GlobalResponse.builder().message("TIndak lanjut tidak ditemukan").errorMessage("Follow Up with id:" + dto.getFollowup_id() + " is not found").status(HttpStatus.BAD_REQUEST)
                         .build();
             }
             Optional<Penalty> penalty;
             if (dto.getPenalty_id() != null) {
                 penalty = penaltyRepository.findById(dto.getPenalty_id());
                 if (!penalty.isPresent()) {
-                    return GlobalResponse.builder().message("Penalty with id:" + dto.getPenalty_id() + " is not foudn")
+                    return GlobalResponse.builder().errorMessage("Penalty with id:" + dto.getPenalty_id() + " is not foudn").status(HttpStatus.BAD_REQUEST).message("Penlaty not found")
                             .build();
                 }
             } else {
@@ -289,7 +289,7 @@ public class FollowupService {
         try {
             Optional<FollowUp> getFollowUp = repository.findById(id);
             if (!getFollowUp.isPresent()) {
-                return GlobalResponse.builder().message("Follow up with id:" + id + " is not found").build();
+                return GlobalResponse.builder().message("Tindak lanjut tidak ditemukan").status(HttpStatus.BAD_REQUEST).errorMessage("Follow up with id:" + id + " is not found").build();
             }
 
             // String fileName = randomValueNumber.randomNumberGenerator() + "-" +

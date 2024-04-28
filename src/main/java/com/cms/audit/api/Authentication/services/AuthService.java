@@ -45,7 +45,7 @@ public class AuthService {
                                                         signinDTO.getPassword())
                                         );
                 } catch (BadCredentialsException e) {
-                        return AuthResponse.builder().message("Invalid username or password")
+                        return AuthResponse.builder().message("Invalid password")
                                         .status(HttpStatus.BAD_REQUEST).build();
                 }
 
