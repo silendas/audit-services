@@ -83,13 +83,13 @@ public class AuditWorkingPaperService {
                     response = pag.findWorkingPaperByBranch(branchId, PageRequest.of(page, size));
                 }
             } else {
-                if (getUser.getLevel().getCode().equals("A")  || getUser.getLevel().getCode().equals("A") ) {
+                if (getUser.getLevel().getCode().equals("A") || getUser.getLevel().getCode().equals("A")) {
                     if (start_date != null && end_date != null) {
                         response = pag.findWorkingPaperInDateRange(start_date, end_date, PageRequest.of(page, size));
                     } else {
                         response = pag.findAllWorkingPaper(PageRequest.of(page, size));
                     }
-                } else if (getUser.getLevel().getCode().equals("B") ) {
+                } else if (getUser.getLevel().getCode().equals("B")) {
                     Pageable pageable = PageRequest.of(page, size);
                     List<AuditWorkingPaper> lhaList = new ArrayList<>();
                     for (int i = 0; i < getUser.getRegionId().size(); i++) {
@@ -116,7 +116,7 @@ public class AuditWorkingPaperService {
                                 .status(HttpStatus.BAD_REQUEST)
                                 .build();
                     }
-                } else if (getUser.getLevel().getCode().equals("C") ) {
+                } else if (getUser.getLevel().getCode().equals("C")) {
                     if (start_date != null && end_date != null) {
                         response = pag.findAllWorkingPaperByUserIdAndDate(getUser.getId(), start_date, end_date,
                                 PageRequest.of(page, size));
@@ -252,13 +252,21 @@ public class AuditWorkingPaperService {
 
     public GlobalResponse uploadFile(MultipartFile file, Long id) {
         try {
+            List<Schedule> checkShcedule = scheduleRepository.CheckIfScheduleisNow(id);
+            if (checkShcedule.isEmpty()) {
+                return GlobalResponse.builder().message("Tidak bisa memproses jadwal karena jadwal belum dimulai")
+                        .errorMessage("Jadwal belum dimulai, tidak dapat diproses")
+                        .status(HttpStatus.BAD_REQUEST).build();
+            }
+
             Optional<Schedule> getSchedule = scheduleRepository.findById(id);
             if (!getSchedule.isPresent()) {
-                return GlobalResponse.builder().message("Schedule with id:" + id + " is not found").status(HttpStatus.BAD_REQUEST).build();
+                return GlobalResponse.builder().message("Schedule with id:" + id + " is not found")
+                        .status(HttpStatus.BAD_REQUEST).build();
             }
 
             List<AuditWorkingPaper> checkKKA = repository.findListByScheduleId(id);
-            if(!checkKKA.isEmpty()){
+            if (!checkKKA.isEmpty()) {
                 return GlobalResponse.builder().message("KKA is already exist").status(HttpStatus.FOUND).build();
             }
 

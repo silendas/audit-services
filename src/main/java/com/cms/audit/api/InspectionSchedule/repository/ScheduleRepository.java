@@ -62,6 +62,9 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
         @Query(value = "SELECT * FROM inspection_schedule u WHERE u.user_id = :userId AND u.branch_id = :branchId AND u.start_date = :start_date AND u.end_date = :end_date AND u.is_delete = 0 ;", nativeQuery = true)
         public List<Schedule> findScheduleInAllCheckNoCheck(@Param("userId") Long userId, @Param("branchId") Long branchId, @Param("start_date") Date start_date,
                         @Param("end_date") Date end_date);
+        
+        @Query(value="Select * from inspection_schedule u where u.id= :id AND CURRENT_TIMESTAMP BETWEEN u.start_date AND u.end_date ;", nativeQuery=true)
+        public List<Schedule> CheckIfScheduleisNow(@Param("id") Long id);
 
         @Query(value = "SELECT u.* FROM inspection_schedule u INNER JOIN branch_office bo ON u.branch_id = bo.id INNER JOIN area_office ao ON bo.area_id = ao.id INNER JOIN region_office ro ON ao.region_id = ro.id WHERE ro.id = :regionId AND u.category = :category AND u.is_delete <> 1 ORDER BY u.id DESC ;", nativeQuery = true)
         public List<Schedule> findByRegionId(@Param("regionId") Long regionId, @Param("category") String category);
@@ -71,9 +74,8 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
                         @Param("category") String ucategory, @Param("start_date") Date start_date,
                         @Param("end_date") Date end_date);
 
-        @Query(value = "SELECT u.* FROM inspection_schedule u LEFT JOIN audit_working_paper kka ON kka.schedule_id = u.id WHERE u.start_date < :start_date AND u.category = :category AND u.user_id = :user_id  AND (u.status = 'TODO' OR u.status = 'PROGRESS' OR u.status = 'DONE') AND (kka.file_name IS NULL) AND u.is_delete <> 1 ORDER BY id ASC;", nativeQuery = true)
-        List<Schedule> findForScheduleList(@Param("user_id") Long userId, @Param("start_date") Date start_date,
-                        @Param("category") String category);
+        @Query(value = "SELECT u.* FROM inspection_schedule u LEFT JOIN audit_working_paper kka ON kka.schedule_id = u.id WHERE u.start_date < :start_date AND u.user_id = :user_id  AND (u.status = 'TODO' OR u.status = 'PROGRESS' OR u.status = 'DONE') AND (kka.file_name IS NULL) AND u.is_delete <> 1 ORDER BY id ASC;", nativeQuery = true)
+        List<Schedule> findForScheduleList(@Param("user_id") Long userId, @Param("start_date") Date start_date);
 
         @Query(value = "SELECT * FROM inspection_schedule u WHERE u.id = :scheduleId ", nativeQuery = true)
         public Optional<Schedule> findOneScheduleById(@Param("scheduleId") Long scheduleId);
