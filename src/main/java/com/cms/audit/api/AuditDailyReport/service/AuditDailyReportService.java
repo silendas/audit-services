@@ -679,13 +679,20 @@ public class AuditDailyReportService {
                 try {
                         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
+                        List<Schedule> checkShcedule = scheduleRepository.CheckIfScheduleisNow(dto.getSchedule_id());
+                        if (checkShcedule.isEmpty()) {
+                                return GlobalResponse.builder().message("Tidak bisa memproses jadwal karena jadwal belum dimulai")
+                                                .errorMessage("Jadwal belum dimulai, tidak dapat diproses")
+                                                .status(HttpStatus.BAD_REQUEST).build();
+                        }
+
                         List<AuditDailyReport> checkLHA = auditDailyReportRepository
                                         .findByCurrentDay(dto.getSchedule_id());
                         if (!checkLHA.isEmpty()) {
                                 return GlobalResponse
                                                 .builder()
-                                                //.message("")
-                                                .message("LHA already exist for today, insert again tommorow")
+                                                .message("LHA untuk hari ini sudah ada")
+                                                .errorMessage("LHA already exist for today, insert again tommorow")
                                                 .status(HttpStatus.BAD_REQUEST)
                                                 .build();
                         }
@@ -699,7 +706,7 @@ public class AuditDailyReportService {
 
                         List<Schedule> scheduleList = scheduleRepository.findForScheduleList(
                                         getschedule.get().getUser().getId(),
-                                        getschedule.get().getStart_date(), getschedule.get().getStatus().toString());
+                                        getschedule.get().getStart_date());
                         if (!scheduleList.isEmpty()) {
                                 return GlobalResponse.builder().message(
                                                 "Tidak bisa memproses jadwal & LHA karena sebelumnya belum membuat KKA")

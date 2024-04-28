@@ -218,7 +218,7 @@ public class BranchService {
             List<BranchInterface> response = new ArrayList<>();
             if (id.isEmpty()) {
                 return GlobalResponse.builder().message("Id tidak boleh kosong")
-                        .errorMessage("Id is not found").status(HttpStatus.BAD_REQUEST)
+                        .errorMessage("Area tidak diisi").status(HttpStatus.BAD_REQUEST)
                         .data(response)
                         .build();
             }

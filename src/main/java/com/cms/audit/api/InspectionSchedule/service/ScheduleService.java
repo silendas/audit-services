@@ -965,7 +965,7 @@ public class ScheduleService {
 
                         List<Schedule> scheduleList = repository.findForScheduleList(
                                         response.getContent().get(i).getUser().getId(),
-                                        response.getContent().get(i).getStart_date(), "REGULAR");
+                                        response.getContent().get(i).getStart_date());
                         if (scheduleList.isEmpty()) {
                                 map.put("is_active", 1);
                         } else {
