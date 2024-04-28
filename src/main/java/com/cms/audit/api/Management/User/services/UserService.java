@@ -81,7 +81,7 @@ public class UserService {
                                                 "user with username " + username + " is not found"));
                 Pageable pageable = PageRequest.of(page, size);
                 List<User> user = new ArrayList<>();
-                if (getUser.getLevel().getCode().equals("A") || getUser.getLevel().getCode().equals("A")) {
+                if (getUser.getLevel().getCode().equals("A")) {
                         user = userRepository.findAllUser();
                 } else if (getUser.getLevel().getCode().equals("B")) {
                         if (getUser.getRegionId() != null) {
