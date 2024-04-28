@@ -247,7 +247,7 @@ public class ReportService {
         } else if (start_date != null && end_date != null) {
             response = repository.findClarificationInDateRange(start_date, end_date);
         } else {
-            response = repository.findAll();
+            response = repository.findClarificationInDateRange(new Date(), new Date());
         }
         ByteArrayInputStream data = ExcelUtil.dataToExcel(response);
         return data;

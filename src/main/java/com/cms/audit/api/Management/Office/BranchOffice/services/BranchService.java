@@ -217,7 +217,7 @@ public class BranchService {
         try {
             List<BranchInterface> response = new ArrayList<>();
             if (id.isEmpty()) {
-                return GlobalResponse.builder().message("Id tidak boleh kosong")
+                return GlobalResponse.builder().message("Area id tidak boleh kosong")
                         .errorMessage("Area tidak diisi").status(HttpStatus.BAD_REQUEST)
                         .data(response)
                         .build();
@@ -357,7 +357,7 @@ public class BranchService {
         try {
             Optional<User> getUser = userRepository.findById(userId);
             if (!getUser.isPresent()) {
-                return GlobalResponse.builder().message("User with id:" + userId + " is not found")
+                return GlobalResponse.builder().message("User tidak ditemukan").errorMessage("User with id:" + userId + " is not found")
                         .status(HttpStatus.BAD_REQUEST).build();
             }
             List<Branch> getBranch = new ArrayList<>();
@@ -382,7 +382,7 @@ public class BranchService {
                         }
                     }
                 } else {
-                    return GlobalResponse.builder().message("Not Found").status(HttpStatus.BAD_REQUEST).data(getBranch)
+                    return GlobalResponse.builder().errorMessage("Tidak berhasil menemukan area dan branch").message("Tidak ditemukan Region dan branch pada user").status(HttpStatus.BAD_REQUEST).data(getBranch)
                             .build();
                 }
             }

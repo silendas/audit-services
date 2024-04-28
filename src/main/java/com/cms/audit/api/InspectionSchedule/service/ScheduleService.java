@@ -643,7 +643,7 @@ public class ScheduleService {
                         return getReschedule(name, branchId, page, size, startDate, endDate, "PENDING");
                 } else {
                         return GlobalResponse.builder().message("Audit wilayah tidak dapat mengakses")
-                                        .status(HttpStatus.OK).build();
+                                        .status(HttpStatus.UNAUTHORIZED).build();
                 }
 
         }
@@ -1131,11 +1131,11 @@ public class ScheduleService {
                                                         .builder()
                                                         .message("Tanggal sudah tersedia")
                                                         .errorMessage("Tanggal dengan start_date:"
-                                                                        + scheduleDTO.getSchedules().get(i)
-                                                                                        .getStart_date()
+                                                                        + convertDateToRoman.convertDateHehe(scheduleDTO.getSchedules().get(i)
+                                                                        .getStart_date())
                                                                         + " and end_date:"
-                                                                        + scheduleDTO.getSchedules().get(i)
-                                                                                        .getEnd_date()
+                                                                        + convertDateToRoman.convertDateHehe(scheduleDTO.getSchedules().get(i)
+                                                                        .getEnd_date())
                                                                         + ", sudah terbuat sebelumnya")
                                                         .status(HttpStatus.BAD_REQUEST)
                                                         .build();
@@ -1385,9 +1385,9 @@ public class ScheduleService {
                                                 .builder()
                                                 .message("Tanggal sudah tersedia")
                                                 .errorMessage("Tanggal dengan start_date:"
-                                                                + dto.getStart_date()
+                                                                + convertDateToRoman.convertDateHehe(dto.getStart_date())
                                                                 + " and end_date:"
-                                                                + dto.getEnd_date()
+                                                                + convertDateToRoman.convertDateHehe(dto.getEnd_date())
                                                                 + ", sudah terbuat sebelumnya")
                                                 .status(HttpStatus.BAD_REQUEST)
                                                 .build();
@@ -1510,9 +1510,9 @@ public class ScheduleService {
                                                 .builder()
                                                 .message("Jadwal sudah ada ")
                                                 .errorMessage("Tanggal dengan start_date:"
-                                                                + dto.getStart_date()
+                                                                + convertDateToRoman.convertDateHehe(dto.getStart_date())
                                                                 + " and end_date:"
-                                                                + dto.getEnd_date()
+                                                                + convertDateToRoman.convertDateHehe(dto.getEnd_date())
                                                                 + ", sudah terbuat sebelumnya")
                                                 .status(HttpStatus.BAD_REQUEST)
                                                 .build();
@@ -1566,7 +1566,7 @@ public class ScheduleService {
 
         public GlobalResponse approve(Long id) throws Exception {
                 User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-                if (user.getLevel().getName() != "LEAD" || !user.getRole().getName().equals("ADMINISTRATOR")) {
+                if (!user.getLevel().getName().equals("LEAD")) {
                         return GlobalResponse.builder().message("Selain audit leader tidak dapat akses")
                                         .status(HttpStatus.UNAUTHORIZED).build();
                 }
@@ -1579,7 +1579,6 @@ public class ScheduleService {
                 ScheduleTrx getTrx = scheduleTrxRepo.findById(getSchedule.get().getScheduleTrx().getId())
                                 .orElseThrow(() -> new Exception("Not found"));
 
-                Map<String, String> err = new LinkedHashMap<>();
                 if (getTrx.getStart_date().before(getDateNow())
                                 || getTrx.getEnd_date()
                                                 .before(getDateNow())) {
@@ -1622,9 +1621,9 @@ public class ScheduleService {
                                         .builder()
                                         .message("Tanggal sudah ada")
                                         .errorMessage("Tanggal dengan start_date:"
-                                                        + getTrx.getStart_date()
+                                                        + convertDateToRoman.convertDateHehe(getTrx.getStart_date())
                                                         + " and end_date:"
-                                                        + getTrx.getEnd_date()
+                                                        + convertDateToRoman.convertDateHehe(getTrx.getEnd_date())
                                                         + ", sudah terbuat sebelumnya")
                                         .status(HttpStatus.BAD_REQUEST)
                                         .build();
@@ -1657,7 +1656,7 @@ public class ScheduleService {
 
         public GlobalResponse rejected(Long id) throws Exception {
                 User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-                if (user.getLevel().getName() != "LEAD" || !user.getRole().getName().equals("ADMINISTRATOR")) {
+                if (!user.getLevel().getName().equals("LEAD")) {
                         return GlobalResponse.builder().message("Selain audit leader tidak dapat akses")
                                         .status(HttpStatus.UNAUTHORIZED).build();
                 }

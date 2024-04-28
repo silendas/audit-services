@@ -17,7 +17,7 @@ import com.cms.audit.api.Management.User.models.User;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
 
-    @Query("SELECT u FROM User u WHERE u.is_delete <> 1 AND u.id <> 1")
+    @Query("SELECT u FROM User u WHERE u.is_delete <> 1 AND u.id <> 1 ORDER BY u.id ASC")
     List<User> findAllUser();
 
     @Query(value="SELECT * FROM users u WHERE u.is_delete <> 1 AND u.id <> 1 AND u.level_id <> 2 AND u.level_id <> 1 AND u.level_id <> 4", nativeQuery=true)
