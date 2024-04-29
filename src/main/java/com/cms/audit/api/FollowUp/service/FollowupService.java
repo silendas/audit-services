@@ -147,7 +147,7 @@ public class FollowupService {
             return GlobalResponse
                     .builder()
                     .data(parent)
-                    .message("Success")
+                    .message("Berhasil menampilkan data")
                     .status(HttpStatus.OK)
                     .build();
         } catch (Exception e) {
@@ -207,7 +207,7 @@ public class FollowupService {
             return GlobalResponse
                     .builder()
                     .data(fuMap)
-                    .message("Success")
+                    .message("Berhasil menampilkan data")
                     .status(HttpStatus.OK)
                     .build();
         } catch (Exception e) {
@@ -274,7 +274,7 @@ public class FollowupService {
                         .build();
             }
 
-            return GlobalResponse.builder().message("Success").data(dataResponse).status(HttpStatus.OK).build();
+            return GlobalResponse.builder().message("Berhasil menambahkan data").data(dataResponse).status(HttpStatus.OK).build();
 
         } catch (Exception e) {
             return GlobalResponse
@@ -317,7 +317,7 @@ public class FollowupService {
 
             return GlobalResponse
                     .builder()
-                    .message("Success")
+                    .message("Berhasil upload file")
                     .data(returnResponse)
                     .status(HttpStatus.OK)
                     .build();

@@ -51,7 +51,7 @@ public class MainService {
             }
             return GlobalResponse
                     .builder()
-                    .message("Success")
+                    .message("Berhasil menampilkan data")
                     .data(response)
                     .status(HttpStatus.OK)
                     .build();
@@ -84,7 +84,7 @@ public class MainService {
             }
             return GlobalResponse
                     .builder()
-                    .message("Success")
+                    .message("Berhasil menampilkan data")
                     .data(response)
                     .status(HttpStatus.OK)
                     .build();
@@ -116,7 +116,7 @@ public class MainService {
             }
             return GlobalResponse
                     .builder()
-                    .message("Success")
+                    .message("Berhasil menampilkan data")
                     .data(response)
                     .status(HttpStatus.OK)
                     .build();
@@ -157,7 +157,7 @@ public class MainService {
             }
             return GlobalResponse
                     .builder()
-                    .message("Success")
+                    .message("Berhasil menambahkan data")
                     .status(HttpStatus.OK)
                     .build();
         } catch (DataException e) {
@@ -198,7 +198,7 @@ public class MainService {
             }
             return GlobalResponse
                     .builder()
-                    .message("Success")
+                    .message("Berhasil mengubah data")
                     .status(HttpStatus.OK)
                     .build();
         } catch (DataException e) {
@@ -241,7 +241,7 @@ public class MainService {
             mainRepository.save(main);
             return GlobalResponse
                     .builder()
-                    .message("Success")
+                    .message("Berhasil menghapus data")
                     .status(HttpStatus.OK)
                     .build();
         } catch (DataException e) {

@@ -223,7 +223,7 @@ public class ClarificationService {
                         parent.put("content", listCl);
                         return GlobalResponse
                                         .builder()
-                                        .message("Success")
+                                        .message("Berhasil menampilkan data")
                                         .data(parent)
                                         .status(HttpStatus.OK)
                                         .build();
@@ -305,7 +305,7 @@ public class ClarificationService {
                         }
                         return GlobalResponse
                                         .builder()
-                                        .message("Success")
+                                        .message("Berhasil menampilkan data")
                                         .data(clarification)
                                         .status(HttpStatus.OK)
                                         .build();
@@ -330,7 +330,7 @@ public class ClarificationService {
                                         PageRequest.of(page, size));
                         return GlobalResponse
                                         .builder()
-                                        .message("Success")
+                                        .message("Berhasil menampilkan data")
                                         .data(response)
                                         .status(HttpStatus.OK)
                                         .build();
@@ -437,7 +437,7 @@ public class ClarificationService {
 
                         return GlobalResponse
                                         .builder()
-                                        .message("Success")
+                                        .message("Berhasil generate klarifikasi")
                                         .status(HttpStatus.OK)
                                         .build();
                 } catch (DataException e) {
@@ -537,7 +537,7 @@ public class ClarificationService {
 
                         return GlobalResponse
                                         .builder()
-                                        .message("Success")
+                                        .message("Berhasil input klarifikasi")
                                         .data(returnResponse)
                                         .status(HttpStatus.OK)
                                         .build();
@@ -728,7 +728,7 @@ public class ClarificationService {
 
                         return GlobalResponse
                                         .builder()
-                                        .message("Success")
+                                        .message("Berhasil melakukan identifikasi klarifikasi")
                                         .data(returnResponse)
                                         .status(HttpStatus.OK)
                                         .build();
@@ -775,7 +775,7 @@ public class ClarificationService {
 
                         return GlobalResponse
                                         .builder()
-                                        .message("Success")
+                                        .message("Berhasil upload file")
                                         .status(HttpStatus.OK)
                                         .build();
                 } catch (DataException e) {

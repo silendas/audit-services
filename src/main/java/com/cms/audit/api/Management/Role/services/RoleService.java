@@ -1,8 +1,8 @@
 package com.cms.audit.api.Management.Role.services;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-import java.util.Date;
 
 import org.hibernate.exception.DataException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +36,7 @@ public class RoleService {
             }
             return GlobalResponse
                     .builder()
-                    .message("Success")
+                    .message("Berhasil menampilkan data")
                     .data(response)
                     .status(HttpStatus.OK)
                     .build();
@@ -68,7 +68,7 @@ public class RoleService {
             }
             return GlobalResponse
                     .builder()
-                    .message("Success")
+                    .message("Berhasil menampilkan data")
                     .data(response)
                     .status(HttpStatus.OK)
                     .build();
@@ -99,7 +99,7 @@ public class RoleService {
             }
             return GlobalResponse
                     .builder()
-                    .message("Success")
+                    .message("Berhasil menampilkan data")
                     .data(response)
                     .status(HttpStatus.OK)
                     .build();
@@ -139,7 +139,7 @@ public class RoleService {
             }
             return GlobalResponse
                     .builder()
-                    .message("Success")
+                    .message("Berhasil menambahkan data")
                     .status(HttpStatus.OK)
                     .build();
         } catch (DataException e) {
@@ -186,7 +186,7 @@ public class RoleService {
             }
             return GlobalResponse
                     .builder()
-                    .message("Success")
+                    .message("Berhasil mengubah data")
                     .status(HttpStatus.OK)
                     .build();
         } catch (DataException e) {
@@ -233,7 +233,7 @@ public class RoleService {
             }
             return GlobalResponse
                     .builder()
-                    .message("Success")
+                    .message("Berhasil menghapus data")
                     .status(HttpStatus.OK)
                     .build();
         } catch (DataException e) {

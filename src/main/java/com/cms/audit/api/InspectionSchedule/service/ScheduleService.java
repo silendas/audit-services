@@ -127,7 +127,7 @@ public class ScheduleService {
                         }
                         return GlobalResponse
                                         .builder()
-                                        .message("Success")
+                                        .message("Berhasil menampilkan data")
                                         .data(mappingPageSchedule(response))
                                         .status(HttpStatus.OK)
                                         .build();
@@ -187,7 +187,7 @@ public class ScheduleService {
                         }
                         return GlobalResponse
                                         .builder()
-                                        .message("Success")
+                                        .message("Berhasil menampilkan data")
                                         .data(mappingPageSchedule(response))
                                         .status(HttpStatus.OK)
                                         .build();
@@ -215,7 +215,7 @@ public class ScheduleService {
                                         category, start_date, end_date, PageRequest.of(page, size));
                         return GlobalResponse.builder()
                                         .data(mappingPageSchedule(response))
-                                        .message("Success").status(HttpStatus.OK).build();
+                                        .message("Berhasil menampilkan data").status(HttpStatus.OK).build();
                 } else if (name != null) {
                         List<User> getUser = userRepository.findByFullnameLike(name);
                         if (getUser.isEmpty()) {
@@ -242,7 +242,7 @@ public class ScheduleService {
                                                 scheduleList.size());
                                 return GlobalResponse
                                                 .builder()
-                                                .message("Success")
+                                                .message("Berhasil menampilkan data")
                                                 .data(mappingPageSchedule(response2))
                                                 .status(HttpStatus.OK)
                                                 .build();
@@ -277,7 +277,7 @@ public class ScheduleService {
                                                 scheduleList.size());
                                 return GlobalResponse
                                                 .builder()
-                                                .message("Success")
+                                                .message("Berhasil menampilkan data")
                                                 .data(mappingPageSchedule(response2))
                                                 .status(HttpStatus.OK)
                                                 .build();
@@ -307,7 +307,7 @@ public class ScheduleService {
                                                         PageRequest.of(page, size));
                                         return GlobalResponse.builder()
                                                         .data(mappingPageSchedule(response))
-                                                        .message("Success").status(HttpStatus.OK).build();
+                                                        .message("Berhasil menampilkan data").status(HttpStatus.OK).build();
                                 } else if (name != null) {
                                         List<User> getUser = userRepository.findByFullnameLike(name);
                                         Pageable pageable = PageRequest.of(page, size);
@@ -340,7 +340,7 @@ public class ScheduleService {
                                                                 scheduleList.size());
                                                 return GlobalResponse
                                                                 .builder()
-                                                                .message("Success")
+                                                                .message("Berhasil menampilkan data")
                                                                 .data(mappingPageSchedule(response2))
                                                                 .status(HttpStatus.OK)
                                                                 .build();
@@ -360,7 +360,7 @@ public class ScheduleService {
                                                         "REGULAR", start_date, end_date, PageRequest.of(page, size));
                                         return GlobalResponse.builder()
                                                         .data(mappingPageSchedule(response))
-                                                        .message("Success").status(HttpStatus.OK).build();
+                                                        .message("Berhasil menampilkan data").status(HttpStatus.OK).build();
                                 } else {
                                         return getScheduleArea(user, "REGULAR", branch_id, name, page, size, start_date,
                                                         end_date);
@@ -368,7 +368,7 @@ public class ScheduleService {
                         } else {
                                 return GlobalResponse
                                                 .builder()
-                                                .message("Success")
+                                                .message("Berhasil menampilkan data")
                                                 .status(HttpStatus.OK)
                                                 .build();
                         }
@@ -402,7 +402,7 @@ public class ScheduleService {
                                                                         .findAllScheduleByAllFilter(name, branch_id,
                                                                                         "SPECIAL", start_date, end_date,
                                                                                         PageRequest.of(page, size))))
-                                                        .message("Success").status(HttpStatus.OK).build();
+                                                        .message("Berhasil menampilkan data").status(HttpStatus.OK).build();
                                 } else if (name != null) {
                                         List<User> getUser = userRepository.findByFullnameLike(name);
                                         Pageable pageable = PageRequest.of(page, size);
@@ -435,7 +435,7 @@ public class ScheduleService {
                                                                 scheduleList.size());
                                                 return GlobalResponse
                                                                 .builder()
-                                                                .message("Success")
+                                                                .message("Berhasil menampilkan data")
                                                                 .data(mappingPageSchedule(response2))
                                                                 .status(HttpStatus.OK)
                                                                 .build();
@@ -456,7 +456,7 @@ public class ScheduleService {
                         } else {
                                 return GlobalResponse
                                                 .builder()
-                                                .message("Success")
+                                                .message("Berhasil menampilkan data")
                                                 .status(HttpStatus.OK)
                                                 .build();
                         }
@@ -484,7 +484,7 @@ public class ScheduleService {
                 }
                 return GlobalResponse
                                 .builder()
-                                .message("Success")
+                                .message("Berhasil menampilkan data")
                                 .data(response)
                                 .status(HttpStatus.OK)
                                 .build();
@@ -505,7 +505,7 @@ public class ScheduleService {
                         }
                         return GlobalResponse
                                         .builder()
-                                        .message("Success")
+                                        .message("Berhasil menampilkan data")
                                         .data(mappingPageSchedule(response))
                                         .status(HttpStatus.OK)
                                         .build();
@@ -603,7 +603,7 @@ public class ScheduleService {
 
                         return GlobalResponse
                                         .builder()
-                                        .message("Success")
+                                        .message("Berhasil menampilkan data")
                                         .data(response)
                                         .status(HttpStatus.OK)
                                         .build();
@@ -1008,7 +1008,7 @@ public class ScheduleService {
                         }
                         return GlobalResponse
                                         .builder()
-                                        .message("Success")
+                                        .message("Berhasil menampilkan data")
                                         .data(mappingPageSchedule(response))
                                         .status(HttpStatus.OK)
                                         .build();
@@ -1048,7 +1048,7 @@ public class ScheduleService {
                         }
                         return GlobalResponse
                                         .builder()
-                                        .message("Success")
+                                        .message("Berhasil menampilkan data")
                                         .data(mappingPageSchedule(response))
                                         .status(HttpStatus.OK)
                                         .build();
@@ -1083,8 +1083,6 @@ public class ScheduleService {
                 try {
                         User getUser = userRepository.findByUsername(username)
                                         .orElseThrow(() -> new ResourceNotFoundException("user not found"));
-                        Map<String, Object> err = new HashMap<>();
-
                         for (int i = 0; i < scheduleDTO.getSchedules().size(); i++) {
 
                                 if (scheduleDTO.getSchedules().get(i).getStart_date().before(getDateNow())
@@ -1202,7 +1200,7 @@ public class ScheduleService {
 
                         return GlobalResponse
                                         .builder()
-                                        .message("Success")
+                                        .message("Berhasil menambahkan data")
                                         .status(HttpStatus.OK)
                                         .build();
 
@@ -1320,7 +1318,7 @@ public class ScheduleService {
 
                         return GlobalResponse
                                         .builder()
-                                        .message("Success")
+                                        .message("Berhasil menambahkan data")
                                         .status(HttpStatus.OK)
                                         .build();
 
@@ -1447,7 +1445,7 @@ public class ScheduleService {
 
                         return GlobalResponse
                                         .builder()
-                                        .message("Success")
+                                        .message("Berhasil request jadwal")
                                         .status(HttpStatus.OK)
                                         .build();
                 } catch (DataException e) {
@@ -1467,7 +1465,6 @@ public class ScheduleService {
 
         public GlobalResponse editSchedule(EditScheduleDTO dto, Long id, ECategory category, String username) {
                 try {
-                        Map<String, String> err = new LinkedHashMap<>();
                         if (dto.getStart_date().before(getDateNow())
                                         || dto.getEnd_date()
                                                         .before(getDateNow())) {
@@ -1479,8 +1476,9 @@ public class ScheduleService {
                                                 .build();
                         }
 
-                        List<Schedule> checkIfExist = repository.findScheduleInAllCheckNoCheck(
+                        List<Schedule> checkIfExist = repository.findScheduleInAllCheckNoCheckForEdit(
                                         dto.getUser_id(),
+                                        dto.getDescription(),
                                         dto.getBranch_id(),
                                         dto.getStart_date(),
                                         dto.getEnd_date());
@@ -1501,8 +1499,9 @@ public class ScheduleService {
                                                 .build();
                         }
 
-                        List<Schedule> checkDatefExist = repository.findScheduleInDateRangeByUserIdNoCategory(
+                        List<Schedule> checkDatefExist = repository.findScheduleInDateRangeByUserIdNoCategoryForEdit(
                                         dto.getUser_id(),
+                                        dto.getDescription(),
                                         dto.getStart_date(),
                                         dto.getEnd_date());
                         if (!checkDatefExist.isEmpty()) {
@@ -1546,7 +1545,7 @@ public class ScheduleService {
 
                         return GlobalResponse
                                         .builder()
-                                        .message("Success")
+                                        .message("Berhasil mengubah data")
                                         .status(HttpStatus.OK)
                                         .build();
                 } catch (DataException e) {
@@ -1650,7 +1649,7 @@ public class ScheduleService {
                 editSchedule.setUpdated_at(new Date());
                 repository.save(editSchedule);
 
-                return GlobalResponse.builder().message("Success").status(HttpStatus.OK).build();
+                return GlobalResponse.builder().message("Berhasil approve jadwal").status(HttpStatus.OK).build();
 
         }
 
@@ -1672,7 +1671,7 @@ public class ScheduleService {
                 editSchedule.setUpdated_at(new Date());
                 repository.save(editSchedule);
 
-                return GlobalResponse.builder().message("Success").status(HttpStatus.OK).build();
+                return GlobalResponse.builder().message("Berhasil reject jadwal").status(HttpStatus.OK).build();
 
         }
 
@@ -1708,7 +1707,7 @@ public class ScheduleService {
 
                         return GlobalResponse
                                         .builder()
-                                        .message("Success")
+                                        .message("Berhasil mengubah data")
                                         .status(HttpStatus.OK)
                                         .build();
                 } catch (DataException e) {
@@ -1750,7 +1749,7 @@ public class ScheduleService {
                                         response.getCategory(), response.getStatus());
                         return GlobalResponse
                                         .builder()
-                                        .message("Success")
+                                        .message("Berhasil menghapus data")
                                         .status(HttpStatus.OK)
                                         .build();
                 } catch (DataException e) {

@@ -56,7 +56,7 @@ public class AuthService {
                 var jwtToken = jwtService.generateToken(userDetails, response.orElseThrow());
 
                 return AuthResponse.builder()
-                                .message("Success")
+                                .message("Berhasil Login")
                                 .token(jwtToken)
                                 .status(HttpStatus.OK)
                                 .build();
@@ -68,7 +68,7 @@ public class AuthService {
                         jwtService.blacklistToken(token);
                         return AuthResponse
                                         .builder()
-                                        .message("Success")
+                                        .message("Berhasil Logout")
                                         .status(HttpStatus.OK)
                                         .build();
                 } catch (Exception e) {

@@ -38,6 +38,6 @@ public class AuthController {
         }
         String jwtToken = tokenHeader.substring(7);
         authService.logout(jwtToken);
-        return ResponseEntittyHandler.authSuccess("Success",null, HttpStatus.OK);
+        return ResponseEntittyHandler.authSuccess("Berhasil Login",null, HttpStatus.OK);
     }
 }

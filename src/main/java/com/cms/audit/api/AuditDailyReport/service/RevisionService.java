@@ -42,7 +42,7 @@ public class RevisionService {
                     return GlobalResponse.builder().message("Data not found").status(HttpStatus.OK).data(response).build();
                 }
                 }
-                return GlobalResponse.builder().data(response).message("Success").status(HttpStatus.OK).build();
+                return GlobalResponse.builder().data(response).message("Berhasil menampilkan data").status(HttpStatus.OK).build();
             } else {
                 List<Revision> response = repository.findByDetailIdAll(detaild);
                 if (response.isEmpty()) {
@@ -66,7 +66,7 @@ public class RevisionService {
                         response.get(i).setIs_research(0);
                     }
                 }
-                return GlobalResponse.builder().data(response).message("Success").status(HttpStatus.OK).build();
+                return GlobalResponse.builder().data(response).message("Berhasil menampilkan data").status(HttpStatus.OK).build();
             }
         } catch (Exception e) {
             return GlobalResponse.builder().error(e).status(HttpStatus.INTERNAL_SERVER_ERROR).build();
@@ -93,7 +93,7 @@ public class RevisionService {
             } else {
                 response.get().setIs_research(0);
             }
-            return GlobalResponse.builder().message("Success").data(response).status(HttpStatus.OK).build();
+            return GlobalResponse.builder().message("Berhasil menampilkan data").data(response).status(HttpStatus.OK).build();
         } catch (Exception e) {
             return GlobalResponse.builder().error(e).status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
@@ -157,7 +157,7 @@ public class RevisionService {
 
         try {
             repository.save(revision);
-            return GlobalResponse.builder().message("Success").status(HttpStatus.OK).build();
+            return GlobalResponse.builder().message("Berhasil menambahkan data").status(HttpStatus.OK).build();
         } catch (Exception e) {
             return GlobalResponse.builder().error(e).status(HttpStatus.BAD_REQUEST).build();
         }
