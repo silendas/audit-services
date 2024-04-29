@@ -1,7 +1,7 @@
 package com.cms.audit.api.Management.Penalty.services;
 
-import java.util.List;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 import org.hibernate.exception.DataException;
@@ -36,7 +36,7 @@ public class PenaltyService {
             }
             return GlobalResponse
                     .builder()
-                    .message("Success")
+                    .message("Berhasil menampilkan data")
                     .data(response)
                     .status(HttpStatus.OK)
                     .build();
@@ -68,7 +68,7 @@ public class PenaltyService {
             }
             return GlobalResponse
                     .builder()
-                    .message("Success")
+                    .message("Berhasil menampilkan data")
                     .data(response)
                     .status(HttpStatus.OK)
                     .build();
@@ -100,7 +100,7 @@ public class PenaltyService {
             }
             return GlobalResponse
                     .builder()
-                    .message("Success")
+                    .message("Berhasil menampilkan data")
                     .data(response)
                     .status(HttpStatus.OK)
                     .build();
@@ -141,7 +141,7 @@ public class PenaltyService {
             }
             return GlobalResponse
                     .builder()
-                    .message("Success")
+                    .message("Berhasil menambahkan data")
                     .status(HttpStatus.OK)
                     .build();
         } catch (DataException e) {
@@ -181,7 +181,7 @@ public class PenaltyService {
             }
             return GlobalResponse
                     .builder()
-                    .message("Success")
+                    .message("Berhasil mengubah data")
                     .status(HttpStatus.OK)
                     .build();
         } catch (DataException e) {
@@ -220,7 +220,7 @@ public class PenaltyService {
             }
             return GlobalResponse
                     .builder()
-                    .message("Success")
+                    .message("Berhasil menghapus data")
                     .status(HttpStatus.OK)
                     .build();
         } catch (DataException e) {

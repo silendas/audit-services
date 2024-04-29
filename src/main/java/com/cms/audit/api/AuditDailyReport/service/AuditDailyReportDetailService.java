@@ -198,7 +198,7 @@ public class AuditDailyReportDetailService {
 
             return GlobalResponse
                     .builder()
-                    .message("Success")
+                    .message("Berhasil menampilkan data")
                     .data(parent)
                     .status(HttpStatus.OK)
                     .build();
@@ -275,7 +275,7 @@ public class AuditDailyReportDetailService {
             }
             return GlobalResponse
                     .builder()
-                    .message("Success")
+                    .message("Berhasil menampilkan data")
                     .data(builder)
                     .status(HttpStatus.OK)
                     .build();
@@ -312,7 +312,7 @@ public class AuditDailyReportDetailService {
             }
             return GlobalResponse
                     .builder()
-                    .message("Success")
+                    .message("Berhasil menampilkan data")
                     .data(response)
                     .status(HttpStatus.OK)
                     .build();
@@ -349,7 +349,7 @@ public class AuditDailyReportDetailService {
             }
             return GlobalResponse
                     .builder()
-                    .message("Success")
+                    .message("Berhasil menampilkan data")
                     .data(response)
                     .status(HttpStatus.OK)
                     .build();
@@ -501,7 +501,7 @@ public class AuditDailyReportDetailService {
 
             return GlobalResponse
                     .builder()
-                    .message("Success")
+                    .message("Berhasil menambahkan data")
                     .status(HttpStatus.OK)
                     .build();
         } catch (ResponseStatusException e) {
@@ -543,7 +543,7 @@ public class AuditDailyReportDetailService {
         dto.setUpdate_at(new Date());
         repository.save(dto);
 
-        return GlobalResponse.builder().message("Success").status(HttpStatus.OK).build();
+        return GlobalResponse.builder().message("Berhasil memilah data").status(HttpStatus.OK).build();
 
     }
 
@@ -565,7 +565,7 @@ public class AuditDailyReportDetailService {
         dto.setUpdate_at(new Date());
         repository.save(dto);
 
-        return GlobalResponse.builder().message("Success").status(HttpStatus.OK).build();
+        return GlobalResponse.builder().message("Berhasil mengirim ke leader").status(HttpStatus.OK).build();
 
     }
 
@@ -622,7 +622,7 @@ public class AuditDailyReportDetailService {
             repository.save(auditDailyReport);
             return GlobalResponse
                     .builder()
-                    .message("Success")
+                    .message("Berhasil mengubah data")
                     .status(HttpStatus.OK)
                     .build();
         } catch (ResponseStatusException e) {
@@ -668,7 +668,7 @@ public class AuditDailyReportDetailService {
 
             return GlobalResponse
                     .builder()
-                    .message("Success")
+                    .message("Berhasil menghapus data")
                     .status(HttpStatus.OK)
                     .build();
         } catch (ResponseStatusException e) {

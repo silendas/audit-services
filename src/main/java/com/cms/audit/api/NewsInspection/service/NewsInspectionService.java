@@ -151,7 +151,7 @@ public class NewsInspectionService {
             }
             return GlobalResponse
                     .builder()
-                    .message("Success")
+                    .message("Berhasil menampilkan data")
                     .data(parent)
                     .status(HttpStatus.OK)
                     .build();
@@ -214,7 +214,7 @@ public class NewsInspectionService {
             }
             return GlobalResponse
                     .builder()
-                    .message("Success")
+                    .message("Berhasil menampilkan data")
                     .data(kkaMap)
                     .status(HttpStatus.OK)
                     .build();
@@ -263,7 +263,7 @@ public class NewsInspectionService {
 
             return GlobalResponse
                     .builder()
-                    .message("Success")
+                    .message("Berhasil upload file")
                     .status(HttpStatus.OK)
                     .build();
         } catch (DataException e) {

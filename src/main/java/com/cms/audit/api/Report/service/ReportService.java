@@ -85,7 +85,7 @@ public class ReportService {
                     return GlobalResponse.builder()
                             .data(pagRepository.findByAllFilter(user_id, region_id, branchId, start_date,
                                     end_date, PageRequest.of(page, size)))
-                            .status(HttpStatus.OK).message("Success").build();
+                            .status(HttpStatus.OK).message("Berhasil menampilkan data").build();
                 } else if (user_id != null) {
                     if (start_date != null && end_date != null) {
                         response = pagRepository.findByUserInDateRange(user.getId(), start_date, end_date,
@@ -101,7 +101,7 @@ public class ReportService {
                     if (start_date == null || end_date == null) {
                         if (user.getLevel().getCode().equals("A")) {
                             return GlobalResponse.builder().data(pagRepository.findAll(PageRequest.of(page, size)))
-                                    .message("Success").status(HttpStatus.OK).build();
+                                    .message("Berhasil menampilkan data").status(HttpStatus.OK).build();
                         }
                         for (int i = 0; i < user.getRegionId().size(); i++) {
                             List<Clarification> getByRegion = repository.findByRegionId(user.getRegionId().get(i));
@@ -116,7 +116,7 @@ public class ReportService {
                             return GlobalResponse.builder()
                                     .data(pagRepository.findClarificationInDateRange(start_date, end_date,
                                             PageRequest.of(page, size)))
-                                    .message("Success").status(HttpStatus.OK).build();
+                                    .message("Berhasil menampilkan data").status(HttpStatus.OK).build();
                         }
                         for (int i = 0; i < user.getRegionId().size(); i++) {
                             List<Clarification> getByRegion = repository
@@ -135,7 +135,7 @@ public class ReportService {
                         Page<Clarification> response2 = new PageImpl<>(pageContent, pageable, clarificationList.size());
                         return GlobalResponse
                                 .builder()
-                                .message("Success")
+                                .message("Berhasil menampilkan data")
                                 .data(response2)
                                 .status(HttpStatus.OK)
                                 .build();
@@ -158,7 +158,7 @@ public class ReportService {
             if (response.isEmpty()) {
                 return GlobalResponse.builder().message("Data Empty").status(HttpStatus.OK).build();
             }
-            return GlobalResponse.builder().data(response).message("Success").status(HttpStatus.OK).build();
+            return GlobalResponse.builder().data(response).message("Berhasil menampilkan data").status(HttpStatus.OK).build();
         } catch (Exception e) {
             return GlobalResponse.builder().error(e).status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
@@ -176,7 +176,7 @@ public class ReportService {
             if (response.isEmpty()) {
                 return GlobalResponse.builder().message("Data Empty").status(HttpStatus.OK).build();
             }
-            return GlobalResponse.builder().data(response).message("Success").status(HttpStatus.OK).build();
+            return GlobalResponse.builder().data(response).message("Berhasil menampilkan data").status(HttpStatus.OK).build();
         } catch (Exception e) {
             return GlobalResponse.builder().error(e).status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
@@ -194,7 +194,7 @@ public class ReportService {
             if (response.isEmpty()) {
                 return GlobalResponse.builder().message("Data Empty").status(HttpStatus.OK).build();
             }
-            return GlobalResponse.builder().data(response).message("Success").status(HttpStatus.OK).build();
+            return GlobalResponse.builder().data(response).message("Berhasil menampilkan data").status(HttpStatus.OK).build();
         } catch (Exception e) {
             return GlobalResponse.builder().error(e).status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
@@ -207,7 +207,7 @@ public class ReportService {
             if (response.isEmpty()) {
                 return GlobalResponse.builder().message("Data Empty").status(HttpStatus.OK).build();
             }
-            return GlobalResponse.builder().data(response).message("Success").status(HttpStatus.OK).build();
+            return GlobalResponse.builder().data(response).message("Berhasil menampilkan data").status(HttpStatus.OK).build();
         } catch (Exception e) {
             return GlobalResponse.builder().error(e).status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
@@ -219,9 +219,9 @@ public class ReportService {
             if (!response.isPresent()) {
                 return GlobalResponse.builder().message("Data Empty").status(HttpStatus.OK).build();
             }
-            return GlobalResponse.builder().data(response).message("Success").status(HttpStatus.OK).build();
+            return GlobalResponse.builder().data(response).message("Berhasil menampilkan data").status(HttpStatus.OK).build();
         } catch (Exception e) {
-            return GlobalResponse.builder().error(e).message("Success").status(HttpStatus.OK).build();
+            return GlobalResponse.builder().error(e).message("Error").status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 

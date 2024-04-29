@@ -249,7 +249,7 @@ public class AuditDailyReportService {
                         parent.put("content", listLha);
                         return GlobalResponse
                                         .builder()
-                                        .message("Success")
+                                        .message("Berhasil menampilkan data")
                                         .data(parent)
                                         .status(HttpStatus.OK)
                                         .build();
@@ -359,7 +359,7 @@ public class AuditDailyReportService {
                         response.put("lha_details", details);
                         return GlobalResponse
                                         .builder()
-                                        .message("Success")
+                                        .message("Berhasil menampilkan data")
                                         .data(response)
                                         .status(HttpStatus.OK)
                                         .build();
@@ -435,7 +435,7 @@ public class AuditDailyReportService {
                         parent.put("content", listLha);
                         return GlobalResponse
                                         .builder()
-                                        .message("Success")
+                                        .message("Berhasil menampilkan data")
                                         .data(parent)
                                         .status(HttpStatus.OK)
                                         .build();
@@ -604,7 +604,7 @@ public class AuditDailyReportService {
                         list.clear();
                         return GlobalResponse
                                         .builder()
-                                        .message("Success")
+                                        .message("Berhasil menampilkan data")
                                         .data(dto)
                                         .status(HttpStatus.OK)
                                         .build();
@@ -661,7 +661,7 @@ public class AuditDailyReportService {
                                 Page<LhaReportDTO> result = new PageImpl<>(pageContent, pageable, listAllReport.size());
                                 return GlobalResponse
                                                 .builder()
-                                                .message("Success")
+                                                .message("Berhasil menampilkan data")
                                                 .data(result)
                                                 .status(HttpStatus.OK)
                                                 .build();
@@ -863,7 +863,7 @@ public class AuditDailyReportService {
 
                         return GlobalResponse
                                         .builder()
-                                        .message("Success")
+                                        .message("Berhasil menambahkan data")
                                         .status(HttpStatus.OK)
                                         .build();
                 } catch (ResponseStatusException e) {
@@ -919,7 +919,7 @@ public class AuditDailyReportService {
                         auditDailyReportRepository.save(auditDailyReport);
                         return GlobalResponse
                                         .builder()
-                                        .message("Success")
+                                        .message("Berhasil mengubah data")
                                         .status(HttpStatus.OK)
                                         .build();
                 } catch (ResponseStatusException e) {
@@ -973,7 +973,7 @@ public class AuditDailyReportService {
                         auditDailyReportRepository.save(auditDailyReport);
                         return GlobalResponse
                                         .builder()
-                                        .message("Success")
+                                        .message("Berhasil menghapus data")
                                         .status(HttpStatus.OK)
                                         .build();
                 } catch (ResponseStatusException e) {

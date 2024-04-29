@@ -61,7 +61,7 @@ public class AuditWorkingPaperService {
 
             Page<AuditWorkingPaper> response = null;
             if (schedule_id != null) {
-                return GlobalResponse.builder().data(repository.findByScheduleId(schedule_id)).message("Success")
+                return GlobalResponse.builder().data(repository.findByScheduleId(schedule_id)).message("Berhasil menampilkan data")
                         .status(HttpStatus.OK).build();
             } else if (name != null && branchId != null && start_date != null && end_date != null) {
                 response = pag.findWorkingPaperByAllFilter(name, schedule_id, start_date, end_date,
@@ -180,7 +180,7 @@ public class AuditWorkingPaperService {
             }
             return GlobalResponse
                     .builder()
-                    .message("Success")
+                    .message("Berhasil menampilkan data")
                     .data(parent)
                     .status(HttpStatus.OK)
                     .build();
@@ -231,7 +231,7 @@ public class AuditWorkingPaperService {
             kkaMap.put("file_path", response.getFile_path());
             return GlobalResponse
                     .builder()
-                    .message("Success")
+                    .message("Berhasil menampilkan data")
                     .data(kkaMap)
                     .status(HttpStatus.OK)
                     .build();
@@ -297,7 +297,7 @@ public class AuditWorkingPaperService {
 
             return GlobalResponse
                     .builder()
-                    .message("Success")
+                    .message("Berhasil upload file")
                     .status(HttpStatus.OK)
                     .build();
         } catch (DataException e) {

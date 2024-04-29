@@ -141,7 +141,7 @@ public class DropdownController {
                             }
                         }
                     }
-                    response = GlobalResponse.builder().data(user).message("Success").status(HttpStatus.OK).build();
+                    response = GlobalResponse.builder().data(user).message("Berhasil menampilkan data").status(HttpStatus.OK).build();
                 } else {
                     response = GlobalResponse.builder().data(response).message("Tidak dapat akses")
                             .status(HttpStatus.UNAUTHORIZED)

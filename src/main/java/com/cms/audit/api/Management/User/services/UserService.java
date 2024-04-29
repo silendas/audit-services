@@ -178,7 +178,7 @@ public class UserService {
                         Page<User> response = new PageImpl<>(pageContent, pageable, user.size());
                         return GlobalResponse
                                         .builder()
-                                        .message("Success")
+                                        .message("Berhasil meanmpilkan data")
                                         .data(response)
                                         .status(HttpStatus.OK)
                                         .build();
@@ -239,7 +239,7 @@ public class UserService {
 
                         return GlobalResponse
                                         .builder()
-                                        .message("Success")
+                                        .message("Berhasil menampilkan data")
                                         .data(user)
                                         .status(HttpStatus.OK)
                                         .build();
@@ -305,7 +305,7 @@ public class UserService {
                         user.setUpdated_at(response.get().getUpdated_at());
                         return GlobalResponse
                                         .builder()
-                                        .message("Success")
+                                        .message("Berhasil menampilkan data")
                                         .data(user)
                                         .status(HttpStatus.OK)
                                         .build();
@@ -337,7 +337,7 @@ public class UserService {
                         }
                         return GlobalResponse
                                         .builder()
-                                        .message("Success")
+                                        .message("Berhasilmenampilkan data")
                                         .data(response)
                                         .status(HttpStatus.OK)
                                         .build();
@@ -382,7 +382,7 @@ public class UserService {
                         }
                         return GlobalResponse
                                         .builder()
-                                        .message("Success")
+                                        .message("Berhasil menampilkan data")
                                         .data(response)
                                         .status(HttpStatus.OK)
                                         .build();
@@ -448,7 +448,7 @@ public class UserService {
                         }
                         return GlobalResponse
                                         .builder()
-                                        .message("Success")
+                                        .message("Berhasil menampilkan data")
                                         .data(response)
                                         .status(HttpStatus.OK)
                                         .build();
@@ -469,7 +469,7 @@ public class UserService {
                         }
                         return GlobalResponse
                                         .builder()
-                                        .message("Success")
+                                        .message("Berhasil menampilkan data")
                                         .data(response)
                                         .status(HttpStatus.OK)
                                         .build();
@@ -661,7 +661,7 @@ public class UserService {
                         }
                         return GlobalResponse
                                         .builder()
-                                        .message("Success")
+                                        .message("Berhasil menambahkan data user")
                                         .status(HttpStatus.OK)
                                         .build();
                 } catch (
@@ -892,7 +892,7 @@ public class UserService {
 
                         return GlobalResponse
                                         .builder()
-                                        .message("Success")
+                                        .message("Berhasil mengubah data user")
                                         .status(HttpStatus.OK)
                                         .build();
                 } catch (SqlScriptException e) {
@@ -937,7 +937,7 @@ public class UserService {
                         }
                         return GlobalResponse
                                         .builder()
-                                        .message("Success")
+                                        .message("Berhasil menghapus data user")
                                         .status(HttpStatus.OK)
                                         .build();
                 } catch (DataException e) {
@@ -971,7 +971,7 @@ public class UserService {
 
                         return GlobalResponse
                                         .builder()
-                                        .message("Success")
+                                        .message("Berhasil mengubah password")
                                         .status(HttpStatus.OK)
                                         .build();
                 } catch (DataException e) {
@@ -1005,7 +1005,7 @@ public class UserService {
                         }
                         return GlobalResponse
                                         .builder()
-                                        .message("Success")
+                                        .message("Berhasil mengubah profile user")
                                         .status(HttpStatus.OK)
                                         .build();
                 } catch (DataException e) {
