@@ -381,20 +381,20 @@ public class AuditDailyReportDetailService {
             Optional<AuditDailyReport> setId = lhaReportsitory.findById(dto.getAudit_daily_report_id());
             if (!setId.isPresent()) {
                 return GlobalResponse.builder().message("Lha tidak ditemukan")
-                        .errorMessage("Lha with id:" + dto.getAudit_daily_report_id() + " not found")
+                        .errorMessage("LHA dengan id :" + dto.getAudit_daily_report_id() + " tidak ditemukan")
                         .status(HttpStatus.BAD_REQUEST).build();
             }
             Optional<Case> setCaseId = caseRepository.findById(dto.getCase_id());
             if (!setCaseId.isPresent()) {
-                return GlobalResponse.builder().message("failed")
-                        .message("Case with id:" + dto.getCase_id() + " not found")
+                return GlobalResponse.builder().errorMessage("DIvisi tidak ditemukan")
+                        .message("Divisi dengan id : " + dto.getCase_id() + " tidak ditemukan")
                         .status(HttpStatus.BAD_REQUEST).build();
             }
             Optional<CaseCategory> setCCId = ccRepository.findById(dto.getCase_category_id());
             if (!setCCId.isPresent()) {
                 return GlobalResponse.builder()
-                        .message("failed")
-                        .message("Case Category with id:" + dto.getCase_category_id() + " not found")
+                        .errorMessage("Kategori divisi tidak ditemukan")
+                        .message("Kategori divisi dengan id:" + dto.getCase_category_id() + " tidak ditemukan")
                         .status(HttpStatus.BAD_REQUEST)
                         .build();
             }
@@ -654,7 +654,7 @@ public class AuditDailyReportDetailService {
             if (!getBefore.isPresent()) {
                 return GlobalResponse
                         .builder()
-                        .message("LHA detail tidak ditemukan").errorMessage("LHA detail dengan id : "+id+ " tidak ditemukan")
+                        .errorMessage("LHA detail tidak ditemukan").message("LHA detail dengan id : "+id+ " tidak ditemukan")
                         .status(HttpStatus.BAD_REQUEST)
                         .build();
             }

@@ -692,15 +692,15 @@ public class AuditDailyReportService {
                                 return GlobalResponse
                                                 .builder()
                                                 .message("LHA untuk hari ini sudah ada")
-                                                .errorMessage("LHA already exist for today, insert again tommorow")
+                                                .errorMessage("LHA sudah ada untuk hari ini, input lagi besok")
                                                 .status(HttpStatus.BAD_REQUEST)
                                                 .build();
                         }
 
                         Optional<Schedule> getschedule = scheduleRepository.findById(dto.getSchedule_id());
                         if (!getschedule.isPresent()) {
-                                return GlobalResponse.builder().message("schedule_id is not found")
-                                                .errorMessage("Data schedule with id : "+ dto.getSchedule_id()+" not found")
+                                return GlobalResponse.builder().message("Jadwal tidak ditemukan")
+                                                .errorMessage("Data jadwal dengan id : "+ dto.getSchedule_id()+" tidak ditemukan")
                                                 .status(HttpStatus.BAD_REQUEST).build();
                         }
 
@@ -895,7 +895,7 @@ public class AuditDailyReportService {
                         if (!getBefore.isPresent()) {
                                 return GlobalResponse
                                                 .builder()
-                                                .message("failed").message("Not Found")
+                                                .message("tidak ditemukan").errorMessage("Data lha tidak ditemukan")
                                                 .status(HttpStatus.BAD_REQUEST)
                                                 .build();
                         }
@@ -949,8 +949,8 @@ public class AuditDailyReportService {
                         if (!getBefore.isPresent()) {
                                 return GlobalResponse
                                                 .builder()
-                                                .message("failed").message("Not Found")
-                                                .status(HttpStatus.NOT_FOUND)
+                                                .message("tidak ditemukan").message("LHA tidak ditemukan")
+                                                .status(HttpStatus.BAD_REQUEST)
                                                 .build();
                         }
 
