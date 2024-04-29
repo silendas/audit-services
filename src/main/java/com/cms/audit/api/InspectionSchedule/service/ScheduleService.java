@@ -35,6 +35,7 @@ import com.cms.audit.api.Flag.model.Flag;
 import com.cms.audit.api.Flag.repository.FlagRepo;
 import com.cms.audit.api.InspectionSchedule.dto.EditScheduleDTO;
 import com.cms.audit.api.InspectionSchedule.dto.RequestReschedule;
+import com.cms.audit.api.InspectionSchedule.dto.ScheduleDTO;
 import com.cms.audit.api.InspectionSchedule.dto.ScheduleRequest;
 import com.cms.audit.api.InspectionSchedule.models.ECategory;
 import com.cms.audit.api.InspectionSchedule.models.EStatus;
@@ -307,7 +308,8 @@ public class ScheduleService {
                                                         PageRequest.of(page, size));
                                         return GlobalResponse.builder()
                                                         .data(mappingPageSchedule(response))
-                                                        .message("Berhasil menampilkan data").status(HttpStatus.OK).build();
+                                                        .message("Berhasil menampilkan data").status(HttpStatus.OK)
+                                                        .build();
                                 } else if (name != null) {
                                         List<User> getUser = userRepository.findByFullnameLike(name);
                                         Pageable pageable = PageRequest.of(page, size);
@@ -360,7 +362,8 @@ public class ScheduleService {
                                                         "REGULAR", start_date, end_date, PageRequest.of(page, size));
                                         return GlobalResponse.builder()
                                                         .data(mappingPageSchedule(response))
-                                                        .message("Berhasil menampilkan data").status(HttpStatus.OK).build();
+                                                        .message("Berhasil menampilkan data").status(HttpStatus.OK)
+                                                        .build();
                                 } else {
                                         return getScheduleArea(user, "REGULAR", branch_id, name, page, size, start_date,
                                                         end_date);
@@ -402,7 +405,8 @@ public class ScheduleService {
                                                                         .findAllScheduleByAllFilter(name, branch_id,
                                                                                         "SPECIAL", start_date, end_date,
                                                                                         PageRequest.of(page, size))))
-                                                        .message("Berhasil menampilkan data").status(HttpStatus.OK).build();
+                                                        .message("Berhasil menampilkan data").status(HttpStatus.OK)
+                                                        .build();
                                 } else if (name != null) {
                                         List<User> getUser = userRepository.findByFullnameLike(name);
                                         Pageable pageable = PageRequest.of(page, size);
@@ -1083,7 +1087,26 @@ public class ScheduleService {
                 try {
                         User getUser = userRepository.findByUsername(username)
                                         .orElseThrow(() -> new ResourceNotFoundException("user not found"));
+                        List<ScheduleDTO> listRequestSchedule = new ArrayList<>();
                         for (int i = 0; i < scheduleDTO.getSchedules().size(); i++) {
+
+                                for (int u = 0; u < listRequestSchedule.size(); u++) {
+                                        if (scheduleDTO.getSchedules().get(i).getUser_id()
+                                                        .equals(listRequestSchedule.get(u).getUser_id())
+                                                        && !scheduleDTO.getSchedules().get(i).getEnd_date().before(
+                                                                        listRequestSchedule.get(u).getStart_date())
+                                                        && !scheduleDTO.getSchedules().get(i).getStart_date().after(
+                                                                        listRequestSchedule.get(u).getEnd_date())) {
+                                                return GlobalResponse
+                                                                .builder()
+                                                                .message("Anda menginput jadwal yang sama ")
+                                                                .errorMessage("Tidak bisa menambahkan jadwal yang sama")
+                                                                .status(HttpStatus.BAD_REQUEST)
+                                                                .build();
+                                        } else {
+                                                listRequestSchedule.add(scheduleDTO.getSchedules().get(i));
+                                        }
+                                }
 
                                 if (scheduleDTO.getSchedules().get(i).getStart_date().before(getDateNow())
                                                 || scheduleDTO.getSchedules().get(i).getEnd_date()
@@ -1129,11 +1152,13 @@ public class ScheduleService {
                                                         .builder()
                                                         .message("Tanggal sudah tersedia")
                                                         .errorMessage("Tanggal dengan start_date:"
-                                                                        + convertDateToRoman.convertDateHehe(scheduleDTO.getSchedules().get(i)
-                                                                        .getStart_date())
+                                                                        + convertDateToRoman.convertDateHehe(scheduleDTO
+                                                                                        .getSchedules().get(i)
+                                                                                        .getStart_date())
                                                                         + " and end_date:"
-                                                                        + convertDateToRoman.convertDateHehe(scheduleDTO.getSchedules().get(i)
-                                                                        .getEnd_date())
+                                                                        + convertDateToRoman.convertDateHehe(scheduleDTO
+                                                                                        .getSchedules().get(i)
+                                                                                        .getEnd_date())
                                                                         + ", sudah terbuat sebelumnya")
                                                         .status(HttpStatus.BAD_REQUEST)
                                                         .build();
@@ -1225,8 +1250,26 @@ public class ScheduleService {
                         User getUser = userRepository.findByUsername(username)
                                         .orElseThrow(() -> new ResourceNotFoundException("user not found"));
 
-                        Map<String, Object> err = new HashMap<>();
+                        List<ScheduleDTO> listRequestSchedule = new ArrayList<>();
                         for (int i = 0; i < scheduleDTO.getSchedules().size(); i++) {
+                                for (int u = 0; u < listRequestSchedule.size(); u++) {
+                                        if (scheduleDTO.getSchedules().get(i).getUser_id()
+                                                        .equals(listRequestSchedule.get(u).getUser_id())
+                                                        && !scheduleDTO.getSchedules().get(i).getEnd_date().before(
+                                                                        listRequestSchedule.get(u).getStart_date())
+                                                        && !scheduleDTO.getSchedules().get(i).getStart_date().after(
+                                                                        listRequestSchedule.get(u).getEnd_date())) {
+                                                return GlobalResponse
+                                                                .builder()
+                                                                .message("Anda menginput jadwal yang sama ")
+                                                                .errorMessage("Tidak bisa menambahkan jadwal yang sama")
+                                                                .status(HttpStatus.BAD_REQUEST)
+                                                                .build();
+                                        } else {
+                                                listRequestSchedule.add(scheduleDTO.getSchedules().get(i));
+                                        }
+                                }
+
                                 if (scheduleDTO.getSchedules().get(i).getStart_date().before(getDateNow())
                                                 || scheduleDTO.getSchedules().get(i).getEnd_date()
                                                                 .before(getDateNow())) {
@@ -1339,7 +1382,6 @@ public class ScheduleService {
 
         public GlobalResponse requestSchedule(RequestReschedule dto, String username) {
                 try {
-                        Map<String, Object> err = new HashMap<>();
 
                         if (dto.getStart_date().before(getDateNow())
                                         || dto.getEnd_date()
@@ -1383,7 +1425,8 @@ public class ScheduleService {
                                                 .builder()
                                                 .message("Tanggal sudah tersedia")
                                                 .errorMessage("Tanggal dengan start_date:"
-                                                                + convertDateToRoman.convertDateHehe(dto.getStart_date())
+                                                                + convertDateToRoman
+                                                                                .convertDateHehe(dto.getStart_date())
                                                                 + " and end_date:"
                                                                 + convertDateToRoman.convertDateHehe(dto.getEnd_date())
                                                                 + ", sudah terbuat sebelumnya")
@@ -1400,11 +1443,8 @@ public class ScheduleService {
                                         .findById(dto.getBranch_id());
                         if (!branchId.isPresent()) {
                                 return GlobalResponse.builder()
-                                                .errorMessage("Branch with id: "
-                                                                + dto
-                                                                                .getBranch_id()
-                                                                + " is not found")
-                                                .message("Branch tidak ditemukan")
+                                                .message("Branch dengan id: "+ dto.getBranch_id()+ " tidak ada")
+                                                .errorMessage("Branch tidak ditemukan")
                                                 .status(HttpStatus.BAD_REQUEST)
                                                 .build();
                         }
@@ -1413,10 +1453,10 @@ public class ScheduleService {
                                         .findById(dto.getUser_id());
                         if (!userId.isPresent()) {
                                 return GlobalResponse.builder()
-                                                .errorMessage("User with id: "
+                                                .message("user dengan id: "
                                                                 + dto.getUser_id()
-                                                                + " is not found")
-                                                .message("User tidak ditemukan")
+                                                                + " tidak ditemukan")
+                                                .errorMessage("User tidak ditemukan")
                                                 .status(HttpStatus.BAD_REQUEST)
                                                 .build();
                         }
@@ -1509,7 +1549,8 @@ public class ScheduleService {
                                                 .builder()
                                                 .message("Jadwal sudah ada ")
                                                 .errorMessage("Tanggal dengan start_date:"
-                                                                + convertDateToRoman.convertDateHehe(dto.getStart_date())
+                                                                + convertDateToRoman
+                                                                                .convertDateHehe(dto.getStart_date())
                                                                 + " and end_date:"
                                                                 + convertDateToRoman.convertDateHehe(dto.getEnd_date())
                                                                 + ", sudah terbuat sebelumnya")
