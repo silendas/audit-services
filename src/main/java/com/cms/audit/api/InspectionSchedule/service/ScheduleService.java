@@ -761,9 +761,15 @@ public class ScheduleService {
                         Map<String, Object> getUserBy = new LinkedHashMap<>();
                         Optional<User> getUser = userRepository.findById(response.get(i).getCreatedBy());
                         if (getUser.isPresent()) {
+                                Map<String, Object> getLevelBy = new LinkedHashMap<>();
+                                getLevelBy.put("id", getUser.get().getLevel().getId());
+                                getLevelBy.put("name", getUser.get().getLevel().getName());
+                                getLevelBy.put("code", getUser.get().getLevel().getCode());
+
                                 getUserBy.put("id", getUser.get().getId());
                                 getUserBy.put("fullname", getUser.get().getFullname());
                                 getUserBy.put("initial_name", getUser.get().getInitial_name());
+                                getUserBy.put("level", getLevelBy);
                                 mapParent.put("created_by", getUserBy);
                         } else {
                                 mapParent.put("created_by", null);
@@ -866,9 +872,15 @@ public class ScheduleService {
                         Map<String, Object> getUserBy = new LinkedHashMap<>();
                         Optional<User> getUser = userRepository.findById(response.getCreatedBy());
                         if (getUser.isPresent()) {
+                                Map<String, Object> getLevelBy = new LinkedHashMap<>();
+                                getLevelBy.put("id", getUser.get().getLevel().getId());
+                                getLevelBy.put("name", getUser.get().getLevel().getName());
+                                getLevelBy.put("code", getUser.get().getLevel().getCode());
+
                                 getUserBy.put("id", getUser.get().getId());
                                 getUserBy.put("fullname", getUser.get().getFullname());
                                 getUserBy.put("initial_name", getUser.get().getInitial_name());
+                                getUserBy.put("level", getLevelBy);
                                 map.put("created_by", getUserBy);
                         } else {
                                 map.put("created_by", null);
@@ -997,9 +1009,15 @@ public class ScheduleService {
                         Map<String, Object> getUserBy = new LinkedHashMap<>();
                         Optional<User> getUser = userRepository.findById(response.getContent().get(i).getCreatedBy());
                         if (getUser.isPresent()) {
+                                Map<String, Object> getLevelBy = new LinkedHashMap<>();
+                                getLevelBy.put("id", getUser.get().getLevel().getId());
+                                getLevelBy.put("name", getUser.get().getLevel().getName());
+                                getLevelBy.put("code", getUser.get().getLevel().getCode());
+
                                 getUserBy.put("id", getUser.get().getId());
                                 getUserBy.put("fullname", getUser.get().getFullname());
                                 getUserBy.put("initial_name", getUser.get().getInitial_name());
+                                getUserBy.put("level", getLevelBy);
                                 map.put("created_by", getUserBy);
                         } else {
                                 map.put("created_by", null);

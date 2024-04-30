@@ -534,6 +534,8 @@ public class UserService {
         public GlobalResponse save(
                         @Valid UserDTO userDTO) {
                 try {
+                        System.out.println("kesini");
+
                         Level levelId = Level.builder()
                                         .id(userDTO.getLevel_id())
                                         .build();
@@ -651,6 +653,8 @@ public class UserService {
                                         }
                                 }
                         }
+
+                        System.out.println("kesini");
 
                         User user = new User(
                                         null,

@@ -12,14 +12,12 @@ public class UserDTO {
     private String email;
     private String nip;
     private String username;
-    @Size(min = 8, message = "password min 8 char")
-    private String password;
     private String fullname;
     private String initial_name;
+    private String password;
     private Long level_id;
     private Long main_id = null;
     private List<Long> region_id = null;
     private List<Long> area_id = null;
     private List<Long> branch_id = null;
-    
 }
