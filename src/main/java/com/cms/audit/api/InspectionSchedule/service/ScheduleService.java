@@ -1090,21 +1090,49 @@ public class ScheduleService {
                         List<ScheduleDTO> listRequestSchedule = new ArrayList<>();
                         for (int i = 0; i < scheduleDTO.getSchedules().size(); i++) {
 
-                                for (int u = 0; u < listRequestSchedule.size(); u++) {
-                                        if (scheduleDTO.getSchedules().get(i).getUser_id()
-                                                        .equals(listRequestSchedule.get(u).getUser_id())
-                                                        && !scheduleDTO.getSchedules().get(i).getEnd_date().before(
-                                                                        listRequestSchedule.get(u).getStart_date())
-                                                        && !scheduleDTO.getSchedules().get(i).getStart_date().after(
-                                                                        listRequestSchedule.get(u).getEnd_date())) {
-                                                return GlobalResponse
-                                                                .builder()
-                                                                .message("Anda menginput jadwal yang sama ")
-                                                                .errorMessage("Tidak bisa menambahkan jadwal yang sama")
-                                                                .status(HttpStatus.BAD_REQUEST)
-                                                                .build();
-                                        } else {
-                                                listRequestSchedule.add(scheduleDTO.getSchedules().get(i));
+                                if (listRequestSchedule.isEmpty()) {
+                                        listRequestSchedule.add(scheduleDTO.getSchedules().get(i));
+                                } else {
+                                        for (int u = 0; u < listRequestSchedule.size(); u++) {
+                                                if (scheduleDTO.getSchedules().get(i).getUser_id()
+                                                                .equals(listRequestSchedule.get(u).getUser_id())
+                                                                && !scheduleDTO.getSchedules().get(i).getEnd_date()
+                                                                                .before(
+                                                                                                listRequestSchedule
+                                                                                                                .get(u)
+                                                                                                                .getStart_date())
+                                                                && !scheduleDTO.getSchedules().get(i).getStart_date()
+                                                                                .after(
+                                                                                                listRequestSchedule
+                                                                                                                .get(u)
+                                                                                                                .getEnd_date())) {
+                                                        return GlobalResponse
+                                                                        .builder()
+                                                                        .message("Anda menginput jadwal yang sama ")
+                                                                        .errorMessage("Tidak bisa menambahkan jadwal yang bersilangan")
+                                                                        .status(HttpStatus.BAD_REQUEST)
+                                                                        .build();
+                                                } else if (scheduleDTO.getSchedules().get(i).getUser_id()
+                                                                .equals(listRequestSchedule.get(u).getUser_id())
+                                                                && scheduleDTO.getSchedules().get(i).getEnd_date()
+                                                                                .equals(
+                                                                                                listRequestSchedule
+                                                                                                                .get(u)
+                                                                                                                .getStart_date())
+                                                                && scheduleDTO.getSchedules().get(i).getStart_date()
+                                                                                .equals(
+                                                                                                listRequestSchedule
+                                                                                                                .get(u)
+                                                                                                                .getEnd_date())) {
+                                                        return GlobalResponse
+                                                                        .builder()
+                                                                        .message("Anda menginput jadwal yang sama")
+                                                                        .errorMessage("Tidak bisa menambahkan jadwal yang sama")
+                                                                        .status(HttpStatus.BAD_REQUEST)
+                                                                        .build();
+                                                } else {
+                                                        listRequestSchedule.add(scheduleDTO.getSchedules().get(i));
+                                                }
                                         }
                                 }
 
@@ -1252,21 +1280,49 @@ public class ScheduleService {
 
                         List<ScheduleDTO> listRequestSchedule = new ArrayList<>();
                         for (int i = 0; i < scheduleDTO.getSchedules().size(); i++) {
-                                for (int u = 0; u < listRequestSchedule.size(); u++) {
-                                        if (scheduleDTO.getSchedules().get(i).getUser_id()
-                                                        .equals(listRequestSchedule.get(u).getUser_id())
-                                                        && !scheduleDTO.getSchedules().get(i).getEnd_date().before(
-                                                                        listRequestSchedule.get(u).getStart_date())
-                                                        && !scheduleDTO.getSchedules().get(i).getStart_date().after(
-                                                                        listRequestSchedule.get(u).getEnd_date())) {
-                                                return GlobalResponse
-                                                                .builder()
-                                                                .message("Anda menginput jadwal yang sama ")
-                                                                .errorMessage("Tidak bisa menambahkan jadwal yang sama")
-                                                                .status(HttpStatus.BAD_REQUEST)
-                                                                .build();
-                                        } else {
-                                                listRequestSchedule.add(scheduleDTO.getSchedules().get(i));
+                                if (listRequestSchedule.isEmpty()) {
+                                        listRequestSchedule.add(scheduleDTO.getSchedules().get(i));
+                                } else {
+                                        for (int u = 0; u < listRequestSchedule.size(); u++) {
+                                                if (scheduleDTO.getSchedules().get(i).getUser_id()
+                                                                .equals(listRequestSchedule.get(u).getUser_id())
+                                                                && !scheduleDTO.getSchedules().get(i).getEnd_date()
+                                                                                .before(
+                                                                                                listRequestSchedule
+                                                                                                                .get(u)
+                                                                                                                .getStart_date())
+                                                                && !scheduleDTO.getSchedules().get(i).getStart_date()
+                                                                                .after(
+                                                                                                listRequestSchedule
+                                                                                                                .get(u)
+                                                                                                                .getEnd_date())) {
+                                                        return GlobalResponse
+                                                                        .builder()
+                                                                        .message("Anda menginput jadwal yang sama ")
+                                                                        .errorMessage("Tidak bisa menambahkan jadwal yang bersilangan")
+                                                                        .status(HttpStatus.BAD_REQUEST)
+                                                                        .build();
+                                                } else if (scheduleDTO.getSchedules().get(i).getUser_id()
+                                                                .equals(listRequestSchedule.get(u).getUser_id())
+                                                                && scheduleDTO.getSchedules().get(i).getEnd_date()
+                                                                                .equals(
+                                                                                                listRequestSchedule
+                                                                                                                .get(u)
+                                                                                                                .getStart_date())
+                                                                && scheduleDTO.getSchedules().get(i).getStart_date()
+                                                                                .equals(
+                                                                                                listRequestSchedule
+                                                                                                                .get(u)
+                                                                                                                .getEnd_date())) {
+                                                        return GlobalResponse
+                                                                        .builder()
+                                                                        .message("Anda menginput jadwal yang sama")
+                                                                        .errorMessage("Tidak bisa menambahkan jadwal yang sama")
+                                                                        .status(HttpStatus.BAD_REQUEST)
+                                                                        .build();
+                                                } else {
+                                                        listRequestSchedule.add(scheduleDTO.getSchedules().get(i));
+                                                }
                                         }
                                 }
 
@@ -1443,7 +1499,7 @@ public class ScheduleService {
                                         .findById(dto.getBranch_id());
                         if (!branchId.isPresent()) {
                                 return GlobalResponse.builder()
-                                                .message("Branch dengan id: "+ dto.getBranch_id()+ " tidak ada")
+                                                .message("Branch dengan id: " + dto.getBranch_id() + " tidak ada")
                                                 .errorMessage("Branch tidak ditemukan")
                                                 .status(HttpStatus.BAD_REQUEST)
                                                 .build();

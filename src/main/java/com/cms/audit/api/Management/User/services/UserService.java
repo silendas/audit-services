@@ -690,13 +690,18 @@ public class UserService {
         public GlobalResponse edit(EditUserDTO userDTO, Long id) {
                 try {
 
-                        User userGet = userRepository.findById(id).get();
+                        Optional<User> userGet = userRepository.findById(id);
+                        if (!userGet.isPresent()) {
+                                return GlobalResponse.builder().message("User tidak ditemukan")
+                                                .errorMessage("User dengan id : " + id + " tidak ditemukan").build();
+                        }
 
                         String password = null;
                         if (userDTO.getPassword() != null || !userDTO.getPassword().equals("")) {
                                 password = passwordEncoder.encode(userDTO.getPassword());
+                                System.out.println(password);
                         } else {
-                                password = userGet.getPassword();
+                                password = userGet.get().getPassword();
                         }
 
                         Level levelId = Level.builder()
@@ -832,7 +837,7 @@ public class UserService {
                                         userDTO.getInitial_name(),
                                         1,
                                         0,
-                                        userGet.getCreated_at(),
+                                        userGet.get().getCreated_at(),
                                         new Date());
                         try {
                                 if (!user.getEmail().equals(userDTO.getEmail())) {
@@ -847,16 +852,17 @@ public class UserService {
                                 }
                                 if (!user.getNip().equals(userDTO.getNip())) {
                                         List<User> checkNip = userRepository.findByNIP(userDTO.getNip());
-                                                if (!checkNip.isEmpty()) {
-                                                        return GlobalResponse
-                                                                        .builder()
-                                                                        .message("NIP already exist")
-                                                                        .status(HttpStatus.BAD_REQUEST)
-                                                                        .build();
-                                                }
+                                        if (!checkNip.isEmpty()) {
+                                                return GlobalResponse
+                                                                .builder()
+                                                                .message("NIP already exist")
+                                                                .status(HttpStatus.BAD_REQUEST)
+                                                                .build();
+                                        }
                                 }
                                 if (!user.getInitial_name().equals(userDTO.getInitial_name())) {
-                                        List<User> checkIN = userRepository.findByInitialName(userDTO.getInitial_name());
+                                        List<User> checkIN = userRepository
+                                                        .findByInitialName(userDTO.getInitial_name());
                                         if (!checkIN.isEmpty()) {
                                                 return GlobalResponse
                                                                 .builder()
@@ -866,7 +872,8 @@ public class UserService {
                                         }
                                 }
                                 if (!user.getUsername().equals(userDTO.getUsername())) {
-                                        Optional<User> checkUsername = userRepository.findByUsername(userDTO.getUsername());
+                                        Optional<User> checkUsername = userRepository
+                                                        .findByUsername(userDTO.getUsername());
                                         if (checkUsername.isPresent()) {
                                                 return GlobalResponse
                                                                 .builder()
@@ -919,13 +926,13 @@ public class UserService {
         public GlobalResponse delete(Long id) {
                 try {
                         Optional<User> getUser = userRepository.findById(id);
-                        if(!getUser.isPresent()){
+                        if (!getUser.isPresent()) {
                                 return GlobalResponse
-                                        .builder()
-                                        .message("User tidak ditemukan")
-                                        .errorMessage("User with id ;" +id+ " not found")
-                                        .status(HttpStatus.BAD_REQUEST)
-                                        .build();
+                                                .builder()
+                                                .message("User tidak ditemukan")
+                                                .errorMessage("User with id ;" + id + " not found")
+                                                .status(HttpStatus.BAD_REQUEST)
+                                                .build();
                         }
                         User user = getUser.get();
                         user.setIs_delete(1);
