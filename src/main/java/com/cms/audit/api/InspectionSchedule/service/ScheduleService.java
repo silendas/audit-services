@@ -1305,15 +1305,13 @@ public class ScheduleService {
                                                 } else if (scheduleDTO.getSchedules().get(i).getUser_id()
                                                                 .equals(listRequestSchedule.get(u).getUser_id())
                                                                 && scheduleDTO.getSchedules().get(i).getEnd_date()
-                                                                                .equals(
-                                                                                                listRequestSchedule
-                                                                                                                .get(u)
-                                                                                                                .getStart_date())
+                                                                                .equals(listRequestSchedule
+                                                                                                .get(u)
+                                                                                                .getStart_date())
                                                                 && scheduleDTO.getSchedules().get(i).getStart_date()
-                                                                                .equals(
-                                                                                                listRequestSchedule
-                                                                                                                .get(u)
-                                                                                                                .getEnd_date())) {
+                                                                                .equals(listRequestSchedule
+                                                                                                .get(u)
+                                                                                                .getEnd_date())) {
                                                         return GlobalResponse
                                                                         .builder()
                                                                         .message("Anda menginput jadwal yang sama")
