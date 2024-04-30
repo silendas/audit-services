@@ -1,15 +1,12 @@
 package com.cms.audit.api.InspectionSchedule.service;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 
 import org.hibernate.exception.DataException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -761,6 +758,16 @@ public class ScheduleService {
                         } else {
                                 mapParent.put("kka", null);
                         }
+                        Map<String, Object> getUserBy = new LinkedHashMap<>();
+                        Optional<User> getUser = userRepository.findById(response.get(i).getCreatedBy());
+                        if (getUser.isPresent()) {
+                                getUserBy.put("id", getUser.get().getId());
+                                getUserBy.put("fullname", getUser.get().getFullname());
+                                getUserBy.put("initial_name", getUser.get().getInitial_name());
+                                mapParent.put("created_by", getUserBy);
+                        } else {
+                                mapParent.put("created_by", null);
+                        }
 
                         listSchedule.add(mapParent);
                 }
@@ -856,6 +863,17 @@ public class ScheduleService {
                                 map.put("end_date_realization", convertDateToRoman.convertDateHehe(
                                                 response.getEnd_date_realization()));
                         }
+                        Map<String, Object> getUserBy = new LinkedHashMap<>();
+                        Optional<User> getUser = userRepository.findById(response.getCreatedBy());
+                        if (getUser.isPresent()) {
+                                getUserBy.put("id", getUser.get().getId());
+                                getUserBy.put("fullname", getUser.get().getFullname());
+                                getUserBy.put("initial_name", getUser.get().getInitial_name());
+                                map.put("created_by", getUserBy);
+                        } else {
+                                map.put("created_by", null);
+                        }
+
                 }
 
                 return map;
@@ -974,6 +992,17 @@ public class ScheduleService {
                                 map.put("is_active", 1);
                         } else {
                                 map.put("is_active", 0);
+                        }
+
+                        Map<String, Object> getUserBy = new LinkedHashMap<>();
+                        Optional<User> getUser = userRepository.findById(response.getContent().get(i).getCreatedBy());
+                        if (getUser.isPresent()) {
+                                getUserBy.put("id", getUser.get().getId());
+                                getUserBy.put("fullname", getUser.get().getFullname());
+                                getUserBy.put("initial_name", getUser.get().getInitial_name());
+                                map.put("created_by", getUserBy);
+                        } else {
+                                map.put("created_by", null);
                         }
 
                         listSchedule.add(map);
