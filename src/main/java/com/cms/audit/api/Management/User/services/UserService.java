@@ -172,10 +172,11 @@ public class UserService {
                                         .status(HttpStatus.BAD_REQUEST).build();
                 }
                 try {
+                        List<UserResponse> listResponses = pageUserDetail(user);
                         int start = (int) pageable.getOffset();
-                        int end = Math.min((start + pageable.getPageSize()), user.size());
-                        List<User> pageContent = user.subList(start, end);
-                        Page<User> response = new PageImpl<>(pageContent, pageable, user.size());
+                        int end = Math.min((start + pageable.getPageSize()), listResponses.size());
+                        List<UserResponse> pageContent = listResponses.subList(start, end);
+                        Page<UserResponse> response = new PageImpl<>(pageContent, pageable, listResponses.size());
                         return GlobalResponse
                                         .builder()
                                         .message("Berhasil meanmpilkan data")
@@ -189,6 +190,55 @@ public class UserService {
                                         .status(HttpStatus.OK)
                                         .build();
                 }
+        }
+
+        public List<UserResponse> pageUserDetail(List<User> response) {
+
+                List<UserResponse> listUser = new ArrayList<>();
+                for (int u = 0; u < response.size(); u++) {
+                        List<Region> region = new ArrayList<>();
+                        if (!response.get(u).getRegionId().isEmpty()) {
+                                for (int i = 0; i < response.get(u).getRegionId().size(); i++) {
+                                        region.add(regionRepository.findById(response.get(u).getRegionId().get(i))
+                                                        .orElse(null));
+                                }
+                        }
+                        List<Area> area = new ArrayList<>();
+                        if (!response.get(u).getAreaId().isEmpty()) {
+                                for (int i = 0; i < response.get(u).getAreaId().size(); i++) {
+                                        area.add(areaRepository.findById(response.get(u).getAreaId().get(i))
+                                                        .orElse(null));
+                                }
+                        }
+                        List<Branch> branch = new ArrayList<>();
+                        if (!response.get(u).getBranchId().isEmpty()) {
+                                for (int i = 0; i < response.get(u).getBranchId().size(); i++) {
+                                        branch.add(branchRepository.findById(response.get(u).getBranchId().get(i))
+                                                        .orElse(null));
+                                }
+                        }
+
+                        UserResponse user = new UserResponse();
+                        user.setId(response.get(u).getId());
+                        user.setLevel(response.get(u).getLevel());
+                        user.setMain(response.get(u).getMain());
+                        user.setRegion(region);
+                        user.setArea(area);
+                        user.setBranch(branch);
+                        user.setEmail(response.get(u).getEmail());
+                        user.setUsername(response.get(u).getUsername());
+                        user.setFullname(response.get(u).getFullname());
+                        user.setInitial_name(response.get(u).getInitial_name());
+                        user.setNip(response.get(u).getNip());
+                        user.setIs_active(response.get(u).getIs_active());
+                        user.setCreated_at(response.get(u).getCreated_at());
+                        user.setUpdated_at(response.get(u).getUpdated_at());
+
+                        listUser.add(user);
+
+                }
+
+                return listUser;
         }
 
         public GlobalResponse findOne(Long id) {
