@@ -154,7 +154,7 @@ public class ClarificationController {
             return ResponseEntittyHandler.errorResponse(response.getErrorMessage(), response.getMessage(),
                     response.getStatus());
         } else {
-            return ResponseEntittyHandler.allHandler(null, response.getMessage(), response.getStatus(),
+            return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(),
                     response.getError());
         }
     }
@@ -166,7 +166,7 @@ public class ClarificationController {
             return ResponseEntittyHandler.errorResponse(response.getErrorMessage(), response.getMessage(),
                     response.getStatus());
         } else {
-            return ResponseEntittyHandler.allHandler(null, response.getMessage(), response.getStatus(),
+            return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(),
                     response.getError());
         }
     }

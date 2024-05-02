@@ -160,7 +160,7 @@ public class FollowupController {
                 if (response.getStatus().value() == 400) {
                         return ResponseEntittyHandler.errorResponse(response.getErrorMessage(), response.getMessage(), response.getStatus());
                 } else {
-                        return ResponseEntittyHandler.allHandler(null, response.getMessage(), response.getStatus(),
+                        return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(),
                                         response.getError());
                 }
         }
@@ -172,7 +172,7 @@ public class FollowupController {
                 if (response.getStatus().value() == 400) {
                         return ResponseEntittyHandler.errorResponse(response.getErrorMessage(), response.getMessage(), response.getStatus());
                 } else {
-                        return ResponseEntittyHandler.allHandler(null, response.getMessage(), response.getStatus(),
+                        return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(),
                                         response.getError());
                 }
         }
