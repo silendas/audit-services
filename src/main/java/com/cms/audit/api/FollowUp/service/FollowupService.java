@@ -94,11 +94,18 @@ public class FollowupService {
                 fuMap.put("user", user);
 
                 List<Object> listPenalty = new ArrayList<>();
-                if (fu.getPenalty() != null) {
+                if (!fu.getPenalty().isEmpty()) {
                     for (int u = 0; u < fu.getPenalty().size(); u++) {
+                        Optional<Penalty> getPenalty = penaltyRepository.findById(fu.getPenalty().get(u));
+                        if (!getPenalty.isPresent()) {
+                            return GlobalResponse.builder()
+                                    .message("Penalty dengan id : " + fu.getPenalty().get(u) + " tidak ditemukan")
+                                    .errorMessage("Tidak dapat menemukan penalty").status(HttpStatus.BAD_REQUEST)
+                                    .build();
+                        }
                         Map<String, Object> objPenalty = new LinkedHashMap<>();
-                        objPenalty.put("id", fu.getPenalty().get(u).getId());
-                        objPenalty.put("code", fu.getPenalty().get(u).getName());
+                        objPenalty.put("id", getPenalty.get().getId());
+                        objPenalty.put("code", getPenalty.get().getName());
                         listPenalty.add(objPenalty);
                     }
                     fuMap.put("penalty", listPenalty);
@@ -184,9 +191,15 @@ public class FollowupService {
             List<Object> listPenalty = new ArrayList<>();
             if (!fu.getPenalty().isEmpty()) {
                 for (int i = 0; i < fu.getPenalty().size(); i++) {
+                    Optional<Penalty> getPenalty = penaltyRepository.findById(fu.getPenalty().get(i));
+                    if (!getPenalty.isPresent()) {
+                        return GlobalResponse.builder()
+                                .message("Penalty dengan id : " + fu.getPenalty().get(i) + " tidak ditemukan")
+                                .errorMessage("Tidak dapat menemukan penalty").status(HttpStatus.BAD_REQUEST).build();
+                    }
                     Map<String, Object> objPenalty = new LinkedHashMap<>();
-                    objPenalty.put("id", fu.getPenalty().get(i).getId());
-                    objPenalty.put("code", fu.getPenalty().get(i).getName());
+                    objPenalty.put("id", getPenalty.get().getId());
+                    objPenalty.put("code", getPenalty.get().getName());
                     listPenalty.add(objPenalty);
                 }
                 fuMap.put("penalty", listPenalty);
@@ -236,7 +249,7 @@ public class FollowupService {
                         .status(HttpStatus.BAD_REQUEST)
                         .build();
             }
-            List<Penalty> listPenalty = new ArrayList<>();
+            List<Long> listPenalty = new ArrayList<>();
             if (!dto.getPenalty_id().isEmpty()) {
                 for (int i = 0; i < dto.getPenalty_id().size(); i++) {
                     Optional<Penalty> penalty = penaltyRepository.findById(dto.getPenalty_id().get(i));
@@ -245,15 +258,16 @@ public class FollowupService {
                                 .message("Penalty with id:" + dto.getPenalty_id() + " is not found")
                                 .status(HttpStatus.BAD_REQUEST).errorMessage("Penalty not found")
                                 .build();
-                    }
+                    } 
+                    listPenalty.add(penalty.get().getId());
                 }
             }
 
             FollowUp followUp = getFollowUp.get();
             followUp.setPenalty(listPenalty);
-            if(dto.getCharging_costs() != null){
+            if (dto.getCharging_costs() != null) {
                 followUp.setCharging_costs(dto.getCharging_costs());
-            }else{
+            } else {
                 followUp.setCharging_costs(String.valueOf(0));
             }
             followUp.setDescription(dto.getDescription());

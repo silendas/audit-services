@@ -11,6 +11,6 @@ import com.cms.audit.api.Management.User.models.LogUser;
 
 @Repository
 public interface LogUserRepository extends JpaRepository<LogUser, Long>{
-    @Query(value = "SELECT u.* FROM log_users u WHERE u.user_id = : id AND u.is_delete <> 1; ")
+    @Query(value = "SELECT u.* FROM log_users u WHERE u.user_id = : id AND u.is_delete <> 1; ",nativeQuery = true)
     public List<LogUser> findByUserId(@Param("id")Long id);
 }

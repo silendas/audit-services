@@ -501,7 +501,7 @@ public class GeneratePdf {
                 float nestedbody6llenght[] = { 18f, 25f, 18f, 25f, 18f, 25f, 18f, 25f, 18f, 350f };
                 Table nested6 = new Table(nestedbody6llenght);
                 for (int i = 0; i < response.getPenalty().size(); i++) {
-                        if (response.getPenalty().get(i).getId() == 1) {
+                        if (response.getPenalty().get(i) == 1) {
                                 nested6.addCell(new Cell().add("").setBackgroundColor(Color.RED));
                         } else {
                                 if (i == response.getPenalty().size()) {
@@ -509,7 +509,7 @@ public class GeneratePdf {
                                 }
                         }
                         nested6.addCell(new Cell().add("ST").setBorder(Border.NO_BORDER).setFontSize(7).setBold());
-                        if (response.getPenalty().get(i).getId() == 2) {
+                        if (response.getPenalty().get(i) == 2) {
                                 nested6.addCell(new Cell().add("").setBackgroundColor(Color.RED));
                         } else {
                                 if (i == response.getPenalty().size()) {
@@ -517,7 +517,7 @@ public class GeneratePdf {
                                 }
                         }
                         nested6.addCell(new Cell().add("SP 1").setBorder(Border.NO_BORDER).setFontSize(7).setBold());
-                        if (response.getPenalty().get(i).getId() == 3) {
+                        if (response.getPenalty().get(i) == 3) {
                                 nested6.addCell(new Cell().add("").setBackgroundColor(Color.RED));
                         } else {
                                 if (i == response.getPenalty().size()) {
@@ -525,7 +525,7 @@ public class GeneratePdf {
                                 }
                         }
                         nested6.addCell(new Cell().add("SP 2").setBorder(Border.NO_BORDER).setFontSize(7).setBold());
-                        if (response.getPenalty().get(i).getId() == 4) {
+                        if (response.getPenalty().get(i) == 4) {
                                 nested6.addCell(new Cell().add("").setBackgroundColor(Color.RED));
                         } else {
                                 if (i == response.getPenalty().size()) {
@@ -533,7 +533,7 @@ public class GeneratePdf {
                                 }
                         }
                         nested6.addCell(new Cell().add("SP 3").setBorder(Border.NO_BORDER).setFontSize(7).setBold());
-                        if (response.getPenalty().get(i).getId() == 5) {
+                        if (response.getPenalty().get(i) == 5) {
                                 nested6.addCell(new Cell().add("").setBackgroundColor(Color.RED));
                         } else {
                                 if (i == response.getPenalty().size()) {

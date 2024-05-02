@@ -46,9 +46,9 @@ public class FollowUp {
     @JoinColumn(name = "branch_id")
     private Branch branch;
 
-    @ManyToOne
+   // @ManyToOne
     @JoinColumn(name = "penalty_id")
-    private List<Penalty> penalty;
+    private List<Long> penalty;
 
     @ManyToOne
     @JoinColumn(name = "report_type_id")
