@@ -94,7 +94,7 @@ public class FollowupService {
                 fuMap.put("user", user);
 
                 List<Object> listPenalty = new ArrayList<>();
-                if (!fu.getPenalty().isEmpty()) {
+                if (fu.getPenalty().isEmpty()) {
                     for (int u = 0; u < fu.getPenalty().size(); u++) {
                         Optional<Penalty> getPenalty = penaltyRepository.findById(fu.getPenalty().get(u));
                         if (!getPenalty.isPresent()) {
