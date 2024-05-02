@@ -8,6 +8,7 @@ import java.util.Date;
 import com.cms.audit.api.Clarifications.models.Clarification;
 import com.cms.audit.api.Clarifications.models.EPriority;
 import com.cms.audit.api.Common.constant.FolderPath;
+import com.cms.audit.api.Common.constant.FormatNumber;
 import com.cms.audit.api.Common.constant.convertDateToRoman;
 import com.cms.audit.api.Common.constant.randomValueNumber;
 import com.cms.audit.api.Common.response.PDFResponse;
@@ -31,7 +32,8 @@ public class GeneratePdf {
         @SuppressWarnings("resource")
         public static PDFResponse generateClarificationPDF(Clarification response, String formulir)
                         throws FileNotFoundException, MalformedURLException {
-                String fileName = randomValueNumber.randomNumberGenerator() + "-" + response.getUser().getInitial_name() + "-"
+                String fileName = randomValueNumber.randomNumberGenerator() + "-" + response.getUser().getInitial_name()
+                                + "-"
                                 + response.getReport_number() + "-clarification.pdf";
                 String path = FolderPath.FOLDER_PATH_CLARIFICATION + fileName;
                 PdfWriter pdfWriter = new PdfWriter(path);
@@ -498,37 +500,50 @@ public class GeneratePdf {
                                 .setBorder(Border.NO_BORDER));
                 float nestedbody6llenght[] = { 18f, 25f, 18f, 25f, 18f, 25f, 18f, 25f, 18f, 350f };
                 Table nested6 = new Table(nestedbody6llenght);
-                if (response.getPenalty().getId() == 1) {
-                        nested6.addCell(new Cell().add("").setBackgroundColor(Color.RED));
-                } else {
-                        nested6.addCell(new Cell().add(""));
+                for (int i = 0; i < response.getPenalty().size(); i++) {
+                        if (response.getPenalty().get(i).getId() == 1) {
+                                nested6.addCell(new Cell().add("").setBackgroundColor(Color.RED));
+                        } else {
+                                if (i == response.getPenalty().size()) {
+                                        nested6.addCell(new Cell().add(""));
+                                }
+                        }
+                        nested6.addCell(new Cell().add("ST").setBorder(Border.NO_BORDER).setFontSize(7).setBold());
+                        if (response.getPenalty().get(i).getId() == 2) {
+                                nested6.addCell(new Cell().add("").setBackgroundColor(Color.RED));
+                        } else {
+                                if (i == response.getPenalty().size()) {
+                                        nested6.addCell(new Cell().add(""));
+                                }
+                        }
+                        nested6.addCell(new Cell().add("SP 1").setBorder(Border.NO_BORDER).setFontSize(7).setBold());
+                        if (response.getPenalty().get(i).getId() == 3) {
+                                nested6.addCell(new Cell().add("").setBackgroundColor(Color.RED));
+                        } else {
+                                if (i == response.getPenalty().size()) {
+                                        nested6.addCell(new Cell().add(""));
+                                }
+                        }
+                        nested6.addCell(new Cell().add("SP 2").setBorder(Border.NO_BORDER).setFontSize(7).setBold());
+                        if (response.getPenalty().get(i).getId() == 4) {
+                                nested6.addCell(new Cell().add("").setBackgroundColor(Color.RED));
+                        } else {
+                                if (i == response.getPenalty().size()) {
+                                        nested6.addCell(new Cell().add(""));
+                                }
+                        }
+                        nested6.addCell(new Cell().add("SP 3").setBorder(Border.NO_BORDER).setFontSize(7).setBold());
+                        if (response.getPenalty().get(i).getId() == 5) {
+                                nested6.addCell(new Cell().add("").setBackgroundColor(Color.RED));
+                        } else {
+                                if (i == response.getPenalty().size()) {
+                                        nested6.addCell(new Cell().add(""));
+                                }
+                        }
+                        nested6.addCell(new Cell().add("Surat Pembebanan/PG").setBorder(Border.NO_BORDER).setFontSize(7)
+                                        .setBold());
                 }
-                nested6.addCell(new Cell().add("ST").setBorder(Border.NO_BORDER).setFontSize(7).setBold());
-                if (response.getPenalty().getId() == 2) {
-                        nested6.addCell(new Cell().add("").setBackgroundColor(Color.RED));
-                } else {
-                        nested6.addCell(new Cell().add(""));
-                }
-                nested6.addCell(new Cell().add("SP 1").setBorder(Border.NO_BORDER).setFontSize(7).setBold());
-                if (response.getPenalty().getId() == 3) {
-                        nested6.addCell(new Cell().add("").setBackgroundColor(Color.RED));
-                } else {
-                        nested6.addCell(new Cell().add(""));
-                }
-                nested6.addCell(new Cell().add("SP 2").setBorder(Border.NO_BORDER).setFontSize(7).setBold());
-                if (response.getPenalty().getId() == 4) {
-                        nested6.addCell(new Cell().add("").setBackgroundColor(Color.RED));
-                } else {
-                        nested6.addCell(new Cell().add(""));
-                }
-                nested6.addCell(new Cell().add("SP 3").setBorder(Border.NO_BORDER).setFontSize(7).setBold());
-                if (response.getPenalty().getId() == 5) {
-                        nested6.addCell(new Cell().add("").setBackgroundColor(Color.RED));
-                } else {
-                        nested6.addCell(new Cell().add(""));
-                }
-                nested6.addCell(new Cell().add("Surat Pembebanan/PG").setBorder(Border.NO_BORDER).setFontSize(7)
-                                .setBold());
+                body6.addCell(new Cell().add("Biaya pembebanan : " + FormatNumber.formatString(response.getCharging_costs())).setBold().setFontSize(7).setBorder(Border.NO_BORDER));
                 body6.addCell(new Cell().add(nested6).setBorder(Border.NO_BORDER));
                 body6.addCell(new Cell().add("").setBorder(Border.NO_BORDER).setHeight(10));
                 body6.addCell(new Cell()

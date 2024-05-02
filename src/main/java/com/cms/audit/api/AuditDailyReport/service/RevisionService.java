@@ -39,16 +39,19 @@ public class RevisionService {
                 List<Revision> response = repository.findAll();
                 if (response.isEmpty()) {
                     if (response.isEmpty()) {
-                    return GlobalResponse.builder().message("Data not found").status(HttpStatus.OK).data(response).build();
+                        return GlobalResponse.builder().message("Data not found").status(HttpStatus.OK).data(response)
+                                .build();
+                    }
                 }
-                }
-                return GlobalResponse.builder().data(response).message("Berhasil menampilkan data").status(HttpStatus.OK).build();
+                return GlobalResponse.builder().data(response).message("Berhasil menampilkan data")
+                        .status(HttpStatus.OK).build();
             } else {
                 List<Revision> response = repository.findByDetailIdAll(detaild);
                 if (response.isEmpty()) {
                     if (response.isEmpty()) {
-                    return GlobalResponse.builder().message("Data not found").status(HttpStatus.OK).data(response).build();
-                }
+                        return GlobalResponse.builder().message("Data not found").status(HttpStatus.OK).data(response)
+                                .build();
+                    }
                 }
                 for (int i = 0; i < response.size(); i++) {
                     if (response.get(i).getIs_research() == 1) {
@@ -66,7 +69,8 @@ public class RevisionService {
                         response.get(i).setIs_research(0);
                     }
                 }
-                return GlobalResponse.builder().data(response).message("Berhasil menampilkan data").status(HttpStatus.OK).build();
+                return GlobalResponse.builder().data(response).message("Berhasil menampilkan data")
+                        .status(HttpStatus.OK).build();
             }
         } catch (Exception e) {
             return GlobalResponse.builder().error(e).status(HttpStatus.INTERNAL_SERVER_ERROR).build();
@@ -93,7 +97,8 @@ public class RevisionService {
             } else {
                 response.get().setIs_research(0);
             }
-            return GlobalResponse.builder().message("Berhasil menampilkan data").data(response).status(HttpStatus.OK).build();
+            return GlobalResponse.builder().message("Berhasil menampilkan data").data(response).status(HttpStatus.OK)
+                    .build();
         } catch (Exception e) {
             return GlobalResponse.builder().error(e).status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
@@ -105,12 +110,28 @@ public class RevisionService {
         Optional<AuditDailyReportDetail> detail = auditDailyReportDetailRepository
                 .findById(dto.getAudit_daily_report_detail_id());
         if (!detail.isPresent()) {
-            return GlobalResponse.builder().message("LHA detail tidak ditemukan").errorMessage("LHA detail with id: " + dto.getAudit_daily_report_detail_id()+" not found").status(HttpStatus.BAD_REQUEST).build();
+            return GlobalResponse.builder().errorMessage("LHA detail tidak ditemukan")
+                    .message("LHA detail with id: " + dto.getAudit_daily_report_detail_id() + " not found")
+                    .status(HttpStatus.BAD_REQUEST).build();
         }
 
-        if(user.getLevel().getCode().equals("B")){
-            if(detail.get().getIs_revision() == 2){
-                return GlobalResponse.builder().message("Karena sudah direvisi oleh pusat atau leader maka tidak dapat direvisi lagi oleh area").errorMessage("Tidak bisa merevisi karena sudah direvisi leader atau pusat").status(HttpStatus.BAD_REQUEST).build();
+        if (user.getLevel().getCode().equals("C")) {
+            if (detail.get().getIs_revision() == 1) {
+                return GlobalResponse.builder()
+                        .message(
+                                "Karena sudah direvisi oleh audit area maka tidak dapat direvisi lagi oleh area")
+                        .errorMessage("Tidak bisa merevisi karena sudah direvisi area")
+                        .status(HttpStatus.BAD_REQUEST).build();
+            }
+        }
+
+        if (user.getLevel().getCode().equals("B")) {
+            if (detail.get().getIs_revision() == 2) {
+                return GlobalResponse.builder()
+                        .message(
+                                "Karena sudah direvisi oleh pusat atau leader maka tidak dapat direvisi lagi oleh area")
+                        .errorMessage("Tidak bisa merevisi karena sudah direvisi leader atau pusat")
+                        .status(HttpStatus.BAD_REQUEST).build();
             }
         }
 
@@ -123,12 +144,13 @@ public class RevisionService {
         auditDailyReportDetail.setUpdated_by(user.getId());
         auditDailyReportDetail.setUpdate_at(new Date());
 
-        if(user.getLevel().getCode().equals("A")){
-            if(detail.get().getIs_revision() == null || detail.get().getIs_revision() == 0 || detail.get().getIs_revision() == 1){
+        if (user.getLevel().getCode().equals("A")) {
+            if (detail.get().getIs_revision() == null || detail.get().getIs_revision() == 0
+                    || detail.get().getIs_revision() == 1) {
                 auditDailyReportDetail.setIs_revision(2);
             }
-        } else if(user.getLevel().getCode().equals("B")){
-            if(detail.get().getIs_revision() == null || detail.get().getIs_revision() == 0){
+        } else if (user.getLevel().getCode().equals("B")) {
+            if (detail.get().getIs_revision() == null || detail.get().getIs_revision() == 0) {
                 auditDailyReportDetail.setIs_revision(1);
             }
         }
@@ -148,11 +170,19 @@ public class RevisionService {
         revision.setIs_research(detail.get().getIs_research());
         revision.setCreated_at(new Date());
 
-        Optional<Revision> getRevision = repository.findByDetailId(detail.get().getId());
-        if (getRevision.isPresent()) {
-            revision.setRevisionNumber(getRevision.get().getRevisionNumber() + 1);
-        } else {
-            revision.setRevisionNumber(1L);
+        if (user.getId() == detail.get().getAuditDailyReport().getUser().getId()) {
+            Optional<Revision> getRevision = repository.findByDetailId(dto.getAudit_daily_report_detail_id());
+            if(getRevision.isPresent()){
+                revision.setId(getRevision.get().getId());
+                revision.setRevisionNumber(getRevision.get().getRevisionNumber());
+            }
+        }else{
+            Optional<Revision> getRevision = repository.findByDetailId(detail.get().getId());
+            if (getRevision.isPresent()) {
+                revision.setRevisionNumber(getRevision.get().getRevisionNumber() + 1);
+            } else {
+                revision.setRevisionNumber(1L);
+            }
         }
 
         try {

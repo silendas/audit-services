@@ -1,5 +1,7 @@
 package com.cms.audit.api.FollowUp.dto;
 
+import java.util.List;
+
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 
@@ -15,6 +17,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class FollowUpDTO {
     private Long followup_id;
-    private Long penalty_id;
+    private List<Long> penalty_id;
+    private String charging_costs;
     private String description;
 }

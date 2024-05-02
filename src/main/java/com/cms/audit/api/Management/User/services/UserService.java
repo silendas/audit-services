@@ -61,6 +61,9 @@ public class UserService {
         private RegionRepository regionRepository;
 
         @Autowired
+        private LogUserService logService;
+
+        @Autowired
         private AreaRepository areaRepository;
 
         @Autowired
@@ -534,7 +537,7 @@ public class UserService {
         public GlobalResponse save(
                         @Valid UserDTO userDTO) {
                 try {
-                        System.out.println("kesini");
+                        
 
                         Level levelId = Level.builder()
                                         .id(userDTO.getLevel_id())
@@ -654,7 +657,7 @@ public class UserService {
                                 }
                         }
 
-                        System.out.println("kesini");
+                        
 
                         User user = new User(
                                         null,
@@ -709,7 +712,8 @@ public class UserService {
                                                         .status(HttpStatus.BAD_REQUEST)
                                                         .build();
                                 }
-                                userRepository.save(user);
+                                User response = userRepository.save(user);
+                                logService.insertAuto(response);
                         } catch (SqlScriptException e) {
                                 return GlobalResponse.builder().error(e).status(HttpStatus.BAD_REQUEST).build();
                         }
@@ -746,8 +750,8 @@ public class UserService {
 
                         Optional<User> userGet = userRepository.findById(id);
                         if (!userGet.isPresent()) {
-                                return GlobalResponse.builder().message("User tidak ditemukan")
-                                                .errorMessage("User dengan id : " + id + " tidak ditemukan").build();
+                                return GlobalResponse.builder().errorMessage("User tidak ditemukan")
+                                                .message("User dengan id : " + id + " tidak ditemukan").build();
                         }
 
                         String password = null;
@@ -936,7 +940,8 @@ public class UserService {
                                                                 .build();
                                         }
                                 }
-                                userRepository.save(user);
+                                User response =userRepository.save(user);
+                                logService.insertAuto(response);
                         } catch (DataIntegrityViolationException e) {
                                 return GlobalResponse
                                                 .builder()
@@ -1021,7 +1026,9 @@ public class UserService {
                                 User user = getUser;
                                 user.setPassword(passwordEncoder.encode(changePasswordDTO.getNew_password()));
                                 user.setUpdated_at(new Date());
-                                userRepository.save(user);
+                                User response=userRepository.save(user);
+                                logService.insertAuto(response);
+
                         } else {
                                 return GlobalResponse
                                                 .builder()

@@ -661,12 +661,10 @@ public class ScheduleService {
                         setUser.setFullname(response.get(i).getUser().getFullname());
                         setUser.setInitial_name(response.get(i).getUser().getInitial_name());
                         setUser.setNip(response.get(i).getUser().getNip());
+                        setUser.setLevel(response.get(i).getUser().getLevel());
                         mapParent.put("user", setUser);
 
-                        Map<String, Object> mapBranch = new LinkedHashMap<>();
-                        mapBranch.put("id", response.get(i).getBranch().getId());
-                        mapBranch.put("name", response.get(i).getBranch().getName());
-                        mapParent.put("branch", mapBranch);
+                        mapParent.put("branch", response.get(i).getBranch());
 
                         mapParent.put("description", response.get(i).getDescription());
                         mapParent.put("status", response.get(i).getStatus());
@@ -791,12 +789,10 @@ public class ScheduleService {
                 setUser.setFullname(response.getUser().getFullname());
                 setUser.setInitial_name(response.getUser().getInitial_name());
                 setUser.setNip(response.getUser().getNip());
+                setUser.setLevel(response.getUser().getLevel());
                 map.put("user", setUser);
 
-                Map<String, Object> mapBranch = new LinkedHashMap<>();
-                mapBranch.put("id", response.getBranch().getId());
-                mapBranch.put("name", response.getBranch().getName());
-                map.put("branch", mapBranch);
+                map.put("branch", response.getBranch());
 
                 map.put("description", response.getDescription());
                 map.put("status", response.getStatus());
@@ -904,12 +900,10 @@ public class ScheduleService {
                         setUser.setFullname(response.getContent().get(i).getUser().getFullname());
                         setUser.setInitial_name(response.getContent().get(i).getUser().getInitial_name());
                         setUser.setNip(response.getContent().get(i).getUser().getNip());
+                        setUser.setLevel(response.getContent().get(i).getUser().getLevel());
                         map.put("user", setUser);
 
-                        Map<String, Object> mapBranch = new LinkedHashMap<>();
-                        mapBranch.put("id", response.getContent().get(i).getBranch().getId());
-                        mapBranch.put("name", response.getContent().get(i).getBranch().getName());
-                        map.put("branch", mapBranch);
+                        map.put("branch", response.getContent().get(i).getBranch());
 
                         map.put("description", response.getContent().get(i).getDescription());
                         map.put("status", response.getContent().get(i).getStatus());
@@ -1140,6 +1134,7 @@ public class ScheduleService {
                                 if (listRequestSchedule.isEmpty()) {
                                         listRequestSchedule.add(scheduleDTO.getSchedules().get(i));
                                 } else {
+
                                         for (int u = 0; u < listRequestSchedule.size(); u++) {
                                                 if (scheduleDTO.getSchedules().get(i).getUser_id()
                                                                 .equals(listRequestSchedule.get(u).getUser_id())
@@ -1162,15 +1157,13 @@ public class ScheduleService {
                                                 } else if (scheduleDTO.getSchedules().get(i).getUser_id()
                                                                 .equals(listRequestSchedule.get(u).getUser_id())
                                                                 && scheduleDTO.getSchedules().get(i).getEnd_date()
-                                                                                .equals(
-                                                                                                listRequestSchedule
-                                                                                                                .get(u)
-                                                                                                                .getStart_date())
+                                                                                .equals(listRequestSchedule
+                                                                                                .get(u)
+                                                                                                .getStart_date())
                                                                 && scheduleDTO.getSchedules().get(i).getStart_date()
-                                                                                .equals(
-                                                                                                listRequestSchedule
-                                                                                                                .get(u)
-                                                                                                                .getEnd_date())) {
+                                                                                .equals(listRequestSchedule
+                                                                                                .get(u)
+                                                                                                .getEnd_date())) {
                                                         return GlobalResponse
                                                                         .builder()
                                                                         .message("Anda menginput jadwal yang sama")

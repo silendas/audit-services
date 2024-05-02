@@ -1,6 +1,7 @@
 package com.cms.audit.api.FollowUp.models;
 
 import java.util.Date;
+import java.util.List;
 
 import com.cms.audit.api.Clarifications.models.Clarification;
 import com.cms.audit.api.Management.Office.BranchOffice.models.Branch;
@@ -47,7 +48,7 @@ public class FollowUp {
 
     @ManyToOne
     @JoinColumn(name = "penalty_id")
-    private Penalty penalty;
+    private List<Penalty> penalty;
 
     @ManyToOne
     @JoinColumn(name = "report_type_id")
@@ -58,6 +59,9 @@ public class FollowUp {
 
     @Column(name = "code")
     private String code;
+
+    @Column(name = "charging_costs")
+    private String charging_costs;
 
     @Column(name = "description")
     private String description;
@@ -73,6 +77,9 @@ public class FollowUp {
 
     @Column(name = "is_penalty")
     private Long isPenalty;
+
+    @Column(name = "created_by")
+    private Long created_by;
 
     @JsonFormat(pattern="yyyy-MM-dd")
     @Column(name = "created_at")

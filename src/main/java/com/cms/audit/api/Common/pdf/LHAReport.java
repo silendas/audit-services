@@ -105,20 +105,44 @@ public class LHAReport {
                                                                 .getName())
                                                 .setBackgroundColor(Color.WHITE)
                                                 .setFontSize(5).setTextAlignment(TextAlignment.CENTER));
-                                bodyNested2.addCell(new Cell()
-                                                .add(dto.getLha_detail().get(i).getDetails().get(u).getDescription())
-                                                .setBackgroundColor(Color.WHITE)
-                                                .setFontSize(5).setTextAlignment(TextAlignment.CENTER));
-                                bodyNested2.addCell(new Cell()
-                                                .add(dto.getLha_detail().get(i).getDetails().get(u)
-                                                                .getTemporary_recommendations())
-                                                .setBackgroundColor(Color.WHITE)
-                                                .setFontSize(5).setTextAlignment(TextAlignment.CENTER));
-                                bodyNested2.addCell(new Cell()
-                                                .add(dto.getLha_detail().get(i).getDetails().get(u)
-                                                                .getPermanent_recommendations())
-                                                .setBackgroundColor(Color.WHITE)
-                                                .setFontSize(5).setTextAlignment(TextAlignment.CENTER));
+                                if (dto.getLha_detail().get(i).getDetails().get(u).getDescription() != null) {
+                                        bodyNested2.addCell(new Cell()
+                                                        .add(dto.getLha_detail().get(i).getDetails().get(u)
+                                                                        .getDescription())
+                                                        .setBackgroundColor(Color.WHITE)
+                                                        .setFontSize(5).setTextAlignment(TextAlignment.CENTER));
+                                } else {
+                                        bodyNested2.addCell(new Cell()
+                                                        .add("-")
+                                                        .setBackgroundColor(Color.WHITE)
+                                                        .setFontSize(5).setTextAlignment(TextAlignment.CENTER));
+                                }
+                                if (dto.getLha_detail().get(i).getDetails().get(u)
+                                                .getTemporary_recommendations() != null) {
+                                        bodyNested2.addCell(new Cell()
+                                                        .add(dto.getLha_detail().get(i).getDetails().get(u)
+                                                                        .getTemporary_recommendations())
+                                                        .setBackgroundColor(Color.WHITE)
+                                                        .setFontSize(5).setTextAlignment(TextAlignment.CENTER));
+                                } else {
+                                        bodyNested2.addCell(new Cell()
+                                                        .add("-")
+                                                        .setBackgroundColor(Color.WHITE)
+                                                        .setFontSize(5).setTextAlignment(TextAlignment.CENTER));
+                                }
+                                if (dto.getLha_detail().get(i).getDetails().get(u)
+                                                .getPermanent_recommendations() != null) {
+                                        bodyNested2.addCell(new Cell()
+                                                        .add(dto.getLha_detail().get(i).getDetails().get(u)
+                                                                        .getPermanent_recommendations())
+                                                        .setBackgroundColor(Color.WHITE)
+                                                        .setFontSize(5).setTextAlignment(TextAlignment.CENTER));
+                                } else {
+                                        bodyNested2.addCell(new Cell()
+                                                        .add("-")
+                                                        .setBackgroundColor(Color.WHITE)
+                                                        .setFontSize(5).setTextAlignment(TextAlignment.CENTER));
+                                }
                         }
                         bodyNested.addCell(
                                         new Cell().add(bodyNested2).setBorder(Border.NO_BORDER).setPadding(0));
@@ -154,7 +178,8 @@ public class LHAReport {
                 Table header2 = new Table(header2Lenght).setHorizontalAlignment(HorizontalAlignment.CENTER);
                 header2.addCell(new Cell().add("TANGGAL").setBackgroundColor(Color.YELLOW).setFontSize(5)
                                 .setTextAlignment(TextAlignment.CENTER));
-                header2.addCell(new Cell().add(convertDateToRoman.convertDateHehe(new Date())).setBackgroundColor(Color.WHITE).setFontSize(5)
+                header2.addCell(new Cell().add(convertDateToRoman.convertDateHehe(new Date()))
+                                .setBackgroundColor(Color.WHITE).setFontSize(5)
                                 .setTextAlignment(TextAlignment.CENTER));
                 header2.addCell(new Cell().add("").setBackgroundColor(Color.YELLOW).setFontSize(5)
                                 .setTextAlignment(TextAlignment.CENTER));
@@ -302,21 +327,48 @@ public class LHAReport {
                                                                         .getName())
                                                         .setBackgroundColor(Color.WHITE)
                                                         .setFontSize(5).setTextAlignment(TextAlignment.CENTER));
-                                        bodyNested2.addCell(new Cell()
-                                                        .add(dto.get(o).getLha_detail().get(i).getDetails().get(u)
-                                                                        .getDescription())
-                                                        .setBackgroundColor(Color.WHITE)
-                                                        .setFontSize(5).setTextAlignment(TextAlignment.CENTER));
-                                        bodyNested2.addCell(new Cell()
-                                                        .add(dto.get(o).getLha_detail().get(i).getDetails().get(u)
-                                                                        .getTemporary_recommendations())
-                                                        .setBackgroundColor(Color.WHITE)
-                                                        .setFontSize(5).setTextAlignment(TextAlignment.CENTER));
-                                        bodyNested2.addCell(new Cell()
-                                                        .add(dto.get(o).getLha_detail().get(i).getDetails().get(u)
-                                                                        .getPermanent_recommendations())
-                                                        .setBackgroundColor(Color.WHITE)
-                                                        .setFontSize(5).setTextAlignment(TextAlignment.CENTER));
+                                        if (dto.get(o).getLha_detail().get(i).getDetails().get(u)
+                                                        .getDescription() != null) {
+                                                bodyNested2.addCell(new Cell()
+                                                                .add(dto.get(o).getLha_detail().get(i).getDetails()
+                                                                                .get(u)
+                                                                                .getDescription())
+                                                                .setBackgroundColor(Color.WHITE)
+                                                                .setFontSize(5).setTextAlignment(TextAlignment.CENTER));
+                                        } else {
+                                                bodyNested2.addCell(new Cell()
+                                                                .add("-")
+                                                                .setBackgroundColor(Color.WHITE)
+                                                                .setFontSize(5).setTextAlignment(TextAlignment.CENTER));
+                                        }
+                                        if (dto.get(o).getLha_detail().get(i).getDetails().get(u)
+                                                        .getTemporary_recommendations() != null) {
+                                                bodyNested2.addCell(new Cell()
+                                                                .add(dto.get(o).getLha_detail().get(i).getDetails()
+                                                                                .get(u)
+                                                                                .getTemporary_recommendations())
+                                                                .setBackgroundColor(Color.WHITE)
+                                                                .setFontSize(5).setTextAlignment(TextAlignment.CENTER));
+                                        } else {
+                                                bodyNested2.addCell(new Cell()
+                                                                .add("-")
+                                                                .setBackgroundColor(Color.WHITE)
+                                                                .setFontSize(5).setTextAlignment(TextAlignment.CENTER));
+                                        }
+                                        if (dto.get(o).getLha_detail().get(i).getDetails().get(u)
+                                                        .getPermanent_recommendations() != null) {
+                                                bodyNested2.addCell(new Cell()
+                                                                .add(dto.get(o).getLha_detail().get(i).getDetails()
+                                                                                .get(u)
+                                                                                .getPermanent_recommendations())
+                                                                .setBackgroundColor(Color.WHITE)
+                                                                .setFontSize(5).setTextAlignment(TextAlignment.CENTER));
+                                        } else {
+                                                bodyNested2.addCell(new Cell()
+                                                                .add("-")
+                                                                .setBackgroundColor(Color.WHITE)
+                                                                .setFontSize(5).setTextAlignment(TextAlignment.CENTER));
+                                        }
                                 }
                                 bodyNested.addCell(
                                                 new Cell().add(bodyNested2).setBorder(Border.NO_BORDER).setPadding(0));

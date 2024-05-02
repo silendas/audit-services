@@ -169,6 +169,7 @@ public class ClarificationService {
                                 user.put("fullname", response.getContent().get(i).getUser().getFullname());
                                 user.put("initial_name", response.getContent().get(i).getUser().getInitial_name());
                                 user.put("email", response.getContent().get(i).getUser().getEmail());
+                                user.put("level", response.getContent().get(i).getUser().getLevel());
                                 clarification.put("user", user);
 
                                 Map<String, Object> branch = new LinkedHashMap<>();
@@ -260,6 +261,7 @@ public class ClarificationService {
                         user.put("fullname", response.getUser().getFullname());
                         user.put("initial_name", response.getUser().getInitial_name());
                         user.put("email", response.getUser().getEmail());
+                        user.put("level", response.getUser().getLevel());
                         clarification.put("user", user);
 
                         Map<String, Object> branch = new LinkedHashMap<>();
@@ -430,6 +432,7 @@ public class ClarificationService {
                                         null,
                                         null,
                                         EStatusClarification.INPUT,
+                                        user.getId(),
                                         new Date(),
                                         new Date());
 
@@ -503,21 +506,13 @@ public class ClarificationService {
                                         null,
                                         null,
                                         EStatusClarification.DOWNLOAD,
+                                        getClarification.get().getUser().getId(),
                                         getClarification.get().getCreated_at(),
                                         new Date());
 
                         Clarification response = repository.save(clarification);
 
-                        String reportNumber = "";
-                        if (response.getReport_number() < 10) {
-                                reportNumber = "00" + reportNumber;
-                        } else if (response.getReport_number() < 100) {
-                                reportNumber = "0" + reportNumber;
-                        } else {
-                                reportNumber = response.getReport_number().toString();
-                        }
-
-                        String formulir = "FM/" + response.getCases().getCode() + "-" + reportNumber;
+                        String formulir = "FM/" + response.getCases().getCode() + "-" + getClarification.get().getReport_number();
 
                         PDFResponse generatePDF = GeneratePdf.generateClarificationPDF(response, formulir);
 
@@ -600,6 +595,7 @@ public class ClarificationService {
                                         dto.getEvaluation(),
                                         dto.getIs_followup(),
                                         EStatusClarification.DONE,
+                                        getBefore.get().getUser().getId(),
                                         getBefore.get().getCreated_at(),
                                         new Date());
 
@@ -660,6 +656,8 @@ public class ClarificationService {
                                                 null,
                                                 reportNumber,
                                                 reportCode,
+                                                response.getNominal_loss(),
+                                                response.getCreated_by(),
                                                 new Date(),
                                                 new Date());
 
@@ -721,6 +719,7 @@ public class ClarificationService {
                                 followUp.setReport_number(reportNumber);
                                 followUp.setCode(reportCode2);
                                 followUp.setStatus(EStatusFollowup.CREATE);
+                                followUp.setCreated_by(response.getUser().getId());
                                 followUp.setCreatedAt(new Date());
 
                                 followUpRepository.save(followUp);

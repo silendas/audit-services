@@ -6,6 +6,7 @@ public interface BasePath {
 
     String BASE_PATH_AUTH = BASE_API+"/auth";
     String BASE_PATH_USER = BASE_API+"/users";
+    String BASE_PATH_USER_LOG = BASE_API+"/log-users";
     String BASE_PATH_PROFILE = BASE_API+"/profile";
     String BASE_PATH_ROLE = BASE_API+"/role";
     String BASE_PATH_LEVEL = BASE_API+"/level";

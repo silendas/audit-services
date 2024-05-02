@@ -1,12 +1,7 @@
 HELP.md
 target/
 
-!uploaded/bap/*
-!uploaded/clarification/*
-!uploaded/followup/*
-!uploaded/kka/*
-# uploaded/report/*
-
+!uploaded/
 !image/
 !.mvn/wrapper/maven-wrapper.jar
 !*/src/main/*/target/

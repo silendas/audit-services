@@ -30,8 +30,6 @@ import com.cms.audit.api.FollowUp.models.EStatusFollowup;
 import com.cms.audit.api.FollowUp.models.FollowUp;
 import com.cms.audit.api.FollowUp.repository.FollowUpRepository;
 import com.cms.audit.api.FollowUp.repository.PagFollowup;
-import com.cms.audit.api.Management.Office.BranchOffice.models.Branch;
-import com.cms.audit.api.Management.Office.BranchOffice.repository.BranchRepository;
 import com.cms.audit.api.Management.Penalty.models.Penalty;
 import com.cms.audit.api.Management.Penalty.repository.PenaltyRepository;
 
@@ -92,25 +90,30 @@ public class FollowupService {
                 user.put("email", fu.getUser().getEmail());
                 user.put("fullname", fu.getUser().getFullname());
                 user.put("initial_name", fu.getUser().getInitial_name());
+                user.put("level", fu.getUser().getLevel());
                 fuMap.put("user", user);
 
-                Map<String, Object> penalty = new LinkedHashMap<>();
+                List<Object> listPenalty = new ArrayList<>();
                 if (fu.getPenalty() != null) {
-                    penalty.put("id", fu.getPenalty().getId());
-                    penalty.put("code", fu.getPenalty().getName());
-                    fuMap.put("penalty", penalty);
+                    for (int u = 0; u < fu.getPenalty().size(); u++) {
+                        Map<String, Object> objPenalty = new LinkedHashMap<>();
+                        objPenalty.put("id", fu.getPenalty().get(u).getId());
+                        objPenalty.put("code", fu.getPenalty().get(u).getName());
+                        listPenalty.add(objPenalty);
+                    }
+                    fuMap.put("penalty", listPenalty);
                 } else {
-                    fuMap.put("penalty", null);
+                    fuMap.put("penalty", listPenalty);
                 }
 
                 Map<String, Object> clarification = new LinkedHashMap<>();
                 clarification.put("id", fu.getClarification().getId());
                 clarification.put("code", fu.getClarification().getCode());
-                if(fu.getClarification().getEvaluation_limitation() != null){
+                if (fu.getClarification().getEvaluation_limitation() != null) {
                     clarification.put("evaluation_limitation",
-                        convertDateToRoman.convertDateToString(fu.getClarification().getEvaluation_limitation()));
-                }else{
-                    clarification.put("evaluation_limitation","-");
+                            convertDateToRoman.convertDateToString(fu.getClarification().getEvaluation_limitation()));
+                } else {
+                    clarification.put("evaluation_limitation", "-");
                 }
                 fuMap.put("clarification", clarification);
 
@@ -175,15 +178,20 @@ public class FollowupService {
             user.put("email", fu.getUser().getEmail());
             user.put("fullname", fu.getUser().getFullname());
             user.put("initial_name", fu.getUser().getInitial_name());
+            user.put("level", fu.getUser().getLevel());
             fuMap.put("user", user);
 
-            Map<String, Object> penalty = new LinkedHashMap<>();
-            if (fu.getPenalty() != null) {
-                penalty.put("id", fu.getPenalty().getId());
-                penalty.put("code", fu.getPenalty().getName());
-                fuMap.put("penalty", penalty);
+            List<Object> listPenalty = new ArrayList<>();
+            if (!fu.getPenalty().isEmpty()) {
+                for (int i = 0; i < fu.getPenalty().size(); i++) {
+                    Map<String, Object> objPenalty = new LinkedHashMap<>();
+                    objPenalty.put("id", fu.getPenalty().get(i).getId());
+                    objPenalty.put("code", fu.getPenalty().get(i).getName());
+                    listPenalty.add(objPenalty);
+                }
+                fuMap.put("penalty", listPenalty);
             } else {
-                fuMap.put("penalty", null);
+                fuMap.put("penalty", listPenalty);
             }
 
             Map<String, Object> clarification = new LinkedHashMap<>();
@@ -223,22 +231,31 @@ public class FollowupService {
         try {
             Optional<FollowUp> getFollowUp = repository.findById(dto.getFollowup_id());
             if (!getFollowUp.isPresent()) {
-                return GlobalResponse.builder().message("TIndak lanjut tidak ditemukan").errorMessage("Follow Up with id:" + dto.getFollowup_id() + " is not found").status(HttpStatus.BAD_REQUEST)
+                return GlobalResponse.builder().errorMessage("TIndak lanjut tidak ditemukan")
+                        .message("Follow Up with id:" + dto.getFollowup_id() + " is not found")
+                        .status(HttpStatus.BAD_REQUEST)
                         .build();
             }
-            Optional<Penalty> penalty;
-            if (dto.getPenalty_id() != null) {
-                penalty = penaltyRepository.findById(dto.getPenalty_id());
-                if (!penalty.isPresent()) {
-                    return GlobalResponse.builder().errorMessage("Penalty with id:" + dto.getPenalty_id() + " is not foudn").status(HttpStatus.BAD_REQUEST).message("Penlaty not found")
-                            .build();
+            List<Penalty> listPenalty = new ArrayList<>();
+            if (!dto.getPenalty_id().isEmpty()) {
+                for (int i = 0; i < dto.getPenalty_id().size(); i++) {
+                    Optional<Penalty> penalty = penaltyRepository.findById(dto.getPenalty_id().get(i));
+                    if (!penalty.isPresent()) {
+                        return GlobalResponse.builder()
+                                .message("Penalty with id:" + dto.getPenalty_id() + " is not found")
+                                .status(HttpStatus.BAD_REQUEST).errorMessage("Penalty not found")
+                                .build();
+                    }
                 }
-            } else {
-                penalty = null;
             }
 
             FollowUp followUp = getFollowUp.get();
-            followUp.setPenalty(penalty.get());
+            followUp.setPenalty(listPenalty);
+            if(dto.getCharging_costs() != null){
+                followUp.setCharging_costs(dto.getCharging_costs());
+            }else{
+                followUp.setCharging_costs(String.valueOf(0));
+            }
             followUp.setDescription(dto.getDescription());
             if (dto.getPenalty_id() != null) {
                 followUp.setIsPenalty(1L);
@@ -246,7 +263,6 @@ public class FollowupService {
                 followUp.setIsPenalty(0L);
             }
             followUp.setStatus(EStatusFollowup.PROGRESS);
-
             FollowUp response1 = repository.save(followUp);
 
             PDFResponse generate = GeneratePdf.generateFollowUpPDF(response1);
@@ -274,7 +290,8 @@ public class FollowupService {
                         .build();
             }
 
-            return GlobalResponse.builder().message("Berhasil menambahkan data").data(dataResponse).status(HttpStatus.OK).build();
+            return GlobalResponse.builder().message("Berhasil menambahkan data").data(dataResponse)
+                    .status(HttpStatus.OK).build();
 
         } catch (Exception e) {
             return GlobalResponse
@@ -289,7 +306,8 @@ public class FollowupService {
         try {
             Optional<FollowUp> getFollowUp = repository.findById(id);
             if (!getFollowUp.isPresent()) {
-                return GlobalResponse.builder().message("Tindak lanjut tidak ditemukan").status(HttpStatus.BAD_REQUEST).errorMessage("Follow up with id:" + id + " is not found").build();
+                return GlobalResponse.builder().message("Tindak lanjut tidak ditemukan").status(HttpStatus.BAD_REQUEST)
+                        .errorMessage("Follow up with id:" + id + " is not found").build();
             }
 
             // String fileName = randomValueNumber.randomNumberGenerator() + "-" +

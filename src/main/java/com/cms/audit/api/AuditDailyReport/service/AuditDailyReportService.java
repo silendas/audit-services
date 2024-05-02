@@ -217,6 +217,7 @@ public class AuditDailyReportService {
                                 user.put("fullname", response.getContent().get(i).getUser().getFullname());
                                 user.put("email", response.getContent().get(i).getUser().getEmail());
                                 user.put("initial_name", response.getContent().get(i).getUser().getInitial_name());
+                                user.put("level", response.getContent().get(i).getUser().getLevel());
                                 responseS.put("user", user);
 
                                 Map<String, Object> branch = new LinkedHashMap<>();
@@ -332,6 +333,7 @@ public class AuditDailyReportService {
                         user.put("fullname", getLha.get().getUser().getFullname());
                         user.put("email", getLha.get().getUser().getEmail());
                         user.put("initial_name", getLha.get().getUser().getInitial_name());
+                        user.put("level", getLha.get().getUser().getLevel());
                         response.put("user", user);
 
                         Map<String, Object> branch = new LinkedHashMap<>();
@@ -398,6 +400,7 @@ public class AuditDailyReportService {
                                 user.put("fullname", response.getContent().get(i).getUser().getFullname());
                                 user.put("email", response.getContent().get(i).getUser().getEmail());
                                 user.put("initial_name", response.getContent().get(i).getUser().getInitial_name());
+                                user.put("level", response.getContent().get(i).getUser().getLevel());
                                 responseS.put("user", user);
 
                                 Map<String, Object> branch = new LinkedHashMap<>();
@@ -699,8 +702,8 @@ public class AuditDailyReportService {
 
                         Optional<Schedule> getschedule = scheduleRepository.findById(dto.getSchedule_id());
                         if (!getschedule.isPresent()) {
-                                return GlobalResponse.builder().message("Jadwal tidak ditemukan")
-                                                .errorMessage("Data jadwal dengan id : "+ dto.getSchedule_id()+" tidak ditemukan")
+                                return GlobalResponse.builder().errorMessage("Jadwal tidak ditemukan")
+                                                .message("Data jadwal dengan id : "+ dto.getSchedule_id()+" tidak ditemukan")
                                                 .status(HttpStatus.BAD_REQUEST).build();
                         }
 
@@ -708,8 +711,7 @@ public class AuditDailyReportService {
                                         getschedule.get().getUser().getId(),
                                         getschedule.get().getStart_date());
                         if (!scheduleList.isEmpty()) {
-                                return GlobalResponse.builder().message("tidak bisa memperoses jadwal karena jadwal sebelumnya belum selesai").errorMessage(
-                                                "Tidak bisa memproses jadwal & LHA karena sebelumnya belum membuat KKA")
+                                return GlobalResponse.builder().message("tidak bisa memperoses jadwal karena jadwal sebelumnya belum selesai").errorMessage("Tidak bisa memproses jadwal & LHA karena sebelumnya belum membuat KKA")
                                                 .status(HttpStatus.BAD_REQUEST).build();
                         }
 
@@ -848,6 +850,7 @@ public class AuditDailyReportService {
                                                         null,
                                                         null,
                                                         EStatusClarification.INPUT,
+                                                        user.getId(),
                                                         new Date(),
                                                         new Date());
 

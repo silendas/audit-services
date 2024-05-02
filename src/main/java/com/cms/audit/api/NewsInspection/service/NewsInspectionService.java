@@ -70,38 +70,38 @@ public class NewsInspectionService {
             } else if (start_date != null && end_date != null) {
                 response = pag.findBAPInDateRange(start_date, end_date, PageRequest.of(page, size));
             } else {
-                if (getUser.getLevel().getCode().equals("C") ) {
+                if (getUser.getLevel().getCode().equals("C")) {
                     response = pag.findBAPInUserid(getUser.getId(), PageRequest.of(page, size));
-            } else if (getUser.getLevel().getCode().equals("B") ) {
+                } else if (getUser.getLevel().getCode().equals("B")) {
                     Pageable pageable = PageRequest.of(page, size);
                     List<NewsInspection> lhaList = new ArrayList<>();
                     for (int i = 0; i < getUser.getRegionId().size(); i++) {
-                            List<NewsInspection> clAgain = new ArrayList<>();
-                            clAgain = repository.findByRegionId(getUser.getRegionId().get(i));
-                            if (!clAgain.isEmpty()) {
-                                    for (int u = 0; u < clAgain.size(); u++) {
-                                            lhaList.add(clAgain.get(u));
-                                    }
+                        List<NewsInspection> clAgain = new ArrayList<>();
+                        clAgain = repository.findByRegionId(getUser.getRegionId().get(i));
+                        if (!clAgain.isEmpty()) {
+                            for (int u = 0; u < clAgain.size(); u++) {
+                                lhaList.add(clAgain.get(u));
                             }
+                        }
                     }
                     try {
-                            int start = (int) pageable.getOffset();
-                            int end = Math.min((start + pageable.getPageSize()),
-                                            lhaList.size());
-                            List<NewsInspection> pageContent = lhaList.subList(start, end);
-                            Page<NewsInspection> response2 = new PageImpl<>(pageContent, pageable,
-                                            lhaList.size());
-                            response = response2;
+                        int start = (int) pageable.getOffset();
+                        int end = Math.min((start + pageable.getPageSize()),
+                                lhaList.size());
+                        List<NewsInspection> pageContent = lhaList.subList(start, end);
+                        Page<NewsInspection> response2 = new PageImpl<>(pageContent, pageable,
+                                lhaList.size());
+                        response = response2;
                     } catch (Exception e) {
-                            return GlobalResponse
-                                            .builder()
-                                            .error(e)
-                                            .status(HttpStatus.BAD_REQUEST)
-                                            .build();
+                        return GlobalResponse
+                                .builder()
+                                .error(e)
+                                .status(HttpStatus.BAD_REQUEST)
+                                .build();
                     }
-            } else if (getUser.getLevel().getCode().equals("A")  || getUser.getLevel().getCode().equals("A") ) {
+                } else if (getUser.getLevel().getCode().equals("A") || getUser.getLevel().getCode().equals("A")) {
                     response = pag.findAllBAP(PageRequest.of(page, size));
-            }
+                }
             }
             List<Object> listBAP = new ArrayList<>();
             for (int i = 0; i < response.getContent().size(); i++) {
@@ -114,11 +114,13 @@ public class NewsInspectionService {
                 user.put("email", bap.getUser().getEmail());
                 user.put("fullname", bap.getUser().getFullname());
                 user.put("initial_name", bap.getUser().getInitial_name());
+                user.put("level", bap.getUser().getLevel());
                 kkaMap.put("user", user);
 
                 Map<String, Object> clarification = new LinkedHashMap<>();
                 clarification.put("id", bap.getClarification().getId());
                 clarification.put("code", bap.getClarification().getCode());
+                clarification.put("nominal_loss", bap.getClarification().getNominal_loss());
                 clarification.put("evaluation_limitation",
                         convertDateToRoman.convertDateToString(bap.getClarification().getEvaluation_limitation()));
                 kkaMap.put("clarification", clarification);
@@ -192,11 +194,13 @@ public class NewsInspectionService {
             user.put("email", bap.getUser().getEmail());
             user.put("fullname", bap.getUser().getFullname());
             user.put("initial_name", bap.getUser().getInitial_name());
+            user.put("level", bap.getUser().getLevel());
             kkaMap.put("user", user);
 
             Map<String, Object> clarification = new LinkedHashMap<>();
             clarification.put("id", bap.getClarification().getId());
             clarification.put("code", bap.getClarification().getCode());
+            clarification.put("nominal_loss", bap.getClarification().getNominal_loss());
             clarification.put("evaluation_limitation",
                     convertDateToRoman.convertDateToString(bap.getClarification().getEvaluation_limitation()));
             kkaMap.put("clarification", clarification);
@@ -242,8 +246,10 @@ public class NewsInspectionService {
     public GlobalResponse uploadFile(MultipartFile file, Long id) {
         try {
             Optional<NewsInspection> getBAP = repository.findById(id);
-            if(!getBAP.isPresent()){
-                return GlobalResponse.builder().message("BAP tidak ditemukan").errorMessage("BAP dengna id : "+id+" tidak ditemukan").status(HttpStatus.BAD_REQUEST).build();
+            if (!getBAP.isPresent()) {
+                return GlobalResponse.builder().message("BAP tidak ditemukan")
+                        .errorMessage("BAP dengna id : " + id + " tidak ditemukan").status(HttpStatus.BAD_REQUEST)
+                        .build();
             }
 
             // String fileName = randomValueNumber.randomNumberGenerator() + "-" +

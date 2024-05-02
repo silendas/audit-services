@@ -1,5 +1,7 @@
 package com.cms.audit.api.Management.User.dto;
 
+import com.cms.audit.api.Management.Level.models.Level;
+
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,4 +19,5 @@ public class UserResponseOther {
     private String nip;
     private String fullname;
     private String initial_name;
+    private Level level;
 }

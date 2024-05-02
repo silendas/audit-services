@@ -105,6 +105,9 @@ public class Clarification {
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
     private EStatusClarification status;
+    
+    @Column(name = "created_by")
+    private Long created_by;
 
     @Column(name = "created_at", columnDefinition = "DATE")
     private Date created_at;

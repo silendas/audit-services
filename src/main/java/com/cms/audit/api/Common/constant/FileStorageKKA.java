@@ -40,7 +40,7 @@ public class FileStorageKKA {
 
     public String storeFile(MultipartFile file) {
         // Normalize file name
-        String fileName = new Date().getTime() + "-kka." + getFileExtension(file.getOriginalFilename());
+        String fileName = new Date().getTime() + convertDateToRoman.convertDateHehe(new Date()) + "-kka." + getFileExtension(file.getOriginalFilename());
 
         try {
             // Check if the filename contains invalid characters
