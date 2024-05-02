@@ -1,8 +1,8 @@
 package com.cms.audit.api.Management.Case.services;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-import java.util.Date;
 
 import org.hibernate.exception.DataException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +37,12 @@ public class CaseService {
 
     public GlobalResponse findAll(String name, int page, int size) {
         try {
-            Page<Case> response = pagCase.findByNameContaining(name, PageRequest.of(page, size));
+            Page<Case> response = null;
+            if(name != null){
+                response = pagCase.findAllCasesByName(name, PageRequest.of(page, size));
+            }else{
+                response = pagCase.findAllCases(PageRequest.of(page, size));
+            }
             if (response.isEmpty()) {
                 return GlobalResponse
                         .builder()
@@ -176,7 +181,7 @@ public class CaseService {
             if (caseGet == null) {
                 return GlobalResponse
                         .builder()
-                        .message("Case with id :" +id+ " no found")
+                        .message("Case with id :" + id + " no found")
                         .status(HttpStatus.BAD_REQUEST)
                         .build();
             }
@@ -221,8 +226,9 @@ public class CaseService {
             Case caseGet = caseRepository.findById(id).get();
 
             List<CaseCategory> check = caseCategoryRepository.findOneCaseCategoryByCasesId(id);
-            if(!check.isEmpty()){
-                return GlobalResponse.builder().message("Cannot delete because relation").status(HttpStatus.BAD_REQUEST).build();
+            if (!check.isEmpty()) {
+                return GlobalResponse.builder().message("Tidak bisa menghapus karena relasi tabel")
+                        .status(HttpStatus.BAD_REQUEST).build();
             }
 
             Case caseEntity = new Case(
@@ -233,14 +239,8 @@ public class CaseService {
                     caseGet.getCreated_at(),
                     new Date());
 
-            Case response = caseRepository.save(caseEntity);
-            if (response == null) {
-                return GlobalResponse
-                        .builder()
-                        .message("Failed")
-                        .status(HttpStatus.BAD_REQUEST)
-                        .build();
-            }
+            caseRepository.save(caseEntity);
+
             return GlobalResponse
                     .builder()
                     .message("Berhasil menghapus data")

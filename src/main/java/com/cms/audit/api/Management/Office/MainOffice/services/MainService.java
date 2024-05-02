@@ -17,6 +17,8 @@ import com.cms.audit.api.Management.Office.MainOffice.dto.response.MainInterface
 import com.cms.audit.api.Management.Office.MainOffice.models.Main;
 import com.cms.audit.api.Management.Office.MainOffice.repository.MainRepository;
 import com.cms.audit.api.Management.Office.MainOffice.repository.PagMain;
+import com.cms.audit.api.Management.Office.RegionOffice.models.Region;
+import com.cms.audit.api.Management.Office.RegionOffice.repository.RegionRepository;
 import com.cms.audit.api.Management.Office.RegionOffice.services.RegionService;
 
 import jakarta.transaction.Transactional;
@@ -33,6 +35,9 @@ public class MainService {
 
     @Autowired
     private RegionService regionService;
+
+    @Autowired
+    private RegionRepository regionRepository;
 
     public GlobalResponse findAll(String name, int page, int size) {
         try {
@@ -221,11 +226,11 @@ public class MainService {
 
             Main mainGet = mainRepository.findById(id).get();
 
-            GlobalResponse getRegion = regionService.findSpecificByMainId(id);
-            if(getRegion.getData() != null) {
+            List<Region> getRegion = regionRepository.findRegionByMainId(id);
+            if(!getRegion.isEmpty()) {
                 return GlobalResponse
                     .builder()
-                    .message("Cannot delete because relation")
+                    .message("Tidak bisa menghapus karena relasi tabel")
                     .status(HttpStatus.BAD_REQUEST)
                     .build();
             }

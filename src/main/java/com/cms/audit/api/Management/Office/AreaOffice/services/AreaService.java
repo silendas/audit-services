@@ -338,11 +338,11 @@ public class AreaService {
 
             Area areaGet = areaRepository.findById(id).get();
 
-            Optional<Branch> branch = branchRepository.findById(id);
-            if (branch.isPresent()) {
+            List<Branch> branch = branchRepository.findBranchByAreaId(id);
+            if (!branch.isEmpty()) {
                 return GlobalResponse
                         .builder()
-                        .message("Cannot delete because relation")
+                        .message("Tidak bisa menghapus karena relasi tabel")
                         .status(HttpStatus.BAD_REQUEST)
                         .build();
             }

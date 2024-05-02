@@ -14,6 +14,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.cms.audit.api.Common.response.GlobalResponse;
+import com.cms.audit.api.Management.Office.AreaOffice.models.Area;
+import com.cms.audit.api.Management.Office.AreaOffice.repository.AreaRepository;
 import com.cms.audit.api.Management.Office.AreaOffice.services.AreaService;
 import com.cms.audit.api.Management.Office.MainOffice.models.Main;
 import com.cms.audit.api.Management.Office.MainOffice.repository.MainRepository;
@@ -39,6 +41,9 @@ public class RegionService {
 
     @Autowired
     private MainRepository mainRepository;
+
+    @Autowired
+    private AreaRepository areaRepository;
 
     @Autowired
     private AreaService areaService;
@@ -315,11 +320,11 @@ public class RegionService {
         try {
             Region regionGet = regionRepository.findById(id).get();
 
-            GlobalResponse area = areaService.findSpecificByRegionId(id);
-            if (area.getData() != null) {
+            List<Area> area = areaRepository.findAreaByRegionId(id);
+            if (!area.isEmpty()) {
                 return GlobalResponse
                         .builder()
-                        .message("Cannot delete because relation")
+                        .message("Tidak bisa menghapus karena relasi tabel")
                         .status(HttpStatus.BAD_REQUEST)
                         .build();
             }
