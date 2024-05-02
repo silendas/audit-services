@@ -1134,7 +1134,7 @@ public class ScheduleService {
                                 if (listRequestSchedule.isEmpty()) {
                                         listRequestSchedule.add(scheduleDTO.getSchedules().get(i));
                                 } else {
-
+                                        System.out.println(listRequestSchedule.size());
                                         for (int u = 0; u < listRequestSchedule.size(); u++) {
                                                 if (scheduleDTO.getSchedules().get(i).getUser_id()
                                                                 .equals(listRequestSchedule.get(u).getUser_id())
