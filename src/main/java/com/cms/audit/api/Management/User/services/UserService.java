@@ -445,13 +445,26 @@ public class UserService {
                                                 Optional<Branch> getBranch = branchRepository
                                                                 .findById(response.get(i).getBranchId().get(u));
                                                 if (getBranch.isPresent()) {
-                                                        oneUser.put("region", getBranch.get().getArea().getRegion()
-                                                                        .getName());
+                                                        List<Region> list = new ArrayList<>();
+                                                        list.add(getBranch.get().getArea().getRegion());
+                                                        oneUser.put("region", list);
                                                         break;
                                                 }
                                         }
+                                } else if (!response.get(i).getRegionId().isEmpty()) {
+                                        List<Region> listRegion = new ArrayList<>();
+                                        for (int u = 0; u < response.get(i).getRegionId().size(); u++) {
+                                                Optional<Region> getRegion = regionRepository
+                                                                .findById(response.get(i).getRegionId().get(u));
+                                                if (getRegion.isPresent()) {
+                                                        listRegion.add(getRegion.get());
+                                                }
+                                        }
+                                        oneUser.put("region", listRegion);
                                 } else {
-                                        oneUser.put("region", null);
+                                        List<Main> list = new ArrayList<>();
+                                        list.add(response.get(i).getMain());
+                                        oneUser.put("region", list);
                                 }
                                 listResponse.add(oneUser);
                         }

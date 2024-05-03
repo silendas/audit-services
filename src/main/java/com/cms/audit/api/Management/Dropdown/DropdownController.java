@@ -27,6 +27,8 @@ import com.cms.audit.api.Management.Office.BranchOffice.models.Branch;
 import com.cms.audit.api.Management.Office.BranchOffice.repository.BranchRepository;
 import com.cms.audit.api.Management.Office.BranchOffice.services.BranchService;
 import com.cms.audit.api.Management.Office.MainOffice.services.MainService;
+import com.cms.audit.api.Management.Office.RegionOffice.models.Region;
+import com.cms.audit.api.Management.Office.RegionOffice.repository.RegionRepository;
 import com.cms.audit.api.Management.Office.RegionOffice.services.RegionService;
 import com.cms.audit.api.Management.Penalty.services.PenaltyService;
 import com.cms.audit.api.Management.ReportType.services.ReportTypeService;
@@ -60,6 +62,9 @@ public class DropdownController {
 
     @Autowired
     private BranchRepository branchRepository;
+
+    @Autowired
+    private RegionRepository regionRepository;
 
     @Autowired
     private AreaService areaService;
@@ -119,7 +124,9 @@ public class DropdownController {
                                             builder.setId(userAgain.get(u).getId());
                                             builder.setInitial_name(userAgain.get(u).getInitial_name());
                                             builder.setLevel(userAgain.get(u).getLevel());
-                                            builder.setRegion(branchAgain.get().getArea().getRegion().getName());
+                                            List<Object> list = new ArrayList<>();
+                                            list.add(branchAgain.get().getArea().getRegion());
+                                            builder.setRegion(list);
                                             if (!user.contains(builder)) {
                                                 user.add(builder);
                                                 break;
@@ -128,7 +135,7 @@ public class DropdownController {
 
                                     }
                                 }
-                            } else {
+                            } else if (!userAgain.get(u).getRegionId().isEmpty()) {
                                 for (int o = 0; o < userAgain.get(u).getRegionId()
                                         .size(); o++) {
                                     if (region_id == userAgain.get(u).getRegionId().get(o)) {
@@ -137,23 +144,44 @@ public class DropdownController {
                                         builder.setId(userAgain.get(u).getId());
                                         builder.setLevel(userAgain.get(u).getLevel());
                                         builder.setInitial_name(userAgain.get(u).getInitial_name());
-                                        builder.setRegion(null);
+                                        List<Object> listRegion = new ArrayList<>();
+                                        for (int a = 0; a < userAgain.get(u).getRegionId().size(); a++) {
+                                            Optional<Region> getRegion = regionRepository.findById(userAgain.get(u).getRegionId().get(a));
+                                            if (getRegion.isPresent()) {
+                                                listRegion.add(getRegion.get());
+                                            }
+                                        }
+                                        builder.setRegion(listRegion);
                                         if (!user.contains(builder)) {
                                             user.add(builder);
                                         }
                                     }
                                 }
+                            } else {
+                                DropDownUserDTO builder = new DropDownUserDTO();
+                                builder.setFullname(userAgain.get(u).getFullname());
+                                builder.setId(userAgain.get(u).getId());
+                                builder.setLevel(userAgain.get(u).getLevel());
+                                builder.setInitial_name(userAgain.get(u).getInitial_name());
+                                List<Object> list = new ArrayList<>();
+                                list.add(userAgain.get(u).getMain());
+                                builder.setRegion(list);
+                                if (!user.contains(builder)) {
+                                    user.add(builder);
+                                }
                             }
                         }
                     }
-                    response = GlobalResponse.builder().data(user).message("Berhasil menampilkan data").status(HttpStatus.OK).build();
+                    response = GlobalResponse.builder().data(user).message("Berhasil menampilkan data")
+                            .status(HttpStatus.OK).build();
                 } else {
                     response = GlobalResponse.builder().data(response).message("Tidak dapat akses")
                             .status(HttpStatus.UNAUTHORIZED)
                             .build();
                 }
             } else {
-                response = GlobalResponse.builder().data(response).message("Tidak dapat akses").status(HttpStatus.UNAUTHORIZED)
+                response = GlobalResponse.builder().data(response).message("Tidak dapat akses")
+                        .status(HttpStatus.UNAUTHORIZED)
                         .build();
             }
         }
