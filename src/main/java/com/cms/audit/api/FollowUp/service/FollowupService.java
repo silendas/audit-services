@@ -279,6 +279,8 @@ public class FollowupService {
             followUp.setStatus(EStatusFollowup.PROGRESS);
             FollowUp response1 = repository.save(followUp);
 
+
+            // salah format biaya pembebanan kurang Rp. dan bentuk ceklis penalty salah looping 2 kali 
             PDFResponse generate = GeneratePdf.generateFollowUpPDF(response1);
 
             FollowUp edit = response1;

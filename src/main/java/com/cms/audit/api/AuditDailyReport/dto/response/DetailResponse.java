@@ -19,4 +19,5 @@ public class DetailResponse {
     Integer is_research;
     Integer status_flow;
     Integer status_parsing;
+    Integer is_revision;
 }

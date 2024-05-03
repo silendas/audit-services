@@ -805,7 +805,9 @@ public class ClarificationService {
                                                 "File not found with name: " + fileName));
 
                 Clarification clarification = response;
-                clarification.setStatus(EStatusClarification.UPLOAD);
+                if(!response.getStatus().equals(EStatusClarification.DONE)){
+                        clarification.setStatus(EStatusClarification.UPLOAD);
+                }
                 clarification.setUpdated_at(new Date());
                 repository.save(clarification);
 

@@ -174,6 +174,11 @@ public class AuditDailyReportDetailService {
                 } else {
                     builder.setStatus_parsing(0);
                 }
+                if (response.getContent().get(i).getIs_revision() != null) {
+                    builder.setIs_revision(response.getContent().get(i).getIs_revision());
+                } else {
+                    builder.setIs_revision(0);
+                }
                 details.add(builder);
             }
             if (response.isEmpty()) {
@@ -272,6 +277,11 @@ public class AuditDailyReportDetailService {
                 builder.put("status_parsing",response.get().getStatus_parsing());
             } else {
                 builder.put("status_parsing",0);
+            }
+            if (response.get().getIs_revision() != null) {
+                builder.put("is_revision",response.get().getIs_revision());
+            } else {
+                builder.put("is_revision",0);
             }
             return GlobalResponse
                     .builder()
