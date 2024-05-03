@@ -757,7 +757,6 @@ public class UserService {
                         String password = null;
                         if (userDTO.getPassword() != null || !userDTO.getPassword().equals("")) {
                                 password = passwordEncoder.encode(userDTO.getPassword());
-                                System.out.println(password);
                         } else {
                                 password = userGet.get().getPassword();
                         }

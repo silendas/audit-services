@@ -77,10 +77,7 @@ public class ResponseEntittyHandler {
             map.put("meta", meta);
             map.put("message", message);
             map.put("status", status.value());
-            System.out.println("cek"+data);
             if (data != null) {
-            System.out.println("cek2"+data);
-
                 map.put("data", data);
             }
         }

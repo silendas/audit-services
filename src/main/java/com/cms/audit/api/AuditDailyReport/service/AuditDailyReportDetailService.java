@@ -566,11 +566,12 @@ public class AuditDailyReportDetailService {
 
         Optional<AuditDailyReportDetail> response = repository.findOneByLHADetailId(lhaDetailId);
         if(!response.isPresent()){
-            return GlobalResponse.builder().message("LHA tidak ditemukan").errorMessage("LHA detail with id: "+ lhaDetailId + " tidak ditemukan").status(HttpStatus.BAD_REQUEST).build();
+            return GlobalResponse.builder().errorMessage("LHA tidak ditemukan").message("LHA detail with id: "+ lhaDetailId + " tidak ditemukan").status(HttpStatus.BAD_REQUEST).build();
         }
 
         AuditDailyReportDetail dto = response.get();
         dto.setStatus_flow(1);
+        dto.setIs_revision(1);
         dto.setUpdated_by(user.getId());
         dto.setUpdate_at(new Date());
         repository.save(dto);
@@ -622,7 +623,7 @@ public class AuditDailyReportDetailService {
                     dto.getIs_research(),
                     dto.getStatus_flow(),
                     dto.getStatus_parsing(),
-                    getBefore.get().getIs_revision(),
+                    dto.getIs_revision(),
                     0,
                     getBefore.get().getCreated_by(),
                     user.getId(),

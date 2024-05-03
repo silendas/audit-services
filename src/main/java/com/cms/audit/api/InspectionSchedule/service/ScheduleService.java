@@ -1134,46 +1134,41 @@ public class ScheduleService {
                                 if (listRequestSchedule.isEmpty()) {
                                         listRequestSchedule.add(scheduleDTO.getSchedules().get(i));
                                 } else {
-                                        System.out.println(listRequestSchedule.size());
-                                        for (int u = 0; u < listRequestSchedule.size(); u++) {
+                                        for (ScheduleDTO existingSchedule : listRequestSchedule) {
+                                                // Periksa apakah jadwal baru bertabrakan dengan jadwal yang ada
                                                 if (scheduleDTO.getSchedules().get(i).getUser_id()
-                                                                .equals(listRequestSchedule.get(u).getUser_id())
+                                                                .equals(existingSchedule.getUser_id())
                                                                 && !scheduleDTO.getSchedules().get(i).getEnd_date()
-                                                                                .before(
-                                                                                                listRequestSchedule
-                                                                                                                .get(u)
-                                                                                                                .getStart_date())
+                                                                                .before(existingSchedule
+                                                                                                .getStart_date())
                                                                 && !scheduleDTO.getSchedules().get(i).getStart_date()
-                                                                                .after(
-                                                                                                listRequestSchedule
-                                                                                                                .get(u)
-                                                                                                                .getEnd_date())) {
-                                                        return GlobalResponse
-                                                                        .builder()
+                                                                                .after(existingSchedule
+                                                                                                .getEnd_date())) {
+                                                        return GlobalResponse.builder()
                                                                         .message("Anda menginput jadwal yang sama ")
                                                                         .errorMessage("Tidak bisa menambahkan jadwal yang bersilangan")
                                                                         .status(HttpStatus.BAD_REQUEST)
                                                                         .build();
-                                                } else if (scheduleDTO.getSchedules().get(i).getUser_id()
-                                                                .equals(listRequestSchedule.get(u).getUser_id())
+                                                }
+                                                // Periksa apakah jadwal baru sama persis dengan jadwal yang ada
+                                                else if (scheduleDTO.getSchedules().get(i).getUser_id()
+                                                                .equals(existingSchedule.getUser_id())
                                                                 && scheduleDTO.getSchedules().get(i).getEnd_date()
-                                                                                .equals(listRequestSchedule
-                                                                                                .get(u)
+                                                                                .equals(existingSchedule
                                                                                                 .getStart_date())
                                                                 && scheduleDTO.getSchedules().get(i).getStart_date()
-                                                                                .equals(listRequestSchedule
-                                                                                                .get(u)
+                                                                                .equals(existingSchedule
                                                                                                 .getEnd_date())) {
-                                                        return GlobalResponse
-                                                                        .builder()
+                                                        return GlobalResponse.builder()
                                                                         .message("Anda menginput jadwal yang sama")
                                                                         .errorMessage("Tidak bisa menambahkan jadwal yang sama")
                                                                         .status(HttpStatus.BAD_REQUEST)
                                                                         .build();
-                                                } else {
-                                                        listRequestSchedule.add(scheduleDTO.getSchedules().get(i));
                                                 }
                                         }
+                                        // Jika tidak ada tabrakan atau kesamaan, tambahkan jadwal baru ke dalam
+                                        // listRequestSchedule
+                                        listRequestSchedule.add(scheduleDTO.getSchedules().get(i));
                                 }
 
                                 if (scheduleDTO.getSchedules().get(i).getStart_date().before(getDateNow())
@@ -1323,45 +1318,41 @@ public class ScheduleService {
                                 if (listRequestSchedule.isEmpty()) {
                                         listRequestSchedule.add(scheduleDTO.getSchedules().get(i));
                                 } else {
-                                        for (int u = 0; u < listRequestSchedule.size(); u++) {
+                                        for (ScheduleDTO existingSchedule : listRequestSchedule) {
+                                                // Periksa apakah jadwal baru bertabrakan dengan jadwal yang ada
                                                 if (scheduleDTO.getSchedules().get(i).getUser_id()
-                                                                .equals(listRequestSchedule.get(u).getUser_id())
+                                                                .equals(existingSchedule.getUser_id())
                                                                 && !scheduleDTO.getSchedules().get(i).getEnd_date()
-                                                                                .before(
-                                                                                                listRequestSchedule
-                                                                                                                .get(u)
-                                                                                                                .getStart_date())
+                                                                                .before(existingSchedule
+                                                                                                .getStart_date())
                                                                 && !scheduleDTO.getSchedules().get(i).getStart_date()
-                                                                                .after(
-                                                                                                listRequestSchedule
-                                                                                                                .get(u)
-                                                                                                                .getEnd_date())) {
-                                                        return GlobalResponse
-                                                                        .builder()
+                                                                                .after(existingSchedule
+                                                                                                .getEnd_date())) {
+                                                        return GlobalResponse.builder()
                                                                         .message("Anda menginput jadwal yang sama ")
                                                                         .errorMessage("Tidak bisa menambahkan jadwal yang bersilangan")
                                                                         .status(HttpStatus.BAD_REQUEST)
                                                                         .build();
-                                                } else if (scheduleDTO.getSchedules().get(i).getUser_id()
-                                                                .equals(listRequestSchedule.get(u).getUser_id())
+                                                }
+                                                // Periksa apakah jadwal baru sama persis dengan jadwal yang ada
+                                                else if (scheduleDTO.getSchedules().get(i).getUser_id()
+                                                                .equals(existingSchedule.getUser_id())
                                                                 && scheduleDTO.getSchedules().get(i).getEnd_date()
-                                                                                .equals(listRequestSchedule
-                                                                                                .get(u)
+                                                                                .equals(existingSchedule
                                                                                                 .getStart_date())
                                                                 && scheduleDTO.getSchedules().get(i).getStart_date()
-                                                                                .equals(listRequestSchedule
-                                                                                                .get(u)
+                                                                                .equals(existingSchedule
                                                                                                 .getEnd_date())) {
-                                                        return GlobalResponse
-                                                                        .builder()
+                                                        return GlobalResponse.builder()
                                                                         .message("Anda menginput jadwal yang sama")
                                                                         .errorMessage("Tidak bisa menambahkan jadwal yang sama")
                                                                         .status(HttpStatus.BAD_REQUEST)
                                                                         .build();
-                                                } else {
-                                                        listRequestSchedule.add(scheduleDTO.getSchedules().get(i));
                                                 }
                                         }
+                                        // Jika tidak ada tabrakan atau kesamaan, tambahkan jadwal baru ke dalam
+                                        // listRequestSchedule
+                                        listRequestSchedule.add(scheduleDTO.getSchedules().get(i));
                                 }
 
                                 if (scheduleDTO.getSchedules().get(i).getStart_date().before(getDateNow())

@@ -322,6 +322,11 @@ public class AuditDailyReportService {
                                 }else{
                                         builder.setStatus_parsing(0);
                                 }
+                                if(getDetail.get(i).getIs_revision() != null){
+                                        builder.setIs_revision(getDetail.get(i).getIs_revision());
+                                }else{
+                                        builder.setIs_revision(0);
+                                }
                                 details.add(builder);
                         }
 

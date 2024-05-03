@@ -28,6 +28,8 @@ import com.cms.audit.api.Common.constant.convertDateToRoman;
 import com.cms.audit.api.Common.response.GlobalResponse;
 import com.cms.audit.api.Common.response.ResponseEntittyHandler;
 
+import jakarta.annotation.Nonnull;
+
 @RestController
 @Validated
 @RequestMapping(value = BasePath.BASE_PATH_LHA_DETAIL)
@@ -94,7 +96,7 @@ public class AuditDailyReportDetailController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Object> put(@RequestBody EditAuditDailyReportDetailDTO dto, @PathVariable("id") Long id) {
+    public ResponseEntity<Object> put(@RequestBody @Nonnull EditAuditDailyReportDetailDTO dto, @PathVariable("id") Long id) {
         GlobalResponse response = service.edit(dto, id);
         if (response.getStatus().value() == 400) {
             return ResponseEntittyHandler.errorResponse(response.getErrorMessage(), response.getMessage(),
