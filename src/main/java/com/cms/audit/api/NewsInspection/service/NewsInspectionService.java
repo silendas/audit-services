@@ -117,6 +117,8 @@ public class NewsInspectionService {
                 user.put("level", bap.getUser().getLevel());
                 kkaMap.put("user", user);
 
+                kkaMap.put("branch", bap.getBranch());
+
                 Map<String, Object> clarification = new LinkedHashMap<>();
                 clarification.put("id", bap.getClarification().getId());
                 clarification.put("code", bap.getClarification().getCode());
@@ -196,6 +198,8 @@ public class NewsInspectionService {
             user.put("initial_name", bap.getUser().getInitial_name());
             user.put("level", bap.getUser().getLevel());
             kkaMap.put("user", user);
+
+            kkaMap.put("branch", bap.getBranch());
 
             Map<String, Object> clarification = new LinkedHashMap<>();
             clarification.put("id", bap.getClarification().getId());

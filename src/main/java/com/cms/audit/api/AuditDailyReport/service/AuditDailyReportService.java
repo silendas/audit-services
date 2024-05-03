@@ -341,10 +341,7 @@ public class AuditDailyReportService {
                         user.put("level", getLha.get().getUser().getLevel());
                         response.put("user", user);
 
-                        Map<String, Object> branch = new LinkedHashMap<>();
-                        branch.put("id", getLha.get().getBranch().getId());
-                        branch.put("name", getLha.get().getBranch().getName());
-                        response.put("branch", branch);
+                        response.put("branch", getLha.get().getBranch());
 
                         Map<String, Object> schedule = new LinkedHashMap<>();
                         schedule.put("id", getLha.get().getSchedule().getId());

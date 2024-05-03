@@ -172,10 +172,7 @@ public class ClarificationService {
                                 user.put("level", response.getContent().get(i).getUser().getLevel());
                                 clarification.put("user", user);
 
-                                Map<String, Object> branch = new LinkedHashMap<>();
-                                branch.put("id", response.getContent().get(i).getBranch().getId());
-                                branch.put("name", response.getContent().get(i).getBranch().getName());
-                                clarification.put("branch", branch);
+                                clarification.put("branch", response.getContent().get(i).getBranch());
 
                                 Map<String, Object> cases = new LinkedHashMap<>();
                                 cases.put("id", response.getContent().get(i).getCases().getId());
@@ -264,10 +261,7 @@ public class ClarificationService {
                         user.put("level", response.getUser().getLevel());
                         clarification.put("user", user);
 
-                        Map<String, Object> branch = new LinkedHashMap<>();
-                        branch.put("id", response.getBranch().getId());
-                        branch.put("name", response.getBranch().getName());
-                        clarification.put("branch", branch);
+                        clarification.put("branch", response.getBranch());
 
                         Map<String, Object> cases = new LinkedHashMap<>();
                         cases.put("id", response.getCases().getId());

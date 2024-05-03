@@ -93,6 +93,8 @@ public class FollowupService {
                 user.put("level", fu.getUser().getLevel());
                 fuMap.put("user", user);
 
+                fuMap.put("branch", fu.getBranch());
+
                 List<Object> listPenalty = new ArrayList<>();
                 if (fu.getPenalty().isEmpty()) {
                     for (int u = 0; u < fu.getPenalty().size(); u++) {
@@ -187,6 +189,8 @@ public class FollowupService {
             user.put("initial_name", fu.getUser().getInitial_name());
             user.put("level", fu.getUser().getLevel());
             fuMap.put("user", user);
+
+            fuMap.put("branch", fu.getBranch());
 
             List<Object> listPenalty = new ArrayList<>();
             if (!fu.getPenalty().isEmpty()) {

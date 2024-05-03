@@ -140,10 +140,8 @@ public class AuditWorkingPaperService {
                 user.put("initial_name", kka.getUser().getInitial_name());
                 kkaMap.put("user", user);
 
-                Map<String, Object> branch = new LinkedHashMap<>();
-                branch.put("id", kka.getBranch().getId());
-                branch.put("name", kka.getBranch().getName());
-                kkaMap.put("branch", branch);
+                kkaMap.put("branch", kka.getBranch());
+
 
                 Map<String, Object> schedule = new LinkedHashMap<>();
                 schedule.put("id", kka.getSchedule().getId());
@@ -214,10 +212,7 @@ public class AuditWorkingPaperService {
             user.put("initial_name", response.getUser().getInitial_name());
             kkaMap.put("user", user);
 
-            Map<String, Object> branch = new LinkedHashMap<>();
-            branch.put("id", response.getBranch().getId());
-            branch.put("name", response.getBranch().getName());
-            kkaMap.put("branch", branch);
+            kkaMap.put("branch", response.getBranch());
 
             Map<String, Object> schedule = new LinkedHashMap<>();
             schedule.put("id", response.getSchedule().getId());
