@@ -118,8 +118,11 @@ public class DropdownController {
                                             builder.setFullname(userAgain.get(u).getFullname());
                                             builder.setId(userAgain.get(u).getId());
                                             builder.setInitial_name(userAgain.get(u).getInitial_name());
+                                            builder.setLevel(userAgain.get(u).getLevel());
+                                            builder.setRegion(branchAgain.get().getArea().getRegion().getName());
                                             if (!user.contains(builder)) {
                                                 user.add(builder);
+                                                break;
                                             }
                                         }
 
@@ -132,7 +135,9 @@ public class DropdownController {
                                         DropDownUserDTO builder = new DropDownUserDTO();
                                         builder.setFullname(userAgain.get(u).getFullname());
                                         builder.setId(userAgain.get(u).getId());
+                                        builder.setLevel(userAgain.get(u).getLevel());
                                         builder.setInitial_name(userAgain.get(u).getInitial_name());
+                                        builder.setRegion(null);
                                         if (!user.contains(builder)) {
                                             user.add(builder);
                                         }

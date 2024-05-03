@@ -427,16 +427,38 @@ public class UserService {
 
         public GlobalResponse dropDown(Long id) {
                 try {
-                        List<DropDownUser> response = userRepository.findDropDown(id);
+                        List<User> response = userRepository.findUserExceptItSelf(id);
+                        List<Object> listResponse = new ArrayList<>();
                         if (response.isEmpty()) {
                                 return GlobalResponse.builder().message("Data not found").data(response)
                                                 .status(HttpStatus.OK)
                                                 .build();
                         }
+                        for (int i = 0; i < response.size(); i++) {
+                                Map<String, Object> oneUser = new LinkedHashMap<>();
+                                oneUser.put("id", response.get(i).getId());
+                                oneUser.put("fullname", response.get(i).getFullname());
+                                oneUser.put("initial_name", response.get(i).getInitial_name());
+                                oneUser.put("level", response.get(i).getLevel());
+                                if (!response.get(i).getBranchId().isEmpty()) {
+                                        for (int u = 0; u < response.get(i).getBranchId().size(); u++) {
+                                                Optional<Branch> getBranch = branchRepository
+                                                                .findById(response.get(i).getBranchId().get(u));
+                                                if (getBranch.isPresent()) {
+                                                        oneUser.put("region", getBranch.get().getArea().getRegion()
+                                                                        .getName());
+                                                        break;
+                                                }
+                                        }
+                                } else {
+                                        oneUser.put("region", null);
+                                }
+                                listResponse.add(oneUser);
+                        }
                         return GlobalResponse
                                         .builder()
                                         .message("Berhasil menampilkan data")
-                                        .data(response)
+                                        .data(listResponse)
                                         .status(HttpStatus.OK)
                                         .build();
                 } catch (DataException e) {
@@ -464,7 +486,7 @@ public class UserService {
 
         public GlobalResponse dropDownByRegionId(Long id) {
                 try {
-                        List<User> getUser = userRepository.findAll();
+                        List<User> getUser = userRepository.findAllUser();
                         if (getUser.isEmpty()) {
                                 return null;
                         }
@@ -537,7 +559,6 @@ public class UserService {
         public GlobalResponse save(
                         @Valid UserDTO userDTO) {
                 try {
-                        
 
                         Level levelId = Level.builder()
                                         .id(userDTO.getLevel_id())
@@ -656,8 +677,6 @@ public class UserService {
                                         }
                                 }
                         }
-
-                        
 
                         User user = new User(
                                         null,
@@ -939,7 +958,7 @@ public class UserService {
                                                                 .build();
                                         }
                                 }
-                                User response =userRepository.save(user);
+                                User response = userRepository.save(user);
                                 logService.insertAuto(response);
                         } catch (DataIntegrityViolationException e) {
                                 return GlobalResponse
@@ -1025,7 +1044,7 @@ public class UserService {
                                 User user = getUser;
                                 user.setPassword(passwordEncoder.encode(changePasswordDTO.getNew_password()));
                                 user.setUpdated_at(new Date());
-                                User response=userRepository.save(user);
+                                User response = userRepository.save(user);
                                 logService.insertAuto(response);
 
                         } else {

@@ -19,6 +19,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @Query("SELECT u FROM User u WHERE u.is_delete <> 1 AND u.id <> 1 ORDER BY u.id ASC")
     List<User> findAllUser();
+    
+    @Query(value = "SELECT u.* FROM users u where u.id <> :id AND u.is_delete <> 1 AND u.id <> 1;", nativeQuery = true)
+    List<User> findUserExceptItSelf(@Param("id") Long id);
 
     @Query(value="SELECT * FROM users u WHERE u.is_delete <> 1 AND u.id <> 1 AND u.level_id <> 2 AND u.level_id <> 1 AND u.level_id <> 4", nativeQuery=true)
     List<User> findAllUserIIfArea();
