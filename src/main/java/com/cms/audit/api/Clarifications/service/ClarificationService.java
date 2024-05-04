@@ -398,7 +398,7 @@ public class ClarificationService {
                         String romanMonth = convertDateToRoman.getRomanMonth();
                         Integer thisYear = convertDateToRoman.getIntYear();
 
-                        Optional<ReportType> reportType = reportTypeRepository.findByCode("CK");
+                        Optional<ReportType> reportType = reportTypeRepository.findById(1L);
 
                         String reportCode = rptNum + lvlCode + "/" + initialName + "-" + caseName
                                         + "/" + reportType.get().getCode() + "/" + branchName + "/" + romanMonth + "/"
@@ -631,7 +631,7 @@ public class ClarificationService {
                                 String romanMonth = convertDateToRoman.getRomanMonth();
                                 Integer thisYear = convertDateToRoman.getIntYear();
 
-                                Optional<ReportType> reportType = reportTypeRepository.findByCode("BA");
+                                Optional<ReportType> reportType = reportTypeRepository.findById(2L);
 
                                 String reportCode = rptNum + lvlCode + "/" + initialName + "-" + caseName + "/"
                                                 + reportType.get().getCode() + "/" + branchName + "/" + romanMonth + "/"
@@ -695,7 +695,7 @@ public class ClarificationService {
                                 String romanMonth2 = convertDateToRoman.getRomanMonth();
                                 Integer thisYear2 = convertDateToRoman.getIntYear();
 
-                                Optional<ReportType> reportType2 = reportTypeRepository.findByCode("TL");
+                                Optional<ReportType> reportType2 = reportTypeRepository.findById(3L);
 
                                 String reportCode2 = rptNum + lvlCode2 + "/" + initialName2 + "-" + caseName2 + "/"
                                                 + reportType2.get().getCode() + "/" + branchName2 + "/" + romanMonth2

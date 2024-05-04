@@ -90,6 +90,7 @@ public class LogUser {
     @Column(name = "is_delete", length = 2, nullable = true)
     private Integer is_delete;
 
+    @JsonIgnore
     @Column(name = "created_by")
     private Long created_by;
 

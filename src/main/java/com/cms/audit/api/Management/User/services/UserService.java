@@ -787,7 +787,7 @@ public class UserService {
                         }
 
                         String password = null;
-                        if (userDTO.getPassword() != null || !userDTO.getPassword().equals("")) {
+                        if (!userDTO.getPassword().equals("")) {
                                 password = passwordEncoder.encode(userDTO.getPassword());
                         } else {
                                 password = userGet.get().getPassword();
@@ -1029,6 +1029,7 @@ public class UserService {
                         user.setIs_active(0);
                         user.setUpdated_at(new Date());
                         User response = userRepository.save(user);
+                        logService.insertAuto(response);
                         if (response == null) {
                                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Bad Request");
                         }
@@ -1059,7 +1060,6 @@ public class UserService {
                                 user.setUpdated_at(new Date());
                                 User response = userRepository.save(user);
                                 logService.insertAuto(response);
-
                         } else {
                                 return GlobalResponse
                                                 .builder()
@@ -1098,7 +1098,8 @@ public class UserService {
                         user.setEmail(dto.getEmail());
 
                         try {
-                                userRepository.save(user);
+                                User response = userRepository.save(user);
+                                logService.insertAuto(response);
                         } catch (Exception e) {
                                 return GlobalResponse.builder().error(e).status(HttpStatus.BAD_REQUEST).build();
                         }

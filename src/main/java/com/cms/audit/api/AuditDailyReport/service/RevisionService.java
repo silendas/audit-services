@@ -8,6 +8,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.cms.audit.api.AuditDailyReport.dto.RevisionDTO;
+import com.cms.audit.api.AuditDailyReport.dto.response.RevisionResponse;
 import com.cms.audit.api.AuditDailyReport.models.AuditDailyReportDetail;
 import com.cms.audit.api.AuditDailyReport.models.Revision;
 import com.cms.audit.api.AuditDailyReport.repository.AuditDailyReportDetailRepository;
@@ -17,6 +18,7 @@ import com.cms.audit.api.Common.response.GlobalResponse;
 import com.cms.audit.api.Flag.model.Flag;
 import com.cms.audit.api.Flag.repository.FlagRepo;
 import com.cms.audit.api.Management.User.models.User;
+import com.cms.audit.api.Management.User.repository.UserRepository;
 
 import jakarta.transaction.Transactional;
 
@@ -31,7 +33,62 @@ public class RevisionService {
     private FlagRepo flagRepo;
 
     @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
     private AuditDailyReportDetailRepository auditDailyReportDetailRepository;
+
+    private RevisionResponse objRevision(Revision dto){
+            RevisionResponse obj = new RevisionResponse();
+            obj.setRevisionNumber(dto.getRevisionNumber());
+            obj.setCaseCategory(dto.getCaseCategory());
+            obj.setCases(dto.getCases());
+            obj.setDescription(dto.getDescription());
+            obj.setId(dto.getId());
+            obj.setIs_research(dto.getIs_research());
+            obj.setPermanent_recommendations(dto.getPermanent_recommendations());
+            obj.setSuggestion(dto.getSuggestion());
+            obj.setTemporary_recommendations(dto.getTemporary_recommendations());
+
+            Optional<User> createdBy = userRepository.findById(dto.getCreated_by());
+            Map<String, Object> objUser = new LinkedHashMap<>();
+            objUser.put("id", createdBy.get().getId());
+            objUser.put("fullname", createdBy.get().getFullname());
+            objUser.put("initial_name", createdBy.get().getInitial_name());
+            objUser.put("nip", createdBy.get().getNip());
+            objUser.put("level", createdBy.get().getLevel());
+            obj.setCreated_by(objUser);
+
+        return obj;
+    }
+
+    private List<RevisionResponse> pageRevision(List<Revision> dto){
+        List<RevisionResponse> response = new ArrayList<>();
+        for(int i=0;i<dto.size();i++){
+            RevisionResponse obj = new RevisionResponse();
+            obj.setRevisionNumber(dto.get(i).getRevisionNumber());
+            obj.setCaseCategory(dto.get(i).getCaseCategory());
+            obj.setCases(dto.get(i).getCases());
+            obj.setDescription(dto.get(i).getDescription());
+            obj.setId(dto.get(i).getId());
+            obj.setIs_research(dto.get(i).getIs_research());
+            obj.setPermanent_recommendations(dto.get(i).getPermanent_recommendations());
+            obj.setSuggestion(dto.get(i).getSuggestion());
+            obj.setTemporary_recommendations(dto.get(i).getTemporary_recommendations());
+
+            Optional<User> createdBy = userRepository.findById(dto.get(i).getCreated_by());
+            Map<String, Object> objUser = new LinkedHashMap<>();
+            objUser.put("id", createdBy.get().getId());
+            objUser.put("fullname", createdBy.get().getFullname());
+            objUser.put("initial_name", createdBy.get().getInitial_name());
+            objUser.put("nip", createdBy.get().getNip());
+            objUser.put("level", createdBy.get().getLevel());
+            obj.setCreated_by(objUser);
+
+            response.add(obj);
+        }
+        return response;
+    }
 
     public GlobalResponse getAll(Long detaild) {
         try {
@@ -69,7 +126,7 @@ public class RevisionService {
                         response.get(i).setIs_research(0);
                     }
                 }
-                return GlobalResponse.builder().data(response).message("Berhasil menampilkan data")
+                return GlobalResponse.builder().data(pageRevision(response)).message("Berhasil menampilkan data")
                         .status(HttpStatus.OK).build();
             }
         } catch (Exception e) {
@@ -97,7 +154,7 @@ public class RevisionService {
             } else {
                 response.get().setIs_research(0);
             }
-            return GlobalResponse.builder().message("Berhasil menampilkan data").data(response).status(HttpStatus.OK)
+            return GlobalResponse.builder().message("Berhasil menampilkan data").data(objRevision(response.get())).status(HttpStatus.OK)
                     .build();
         } catch (Exception e) {
             return GlobalResponse.builder().error(e).status(HttpStatus.INTERNAL_SERVER_ERROR).build();

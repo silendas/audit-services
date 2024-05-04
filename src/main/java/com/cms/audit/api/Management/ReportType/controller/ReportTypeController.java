@@ -52,7 +52,7 @@ public class ReportTypeController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Object> edit(@RequestBody ReportTypeDTO dto,@PathVariable("id") Long id) {
+    public ResponseEntity<Object> edit(@RequestBody ReportTypeDTO dto, @PathVariable("id") Long id) {
         GlobalResponse response = service.edit(dto,id);
         if (response.getError() != null) {
             return ResponseEntittyHandler.allHandler(null, null, response.getStatus(), response.getError());

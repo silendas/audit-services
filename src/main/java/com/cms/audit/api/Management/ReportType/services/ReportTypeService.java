@@ -161,24 +161,15 @@ public class ReportTypeService {
 
     public GlobalResponse edit(ReportTypeDTO dto, Long id) {
         try {
-            ReportType getReport = reportTypeRepository.findById(id).get();
 
-            ReportType reportType = new ReportType(
-                    id,
-                    dto.getName(),
-                    dto.getCode(),
-                    0,
-                    getReport.getCreated_at(),
-                    new Date());
+            Optional<ReportType> getReport = reportTypeRepository.findById(id);
 
-            ReportType response = reportTypeRepository.save(reportType);
-            if (response == null) {
-                return GlobalResponse
-                        .builder()
-                        .message("Failed")
-                        .status(HttpStatus.BAD_REQUEST)
-                        .build();
-            }
+            ReportType reportType = getReport.get();
+            reportType.setName(dto.getName());
+            reportType.setCode(dto.getCode());
+            reportType.setUpdated_at(new Date());
+            reportTypeRepository.save(reportType);
+
             return GlobalResponse
                     .builder()
                     .message("Berhasil mengubah data")
@@ -201,6 +192,9 @@ public class ReportTypeService {
 
     public GlobalResponse delete(Long id) {
         try {
+            if(id == 1 || id == 2 || id == 3){
+                return GlobalResponse.builder().message("Tidak dapat menghapus data default").status(HttpStatus.BAD_REQUEST).build();
+            }
             ReportType getReport = reportTypeRepository.findById(id).get();
 
             ReportType reportType = new ReportType(
@@ -210,7 +204,6 @@ public class ReportTypeService {
                     1,
                     getReport.getCreated_at(),
                     new Date());
-
             ReportType response = reportTypeRepository.save(reportType);
             if (response == null) {
                 return GlobalResponse
