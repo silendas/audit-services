@@ -42,63 +42,62 @@ public class LogUserService {
     @Autowired
     private AreaRepository areaRepository;
 
-    @Autowired 
+    @Autowired
     private UserRepository userRepository;
 
     @Autowired
     private BranchRepository branchRepository;
 
-    
     public LogUserResponse objUserDetail(LogUser response) {
 
-            List<Region> region = new ArrayList<>();
-            if (!response.getRegionId().isEmpty()) {
-                for (int i = 0; i < response.getRegionId().size(); i++) {
-                    region.add(regionRepository.findById(response.getRegionId().get(i))
-                            .orElse(null));
-                }
+        List<Region> region = new ArrayList<>();
+        if (!response.getRegionId().isEmpty()) {
+            for (int i = 0; i < response.getRegionId().size(); i++) {
+                region.add(regionRepository.findById(response.getRegionId().get(i))
+                        .orElse(null));
             }
-            Optional<User> createdBy = userRepository.findById(response.getId());
-            List<Area> area = new ArrayList<>();
-            if (!response.getAreaId().isEmpty()) {
-                for (int i = 0; i < response.getAreaId().size(); i++) {
-                    area.add(areaRepository.findById(response.getAreaId().get(i))
-                            .orElse(null));
-                }
+        }
+        Optional<User> createdBy = userRepository.findById(response.getId());
+        List<Area> area = new ArrayList<>();
+        if (!response.getAreaId().isEmpty()) {
+            for (int i = 0; i < response.getAreaId().size(); i++) {
+                area.add(areaRepository.findById(response.getAreaId().get(i))
+                        .orElse(null));
             }
-            List<Branch> branch = new ArrayList<>();
-            if (!response.getBranchId().isEmpty()) {
-                for (int i = 0; i < response.getBranchId().size(); i++) {
-                    branch.add(branchRepository.findById(response.getBranchId().get(i))
-                            .orElse(null));
-                }
+        }
+        List<Branch> branch = new ArrayList<>();
+        if (!response.getBranchId().isEmpty()) {
+            for (int i = 0; i < response.getBranchId().size(); i++) {
+                branch.add(branchRepository.findById(response.getBranchId().get(i))
+                        .orElse(null));
             }
+        }
 
-            LogUserResponse user = new LogUserResponse();
-            user.setId(response.getId());
-            user.setLevel(response.getLevel());
-            user.setMain(response.getMain());
-            user.setRegion(region);
-            user.setArea(area);
-            user.setBranch(branch);
-            user.setEmail(response.getEmail());
-            user.setUsername(response.getUsername());
-            user.setFullname(response.getFullname());
-            user.setInitial_name(response.getInitial_name());
-            user.setNip(response.getNip());
-            user.setIs_active(response.getIs_active());
-            user.setCreated_at(response.getCreated_at());
+        LogUserResponse user = new LogUserResponse();
+        user.setId(response.getId());
+        user.setLevel(response.getLevel());
+        user.setMain(response.getMain());
+        user.setRegion(region);
+        user.setArea(area);
+        user.setBranch(branch);
+        user.setEmail(response.getEmail());
+        user.setUsername(response.getUsername());
+        user.setFullname(response.getFullname());
+        user.setInitial_name(response.getInitial_name());
+        user.setNip(response.getNip());
+        user.setIs_active(response.getIs_active());
+        user.setCreated_at(response.getCreated_at());
 
-            Map<String, Object> objUser = new LinkedHashMap<>();
-            objUser.put("id", createdBy.get().getId());
-            objUser.put("fullname", createdBy.get().getFullname());
-            objUser.put("initial_name", createdBy.get().getInitial_name());
-            objUser.put("nip", createdBy.get().getNip());
-            objUser.put("level", createdBy.get().getLevel());
+        Map<String, Object> objUser = new LinkedHashMap<>();
+        objUser.put("id", createdBy.get().getId());
+        objUser.put("fullname", createdBy.get().getFullname());
+        objUser.put("initial_name", createdBy.get().getInitial_name());
+        objUser.put("nip", createdBy.get().getNip());
+        objUser.put("level", createdBy.get().getLevel());
 
-            user.setCreated_by(objUser);
+        user.setCreated_by(objUser);
 
-            return user;
+        return user;
 
     }
 
@@ -170,10 +169,16 @@ public class LogUserService {
             } else {
                 getLog = repository.findAll();
             }
-
-            GlobalResponse response = GlobalResponse.builder().data(pageUserDetail(getLog))
-                    .message("Data berhasil ditampilkan")
-                    .status(HttpStatus.OK).build();
+            GlobalResponse response = new GlobalResponse();
+            if (getLog.isEmpty()) {
+                response = GlobalResponse.builder().data(getLog)
+                        .message("Data tidak ditemukan")
+                        .status(HttpStatus.OK).build();
+            } else {
+                response = GlobalResponse.builder().data(pageUserDetail(getLog))
+                        .message("Data berhasil ditampilkan")
+                        .status(HttpStatus.OK).build();
+            }
             return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(),
                     null);
         } catch (Exception e) {

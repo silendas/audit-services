@@ -190,6 +190,7 @@ public class UserService {
                         return GlobalResponse
                                         .builder()
                                         .message("Data not found")
+                                        .data(user)
                                         .status(HttpStatus.OK)
                                         .build();
                 }
