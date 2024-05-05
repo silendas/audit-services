@@ -258,8 +258,8 @@ public class ReportService {
         User getUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         List<AuditDailyReport> response = new ArrayList<>();
-        LhaReportDTO dto = new LhaReportDTO();
-        List<ListLhaDTO> list = new ArrayList<>();
+        // LhaReportDTO dto = new LhaReportDTO();
+        // List<ListLhaDTO> list = new ArrayList<>();
         List<LhaReportDTO> listAllReport = new ArrayList<>();
 
         if (user_id != null && regionId != null && start_date != null && end_date != null) {
