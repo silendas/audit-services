@@ -500,7 +500,7 @@ public class GeneratePdf {
                                 .setBorder(Border.NO_BORDER));
                 float nestedbody6llenght[] = { 18f, 25f, 18f, 25f, 18f, 25f, 18f, 25f, 18f, 350f };
                 Table nested6 = new Table(nestedbody6llenght);
-                if (response.getPenalty().contains(1)) {
+                if (response.getPenalty().contains(Long.valueOf(1))) {
                         nested6.addCell(new Cell().add("").setBackgroundColor(Color.RED));
                         nested6.addCell(new Cell().add("ST").setBorder(Border.NO_BORDER).setFontSize(7)
                                         .setBold());
@@ -509,14 +509,14 @@ public class GeneratePdf {
                         nested6.addCell(new Cell().add("ST").setBorder(Border.NO_BORDER).setFontSize(7)
                                         .setBold());
                 }
-                if (response.getPenalty().contains(2)) {
+                if (response.getPenalty().contains(Long.valueOf(2))) {
                         nested6.addCell(new Cell().add("").setBackgroundColor(Color.RED));
                         nested6.addCell(new Cell().add("SP 1").setBorder(Border.NO_BORDER).setFontSize(7).setBold());
                 } else {
                         nested6.addCell(new Cell().add(""));
                         nested6.addCell(new Cell().add("SP 1").setBorder(Border.NO_BORDER).setFontSize(7).setBold());
                 }
-                if (response.getPenalty().contains(3)) {
+                if (response.getPenalty().contains(Long.valueOf(3))) {
                         nested6.addCell(new Cell().add("").setBackgroundColor(Color.RED));
                         nested6.addCell(new Cell().add("SP 2").setBorder(Border.NO_BORDER).setFontSize(7).setBold());
                 } else {
