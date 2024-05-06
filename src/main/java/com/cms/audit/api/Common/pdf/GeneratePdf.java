@@ -541,7 +541,7 @@ public class GeneratePdf {
                 }
                 body6.addCell(new Cell().add(nested6).setBorder(Border.NO_BORDER));
                 body6.addCell(new Cell()
-                                .add("Biaya pembebanan : " + FormatNumber.formatString(response.getCharging_costs()))
+                                .add("Biaya pembebanan : Rp." + FormatNumber.formatString(response.getCharging_costs()))
                                 .setBold().setFontSize(7).setBorder(Border.NO_BORDER));
                 body6.addCell(new Cell().add("").setBorder(Border.NO_BORDER).setHeight(10));
                 body6.addCell(new Cell()
