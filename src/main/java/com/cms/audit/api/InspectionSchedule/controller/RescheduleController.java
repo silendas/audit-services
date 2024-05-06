@@ -21,7 +21,6 @@ import com.cms.audit.api.Common.response.GlobalResponse;
 import com.cms.audit.api.Common.response.ResponseEntittyHandler;
 import com.cms.audit.api.Config.Jwt.JwtService;
 import com.cms.audit.api.InspectionSchedule.dto.RequestReschedule;
-import com.cms.audit.api.InspectionSchedule.models.EStatus;
 import com.cms.audit.api.InspectionSchedule.service.ScheduleService;
 
 import io.micrometer.common.lang.NonNull;

@@ -673,77 +673,14 @@ public class ScheduleService {
                                 Optional<ScheduleTrx> trxCheck = scheduleTrxRepo
                                                 .findById(response.get(i).getScheduleTrx().getId());
                                 if (trxCheck.isPresent()) {
-                                        if (trxCheck.get().getStart_date() == null) {
-                                                mapParent.put("new_start_date", null);
-                                        } else {
-                                                mapParent.put("new_start_date", convertDateToRoman
-                                                                .convertDateHehe(trxCheck.get().getStart_date()));
-                                        }
-                                        if (trxCheck.get().getEnd_date() == null) {
-                                                mapParent.put("new_end_date", null);
-                                        } else {
-                                                mapParent.put("new_end_date", convertDateToRoman
-                                                                .convertDateHehe(trxCheck.get().getEnd_date()));
-                                        }
-                                }
-                                if (response.get(i).getStart_date() == null) {
-                                        mapParent.put("start_date", null);
-                                } else {
-                                        mapParent.put("start_date", convertDateToRoman
-                                                        .convertDateHehe(response.get(i).getStart_date()));
-                                }
-                                if (response.get(i).getEnd_date() == null) {
-                                        mapParent.put("end_date", null);
-                                } else {
-                                        mapParent.put("end_date", convertDateToRoman
-                                                        .convertDateHehe(response.get(i).getEnd_date()));
-                                }
-                                if (response.get(i).getStart_date_realization() == null) {
-                                        mapParent.put("start_date_realization", null);
-                                } else {
-                                        mapParent.put("start_date_realization",
-                                                        convertDateToRoman.convertDateHehe(response.get(i)
-                                                                        .getStart_date_realization()));
-                                }
-                                if (response.get(i).getEnd_date_realization() == null) {
-                                        mapParent.put("end_date_realization", null);
-                                } else {
-                                        mapParent.put("end_date_realization", convertDateToRoman.convertDateHehe(
-                                                        response.get(i).getEnd_date_realization()));
-                                }
-                        } else {
-                                if (response.get(i).getStart_date() == null) {
-                                        mapParent.put("start_date", null);
-                                } else {
-                                        mapParent.put("start_date", convertDateToRoman
-                                                        .convertDateHehe(response.get(i).getStart_date()));
-                                }
-                                if (response.get(i).getEnd_date() == null) {
-                                        mapParent.put("end_date", null);
-                                } else {
-                                        mapParent.put("end_date", convertDateToRoman
-                                                        .convertDateHehe(response.get(i).getEnd_date()));
-                                }
-                                if (response.get(i).getStart_date_realization() == null) {
-                                        mapParent.put("start_date_realization", null);
-                                } else {
-                                        mapParent.put("start_date_realization",
-                                                        convertDateToRoman.convertDateHehe(response.get(i)
-                                                                        .getStart_date_realization()));
-                                }
-                                if (response.get(i).getEnd_date_realization() == null) {
-                                        mapParent.put("end_date_realization", null);
-                                } else {
-                                        mapParent.put("end_date_realization", convertDateToRoman.convertDateHehe(
-                                                        response.get(i).getEnd_date_realization()));
+                                        mapParent.put("new_start_date", response.get(i).getStart_date());
+                                        mapParent.put("new_end_date", response.get(i).getEnd_date());
                                 }
                         }
-                        if (response.get(i).getEnd_date_realization() == null) {
-                                mapParent.put("end_date_realization", null);
-                        } else {
-                                mapParent.put("end_date_realization", convertDateToRoman.convertDateHehe(
-                                                response.get(i).getEnd_date_realization()));
-                        }
+                        mapParent.put("start_date", response.get(i).getStart_date());
+                        mapParent.put("end_date", response.get(i).getEnd_date());
+                        mapParent.put("start_date_realization", response.get(i).getStart_date_realization());
+                        mapParent.put("end_date_realization", response.get(i).getEnd_date_realization());
 
                         Optional<AuditWorkingPaper> getKka = auditWorkingPaperRepository
                                         .findByScheduleId(response.get(i).getId());
@@ -801,87 +738,30 @@ public class ScheduleService {
                         Optional<ScheduleTrx> trxCheck = scheduleTrxRepo
                                         .findById(response.getScheduleTrx().getId());
                         if (trxCheck.isPresent()) {
-                                if (trxCheck.get().getStart_date() == null) {
-                                        map.put("new_start_date", null);
-                                } else {
-                                        map.put("new_start_date", convertDateToRoman
-                                                        .convertDateHehe(trxCheck.get().getStart_date()));
-                                }
-                                if (trxCheck.get().getEnd_date() == null) {
-                                        map.put("new_end_date", null);
-                                } else {
-                                        map.put("new_end_date", convertDateToRoman
-                                                        .convertDateHehe(trxCheck.get().getEnd_date()));
-                                }
+                                map.put("new_start_date", trxCheck.get().getStart_date());
+                                map.put("new_end_date", trxCheck.get().getEnd_date());
                         }
-                        if (response.getStart_date() == null) {
-                                map.put("start_date", null);
-                        } else {
-                                map.put("start_date", convertDateToRoman
-                                                .convertDateHehe(response.getStart_date()));
-                        }
-                        if (response.getEnd_date() == null) {
-                                map.put("end_date", null);
-                        } else {
-                                map.put("end_date", convertDateToRoman
-                                                .convertDateHehe(response.getEnd_date()));
-                        }
-                        if (response.getStart_date_realization() == null) {
-                                map.put("start_date_realization", null);
-                        } else {
-                                map.put("start_date_realization",
-                                                convertDateToRoman.convertDateHehe(response
-                                                                .getStart_date_realization()));
-                        }
-                        if (response.getEnd_date_realization() == null) {
-                                map.put("end_date_realization", null);
-                        } else {
-                                map.put("end_date_realization", convertDateToRoman.convertDateHehe(
-                                                response.getEnd_date_realization()));
-                        }
+                }
+                map.put("start_date", response.getStart_date());
+                map.put("end_date", response.getEnd_date());
+                map.put("start_date_realization", response.getStart_date_realization());
+                map.put("end_date_realization", response.getEnd_date_realization());
+
+                Map<String, Object> getUserBy = new LinkedHashMap<>();
+                Optional<User> getUser = userRepository.findById(response.getCreatedBy());
+                if (getUser.isPresent()) {
+                        Map<String, Object> getLevelBy = new LinkedHashMap<>();
+                        getLevelBy.put("id", getUser.get().getLevel().getId());
+                        getLevelBy.put("name", getUser.get().getLevel().getName());
+                        getLevelBy.put("code", getUser.get().getLevel().getCode());
+
+                        getUserBy.put("id", getUser.get().getId());
+                        getUserBy.put("fullname", getUser.get().getFullname());
+                        getUserBy.put("initial_name", getUser.get().getInitial_name());
+                        getUserBy.put("level", getLevelBy);
+                        map.put("created_by", getUserBy);
                 } else {
-                        if (response.getStart_date() == null) {
-                                map.put("start_date", null);
-                        } else {
-                                map.put("start_date", convertDateToRoman
-                                                .convertDateHehe(response.getStart_date()));
-                        }
-                        if (response.getEnd_date() == null) {
-                                map.put("end_date", null);
-                        } else {
-                                map.put("end_date", convertDateToRoman
-                                                .convertDateHehe(response.getEnd_date()));
-                        }
-                        if (response.getStart_date_realization() == null) {
-                                map.put("start_date_realization", null);
-                        } else {
-                                map.put("start_date_realization",
-                                                convertDateToRoman.convertDateHehe(response
-                                                                .getStart_date_realization()));
-                        }
-                        if (response.getEnd_date_realization() == null) {
-                                map.put("end_date_realization", null);
-                        } else {
-                                map.put("end_date_realization", convertDateToRoman.convertDateHehe(
-                                                response.getEnd_date_realization()));
-                        }
-                        Map<String, Object> getUserBy = new LinkedHashMap<>();
-                        Optional<User> getUser = userRepository.findById(response.getCreatedBy());
-                        if (getUser.isPresent()) {
-                                Map<String, Object> getLevelBy = new LinkedHashMap<>();
-                                getLevelBy.put("id", getUser.get().getLevel().getId());
-                                getLevelBy.put("name", getUser.get().getLevel().getName());
-                                getLevelBy.put("code", getUser.get().getLevel().getCode());
-
-                                getUserBy.put("id", getUser.get().getId());
-                                getUserBy.put("fullname", getUser.get().getFullname());
-                                getUserBy.put("initial_name", getUser.get().getInitial_name());
-                                getUserBy.put("level", getLevelBy);
-                                map.put("created_by", getUserBy);
-                        } else {
-                                map.put("created_by", null);
-                        }
-
+                        map.put("created_by", null);
                 }
 
                 return map;
@@ -913,71 +793,14 @@ public class ScheduleService {
                                 Optional<ScheduleTrx> trxCheck = scheduleTrxRepo
                                                 .findById(response.getContent().get(i).getScheduleTrx().getId());
                                 if (trxCheck.isPresent()) {
-                                        if (trxCheck.get().getStart_date() == null) {
-                                                map.put("new_start_date", null);
-                                        } else {
-                                                map.put("new_start_date", convertDateToRoman
-                                                                .convertDateHehe(trxCheck.get().getStart_date()));
-                                        }
-                                        if (trxCheck.get().getEnd_date() == null) {
-                                                map.put("new_end_date", null);
-                                        } else {
-                                                map.put("new_end_date", convertDateToRoman
-                                                                .convertDateHehe(trxCheck.get().getEnd_date()));
-                                        }
-                                }
-                                if (response.getContent().get(i).getStart_date() == null) {
-                                        map.put("start_date", null);
-                                } else {
-                                        map.put("start_date", convertDateToRoman
-                                                        .convertDateHehe(response.getContent().get(i).getStart_date()));
-                                }
-                                if (response.getContent().get(i).getEnd_date() == null) {
-                                        map.put("end_date", null);
-                                } else {
-                                        map.put("end_date", convertDateToRoman
-                                                        .convertDateHehe(response.getContent().get(i).getEnd_date()));
-                                }
-                                if (response.getContent().get(i).getStart_date_realization() == null) {
-                                        map.put("start_date_realization", null);
-                                } else {
-                                        map.put("start_date_realization",
-                                                        convertDateToRoman.convertDateHehe(response.getContent().get(i)
-                                                                        .getStart_date_realization()));
-                                }
-                                if (response.getContent().get(i).getEnd_date_realization() == null) {
-                                        map.put("end_date_realization", null);
-                                } else {
-                                        map.put("end_date_realization", convertDateToRoman.convertDateHehe(
-                                                        response.getContent().get(i).getEnd_date_realization()));
-                                }
-                        } else {
-                                if (response.getContent().get(i).getStart_date() == null) {
-                                        map.put("start_date", null);
-                                } else {
-                                        map.put("start_date", convertDateToRoman
-                                                        .convertDateHehe(response.getContent().get(i).getStart_date()));
-                                }
-                                if (response.getContent().get(i).getEnd_date() == null) {
-                                        map.put("end_date", null);
-                                } else {
-                                        map.put("end_date", convertDateToRoman
-                                                        .convertDateHehe(response.getContent().get(i).getEnd_date()));
-                                }
-                                if (response.getContent().get(i).getStart_date_realization() == null) {
-                                        map.put("start_date_realization", null);
-                                } else {
-                                        map.put("start_date_realization",
-                                                        convertDateToRoman.convertDateHehe(response.getContent().get(i)
-                                                                        .getStart_date_realization()));
-                                }
-                                if (response.getContent().get(i).getEnd_date_realization() == null) {
-                                        map.put("end_date_realization", null);
-                                } else {
-                                        map.put("end_date_realization", convertDateToRoman.convertDateHehe(
-                                                        response.getContent().get(i).getEnd_date_realization()));
+                                        map.put("new_start_date", trxCheck.get().getStart_date());
+                                        map.put("new_end_date", trxCheck.get().getEnd_date());
                                 }
                         }
+                        map.put("start_date", response.getContent().get(i).getStart_date());
+                        map.put("end_date", response.getContent().get(i).getEnd_date());
+                        map.put("start_date_realization", response.getContent().get(i).getStart_date_realization());
+                        map.put("end_date_realization", response.getContent().get(i).getEnd_date_realization());
 
                         Optional<AuditWorkingPaper> getKka = auditWorkingPaperRepository
                                         .findByScheduleId(response.getContent().get(i).getId());
