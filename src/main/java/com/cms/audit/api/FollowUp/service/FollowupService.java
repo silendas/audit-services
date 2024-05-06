@@ -269,7 +269,7 @@ public class FollowupService {
 
             FollowUp followUp = getFollowUp.get();
             followUp.setPenalty(listPenalty);
-            if (dto.getCharging_costs() != null) {
+            if (dto.getCharging_costs() != null && !dto.getCharging_costs().equals("")) {
                 followUp.setCharging_costs(dto.getCharging_costs());
             } else {
                 followUp.setCharging_costs(String.valueOf(0));
@@ -338,6 +338,7 @@ public class FollowupService {
             String filePath = path;
 
             FollowUp followUp = getFollowUp.get();
+            followUp.setStatus(EStatusFollowup.DONE);
             followUp.setFilename(fileName);
             followUp.setFilePath(filePath);
 

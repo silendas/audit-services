@@ -149,7 +149,8 @@ public class NewsInspectionService {
             if (response.isEmpty()) {
                 return GlobalResponse
                         .builder()
-                        .message("No_Content")
+                        .message("Data tidak ditemukan")
+                        .data(parent)
                         .status(HttpStatus.OK)
                         .build();
             }
