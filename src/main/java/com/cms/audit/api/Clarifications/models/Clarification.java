@@ -74,9 +74,6 @@ public class Clarification {
     @Column(name = "auditee")
     private String auditee;
 
-    // @Column(name = "part")
-    // private String part;
-
     @Column(name = "auditee_leader")
     private String auditee_leader;
 

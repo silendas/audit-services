@@ -7,6 +7,7 @@ import com.cms.audit.api.Management.Office.AreaOffice.models.Area;
 import com.cms.audit.api.Management.Office.BranchOffice.models.Branch;
 import com.cms.audit.api.Management.Office.MainOffice.models.Main;
 import com.cms.audit.api.Management.Office.RegionOffice.models.Region;
+import com.cms.audit.api.Management.User.models.EStatusLog;
 import com.cms.audit.api.Management.User.models.User;
 
 import lombok.Data;
@@ -32,6 +33,7 @@ public class LogUserResponse {
     private String username;
     private String fullname;
     private String initial_name;
+    private EStatusLog action;
     private Integer is_active;
     private Object created_by;
     private Date created_at;

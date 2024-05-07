@@ -41,6 +41,7 @@ import com.cms.audit.api.Management.User.dto.EditUserDTO;
 import com.cms.audit.api.Management.User.dto.UserDTO;
 import com.cms.audit.api.Management.User.dto.response.DropDownUser;
 import com.cms.audit.api.Management.User.dto.response.UserResponse;
+import com.cms.audit.api.Management.User.models.EStatusLog;
 import com.cms.audit.api.Management.User.models.User;
 import com.cms.audit.api.Management.User.repository.PagUser;
 import com.cms.audit.api.Management.User.repository.UserRepository;
@@ -749,7 +750,7 @@ public class UserService {
                                                         .build();
                                 }
                                 User response = userRepository.save(user);
-                                logService.insertAuto(response, "Insert");
+                                logService.insertAuto(response, EStatusLog.CREATE);
                         } catch (SqlScriptException e) {
                                 return GlobalResponse.builder().error(e).status(HttpStatus.BAD_REQUEST).build();
                         }
@@ -976,7 +977,7 @@ public class UserService {
                                         }
                                 }
                                 User response = userRepository.save(user);
-                                logService.insertAuto(response, "Edit");
+                                logService.insertAuto(response, EStatusLog.EDIT);
                         } catch (DataIntegrityViolationException e) {
                                 return GlobalResponse
                                                 .builder()
@@ -1033,7 +1034,7 @@ public class UserService {
                         user.setIs_active(0);
                         user.setUpdated_at(new Date());
                         User response = userRepository.save(user);
-                        logService.insertAuto(response, "Delete");
+                        logService.insertAuto(response, EStatusLog.DELETE);
                         if (response == null) {
                                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Bad Request");
                         }
@@ -1063,7 +1064,7 @@ public class UserService {
                                 user.setPassword(passwordEncoder.encode(changePasswordDTO.getNew_password()));
                                 user.setUpdated_at(new Date());
                                 User response = userRepository.save(user);
-                                logService.insertAuto(response, "Edit");
+                                logService.insertAuto(response, EStatusLog.EDIT);
                         } else {
                                 return GlobalResponse
                                                 .builder()
@@ -1103,7 +1104,7 @@ public class UserService {
 
                         try {
                                 User response = userRepository.save(user);
-                                logService.insertAuto(response, "Edit");
+                                logService.insertAuto(response, EStatusLog.EDIT);
                         } catch (Exception e) {
                                 return GlobalResponse.builder().error(e).status(HttpStatus.BAD_REQUEST).build();
                         }

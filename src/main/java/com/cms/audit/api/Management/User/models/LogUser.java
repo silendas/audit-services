@@ -12,6 +12,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -31,7 +33,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "log_users")
 public class LogUser {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -55,20 +57,21 @@ public class LogUser {
     @JoinColumn(name = "main_id", nullable = true)
     private Main main;
 
-    @Column(name = "region_id",nullable = true)
+    @Column(name = "region_id", nullable = true)
     private List<Long> regionId;
 
-    @Column(name = "area_id",nullable = true)
+    @Column(name = "area_id", nullable = true)
     private List<Long> areaId;
 
-    @Column(name = "branch_id",nullable = true)
+    @Column(name = "branch_id", nullable = true)
     private List<Long> branchId;
 
     @Column(name = "email")
     private String email;
-    
-    @Column(name = "status")
-    private String status;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "action")
+    private EStatusLog action;
 
     @Column(name = "nip")
     private String nip;
