@@ -63,7 +63,7 @@ public class FollowUp {
     @Column(name = "charging_costs")
     private String charging_costs;
 
-    @Column(name = "description",columnDefinition = "TEXT")
+    @Column(name = "description", columnDefinition = "TEXT", length = 5000)
     private String description;
 
     @Column(name = "file_name")

@@ -10,6 +10,7 @@ public interface BasePath {
     String BASE_PATH_PROFILE = BASE_API+"/profile";
     String BASE_PATH_ROLE = BASE_API+"/role";
     String BASE_PATH_LEVEL = BASE_API+"/level";
+    String BASE_PATH_POSITION = BASE_API+"/position";
 
     String BASE_PATH_MAIN_SCHEDULE = BASE_API+"/main-schedule";
     String BASE_PATH_SPECIAL_SCHEDULE = BASE_API+"/special-schedule";
