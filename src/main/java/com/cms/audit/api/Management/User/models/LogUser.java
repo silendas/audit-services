@@ -66,6 +66,9 @@ public class LogUser {
 
     @Column(name = "email")
     private String email;
+    
+    @Column(name = "status")
+    private String status;
 
     @Column(name = "nip")
     private String nip;

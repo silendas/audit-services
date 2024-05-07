@@ -207,7 +207,7 @@ public class LogUserService {
         }
     }
 
-    public void insertAuto(User dto) {
+    public void insertAuto(User dto, String status) {
 
         User getUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
@@ -223,6 +223,7 @@ public class LogUserService {
         setLog.setIs_active(dto.getIs_active());
         setLog.setIs_delete(dto.getIs_delete());
         setLog.setLevel(dto.getLevel());
+        setLog.setStatus(status);
         setLog.setNip(dto.getNip());
         setLog.setPassword(dto.getPassword());
         setLog.setRole(dto.getRole());
@@ -230,8 +231,7 @@ public class LogUserService {
         setLog.setCreated_at(new Date());
         setLog.setCreated_by(getUser.getId());
         repository.save(setLog);
-        // return GlobalResponse.builder().message("Data berhasil
-        // ditambahkan").status(HttpStatus.OK).build();
+
     }
 
 }

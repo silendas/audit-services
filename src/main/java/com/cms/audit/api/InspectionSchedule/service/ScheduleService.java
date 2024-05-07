@@ -1413,9 +1413,11 @@ public class ScheduleService {
 
         public GlobalResponse editSchedule(EditScheduleDTO dto, Long id, ECategory category, String username) {
                 try {
+                        Schedule getSchedule = repository.findById(id)
+                                        .orElseThrow(() -> new ResourceNotFoundException("Schedule not found"));
+
                         if (dto.getStart_date().before(getDateNow())
-                                        || dto.getEnd_date()
-                                                        .before(getDateNow())) {
+                                        || dto.getEnd_date().before(getDateNow())) {
                                 return GlobalResponse
                                                 .builder()
                                                 .message("Jadwal yang dimasukkan adalah jadwal sebelumnya")
@@ -1447,28 +1449,32 @@ public class ScheduleService {
                                                 .build();
                         }
 
-                        List<Schedule> checkDatefExist = repository.findScheduleInDateRangeByUserIdNoCategoryForEdit(
-                                        dto.getUser_id(),
-                                        dto.getDescription(),
-                                        dto.getStart_date(),
-                                        dto.getEnd_date());
-                        if (!checkDatefExist.isEmpty()) {
-                                return GlobalResponse
-                                                .builder()
-                                                .message("Jadwal sudah ada ")
-                                                .errorMessage("Tanggal dengan start_date:"
-                                                                + convertDateToRoman
-                                                                                .convertDateHehe(dto.getStart_date())
-                                                                + " and end_date:"
-                                                                + convertDateToRoman.convertDateHehe(dto.getEnd_date())
-                                                                + ", sudah terbuat sebelumnya")
-                                                .status(HttpStatus.BAD_REQUEST)
-                                                .build();
+                        if (getSchedule.getStart_date() != dto.getStart_date()
+                                        && getSchedule.getEnd_date() != dto.getEnd_date()) {
+                                List<Schedule> checkDatefExist = repository
+                                                .findScheduleInDateRangeByUserIdNoCategory(
+                                                                dto.getUser_id(),
+                                                                dto.getStart_date(),
+                                                                dto.getEnd_date());
+                                if (!checkDatefExist.isEmpty()) {
+                                        return GlobalResponse
+                                                        .builder()
+                                                        .message("Jadwal sudah ada ")
+                                                        .errorMessage("Tanggal dengan start_date:"
+                                                                        + convertDateToRoman
+                                                                                        .convertDateHehe(dto
+                                                                                                        .getStart_date())
+                                                                        + " and end_date:"
+                                                                        + convertDateToRoman.convertDateHehe(
+                                                                                        dto.getEnd_date())
+                                                                        + ", sudah terbuat sebelumnya")
+                                                        .status(HttpStatus.BAD_REQUEST)
+                                                        .build();
+                                }
                         }
+
                         User getUser = userRepository.findByUsername(username)
                                         .orElseThrow(() -> new ResourceNotFoundException("user not found"));
-                        Schedule getSchedule = repository.findById(id)
-                                        .orElseThrow(() -> new ResourceNotFoundException("Schedule not found"));
 
                         Branch branchId = Branch.builder()
                                         .id(dto.getBranch_id())

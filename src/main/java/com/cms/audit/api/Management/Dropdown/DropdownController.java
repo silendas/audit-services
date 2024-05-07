@@ -111,28 +111,30 @@ public class DropdownController {
                             if (userAgain.get(u).getRegionId().size() == 0 || userAgain.get(u).getRegionId() == null) {
                                 if (userAgain.get(u).getBranchId() != null
                                         || userAgain.get(u).getBranchId().size() != 0) {
+                                    List<Branch> listBranch = new ArrayList<>();
                                     for (int e = 0; e < userAgain.get(u).getBranchId()
                                             .size(); e++) {
                                         Optional<Branch> branchAgain = branchRepository
                                                 .findById(userAgain.get(u)
                                                         .getBranchId()
                                                         .get(e));
-                                        if (branchAgain.get().getArea().getRegion()
-                                                .getId() == region_id) {
+                                        if (branchAgain.isPresent()) {
+                                            listBranch.add(branchAgain.get());
+                                        }
+                                    }
+                                    List<Object> listObject = new ArrayList<>(listBranch);
+                                    for(int o = 0; o < listBranch.size(); o++) {
+                                        if(region_id == listBranch.get(o).getArea().getRegion().getId()) {
                                             DropDownUserDTO builder = new DropDownUserDTO();
                                             builder.setFullname(userAgain.get(u).getFullname());
                                             builder.setId(userAgain.get(u).getId());
                                             builder.setInitial_name(userAgain.get(u).getInitial_name());
                                             builder.setLevel(userAgain.get(u).getLevel());
-                                            List<Object> list = new ArrayList<>();
-                                            list.add(branchAgain.get().getArea().getRegion());
-                                            builder.setRegion(list);
+                                            builder.setOffice(listObject);
                                             if (!user.contains(builder)) {
                                                 user.add(builder);
-                                                break;
                                             }
                                         }
-
                                     }
                                 }
                             } else if (!userAgain.get(u).getRegionId().isEmpty()) {
@@ -146,12 +148,13 @@ public class DropdownController {
                                         builder.setInitial_name(userAgain.get(u).getInitial_name());
                                         List<Object> listRegion = new ArrayList<>();
                                         for (int a = 0; a < userAgain.get(u).getRegionId().size(); a++) {
-                                            Optional<Region> getRegion = regionRepository.findById(userAgain.get(u).getRegionId().get(a));
+                                            Optional<Region> getRegion = regionRepository
+                                                    .findById(userAgain.get(u).getRegionId().get(a));
                                             if (getRegion.isPresent()) {
                                                 listRegion.add(getRegion.get());
                                             }
                                         }
-                                        builder.setRegion(listRegion);
+                                        builder.setOffice(listRegion);
                                         if (!user.contains(builder)) {
                                             user.add(builder);
                                         }
@@ -165,7 +168,7 @@ public class DropdownController {
                                 builder.setInitial_name(userAgain.get(u).getInitial_name());
                                 List<Object> list = new ArrayList<>();
                                 list.add(userAgain.get(u).getMain());
-                                builder.setRegion(list);
+                                builder.setOffice(list);
                                 if (!user.contains(builder)) {
                                     user.add(builder);
                                 }

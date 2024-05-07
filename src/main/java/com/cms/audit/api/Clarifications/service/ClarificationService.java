@@ -799,7 +799,7 @@ public class ClarificationService {
                                                 "File not found with name: " + fileName));
 
                 Clarification clarification = response;
-                if(!response.getStatus().equals(EStatusClarification.DONE) && !response.getStatus().equals(EStatusClarification.UPLOAD)){
+                if(!response.getStatus().equals(EStatusClarification.DONE) && !response.getStatus().equals(EStatusClarification.IDENTIFICATION) && !response.getStatus().equals(EStatusClarification.UPLOAD) && !response.getStatus().equals(EStatusClarification.INPUT)) {
                         clarification.setStatus(EStatusClarification.UPLOAD);
                 }
                 clarification.setUpdated_at(new Date());

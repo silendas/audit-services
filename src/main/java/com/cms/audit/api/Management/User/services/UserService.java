@@ -442,16 +442,19 @@ public class UserService {
                                 oneUser.put("initial_name", response.get(i).getInitial_name());
                                 oneUser.put("level", response.get(i).getLevel());
                                 if (!response.get(i).getBranchId().isEmpty()) {
+                                        List<Object> listBranch = new ArrayList<>();
                                         for (int u = 0; u < response.get(i).getBranchId().size(); u++) {
                                                 Optional<Branch> getBranch = branchRepository
                                                                 .findById(response.get(i).getBranchId().get(u));
                                                 if (getBranch.isPresent()) {
-                                                        List<Region> list = new ArrayList<>();
-                                                        list.add(getBranch.get().getArea().getRegion());
-                                                        oneUser.put("region", list);
-                                                        break;
+                                                        Map<String, Object> objBranch = new LinkedHashMap<>();
+                                                        objBranch.put("id", getBranch.get().getId());
+                                                        objBranch.put("name", getBranch.get().getName());                                                        
+                                                        objBranch.put("area", getBranch.get().getArea()); 
+                                                        listBranch.add(objBranch);                                                       
                                                 }
                                         }
+                                        oneUser.put("office", listBranch);
                                 } else if (!response.get(i).getRegionId().isEmpty()) {
                                         List<Region> listRegion = new ArrayList<>();
                                         for (int u = 0; u < response.get(i).getRegionId().size(); u++) {
@@ -461,11 +464,11 @@ public class UserService {
                                                         listRegion.add(getRegion.get());
                                                 }
                                         }
-                                        oneUser.put("region", listRegion);
+                                        oneUser.put("office", listRegion);
                                 } else {
                                         List<Main> list = new ArrayList<>();
                                         list.add(response.get(i).getMain());
-                                        oneUser.put("region", list);
+                                        oneUser.put("office", list);
                                 }
                                 listResponse.add(oneUser);
                         }
@@ -746,7 +749,7 @@ public class UserService {
                                                         .build();
                                 }
                                 User response = userRepository.save(user);
-                                logService.insertAuto(response);
+                                logService.insertAuto(response, "Insert");
                         } catch (SqlScriptException e) {
                                 return GlobalResponse.builder().error(e).status(HttpStatus.BAD_REQUEST).build();
                         }
@@ -973,7 +976,7 @@ public class UserService {
                                         }
                                 }
                                 User response = userRepository.save(user);
-                                logService.insertAuto(response);
+                                logService.insertAuto(response, "Edit");
                         } catch (DataIntegrityViolationException e) {
                                 return GlobalResponse
                                                 .builder()
@@ -1030,7 +1033,7 @@ public class UserService {
                         user.setIs_active(0);
                         user.setUpdated_at(new Date());
                         User response = userRepository.save(user);
-                        logService.insertAuto(response);
+                        logService.insertAuto(response, "Delete");
                         if (response == null) {
                                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Bad Request");
                         }
@@ -1060,7 +1063,7 @@ public class UserService {
                                 user.setPassword(passwordEncoder.encode(changePasswordDTO.getNew_password()));
                                 user.setUpdated_at(new Date());
                                 User response = userRepository.save(user);
-                                logService.insertAuto(response);
+                                logService.insertAuto(response, "Edit");
                         } else {
                                 return GlobalResponse
                                                 .builder()
@@ -1100,7 +1103,7 @@ public class UserService {
 
                         try {
                                 User response = userRepository.save(user);
-                                logService.insertAuto(response);
+                                logService.insertAuto(response, "Edit");
                         } catch (Exception e) {
                                 return GlobalResponse.builder().error(e).status(HttpStatus.BAD_REQUEST).build();
                         }
