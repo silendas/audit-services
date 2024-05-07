@@ -262,7 +262,7 @@ public class FollowupService {
                                 .message("Penalty with id:" + dto.getPenalty_id() + " is not found")
                                 .status(HttpStatus.BAD_REQUEST).errorMessage("Penalty not found")
                                 .build();
-                    } 
+                    }
                     listPenalty.add(penalty.get().getId());
                 }
             }
@@ -283,8 +283,8 @@ public class FollowupService {
             followUp.setStatus(EStatusFollowup.PROGRESS);
             FollowUp response1 = repository.save(followUp);
 
-
-            // salah format biaya pembebanan kurang Rp. dan bentuk ceklis penalty salah looping 2 kali 
+            // salah format biaya pembebanan kurang Rp. dan bentuk ceklis penalty salah
+            // looping 2 kali
             PDFResponse generate = GeneratePdf.generateFollowUpPDF(response1);
 
             FollowUp edit = response1;
@@ -326,25 +326,24 @@ public class FollowupService {
         try {
             Optional<FollowUp> getFollowUp = repository.findById(id);
             if (!getFollowUp.isPresent()) {
-                return GlobalResponse.builder().message("Tindak lanjut tidak ditemukan").status(HttpStatus.BAD_REQUEST)
-                        .errorMessage("Follow up with id:" + id + " is not found").build();
+                return GlobalResponse.builder().errorMessage("Tindak lanjut tidak ditemukan")
+                        .status(HttpStatus.BAD_REQUEST)
+                        .message("Follow up with id:" + id + " is not found").build();
             }
 
-            // String fileName = randomValueNumber.randomNumberGenerator() + "-" +
-            // file.getOriginalFilename();
-
-            String fileName = fileStorageService.storeFile(file);
-            String path = FOLDER_PATH + fileName;
-            String filePath = path;
-
             FollowUp followUp = getFollowUp.get();
-            followUp.setStatus(EStatusFollowup.DONE);
-            followUp.setFilename(fileName);
-            followUp.setFilePath(filePath);
+            followUp.setStatus(EStatusFollowup.CLOSE);
+
+            if (file != null) {
+                String fileName = fileStorageService.storeFile(file);
+                String path = FOLDER_PATH + fileName;
+                String filePath = path;
+                followUp.setFilename(fileName);
+                followUp.setFilePath(filePath);
+                file.transferTo(new File(filePath));
+            }
 
             FollowUp getResponse = repository.save(followUp);
-
-            file.transferTo(new File(filePath));
 
             Map<String, Object> returnResponse = new LinkedHashMap<>();
             Map<String, Object> mappingRes = new LinkedHashMap<>();
@@ -386,7 +385,7 @@ public class FollowupService {
                 .orElseThrow(() -> new BadRequestException("File not found with name: " + fileName));
 
         FollowUp followUp = response;
-        followUp.setStatus(EStatusFollowup.DONE);
+        followUp.setStatus(EStatusFollowup.PROGRESS);
         repository.save(followUp);
 
         return response;

@@ -46,10 +46,10 @@ public class AuditDailyReportDetail {
     @JoinColumn(name = "case_category_id")
     private CaseCategory caseCategory;
 
-    @Column(name = "description")
+    @Column(name = "description", columnDefinition = "TEXT")
     private String description;
 
-    @Column(name = "suggestion")
+    @Column(name = "suggestion", columnDefinition = "TEXT")
     private String suggestion;
     
     @Column(name = "temporary_recommendations")

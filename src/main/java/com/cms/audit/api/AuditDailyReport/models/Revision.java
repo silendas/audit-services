@@ -50,10 +50,10 @@ public class Revision {
     @Column(name = "revision_number")
     private Long revisionNumber;
 
-    @Column(name = "description")
+    @Column(name = "description", columnDefinition = "TEXT")
     private String description;
 
-    @Column(name = "suggestion")
+    @Column(name = "suggestion", columnDefinition = "TEXT")
     private String suggestion;
     
     @Column(name = "temporary_recommendations")
