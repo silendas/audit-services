@@ -127,6 +127,7 @@ public class FollowupService {
                 fuMap.put("clarification", clarification);
 
                 fuMap.put("code", fu.getCode());
+                fuMap.put("charging_costs", fu.getCharging_costs());
                 fuMap.put("description", fu.getDescription());
                 fuMap.put("status", fu.getStatus());
                 fuMap.put("filename", fu.getFilename());
@@ -223,6 +224,7 @@ public class FollowupService {
             fuMap.put("clarification", clarification);
 
             fuMap.put("code", fu.getCode());
+            fuMap.put("charging_costs", fu.getCharging_costs());
             fuMap.put("description", fu.getDescription());
             fuMap.put("status", fu.getStatus());
             fuMap.put("filename", fu.getFilename());

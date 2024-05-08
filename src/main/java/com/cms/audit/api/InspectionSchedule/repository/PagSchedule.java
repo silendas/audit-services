@@ -2,8 +2,10 @@ package com.cms.audit.api.InspectionSchedule.repository;
 
 import java.util.Date;
 
+import org.springframework.cglib.core.Predicate;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;
@@ -14,7 +16,7 @@ import com.cms.audit.api.InspectionSchedule.models.Schedule;
 @Repository
 public interface PagSchedule extends PagingAndSortingRepository<Schedule, Long> {
 
-        Page<Schedule> findAll(Pageable pageable);
+        Page<Schedule> findAll(Predicate predicate,Pageable pageable);
 
         @Query(value = "SELECT * FROM inspection_schedule u WHERE u.category = :category AND u.status <> 'REJECTED' AND u.status <> 'CLOSE' AND u.is_delete <> 1 ORDER BY u.id DESC ", nativeQuery = true)
         Page<Schedule> findByCategoryInByOrderByIdDesc(@Param("category") String category, Pageable pageable);
