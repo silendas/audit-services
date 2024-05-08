@@ -342,7 +342,7 @@ public class FollowupService {
                 String filePath = path;
                 followUp.setFilename(fileName);
                 followUp.setFilePath(filePath);
-                file.transferTo(new File(filePath));
+                //file.transferTo(new File(filePath));
             }
 
             FollowUp getResponse = repository.save(followUp);
