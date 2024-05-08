@@ -1526,8 +1526,8 @@ public class ScheduleService {
                 }
                 Optional<Schedule> getSchedule = repository.findById(id);
                 if (!getSchedule.isPresent()) {
-                        return GlobalResponse.builder().errorMessage("Schedule with id : " + id + " is not found")
-                                        .message("Jadwal tidak ditemukan").status(HttpStatus.BAD_REQUEST).build();
+                        return GlobalResponse.builder().message("Schedule with id : " + id + " is not found")
+                                        .errorMessage("Jadwal tidak ditemukan").status(HttpStatus.BAD_REQUEST).build();
                 }
 
                 ScheduleTrx getTrx = scheduleTrxRepo.findById(getSchedule.get().getScheduleTrx().getId())
@@ -1591,11 +1591,11 @@ public class ScheduleService {
                 schedule.setStatus(EStatus.TODO);
                 schedule.setCategory(getTrx.getCategory());
                 schedule.setEnd_date(getTrx.getEnd_date());
+                schedule.setIs_delete(0);
                 schedule.setCreatedBy(user.getId());
                 schedule.setUpdatedBy(user.getId());
                 schedule.setCreated_at(new Date());
                 schedule.setUpdated_at(new Date());
-
                 repository.save(schedule);
 
                 Schedule editSchedule = getSchedule.get();
