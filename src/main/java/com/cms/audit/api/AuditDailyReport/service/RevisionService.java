@@ -38,33 +38,33 @@ public class RevisionService {
     @Autowired
     private AuditDailyReportDetailRepository auditDailyReportDetailRepository;
 
-    private RevisionResponse objRevision(Revision dto){
-            RevisionResponse obj = new RevisionResponse();
-            obj.setRevisionNumber(dto.getRevisionNumber());
-            obj.setCaseCategory(dto.getCaseCategory());
-            obj.setCases(dto.getCases());
-            obj.setDescription(dto.getDescription());
-            obj.setId(dto.getId());
-            obj.setIs_research(dto.getIs_research());
-            obj.setPermanent_recommendations(dto.getPermanent_recommendations());
-            obj.setSuggestion(dto.getSuggestion());
-            obj.setTemporary_recommendations(dto.getTemporary_recommendations());
+    private RevisionResponse objRevision(Revision dto) {
+        RevisionResponse obj = new RevisionResponse();
+        obj.setRevisionNumber(dto.getRevisionNumber());
+        obj.setCaseCategory(dto.getCaseCategory());
+        obj.setCases(dto.getCases());
+        obj.setDescription(dto.getDescription());
+        obj.setId(dto.getId());
+        obj.setIs_research(dto.getIs_research());
+        obj.setPermanent_recommendations(dto.getPermanent_recommendations());
+        obj.setSuggestion(dto.getSuggestion());
+        obj.setTemporary_recommendations(dto.getTemporary_recommendations());
 
-            Optional<User> createdBy = userRepository.findById(dto.getCreated_by());
-            Map<String, Object> objUser = new LinkedHashMap<>();
-            objUser.put("id", createdBy.get().getId());
-            objUser.put("fullname", createdBy.get().getFullname());
-            objUser.put("initial_name", createdBy.get().getInitial_name());
-            objUser.put("nip", createdBy.get().getNip());
-            objUser.put("level", createdBy.get().getLevel());
-            obj.setCreated_by(objUser);
+        Optional<User> createdBy = userRepository.findById(dto.getCreated_by());
+        Map<String, Object> objUser = new LinkedHashMap<>();
+        objUser.put("id", createdBy.get().getId());
+        objUser.put("fullname", createdBy.get().getFullname());
+        objUser.put("initial_name", createdBy.get().getInitial_name());
+        objUser.put("nip", createdBy.get().getNip());
+        objUser.put("level", createdBy.get().getLevel());
+        obj.setCreated_by(objUser);
 
         return obj;
     }
 
-    private List<RevisionResponse> pageRevision(List<Revision> dto){
+    private List<RevisionResponse> pageRevision(List<Revision> dto) {
         List<RevisionResponse> response = new ArrayList<>();
-        for(int i=0;i<dto.size();i++){
+        for (int i = 0; i < dto.size(); i++) {
             RevisionResponse obj = new RevisionResponse();
             obj.setRevisionNumber(dto.get(i).getRevisionNumber());
             obj.setCaseCategory(dto.get(i).getCaseCategory());
@@ -154,7 +154,8 @@ public class RevisionService {
             } else {
                 response.get().setIs_research(0);
             }
-            return GlobalResponse.builder().message("Berhasil menampilkan data").data(objRevision(response.get())).status(HttpStatus.OK)
+            return GlobalResponse.builder().message("Berhasil menampilkan data").data(objRevision(response.get()))
+                    .status(HttpStatus.OK)
                     .build();
         } catch (Exception e) {
             return GlobalResponse.builder().error(e).status(HttpStatus.INTERNAL_SERVER_ERROR).build();
@@ -197,9 +198,18 @@ public class RevisionService {
         auditDailyReportDetail.setPermanent_recommendations(dto.getPermanent_recommendations());
         auditDailyReportDetail.setTemporary_recommendations(dto.getTemporary_recommendations());
         auditDailyReportDetail.setSuggestion(dto.getSuggestion());
-        auditDailyReportDetail.setStatus_flow(1);
         auditDailyReportDetail.setUpdated_by(user.getId());
         auditDailyReportDetail.setUpdate_at(new Date());
+
+        if (user.getId() == detail.get().getAuditDailyReport().getUser().getId() && user.getLevel().getCode().equals("C")) {
+            auditDailyReportDetail.setStatus_flow(detail.get().getStatus_flow());
+        } else {
+            if (user.getLevel().getCode().equals("A")) {
+                auditDailyReportDetail.setStatus_flow(2);
+            } else if (user.getLevel().getCode().equals("B")) {
+                auditDailyReportDetail.setStatus_flow(1);
+            }
+        }
 
         if (user.getLevel().getCode().equals("A")) {
             if (detail.get().getIs_revision() == null || detail.get().getIs_revision() == 0
@@ -229,11 +239,11 @@ public class RevisionService {
 
         if (user.getId() == detail.get().getAuditDailyReport().getUser().getId()) {
             Optional<Revision> getRevision = repository.findByDetailId(dto.getAudit_daily_report_detail_id());
-            if(getRevision.isPresent()){
+            if (getRevision.isPresent()) {
                 revision.setId(getRevision.get().getId());
                 revision.setRevisionNumber(getRevision.get().getRevisionNumber());
             }
-        }else{
+        } else {
             Optional<Revision> getRevision = repository.findByDetailId(detail.get().getId());
             if (getRevision.isPresent()) {
                 revision.setRevisionNumber(getRevision.get().getRevisionNumber() + 1);
