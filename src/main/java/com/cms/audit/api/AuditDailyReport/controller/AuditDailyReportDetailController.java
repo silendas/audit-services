@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -45,28 +44,10 @@ public class AuditDailyReportDetailController {
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Optional<Date> end_date,
             @RequestParam("page") Optional<Integer> page,
             @RequestParam("size") Optional<Integer> size) {
-        Date startDate;
-        if (start_date.isPresent()) {
-            if (start_date.get().toString() != "") {
-                startDate = start_date.get();
-            } else {
-                startDate = null;
-            }
-        } else {
-            startDate = null;
-        }
+        Date startDate = start_date.orElse(null);
+        Date endDate = end_date.orElse(null);
         if (startDate != null) {
             startDate = convertDateToRoman.setTimeToZero(startDate);
-        }
-        Date endDate;
-        if (end_date.isPresent()) {
-            if (end_date.get().toString() != "") {
-                endDate = end_date.get();
-            } else {
-                endDate = null;
-            }
-        } else {
-            endDate = null;
         }
         if (endDate != null) {
             endDate = convertDateToRoman.setTimeToLastSecond(endDate);
@@ -96,7 +77,8 @@ public class AuditDailyReportDetailController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Object> put(@RequestBody @Nonnull EditAuditDailyReportDetailDTO dto, @PathVariable("id") Long id) {
+    public ResponseEntity<Object> put(@RequestBody @Nonnull EditAuditDailyReportDetailDTO dto,
+            @PathVariable("id") Long id) {
         GlobalResponse response = service.edit(dto, id);
         if (response.getStatus().value() == 400) {
             return ResponseEntittyHandler.errorResponse(response.getErrorMessage(), response.getMessage(),
@@ -111,7 +93,8 @@ public class AuditDailyReportDetailController {
     public ResponseEntity<Object> send(@PathVariable("id") Long id) throws Exception {
         GlobalResponse response = service.sendToLeader(id);
         if (response.getStatus().equals(HttpStatus.BAD_REQUEST)) {
-            return ResponseEntittyHandler.errorResponse(response.getErrorMessage(), response.getMessage(), response.getStatus());
+            return ResponseEntittyHandler.errorResponse(response.getErrorMessage(), response.getMessage(),
+                    response.getStatus());
         } else {
             return ResponseEntittyHandler.allHandler(null, response.getMessage(), response.getStatus(), null);
         }
@@ -121,7 +104,8 @@ public class AuditDailyReportDetailController {
     public ResponseEntity<Object> ignore(@PathVariable("id") Long id) {
         GlobalResponse response = service.ingnoreLhaDetail(id);
         if (response.getStatus().equals(HttpStatus.BAD_REQUEST)) {
-            return ResponseEntittyHandler.errorResponse(response.getErrorMessage(), response.getMessage(), response.getStatus());
+            return ResponseEntittyHandler.errorResponse(response.getErrorMessage(), response.getMessage(),
+                    response.getStatus());
         } else {
             return ResponseEntittyHandler.allHandler(null, response.getMessage(), response.getStatus(), null);
         }

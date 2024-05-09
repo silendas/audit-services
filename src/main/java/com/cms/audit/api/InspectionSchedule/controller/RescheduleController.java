@@ -51,48 +51,12 @@ public class RescheduleController {
             @NonNull HttpServletRequest request,
             @RequestParam("page") Optional<Integer> page,
             @RequestParam("size") Optional<Integer> size) {
-        Long branchId;
-        if (branch_id.isPresent()) {
-            if (branch_id.get().toString() != "") {
-                branchId = branch_id.get();
-            } else {
-                branchId = null;
-            }
-        } else {
-            branchId = null;
-        }
-        String fullname;
-        if (name.isPresent()) {
-            if (name.get().toString() != "") {
-                fullname = name.get();
-            } else {
-                fullname = null;
-            }
-        } else {
-            fullname = null;
-        }
-        Date startDate;
-        if (start_date.isPresent()) {
-            if (start_date.get().toString() != "") {
-                startDate = start_date.get();
-            } else {
-                startDate = null;
-            }
-        } else {
-            startDate = null;
-        }
+        Long branchId = branch_id.orElse(null);
+        String fullname = name.orElse(null);
+        Date startDate = start_date.orElse(null);
+        Date endDate = end_date.orElse(null);
         if (startDate != null) {
             startDate = convertDateToRoman.setTimeToZero(startDate);
-        }
-        Date endDate;
-        if (end_date.isPresent()) {
-            if (end_date.get().toString() != "") {
-                endDate = end_date.get();
-            } else {
-                endDate = null;
-            }
-        } else {
-            endDate = null;
         }
         if (endDate != null) {
             endDate = convertDateToRoman.setTimeToLastSecond(endDate);
@@ -128,9 +92,10 @@ public class RescheduleController {
     @PatchMapping("/approve/{id}")
     public ResponseEntity<Object> rescheduleApprove(@PathVariable("id") Long id) throws Exception {
         GlobalResponse response = scheduleService.approve(id);
-        if(response.getStatus().equals(HttpStatus.BAD_REQUEST)){
-            return ResponseEntittyHandler.errorResponse(response.getErrorMessage(), response.getMessage(), response.getStatus());
-        }else{
+        if (response.getStatus().equals(HttpStatus.BAD_REQUEST)) {
+            return ResponseEntittyHandler.errorResponse(response.getErrorMessage(), response.getMessage(),
+                    response.getStatus());
+        } else {
             return ResponseEntittyHandler.allHandler(null, response.getMessage(), response.getStatus(), null);
         }
     }
@@ -138,9 +103,10 @@ public class RescheduleController {
     @PatchMapping("/reject/{id}")
     public ResponseEntity<Object> rescheduleRejected(@PathVariable("id") Long id) throws Exception {
         GlobalResponse response = scheduleService.rejected(id);
-        if(response.getStatus().equals(HttpStatus.BAD_REQUEST)){
-            return ResponseEntittyHandler.errorResponse(response.getErrorMessage(), response.getMessage(), response.getStatus());
-        }else{
+        if (response.getStatus().equals(HttpStatus.BAD_REQUEST)) {
+            return ResponseEntittyHandler.errorResponse(response.getErrorMessage(), response.getMessage(),
+                    response.getStatus());
+        } else {
             return ResponseEntittyHandler.allHandler(null, response.getMessage(), response.getStatus(), null);
         }
     }

@@ -49,48 +49,12 @@ public class FollowupController {
                         @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Optional<Date> end_date,
                         @RequestParam("page") Optional<Integer> page,
                         @RequestParam("size") Optional<Integer> size) {
-                Long branchId;
-                if (branch_id.isPresent()) {
-                        if (branch_id.get().toString() != "") {
-                                branchId = branch_id.get();
-                        } else {
-                                branchId = null;
-                        }
-                } else {
-                        branchId = null;
-                }
-                String fullname;
-                if (name.isPresent()) {
-                        if (name.get().toString() != "") {
-                                fullname = name.get();
-                        } else {
-                                fullname = null;
-                        }
-                } else {
-                        fullname = null;
-                }
-                Date startDate;
-                if (start_date.isPresent()) {
-                        if (start_date.get().toString() != "") {
-                                startDate = start_date.get();
-                        } else {
-                                startDate = null;
-                        }
-                } else {
-                        startDate = null;
-                }
+                Long branchId = branch_id.orElse(null);
+                String fullname = name.orElse(null);
+                Date startDate = start_date.orElse(null);
+                Date endDate = end_date.orElse(null);
                 if (startDate != null) {
                         startDate = convertDateToRoman.setTimeToZero(startDate);
-                }
-                Date endDate;
-                if (end_date.isPresent()) {
-                        if (end_date.get().toString() != "") {
-                                endDate = end_date.get();
-                        } else {
-                                endDate = null;
-                        }
-                } else {
-                        endDate = null;
                 }
                 if (endDate != null) {
                         endDate = convertDateToRoman.setTimeToLastSecond(endDate);
@@ -106,12 +70,13 @@ public class FollowupController {
         public ResponseEntity<Object> getOne(
                         @PathVariable("id") Long id) {
                 GlobalResponse response = service.getOne(id);
-                if(response.getStatus().equals(HttpStatus.BAD_REQUEST)){
-                        return ResponseEntittyHandler.errorResponse(response.getErrorMessage(), response.getMessage(), response.getStatus());
-                }else{
+                if (response.getStatus().equals(HttpStatus.BAD_REQUEST)) {
+                        return ResponseEntittyHandler.errorResponse(response.getErrorMessage(), response.getMessage(),
+                                        response.getStatus());
+                } else {
                         return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(),
-                                response.getStatus(),
-                                response.getError());
+                                        response.getStatus(),
+                                        response.getError());
                 }
         }
 
@@ -156,20 +121,25 @@ public class FollowupController {
         public ResponseEntity<Object> save(@RequestBody FollowUpDTO dto) {
                 GlobalResponse response = service.save(dto);
                 if (response.getStatus().value() == 400) {
-                        return ResponseEntittyHandler.errorResponse(response.getErrorMessage(), response.getMessage(), response.getStatus());
+                        return ResponseEntittyHandler.errorResponse(response.getErrorMessage(), response.getMessage(),
+                                        response.getStatus());
                 } else {
-                        return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(),
+                        return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(),
+                                        response.getStatus(),
                                         response.getError());
                 }
         }
 
         @PostMapping(value = "/file")
-        public ResponseEntity<Object> upload(@RequestParam(value = "file", required = false) MultipartFile file,@ModelAttribute("followup_id") Long id) {
+        public ResponseEntity<Object> upload(@RequestParam(value = "file", required = false) MultipartFile file,
+                        @ModelAttribute("followup_id") Long id) {
                 GlobalResponse response = service.uploadFile(file, id);
                 if (response.getStatus().value() == 400) {
-                        return ResponseEntittyHandler.errorResponse(response.getErrorMessage(), response.getMessage(), response.getStatus());
+                        return ResponseEntittyHandler.errorResponse(response.getErrorMessage(), response.getMessage(),
+                                        response.getStatus());
                 } else {
-                        return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(),
+                        return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(),
+                                        response.getStatus(),
                                         response.getError());
                 }
         }

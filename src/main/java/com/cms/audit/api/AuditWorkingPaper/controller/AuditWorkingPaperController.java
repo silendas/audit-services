@@ -47,58 +47,13 @@ public class AuditWorkingPaperController {
                         @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Optional<Date> end_date,
                         @RequestParam("page") Optional<Integer> page,
                         @RequestParam("size") Optional<Integer> size) {
-                Long branchId;
-                if (branch_id.isPresent()) {
-                        if (branch_id.get().toString() != "") {
-                                branchId = branch_id.get();
-                        } else {
-                                branchId = null;
-                        }
-                } else {
-                        branchId = null;
-                }
-                Long scheduleId;
-                if (schedule_id.isPresent()) {
-                        if (schedule_id.get().toString() != "") {
-                                scheduleId = schedule_id.get();
-                        } else {
-                                scheduleId = null;
-                        }
-                } else {
-                        scheduleId = null;
-                }
-                String fullname;
-                if (name.isPresent()) {
-                        if (name.get().toString() != "") {
-                                fullname = name.get();
-                        } else {
-                                fullname = null;
-                        }
-                } else {
-                        fullname = null;
-                }
-                Date startDate;
-                if (start_date.isPresent()) {
-                        if (start_date.get().toString() != "") {
-                                startDate = start_date.get();
-                        } else {
-                                startDate = null;
-                        }
-                } else {
-                        startDate = null;
-                }
+                Long branchId = branch_id.orElse(null);
+                Long scheduleId = schedule_id.orElse(null);
+                String fullname = name.orElse(null);
+                Date startDate = start_date.orElse(null);
+                Date endDate = end_date.orElse(null);
                 if (startDate != null) {
                         startDate = convertDateToRoman.setTimeToZero(startDate);
-                }
-                Date endDate;
-                if (end_date.isPresent()) {
-                        if (end_date.get().toString() != "") {
-                                endDate = end_date.get();
-                        } else {
-                                endDate = null;
-                        }
-                } else {
-                        endDate = null;
                 }
                 if (endDate != null) {
                         endDate = convertDateToRoman.setTimeToLastSecond(endDate);
@@ -149,11 +104,11 @@ public class AuditWorkingPaperController {
                 GlobalResponse response = service.uploadFile(file, id);
                 if (response.getStatus().value() == 400) {
                         return ResponseEntittyHandler.errorResponse(response.getErrorMessage(), response.getMessage(),
-                                response.getStatus());
-                    } else {
+                                        response.getStatus());
+                } else {
                         return ResponseEntittyHandler.allHandler(null, response.getMessage(), response.getStatus(),
-                                response.getError());
-                    }
+                                        response.getError());
+                }
         }
 
 }

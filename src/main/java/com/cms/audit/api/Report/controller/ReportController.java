@@ -44,28 +44,10 @@ public class ReportController {
                 } else {
                         fileName = "all-report.xlsx";
                 }
-                Date startDate;
-                if (start_date.isPresent()) {
-                        if (start_date.get().toString() != "") {
-                                startDate = start_date.get();
-                        } else {
-                                startDate = null;
-                        }
-                } else {
-                        startDate = null;
-                }
+                Date startDate = start_date.orElse(null);
+                Date endDate = end_date.orElse(null);
                 if (startDate != null) {
                         startDate = convertDateToRoman.setTimeToZero(startDate);
-                }
-                Date endDate;
-                if (end_date.isPresent()) {
-                        if (end_date.get().toString() != "") {
-                                endDate = end_date.get();
-                        } else {
-                                endDate = null;
-                        }
-                } else {
-                        endDate = null;
                 }
                 if (endDate != null) {
                         endDate = convertDateToRoman.setTimeToLastSecond(endDate);
@@ -89,28 +71,10 @@ public class ReportController {
                         @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Optional<Date> start_date,
                         @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Optional<Date> end_date)
                         throws IOException {
-                Date startDate;
-                if (start_date.isPresent()) {
-                        if (start_date.get().toString() != "") {
-                                startDate = start_date.get();
-                        } else {
-                                startDate = null;
-                        }
-                } else {
-                        startDate = null;
-                }
+                Date startDate = start_date.orElse(null);
+                Date endDate = end_date.orElse(null);
                 if (startDate != null) {
                         startDate = convertDateToRoman.setTimeToZero(startDate);
-                }
-                Date endDate;
-                if (end_date.isPresent()) {
-                        if (end_date.get().toString() != "") {
-                                endDate = end_date.get();
-                        } else {
-                                endDate = null;
-                        }
-                } else {
-                        endDate = null;
                 }
                 if (endDate != null) {
                         endDate = convertDateToRoman.setTimeToLastSecond(endDate);
