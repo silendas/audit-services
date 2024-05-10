@@ -83,7 +83,7 @@ public class PositionService {
             position1.setName(position.getName());
             Optional<Level> level = levelRepository.findById(position.getLevel_id());
             if(!level.isPresent()) {
-                return ResponseEntittyHandler.errorResponse("Data tidak ditemukan","Data with id ;" + position.getLevel_id() + " not found",HttpStatus.BAD_REQUEST);
+                return ResponseEntittyHandler.errorResponse("Data level tidak ditemukan","Data with id ;" + position.getLevel_id() + " not found",HttpStatus.BAD_REQUEST);
             }
             position1.setLevel(level.get());
             repository.save(position1);

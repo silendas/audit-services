@@ -134,7 +134,7 @@ public class GeneratePdf {
                                 new Cell().add("Atasan langsung").setFontSize(5).setBackgroundColor(Color.LIGHT_GRAY)
                                                 .setTextAlignment(TextAlignment.CENTER));
                 nestedsubheader2
-                                .addCell(new Cell().add(response.getCases().getName()).setFontSize(10).setHeight(30)
+                                .addCell(new Cell().add(response.getLocation()).setFontSize(10).setHeight(30)
                                                 .setTextAlignment(TextAlignment.CENTER)
                                                 .setVerticalAlignment(VerticalAlignment.MIDDLE));
                 nestedsubheader2
@@ -423,7 +423,7 @@ public class GeneratePdf {
                                 "Menindaklanjuti dari hasil Hasil temuan Auditor Internal, sesuai dengan klarifikasi Nomor : "
                                                 + response.getClarification().getCode() + " tanggal "
                                                 + convertDateToRoman.convertDateToString(new Date()) + " "
-                                                + response.getClarification().getLocation() + " perihal : ")
+                                                + response.getClarification().getLocation() + ", perihal : ")
                                 .setFontSize(8).setBorder(Border.NO_BORDER));
                 body.addCell(new Cell().add(body1).setBorder(Border.NO_BORDER));
 
