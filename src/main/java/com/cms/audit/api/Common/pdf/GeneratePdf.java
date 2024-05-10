@@ -82,11 +82,11 @@ public class GeneratePdf {
                                                 .setHorizontalAlignment(HorizontalAlignment.CENTER));
                 nestedheader.addCell(new Cell().add("No Revisi").setFontSize(5).setBackgroundColor(Color.LIGHT_GRAY));
                 nestedheader.addCell(
-                                new Cell().add("-").setFontSize(5).setHorizontalAlignment(HorizontalAlignment.CENTER));
+                                new Cell().add("").setFontSize(5).setHorizontalAlignment(HorizontalAlignment.CENTER));
                 nestedheader.addCell(
                                 new Cell().add("Tanggal Revisi").setFontSize(5).setBackgroundColor(Color.LIGHT_GRAY));
                 nestedheader.addCell(
-                                new Cell().add("-").setFontSize(5).setHorizontalAlignment(HorizontalAlignment.CENTER));
+                                new Cell().add("").setFontSize(5).setHorizontalAlignment(HorizontalAlignment.CENTER));
 
                 header.addCell(new Cell().add(nestedheader).setBorder(Border.NO_BORDER).setPadding(0).setMargin(0));
 
@@ -141,42 +141,28 @@ public class GeneratePdf {
                                 .addCell(new Cell().add(response.getAuditee_leader()).setFontSize(10).setHeight(30)
                                                 .setTextAlignment(TextAlignment.CENTER)
                                                 .setVerticalAlignment(VerticalAlignment.MIDDLE));
+                nestedsubheader2.addCell(new Cell().add("Bagian").setFontSize(5)
+                                .setBackgroundColor(Color.LIGHT_GRAY).setTextAlignment(TextAlignment.CENTER));
+                nestedsubheader2
+                                .addCell(new Cell().add("Kepada Yth / jabatan").setFontSize(5)
+                                                .setBackgroundColor(Color.LIGHT_GRAY)
+                                                .setTextAlignment(TextAlignment.CENTER));
+                nestedsubheader2
+                                .addCell(new Cell().add(response.getCases().getName()).setFontSize(10).setHeight(30)
+                                                .setTextAlignment(TextAlignment.CENTER)
+                                                .setVerticalAlignment(VerticalAlignment.MIDDLE));
+                nestedsubheader2
+                                .addCell(new Cell().add(response.getAuditee()).setFontSize(10).setHeight(30)
+                                                .setTextAlignment(TextAlignment.CENTER)
+                                                .setVerticalAlignment(VerticalAlignment.MIDDLE));
                 subheader2.addCell(new Cell().add(nestedsubheader2).setBorder(Border.NO_BORDER).setPadding(0)
                                 .setMargin(0));
 
                 subheader2.addCell(new Cell().add(response.getCaseCategory().getName()).setBorderLeft(Border.NO_BORDER)
                                 .setTextAlignment(TextAlignment.CENTER).setFontSize(8)
                                 .setVerticalAlignment(VerticalAlignment.MIDDLE));
-
                 document.add(subheader2);
                 // section 4
-
-                // section 5
-                Table subheader3 = new Table(subHeader2Lenght);
-
-                Table nestedsubheader3 = new Table(new float[] { 376 / 2, 376 / 2 });
-                nestedsubheader3.addCell(new Cell().add("Bagian").setFontSize(5)
-                                .setBackgroundColor(Color.LIGHT_GRAY).setTextAlignment(TextAlignment.CENTER));
-                nestedsubheader3
-                                .addCell(new Cell().add("Kepada Yth / jabatan").setFontSize(5)
-                                                .setBackgroundColor(Color.LIGHT_GRAY)
-                                                .setTextAlignment(TextAlignment.CENTER));
-                nestedsubheader3
-                                .addCell(new Cell().add(response.getCases().getName()).setFontSize(10).setHeight(30)
-                                                .setTextAlignment(TextAlignment.CENTER)
-                                                .setVerticalAlignment(VerticalAlignment.MIDDLE));
-                nestedsubheader3
-                                .addCell(new Cell().add(response.getAuditee()).setFontSize(10).setHeight(30)
-                                                .setTextAlignment(TextAlignment.CENTER)
-                                                .setVerticalAlignment(VerticalAlignment.MIDDLE));
-                subheader3.addCell(new Cell().add(nestedsubheader3).setBorder(Border.NO_BORDER).setPadding(0)
-                                .setMargin(0));
-
-                subheader3.addCell(new Cell().add("").setBorderLeft(Border.NO_BORDER)
-                                .setTextAlignment(TextAlignment.CENTER).setVerticalAlignment(VerticalAlignment.MIDDLE));
-
-                document.add(subheader3);
-                // section 5
 
                 // section 6
                 document.add(blank1);

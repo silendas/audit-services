@@ -41,6 +41,7 @@ import com.cms.audit.api.FollowUp.repository.FollowUpRepository;
 import com.cms.audit.api.Management.Case.models.Case;
 import com.cms.audit.api.Management.Case.repository.CaseRepository;
 import com.cms.audit.api.Management.CaseCategory.models.CaseCategory;
+import com.cms.audit.api.Management.CaseCategory.repository.CaseCategoryRepository;
 import com.cms.audit.api.Management.Office.BranchOffice.models.Branch;
 import com.cms.audit.api.Management.Office.BranchOffice.repository.BranchRepository;
 import com.cms.audit.api.Management.ReportType.models.ReportType;
@@ -63,6 +64,9 @@ public class ClarificationService {
 
         @Autowired
         private CaseRepository caseRepository;
+
+        @Autowired
+        private CaseCategoryRepository caseCategoryRepository;
 
         @Autowired
         private BranchRepository branchRepository;
@@ -355,12 +359,14 @@ public class ClarificationService {
                 try {
                         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-                        Case setCaseId = Case.builder().id(dto.getCase_id()).build();
-                        CaseCategory setCaseCaegoryId = CaseCategory.builder().id(dto.getCase_category_id()).build();
-
-                        Case getCase = caseRepository.findById(dto.getCase_id())
-                                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.OK,
-                                                        "Case with id " + dto.getCase_id() + " does now exist"));
+                        Optional<CaseCategory> setCaseCaegoryId = caseCategoryRepository.findById(dto.getCase_category_id());
+                        if(!setCaseCaegoryId.isPresent()){
+                                return GlobalResponse.builder().errorMessage("Kategori tidak ditemukan").message("Kategori dengan id : "+ dto.getCase_id() +" tidak ditemukan").status(HttpStatus.BAD_REQUEST).build();
+                        }
+                        Optional<Case> getCase = caseRepository.findById(dto.getCase_id());
+                        if(!getCase.isPresent()){
+                                return GlobalResponse.builder().errorMessage("Divisi tidak ditemukan").message("Divisi dengan id : "+ dto.getCase_id() +" tidak ditemukan").status(HttpStatus.BAD_REQUEST).build();
+                        }
 
                         Long reportNumber = null;
                         String rptNum = null;
@@ -387,13 +393,14 @@ public class ClarificationService {
                                 reportNumber = Long.valueOf(1);
                         }
 
-                        Branch branch = branchRepository.findById(dto.getBranch_id())
-                                        .orElseThrow(() -> new ResourceNotFoundException(
-                                                        "Branch with id:" + dto.getBranch_id() + " is not found"));
+                        Optional<Branch> branch = branchRepository.findById(dto.getBranch_id());
+                        if(!branch.isPresent()){
+                                return GlobalResponse.builder().errorMessage("Branch tidak ditemukan").message("Branch dengan id : " + dto.getBranch_id() + " tidak ditemukan").status(HttpStatus.BAD_REQUEST).build();
+                        }
 
-                        String branchName = branch.getName();
+                        String branchName = branch.get().getName();
                         String initialName = user.getInitial_name();
-                        String caseName = getCase.getCode();
+                        String caseName = getCase.get().getCode();
                         String lvlCode = user.getLevel().getCode();
                         String romanMonth = convertDateToRoman.getRomanMonth();
                         Integer thisYear = convertDateToRoman.getIntYear();
@@ -407,9 +414,9 @@ public class ClarificationService {
                         Clarification clarification = new Clarification(
                                         null,
                                         user,
-                                        branch,
-                                        setCaseId,
-                                        setCaseCaegoryId,
+                                        branch.get(),
+                                        getCase.get(),
+                                        setCaseCaegoryId.get(),
                                         reportType.get(),
                                         reportNumber,
                                         reportCode,
