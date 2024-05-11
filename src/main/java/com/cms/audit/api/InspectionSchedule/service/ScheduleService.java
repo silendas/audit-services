@@ -93,20 +93,20 @@ public class ScheduleService {
                 Specification<Schedule> spec = Specification
                                 .where(new SpecificationFIlter<Schedule>().nameLike(name))
                                 .and(new SpecificationFIlter<Schedule>().branchIdEqual(branch_id))
-                                .and(new SpecificationFIlter<Schedule>().dateBetween(start_date, end_date));
+                                .and(new SpecificationFIlter<Schedule>().dateBetween(start_date, end_date))
+                                .and(new SpecificationFIlter<Schedule>().isNotDeleted())
+                                .and(new SpecificationFIlter<Schedule>().orderByIdDesc());
                 if (status != null) {
                         spec = spec.and(new SpecificationFIlter<Schedule>().getByStatus(status));
                 } else if (getUser.getLevel().getCode().equals("B")) {
-                        spec = spec.and(new SpecificationFIlter<Schedule>().getByStatus(EStatus.PENDING))
-                                        .and(new SpecificationFIlter<Schedule>().getByStatus(EStatus.REQUEST))
-                                        .and(new SpecificationFIlter<Schedule>().getByStatus(EStatus.APPROVE))
-                                        .and(new SpecificationFIlter<Schedule>().getByStatus(EStatus.REJECTED))
-                                        .and(new SpecificationFIlter<Schedule>().orderByIdDesc());
+                        spec = spec.and(new SpecificationFIlter<Schedule>().getByStatus(EStatus.PENDING));
+                        spec = spec.and(new SpecificationFIlter<Schedule>().getByStatus(EStatus.APPROVE));
+                        spec = spec.and(new SpecificationFIlter<Schedule>().getByStatus(EStatus.REJECTED));
+
                 } else if (getUser.getLevel().getCode().equals("A")) {
-                        spec = spec.and(new SpecificationFIlter<Schedule>().getByStatus(EStatus.APPROVE))
-                                        .and(new SpecificationFIlter<Schedule>().getByStatus(EStatus.REJECTED))
-                                        .and(new SpecificationFIlter<Schedule>().getByStatus(EStatus.REQUEST))
-                                        .and(new SpecificationFIlter<Schedule>().orderByIdDesc());
+                        spec = spec.and(new SpecificationFIlter<Schedule>().getByStatus(EStatus.APPROVE));
+                        spec = spec.and(new SpecificationFIlter<Schedule>().getByStatus(EStatus.REJECTED))
+                        spec = spec.and(new SpecificationFIlter<Schedule>().getByStatus(EStatus.REQUEST))
                 }
                 Page<Schedule> response = pag.findAll(spec, PageRequest.of(page, size));
                 if (response.isEmpty()) {
@@ -134,15 +134,15 @@ public class ScheduleService {
                                         .where(new SpecificationFIlter<Schedule>().nameLike(name))
                                         .and(new SpecificationFIlter<Schedule>().branchIdEqual(branch_id))
                                         .and(new SpecificationFIlter<Schedule>().dateBetween(start_date, end_date))
-                                        .and(new SpecificationFIlter<Schedule>().getByCategory(category));
+                                        .and(new SpecificationFIlter<Schedule>().getByCategory(category))
+                                        .and(new SpecificationFIlter<Schedule>().isNotDeleted());
                         if (status != null) {
                                 spec = spec.and(new SpecificationFIlter<Schedule>().getByStatus(status));
                         } else {
-                                spec = spec.and(new SpecificationFIlter<Schedule>().getByStatus(EStatus.TODO))
-                                                .and(new SpecificationFIlter<Schedule>().getByStatus(EStatus.PROGRESS))
-                                                .and(new SpecificationFIlter<Schedule>().getByStatus(EStatus.PENDING))
-                                                .and(spec.and(new SpecificationFIlter<Schedule>()
-                                                                .getByStatus(EStatus.DONE)));
+                                spec = spec.and(new SpecificationFIlter<Schedule>().getByStatus(EStatus.TODO));
+                                spec = spec.and(new SpecificationFIlter<Schedule>().getByStatus(EStatus.PROGRESS));
+                                spec = spec.and(new SpecificationFIlter<Schedule>().getByStatus(EStatus.DONE));
+                                spec = spec.and(new SpecificationFIlter<Schedule>().getByStatus(EStatus.PENDING));
                         }
                         if (getUser.getLevel().getCode().equals("C")) {
                                 spec = spec.and(new SpecificationFIlter<Schedule>().userId(getUser.getId()))
