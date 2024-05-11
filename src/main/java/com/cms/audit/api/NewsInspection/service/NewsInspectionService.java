@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.apache.coyote.BadRequestException;
 import org.apache.tomcat.util.http.fileupload.impl.IOFileUploadException;
 import org.hibernate.exception.DataException;
@@ -23,6 +24,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.cms.audit.api.Common.constant.FileStorageBAP;
 import com.cms.audit.api.Common.constant.FolderPath;
+import com.cms.audit.api.Common.constant.SpecificationFIlter;
 import com.cms.audit.api.Common.constant.convertDateToRoman;
 import com.cms.audit.api.Common.response.GlobalResponse;
 import com.cms.audit.api.Management.User.models.User;
@@ -51,27 +53,19 @@ public class NewsInspectionService {
         try {
             User getUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             Page<NewsInspection> response = null;
-            if (name != null && branch != null && start_date != null && end_date != null) {
-                response = pag.findBAPInAllFilter(name, branch, start_date, end_date, PageRequest.of(page, size));
-            } else if (name != null) {
-                if (branch != null) {
-                    response = pag.findBAPInNameAndBranch(name, branch, PageRequest.of(page, size));
-                } else if (start_date != null && end_date != null) {
-                    response = pag.findBAPInNameAndDate(name, start_date, end_date, PageRequest.of(page, size));
-                } else {
-                    response = pag.findBAPInName(name, PageRequest.of(page, size));
-                }
-            } else if (branch != null) {
-                if (start_date != null && end_date != null) {
-                    response = pag.findBAPInBranchAndDate(branch, start_date, end_date, PageRequest.of(page, size));
-                } else {
-                    response = pag.findBAPInBranch(branch, PageRequest.of(page, size));
-                }
-            } else if (start_date != null && end_date != null) {
-                response = pag.findBAPInDateRange(start_date, end_date, PageRequest.of(page, size));
+            if (name != null || branch != null || start_date != null || end_date != null) {
+                Specification<NewsInspection> spec = Specification
+                        .where(new SpecificationFIlter<NewsInspection>().nameLike(name))
+                        .and(new SpecificationFIlter<NewsInspection>().branchIdEqual(branch))
+                        .and(new SpecificationFIlter<NewsInspection>().dateRange(start_date, end_date))
+                        .and(new SpecificationFIlter<NewsInspection>().orderByIdDesc());
+                response = pag.findAll(spec, PageRequest.of(page, size));
             } else {
                 if (getUser.getLevel().getCode().equals("C")) {
-                    response = pag.findBAPInUserid(getUser.getId(), PageRequest.of(page, size));
+                    Specification<NewsInspection> spec = Specification
+                            .where(new SpecificationFIlter<NewsInspection>().userId(getUser.getId()))
+                            .and(new SpecificationFIlter<NewsInspection>().orderByIdDesc());
+                    response = pag.findAll(spec, PageRequest.of(page, size));
                 } else if (getUser.getLevel().getCode().equals("B")) {
                     Pageable pageable = PageRequest.of(page, size);
                     List<NewsInspection> lhaList = new ArrayList<>();
@@ -99,8 +93,9 @@ public class NewsInspectionService {
                                 .status(HttpStatus.BAD_REQUEST)
                                 .build();
                     }
-                } else if (getUser.getLevel().getCode().equals("A") || getUser.getLevel().getCode().equals("A")) {
-                    response = pag.findAllBAP(PageRequest.of(page, size));
+                } else if (getUser.getLevel().getCode().equals("A")) {
+                    Specification<NewsInspection> spec = Specification.where( new SpecificationFIlter<NewsInspection>().orderByIdDesc());
+                    response = pag.findAll(spec,PageRequest.of(page, size));
                 }
             }
             List<Object> listBAP = new ArrayList<>();
@@ -123,12 +118,13 @@ public class NewsInspectionService {
                 clarification.put("id", bap.getClarification().getId());
                 clarification.put("code", bap.getClarification().getCode());
                 clarification.put("nominal_loss", bap.getClarification().getNominal_loss());
-                clarification.put("evaluation_limitation",bap.getClarification().getEvaluation_limitation());
+                clarification.put("evaluation_limitation", bap.getClarification().getEvaluation_limitation());
                 kkaMap.put("clarification", clarification);
 
                 kkaMap.put("code", bap.getCode());
                 kkaMap.put("filename", bap.getFileName());
                 kkaMap.put("file_path", bap.getFile_path());
+                kkaMap.put("created_at", bap.getCreated_at());
 
                 listBAP.add(kkaMap);
 
@@ -213,6 +209,7 @@ public class NewsInspectionService {
             kkaMap.put("filename", bap.getFileName());
             kkaMap.put("filename", bap.getFileName());
             kkaMap.put("file_path", bap.getFile_path());
+            kkaMap.put("created_at", bap.getCreated_at());
             if (!response.isPresent()) {
                 return GlobalResponse
                         .builder()

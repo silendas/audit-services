@@ -14,8 +14,6 @@ import com.cms.audit.api.InspectionSchedule.models.Schedule;
 @Repository
 public interface PagSchedule extends PagingAndSortingRepository<Schedule, Long> {
 
-        Page<Schedule> findAll(Pageable pageable);
-
         @Query(value = "SELECT * FROM inspection_schedule u WHERE u.category = :category AND u.status <> 'REJECTED' AND u.status <> 'CLOSE' AND u.is_delete <> 1 ORDER BY u.id DESC ", nativeQuery = true)
         Page<Schedule> findByCategoryInByOrderByIdDesc(@Param("category") String category, Pageable pageable);
 

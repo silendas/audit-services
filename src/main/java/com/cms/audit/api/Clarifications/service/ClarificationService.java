@@ -8,6 +8,8 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.apache.tomcat.util.http.fileupload.impl.IOFileUploadException;
 import org.hibernate.exception.DataException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +32,7 @@ import com.cms.audit.api.Clarifications.repository.ClarificationRepository;
 import com.cms.audit.api.Clarifications.repository.PagClarification;
 import com.cms.audit.api.Common.constant.FileStorageService;
 import com.cms.audit.api.Common.constant.FolderPath;
+import com.cms.audit.api.Common.constant.SpecificationFIlter;
 import com.cms.audit.api.Common.constant.convertDateToRoman;
 import com.cms.audit.api.Common.exception.ResourceNotFoundException;
 import com.cms.audit.api.Common.pdf.GeneratePdf;
@@ -88,50 +91,45 @@ public class ClarificationService {
 
                         Page<Clarification> response = null;
                         if (branchId != null && name != null && start_date != null && end_date != null) {
-                                String likeName = name;
-                                response = pag.findByAllFilter(likeName, start_date, end_date,
-                                                PageRequest.of(page, size));
-                        } else if (branchId != null) {
-                                if (start_date != null && end_date != null) {
-                                        response = pag.findByBranchIdByDate(branchId, start_date, end_date,
-                                                        PageRequest.of(page, size));
-                                } else if (name != null) {
-                                        response = pag.findByFullnameLikeAndBranch(name, branchId,
-                                                        PageRequest.of(page, size));
-                                } else {
-                                        response = pag.findByBranchId(branchId,
-                                                        PageRequest.of(page, size));
-                                }
-                        } else if (name != null) {
-                                String likeName = name;
-                                if (start_date != null && end_date != null) {
-                                        response = pag.findByFullnameLikeByDate(likeName, start_date, end_date,
-                                                        PageRequest.of(page, size));
-                                } else {
-                                        response = pag.findByFullnameLike(likeName,
-                                                        PageRequest.of(page, size));
-                                }
+                                Specification<Clarification> spec = Specification
+                                                .where(new SpecificationFIlter<Clarification>().nameLike(name))
+                                                .and(new SpecificationFIlter<Clarification>().branchIdEqual(branchId))
+                                                .and(new SpecificationFIlter<Clarification>().dateRange(start_date,
+                                                                end_date))
+                                                .and(new SpecificationFIlter<Clarification>().orderByIdDesc());
+                                response = pag.findAll(spec, PageRequest.of(page, size));
                         } else {
-                                if (getUser.getLevel().getCode().equals("C") ) {
+                                if (getUser.getLevel().getCode().equals("C")) {
                                         if (start_date != null && end_date != null) {
-                                                response = pag.findClarificationInDateRangeAndUser(getUser.getId(),
-                                                                start_date, end_date,
-                                                                PageRequest.of(page, size));
+                                                Specification<Clarification> spec = Specification
+                                                                .where(new SpecificationFIlter<Clarification>()
+                                                                                .userId(getUser.getId()))
+                                                                .and(new SpecificationFIlter<Clarification>()
+                                                                                .dateRange(start_date, end_date))
+                                                                .and(new SpecificationFIlter<Clarification>()
+                                                                                .orderByIdDesc());
+                                                response = pag.findAll(spec, PageRequest.of(page, size));
                                         } else {
-                                                response = pag.findByUserId(getUser.getId(),
-                                                                PageRequest.of(page, size));
+                                                Specification<Clarification> spec = Specification
+                                                                .where(new SpecificationFIlter<Clarification>()
+                                                                                .userId(getUser.getId()))
+                                                                .and(new SpecificationFIlter<Clarification>()
+                                                                                .orderByIdDesc());
+                                                response = pag.findAll(spec, PageRequest.of(page, size));
                                         }
-                                } else if (getUser.getLevel().getCode().equals("B") ) {
+                                } else if (getUser.getLevel().getCode().equals("B")) {
                                         Pageable pageable = PageRequest.of(page, size);
                                         List<Clarification> lhaList = new ArrayList<>();
                                         for (int i = 0; i < getUser.getRegionId().size(); i++) {
                                                 List<Clarification> clAgain = new ArrayList<>();
                                                 if (start_date != null && end_date != null) {
                                                         response = pag.findByRegionIdAndDate(
-                                                                        getUser.getRegionId().get(i), start_date, end_date,
+                                                                        getUser.getRegionId().get(i), start_date,
+                                                                        end_date,
                                                                         PageRequest.of(page, size));
                                                 } else {
-                                                        clAgain = repository.findByRegionId(getUser.getRegionId().get(i));
+                                                        clAgain = repository
+                                                                        .findByRegionId(getUser.getRegionId().get(i));
 
                                                 }
                                                 if (!clAgain.isEmpty()) {
@@ -155,10 +153,13 @@ public class ClarificationService {
                                                                 .status(HttpStatus.BAD_REQUEST)
                                                                 .build();
                                         }
-                                } else if (getUser.getLevel().getCode().equals("A")  || getUser.getLevel().getCode().equals("A") ) {
+                                } else if (getUser.getLevel().getCode().equals("A")) {
                                         if (start_date != null && end_date != null) {
-                                                response = pag.findClarificationInDateRange(start_date, end_date, PageRequest.of(page, size));
-                                        }else{
+                                                Specification<Clarification> spec = Specification
+                                                                .where(new SpecificationFIlter<Clarification>()
+                                                                                .dateRange(start_date, end_date));
+                                                response = pag.findAll(spec, PageRequest.of(page, size));
+                                        } else {
                                                 response = pag.findAllCLDetail(PageRequest.of(page, size));
                                         }
                                 }
@@ -359,13 +360,19 @@ public class ClarificationService {
                 try {
                         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-                        Optional<CaseCategory> setCaseCaegoryId = caseCategoryRepository.findById(dto.getCase_category_id());
-                        if(!setCaseCaegoryId.isPresent()){
-                                return GlobalResponse.builder().errorMessage("Kategori tidak ditemukan").message("Kategori dengan id : "+ dto.getCase_id() +" tidak ditemukan").status(HttpStatus.BAD_REQUEST).build();
+                        Optional<CaseCategory> setCaseCaegoryId = caseCategoryRepository
+                                        .findById(dto.getCase_category_id());
+                        if (!setCaseCaegoryId.isPresent()) {
+                                return GlobalResponse.builder().errorMessage("Kategori tidak ditemukan")
+                                                .message("Kategori dengan id : " + dto.getCase_id()
+                                                                + " tidak ditemukan")
+                                                .status(HttpStatus.BAD_REQUEST).build();
                         }
                         Optional<Case> getCase = caseRepository.findById(dto.getCase_id());
-                        if(!getCase.isPresent()){
-                                return GlobalResponse.builder().errorMessage("Divisi tidak ditemukan").message("Divisi dengan id : "+ dto.getCase_id() +" tidak ditemukan").status(HttpStatus.BAD_REQUEST).build();
+                        if (!getCase.isPresent()) {
+                                return GlobalResponse.builder().errorMessage("Divisi tidak ditemukan")
+                                                .message("Divisi dengan id : " + dto.getCase_id() + " tidak ditemukan")
+                                                .status(HttpStatus.BAD_REQUEST).build();
                         }
 
                         Long reportNumber = null;
@@ -394,8 +401,11 @@ public class ClarificationService {
                         }
 
                         Optional<Branch> branch = branchRepository.findById(dto.getBranch_id());
-                        if(!branch.isPresent()){
-                                return GlobalResponse.builder().errorMessage("Branch tidak ditemukan").message("Branch dengan id : " + dto.getBranch_id() + " tidak ditemukan").status(HttpStatus.BAD_REQUEST).build();
+                        if (!branch.isPresent()) {
+                                return GlobalResponse.builder().errorMessage("Branch tidak ditemukan")
+                                                .message("Branch dengan id : " + dto.getBranch_id()
+                                                                + " tidak ditemukan")
+                                                .status(HttpStatus.BAD_REQUEST).build();
                         }
 
                         String branchName = branch.get().getName();
@@ -472,7 +482,8 @@ public class ClarificationService {
                                 return GlobalResponse
                                                 .builder()
                                                 .message("Clarificaiton tidak ditemukan")
-                                                .errorMessage("Clarification with id : "+dto.getClarification_id()+" not found")
+                                                .errorMessage("Clarification dengan id : " + dto.getClarification_id()
+                                                                + " tidak ditemukan")
                                                 .status(HttpStatus.BAD_REQUEST)
                                                 .build();
                         }
@@ -513,7 +524,8 @@ public class ClarificationService {
 
                         Clarification response = repository.save(clarification);
 
-                        String formulir = "FM/" + response.getCases().getCode() + "-" + getClarification.get().getReport_number();
+                        String formulir = "FM/" + response.getCases().getCode() + "-"
+                                        + getClarification.get().getReport_number();
 
                         PDFResponse generatePDF = GeneratePdf.generateClarificationPDF(response, formulir);
 
@@ -565,7 +577,8 @@ public class ClarificationService {
                                 return GlobalResponse
                                                 .builder()
                                                 .message("Clarification tidak dapat ditemukan")
-                                                .errorMessage("Clarificaion with id :" + dto.getClarification_id() + " Not found")
+                                                .errorMessage("Clarificaion with id :" + dto.getClarification_id()
+                                                                + " Not found")
                                                 .status(HttpStatus.BAD_REQUEST)
                                                 .build();
                         }
@@ -643,13 +656,11 @@ public class ClarificationService {
                                 String reportCode = rptNum + lvlCode + "/" + initialName + "-" + caseName + "/"
                                                 + reportType.get().getCode() + "/" + branchName + "/" + romanMonth + "/"
                                                 + thisYear;
-
-                                User setUserId = User.builder().id(response.getUser().getId()).build();
                                 Clarification setClarificationId = Clarification.builder().id(response.getId()).build();
 
                                 NewsInspection newsInspection = new NewsInspection(
                                                 null,
-                                                setUserId,
+                                                response.getUser(),
                                                 response.getBranch(),
                                                 setClarificationId,
                                                 reportType.get(),
@@ -749,7 +760,7 @@ public class ClarificationService {
                                 return GlobalResponse
                                                 .builder()
                                                 .message("Clarification tidak bisa ditemukan")
-                                                .errorMessage("Clarifcation with id: "+id+ " not found")
+                                                .errorMessage("Clarifcation with id: " + id + " not found")
                                                 .status(HttpStatus.BAD_REQUEST)
                                                 .build();
                         }
@@ -806,7 +817,10 @@ public class ClarificationService {
                                                 "File not found with name: " + fileName));
 
                 Clarification clarification = response;
-                if(!response.getStatus().equals(EStatusClarification.DONE) && !response.getStatus().equals(EStatusClarification.IDENTIFICATION) && !response.getStatus().equals(EStatusClarification.UPLOAD) && !response.getStatus().equals(EStatusClarification.INPUT)) {
+                if (!response.getStatus().equals(EStatusClarification.DONE)
+                                && !response.getStatus().equals(EStatusClarification.IDENTIFICATION)
+                                && !response.getStatus().equals(EStatusClarification.UPLOAD)
+                                && !response.getStatus().equals(EStatusClarification.INPUT)) {
                         clarification.setStatus(EStatusClarification.UPLOAD);
                 }
                 clarification.setUpdated_at(new Date());
