@@ -105,8 +105,8 @@ public class ScheduleService {
 
                 } else if (getUser.getLevel().getCode().equals("A")) {
                         spec = spec.and(new SpecificationFIlter<Schedule>().getByStatus(EStatus.APPROVE));
-                        spec = spec.and(new SpecificationFIlter<Schedule>().getByStatus(EStatus.REJECTED))
-                        spec = spec.and(new SpecificationFIlter<Schedule>().getByStatus(EStatus.REQUEST))
+                        spec = spec.and(new SpecificationFIlter<Schedule>().getByStatus(EStatus.REJECTED));
+                        spec = spec.and(new SpecificationFIlter<Schedule>().getByStatus(EStatus.REQUEST));
                 }
                 Page<Schedule> response = pag.findAll(spec, PageRequest.of(page, size));
                 if (response.isEmpty()) {
@@ -151,6 +151,7 @@ public class ScheduleService {
                                 spec = spec.and(new SpecificationFIlter<Schedule>()
                                                 .getByRegionIds(getUser.getRegionId()));
                         }
+                        
                         Page<Schedule> response = pag.findAll(spec, PageRequest.of(page, size));
                         if (response.isEmpty()) {
                                 return GlobalResponse
