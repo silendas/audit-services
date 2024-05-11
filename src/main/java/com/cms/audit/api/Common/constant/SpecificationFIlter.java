@@ -6,8 +6,13 @@ import java.util.List;
 
 import org.springframework.data.jpa.domain.Specification;
 
+import com.cms.audit.api.Management.Office.AreaOffice.models.Area;
+import com.cms.audit.api.Management.Office.BranchOffice.models.Branch;
+import com.cms.audit.api.Management.Office.RegionOffice.models.Region;
+
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 
@@ -65,10 +70,16 @@ public class SpecificationFIlter<T> {
 
     public Specification<T> regionIdsIn(List<Long> regionIds) {
         return (Root<T> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) -> {
+            Join<T, Branch> branchJoin = root.join("branch"); // Inner join dengan entitas Branch
+            Join<Branch, Area> areaJoin = branchJoin.join("area"); // Inner join dengan entitas Area
+            Join<Area, Region> regionJoin = areaJoin.join("region"); // Inner join dengan entitas Region
+            
+            // Membuat daftar kriteria untuk setiap ID region
             List<Predicate> predicates = new ArrayList<>();
             for (Long regionId : regionIds) {
-                predicates.add(criteriaBuilder.equal(root.get("branch").get("area").get("region").get("id"), regionId));
+                predicates.add(criteriaBuilder.equal(regionJoin.get("id"), regionId));
             }
+            // Menggabungkan semua kriteria dengan operator OR
             return criteriaBuilder.or(predicates.toArray(new Predicate[0]));
         };
     }
