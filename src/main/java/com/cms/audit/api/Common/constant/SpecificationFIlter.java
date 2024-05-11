@@ -70,17 +70,15 @@ public class SpecificationFIlter<T> {
 
     public Specification<T> regionIdsIn(List<Long> regionIds) {
         return (Root<T> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) -> {
-            Join<T, Branch> branchJoin = root.join("branch"); // Inner join dengan entitas Branch
-            Join<Branch, Area> areaJoin = branchJoin.join("area"); // Inner join dengan entitas Area
-            Join<Area, Region> regionJoin = areaJoin.join("region"); // Inner join dengan entitas Region
-            
             // Membuat daftar kriteria untuk setiap ID region
-            List<Predicate> predicates = new ArrayList<>();
+            Predicate[] predicates = new Predicate[regionIds.size()];
+            int index = 0;
             for (Long regionId : regionIds) {
-                predicates.add(criteriaBuilder.equal(regionJoin.get("id"), regionId));
+                predicates[index++] = criteriaBuilder.equal(root.get("branch").get("area").get("region").get("id"), regionId);
             }
+            
             // Menggabungkan semua kriteria dengan operator OR
-            return criteriaBuilder.or(predicates.toArray(new Predicate[0]));
+            return criteriaBuilder.or(predicates);
         };
     }
 
