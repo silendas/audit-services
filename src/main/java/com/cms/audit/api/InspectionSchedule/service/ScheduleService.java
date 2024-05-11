@@ -14,6 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -25,11 +26,13 @@ import com.cms.audit.api.AuditDailyReport.repository.AuditDailyReportDetailRepos
 import com.cms.audit.api.AuditDailyReport.repository.AuditDailyReportRepository;
 import com.cms.audit.api.AuditWorkingPaper.models.AuditWorkingPaper;
 import com.cms.audit.api.AuditWorkingPaper.repository.AuditWorkingPaperRepository;
+import com.cms.audit.api.Common.constant.SpecificationFIlter;
 import com.cms.audit.api.Common.constant.convertDateToRoman;
 import com.cms.audit.api.Common.exception.ResourceNotFoundException;
 import com.cms.audit.api.Common.response.GlobalResponse;
 import com.cms.audit.api.Flag.model.Flag;
 import com.cms.audit.api.Flag.repository.FlagRepo;
+import com.cms.audit.api.FollowUp.models.FollowUp;
 import com.cms.audit.api.InspectionSchedule.dto.EditScheduleDTO;
 import com.cms.audit.api.InspectionSchedule.dto.RequestReschedule;
 import com.cms.audit.api.InspectionSchedule.dto.ScheduleDTO;
@@ -60,7 +63,7 @@ public class ScheduleService {
         private LogScheduleService logService;
 
         @Autowired
-        private PagSchedule pagSchedule;
+        private PagSchedule pag;
 
         @Autowired
         private FlagRepo flagRepo;
@@ -83,454 +86,97 @@ public class ScheduleService {
         @Autowired
         private ScheduleTrxRepo scheduleTrxRepo;
 
-        public GlobalResponse getReschedule(String name, Long branch_id, int page, int size, Date start_date,
-                        Date end_date, String status) {
-                try {
-                        Page<Schedule> response = null;
-                        if (branch_id != null && name != null && start_date != null && end_date != null) {
-                                response = pagSchedule.findOneScheduleByStatusAndFilterAll(status, name, start_date,
-                                                end_date, branch_id, PageRequest.of(page, size));
-                        } else if (name != null) {
-                                if (start_date != null && end_date != null) {
-                                        response = pagSchedule.findOneScheduleByStatusAndNameAndDate(status, name,
-                                                        start_date, end_date, PageRequest.of(page, size));
-                                } else if (branch_id != null) {
-                                        response = pagSchedule.findOneScheduleByStatusAndBranchId(name, branch_id,
-                                                        PageRequest.of(page, size));
-                                } else {
-                                        response = pagSchedule.findOneScheduleByStatusAndName(status, name,
-                                                        PageRequest.of(page, size));
-                                }
-                        } else if (branch_id != null) {
-                                if (start_date != null && end_date != null) {
-                                        response = pagSchedule.findOneScheduleByStatusAndDateAndBranch(status,
-                                                        branch_id, start_date, end_date, PageRequest.of(page, size));
-                                } else {
-                                        response = pagSchedule.findOneScheduleByStatusAndBranchId(status, branch_id,
-                                                        PageRequest.of(page, size));
-                                }
-                        } else if (start_date != null && end_date != null) {
-                                response = pagSchedule.findOneScheduleByStatusAndDate(status, start_date, end_date,
-                                                PageRequest.of(page, size));
-                        } else {
-                                response = pagSchedule.findOneScheduleByStatus(status, PageRequest.of(page, size));
-                        }
-                        if (response.isEmpty()) {
-                                return GlobalResponse
-                                                .builder()
-                                                .message("Data not found")
-                                                .data(response)
-                                                .status(HttpStatus.OK)
-                                                .build();
-                        }
+        public GlobalResponse getReschedule(Long branch_id, String name, int page, int size, Date start_date,
+                        Date end_date, EStatus status) {
+
+                User getUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+                Specification<Schedule> spec = Specification
+                                .where(new SpecificationFIlter<Schedule>().nameLike(name))
+                                .and(new SpecificationFIlter<Schedule>().branchIdEqual(branch_id))
+                                .and(new SpecificationFIlter<Schedule>().dateBetween(start_date, end_date));
+                if (status != null) {
+                        spec = spec.and(new SpecificationFIlter<Schedule>().getByStatus(status));
+                } else if (getUser.getLevel().getCode().equals("B")) {
+                        spec = spec.and(new SpecificationFIlter<Schedule>().getByStatus(EStatus.PENDING))
+                                        .and(new SpecificationFIlter<Schedule>().getByStatus(EStatus.REQUEST))
+                                        .and(new SpecificationFIlter<Schedule>().getByStatus(EStatus.APPROVE))
+                                        .and(new SpecificationFIlter<Schedule>().getByStatus(EStatus.REJECTED))
+                                        .and(new SpecificationFIlter<Schedule>().orderByIdDesc());
+                } else if (getUser.getLevel().getCode().equals("A")) {
+                        spec = spec.and(new SpecificationFIlter<Schedule>().getByStatus(EStatus.APPROVE))
+                                        .and(new SpecificationFIlter<Schedule>().getByStatus(EStatus.REJECTED))
+                                        .and(new SpecificationFIlter<Schedule>().getByStatus(EStatus.REQUEST))
+                                        .and(new SpecificationFIlter<Schedule>().orderByIdDesc());
+                }
+                Page<Schedule> response = pag.findAll(spec, PageRequest.of(page, size));
+                if (response.isEmpty()) {
                         return GlobalResponse
                                         .builder()
-                                        .message("Berhasil menampilkan data")
-                                        .data(mappingPageSchedule(response))
+                                        .message("Data schedule tidak ditemukan")
+                                        .data(response)
                                         .status(HttpStatus.OK)
                                         .build();
-                } catch (DataException e) {
-                        return GlobalResponse.builder()
-                                        .error(e)
-                                        .status(HttpStatus.UNPROCESSABLE_ENTITY)
-                                        .build();
-                } catch (Exception e) {
-                        return GlobalResponse.builder()
-                                        .error(e)
-                                        .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                                        .build();
-                }
-
-        }
-
-        public GlobalResponse get(String name, Long branch_id, int page, int size, Date start_date, Date end_date,
-                        String category) {
-                try {
-                        Page<Schedule> response = null;
-                        if (branch_id != null && name != null && start_date != null && end_date != null) {
-                                response = pagSchedule.findAllScheduleByAllFilter(name, branch_id, category, start_date,
-                                                end_date, PageRequest.of(page, size));
-                        } else if (name != null) {
-                                if (start_date != null && end_date != null) {
-                                        response = pagSchedule.findAllScheduleByFUllenameAndDate(name, category,
-                                                        start_date, end_date, PageRequest.of(page, size));
-                                } else if (branch_id != null) {
-                                        response = pagSchedule.findAllScheduleByFUllenameAndBranch(name, branch_id,
-                                                        category, PageRequest.of(page, size));
-                                } else {
-                                        response = pagSchedule.findAllScheduleByFUllename(name, category,
-                                                        PageRequest.of(page, size));
-                                }
-                        } else if (branch_id != null) {
-                                if (start_date != null && end_date != null) {
-                                        response = pagSchedule.findAllScheduleByBranchAndDateRange(branch_id, category,
-                                                        start_date, end_date, PageRequest.of(page, size));
-                                } else {
-                                        response = pagSchedule.findAllScheduleByBranchId(branch_id, category,
-                                                        PageRequest.of(page, size));
-                                }
-                        } else if (start_date != null && end_date != null) {
-                                response = pagSchedule.findAllScheduleByDateRange(category, start_date, end_date,
-                                                PageRequest.of(page, size));
-                        } else {
-                                response = pagSchedule.findAllSchedule(category, PageRequest.of(page, size));
-                        }
-                        if (response.isEmpty()) {
-                                return GlobalResponse
-                                                .builder()
-                                                .message("Data not found")
-                                                .data(response)
-                                                .status(HttpStatus.OK)
-                                                .build();
-                        }
-                        return GlobalResponse
-                                        .builder()
-                                        .message("Berhasil menampilkan data")
-                                        .data(mappingPageSchedule(response))
-                                        .status(HttpStatus.OK)
-                                        .build();
-                } catch (DataException e) {
-                        return GlobalResponse.builder()
-                                        .error(e)
-                                        .status(HttpStatus.UNPROCESSABLE_ENTITY)
-                                        .build();
-                } catch (Exception e) {
-                        return GlobalResponse.builder()
-                                        .error(e)
-                                        .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                                        .build();
-                }
-
-        }
-
-        public GlobalResponse getScheduleArea(User user, String category, Long branch_id, String name, int page,
-                        int size,
-                        Date start_date,
-                        Date end_date) {
-                if (branch_id != null && name != null && start_date != null && end_date != null) {
-                        Page<Schedule> response = pagSchedule.findAllScheduleByAllFilter(name,
-                                        branch_id,
-                                        category, start_date, end_date, PageRequest.of(page, size));
-                        return GlobalResponse.builder()
-                                        .data(mappingPageSchedule(response))
-                                        .message("Berhasil menampilkan data").status(HttpStatus.OK).build();
-                } else if (name != null) {
-                        List<User> getUser = userRepository.findByFullnameLike(name);
-                        if (getUser.isEmpty()) {
-                                return GlobalResponse.builder().message("Data not found").status(HttpStatus.OK)
-                                                .build();
-                        }
-                        Pageable pageable = PageRequest.of(page, size);
-                        List<Schedule> scheduleList = new ArrayList<>();
-                        for (int i = 0; i < getUser.size(); i++) {
-                                List<Schedule> getSchedule = repository.findAllScheduleByUserId(
-                                                getUser.get(i).getId(), category);
-                                for (int u = 0; u < getSchedule.size(); u++) {
-                                        if (!scheduleList.contains(getSchedule.get(u))) {
-                                                scheduleList.add(getSchedule.get(u));
-                                        }
-                                }
-                        }
-                        try {
-                                int start = (int) pageable.getOffset();
-                                int end = Math.min((start + pageable.getPageSize()),
-                                                scheduleList.size());
-                                List<Schedule> pageContent = scheduleList.subList(start, end);
-                                Page<Schedule> response2 = new PageImpl<>(pageContent, pageable,
-                                                scheduleList.size());
-                                return GlobalResponse
-                                                .builder()
-                                                .message("Berhasil menampilkan data")
-                                                .data(mappingPageSchedule(response2))
-                                                .status(HttpStatus.OK)
-                                                .build();
-                        } catch (Exception e) {
-                                return GlobalResponse
-                                                .builder()
-                                                .error(e)
-                                                .status(HttpStatus.BAD_REQUEST)
-                                                .build();
-                        }
-                } else if (branch_id != null) {
-                        return getByBranchIdInDate(branch_id, category, page, size, start_date,
-                                        end_date);
-                } else {
-                        Pageable pageable = PageRequest.of(page, size);
-                        List<Schedule> scheduleList = new ArrayList<>();
-                        for (int i = 0; i < user.getRegionId().size(); i++) {
-                                List<Schedule> scheduleAgain = repository.findByRegionId(user.getRegionId().get(i),
-                                                category);
-                                if (!scheduleAgain.isEmpty()) {
-                                        for (int u = 0; u < scheduleAgain.size(); u++) {
-                                                scheduleList.add(scheduleAgain.get(u));
-                                        }
-                                }
-                        }
-                        try {
-                                int start = (int) pageable.getOffset();
-                                int end = Math.min((start + pageable.getPageSize()),
-                                                scheduleList.size());
-                                List<Schedule> pageContent = scheduleList.subList(start, end);
-                                Page<Schedule> response2 = new PageImpl<>(pageContent, pageable,
-                                                scheduleList.size());
-                                return GlobalResponse
-                                                .builder()
-                                                .message("Berhasil menampilkan data")
-                                                .data(mappingPageSchedule(response2))
-                                                .status(HttpStatus.OK)
-                                                .build();
-                        } catch (Exception e) {
-                                return GlobalResponse
-                                                .builder()
-                                                .error(e)
-                                                .status(HttpStatus.BAD_REQUEST)
-                                                .build();
-                        }
-                }
-        }
-
-        public GlobalResponse getMainSchedule(Long branch_id, String name, int page, int size, Date start_date,
-                        Date end_date) {
-                try {
-                        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-                        if (user.getLevel().getCode().equals("A")) {
-                                return get(name, branch_id, page, size, start_date, end_date, "REGULAR");
-                        } else if (user.getLevel().getCode().equals("C")) {
-                                return getByUserId(user.getId(), "REGULAR", page, size, start_date, end_date);
-                        } else if (user.getLevel().getCode().equals("B")) {
-                                if (branch_id != null && name != null && start_date != null && end_date != null) {
-                                        String likeName = name;
-                                        Page<Schedule> response = pagSchedule.findAllScheduleByAllFilter(likeName,
-                                                        branch_id, "REGULAR", start_date, end_date,
-                                                        PageRequest.of(page, size));
-                                        return GlobalResponse.builder()
-                                                        .data(mappingPageSchedule(response))
-                                                        .message("Berhasil menampilkan data").status(HttpStatus.OK)
-                                                        .build();
-                                } else if (name != null) {
-                                        List<User> getUser = userRepository.findByFullnameLike(name);
-                                        Pageable pageable = PageRequest.of(page, size);
-                                        List<Schedule> scheduleList = new ArrayList<>();
-                                        for (int i = 0; i < getUser.size(); i++) {
-                                                List<Schedule> getSchedule = new ArrayList<>();
-                                                if (start_date != null && end_date != null) {
-                                                        getSchedule = repository.findScheduleInDateRangeByUserId(
-                                                                        getUser.get(i).getId(), "REGULAR", start_date,
-                                                                        end_date);
-                                                } else if (branch_id != null) {
-                                                        getSchedule = repository.findAllScheduleByFUllenameAndBranch(
-                                                                        name, branch_id, "REGULAR");
-                                                } else {
-                                                        getSchedule = repository.findAllScheduleByUserId(
-                                                                        getUser.get(i).getId(), "REGULAR");
-                                                }
-                                                for (int u = 0; u < getSchedule.size(); u++) {
-                                                        if (!scheduleList.contains(getSchedule.get(u))) {
-                                                                scheduleList.add(getSchedule.get(u));
-                                                        }
-                                                }
-                                        }
-                                        try {
-                                                int start = (int) pageable.getOffset();
-                                                int end = Math.min((start + pageable.getPageSize()),
-                                                                scheduleList.size());
-                                                List<Schedule> pageContent = scheduleList.subList(start, end);
-                                                Page<Schedule> response2 = new PageImpl<>(pageContent, pageable,
-                                                                scheduleList.size());
-                                                return GlobalResponse
-                                                                .builder()
-                                                                .message("Berhasil menampilkan data")
-                                                                .data(mappingPageSchedule(response2))
-                                                                .status(HttpStatus.OK)
-                                                                .build();
-                                        } catch (Exception e) {
-                                                return GlobalResponse
-                                                                .builder()
-                                                                .error(e)
-                                                                .status(HttpStatus.BAD_REQUEST)
-                                                                .build();
-                                        }
-                                } else if (branch_id != null) {
-                                        return getByBranchIdInDate(branch_id, "REGULAR", page, size, start_date,
-                                                        end_date);
-                                } else if (start_date != null && end_date != null) {
-                                        Page<Schedule> response = pagSchedule.findAllScheduleByAllFilter(name,
-                                                        branch_id,
-                                                        "REGULAR", start_date, end_date, PageRequest.of(page, size));
-                                        return GlobalResponse.builder()
-                                                        .data(mappingPageSchedule(response))
-                                                        .message("Berhasil menampilkan data").status(HttpStatus.OK)
-                                                        .build();
-                                } else {
-                                        return getScheduleArea(user, "REGULAR", branch_id, name, page, size, start_date,
-                                                        end_date);
-                                }
-                        } else {
-                                return GlobalResponse
-                                                .builder()
-                                                .message("Berhasil menampilkan data")
-                                                .status(HttpStatus.OK)
-                                                .build();
-                        }
-                } catch (DataException e) {
-                        return GlobalResponse.builder()
-                                        .error(e)
-                                        .status(HttpStatus.UNPROCESSABLE_ENTITY)
-                                        .build();
-                } catch (Exception e) {
-                        return GlobalResponse.builder()
-                                        .error(e)
-                                        .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                                        .build();
-                }
-
-        }
-
-        public GlobalResponse getSpecialSchedule(Long branch_id, String name, int page, int size, Date start_date,
-                        Date end_date) {
-                try {
-                        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-                        if (user.getLevel().getCode().equals("A")) {
-                                return get(name, branch_id, page, size, start_date, end_date, "SPECIAL");
-                        } else if (user.getLevel().getCode().equals("C")) {
-                                return getByUserId(user.getId(), "SPECIAL", page, size, start_date, end_date);
-                        } else if (user.getLevel().getCode().equals("B")) {
-                                if (branch_id != null && name != null && start_date != null && end_date != null) {
-                                        return GlobalResponse.builder()
-                                                        .data(mappingPageSchedule(pagSchedule
-                                                                        .findAllScheduleByAllFilter(name, branch_id,
-                                                                                        "SPECIAL", start_date, end_date,
-                                                                                        PageRequest.of(page, size))))
-                                                        .message("Berhasil menampilkan data").status(HttpStatus.OK)
-                                                        .build();
-                                } else if (name != null) {
-                                        List<User> getUser = userRepository.findByFullnameLike(name);
-                                        Pageable pageable = PageRequest.of(page, size);
-                                        List<Schedule> scheduleList = new ArrayList<>();
-                                        for (int i = 0; i < getUser.size(); i++) {
-                                                List<Schedule> getSchedule = new ArrayList<>();
-                                                if (start_date != null && end_date != null) {
-                                                        getSchedule = repository.findScheduleInDateRangeByUserId(
-                                                                        getUser.get(i).getId(), "SPECIAL", start_date,
-                                                                        end_date);
-                                                } else if (branch_id != null) {
-                                                        getSchedule = repository.findAllScheduleByFUllenameAndBranch(
-                                                                        name, branch_id, "SPECIAL");
-                                                } else {
-                                                        getSchedule = repository.findAllScheduleByUserId(
-                                                                        getUser.get(i).getId(), "SPECIAL");
-                                                }
-                                                for (int u = 0; u < getSchedule.size(); u++) {
-                                                        if (!scheduleList.contains(getSchedule.get(u))) {
-                                                                scheduleList.add(getSchedule.get(u));
-                                                        }
-                                                }
-                                        }
-                                        try {
-                                                int start = (int) pageable.getOffset();
-                                                int end = Math.min((start + pageable.getPageSize()),
-                                                                scheduleList.size());
-                                                List<Schedule> pageContent = scheduleList.subList(start, end);
-                                                Page<Schedule> response2 = new PageImpl<>(pageContent, pageable,
-                                                                scheduleList.size());
-                                                return GlobalResponse
-                                                                .builder()
-                                                                .message("Berhasil menampilkan data")
-                                                                .data(mappingPageSchedule(response2))
-                                                                .status(HttpStatus.OK)
-                                                                .build();
-                                        } catch (Exception e) {
-                                                return GlobalResponse
-                                                                .builder()
-                                                                .error(e)
-                                                                .status(HttpStatus.BAD_REQUEST)
-                                                                .build();
-                                        }
-                                } else if (branch_id != null) {
-                                        return getByBranchIdInDate(branch_id, "SPECIAL", page, size, start_date,
-                                                        end_date);
-                                } else {
-                                        return getScheduleArea(user, "SPECIAL", branch_id, name, page, size, start_date,
-                                                        end_date);
-                                }
-                        } else {
-                                return GlobalResponse
-                                                .builder()
-                                                .message("Berhasil menampilkan data")
-                                                .status(HttpStatus.OK)
-                                                .build();
-                        }
-                } catch (DataException e) {
-                        return GlobalResponse.builder()
-                                        .error(e)
-                                        .status(HttpStatus.UNPROCESSABLE_ENTITY)
-                                        .build();
-                } catch (Exception e) {
-                        return GlobalResponse.builder()
-                                        .error(e)
-                                        .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                                        .build();
-                }
-        }
-
-        public GlobalResponse getByBranchId(Long id, String category, int page, int size, Date start_date,
-                        Date end_date) {
-                List<Schedule> response;
-                if (start_date == null || end_date == null) {
-                        response = repository.findAllScheduleByBranchId(id, category);
-                } else {
-                        response = repository.findScheduleInDateRangeByRegionId(id, category, start_date,
-                                        end_date);
                 }
                 return GlobalResponse
                                 .builder()
-                                .message("Berhasil menampilkan data")
-                                .data(response)
+                                .message("Data berhasil ditampilkan")
+                                .data(mappingPageSchedule(response))
                                 .status(HttpStatus.OK)
                                 .build();
 
         }
 
-        public GlobalResponse getByBranchIdInDate(Long id, String category, int page, int size, Date start_date,
-                        Date end_date) {
+        public GlobalResponse getSchedule(Long branch_id, String name, int page, int size, Date start_date,
+                        Date end_date, String category, EStatus status) {
                 try {
-                        Page<Schedule> response;
-                        if (start_date == null || end_date == null) {
-                                response = pagSchedule.findAllScheduleByBranchId(id, category,
-                                                PageRequest.of(page, size));
+                        User getUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+                        Specification<Schedule> spec = Specification
+                                        .where(new SpecificationFIlter<Schedule>().nameLike(name))
+                                        .and(new SpecificationFIlter<Schedule>().branchIdEqual(branch_id))
+                                        .and(new SpecificationFIlter<Schedule>().dateBetween(start_date, end_date))
+                                        .and(new SpecificationFIlter<Schedule>().getByCategory(category));
+                        if (status != null) {
+                                spec = spec.and(new SpecificationFIlter<Schedule>().getByStatus(status));
                         } else {
-                                response = pagSchedule.findAllScheduleByBranchAndDateRange(id, category, start_date,
-                                                end_date,
-                                                PageRequest.of(page, size));
+                                spec = spec.and(new SpecificationFIlter<Schedule>().getByStatus(EStatus.TODO))
+                                                .and(new SpecificationFIlter<Schedule>().getByStatus(EStatus.PROGRESS))
+                                                .and(new SpecificationFIlter<Schedule>().getByStatus(EStatus.PENDING))
+                                                .and(spec.and(new SpecificationFIlter<Schedule>()
+                                                                .getByStatus(EStatus.DONE)));
+                        }
+                        if (getUser.getLevel().getCode().equals("C")) {
+                                spec = spec.and(new SpecificationFIlter<Schedule>().userId(getUser.getId()))
+                                                .and(new SpecificationFIlter<Schedule>().orderByIdDesc());
+                        } else if (getUser.getLevel().getCode().equals("B")) {
+                                spec = spec.and(new SpecificationFIlter<Schedule>()
+                                                .getByRegionIds(getUser.getRegionId()));
+                        }
+                        Page<Schedule> response = pag.findAll(spec, PageRequest.of(page, size));
+                        if (response.isEmpty()) {
+                                return GlobalResponse
+                                                .builder()
+                                                .message("Data schedule tidak ditemukan")
+                                                .data(response)
+                                                .status(HttpStatus.OK)
+                                                .build();
                         }
                         return GlobalResponse
                                         .builder()
-                                        .message("Berhasil menampilkan data")
+                                        .message("Data berhasil ditampilkan")
                                         .data(mappingPageSchedule(response))
                                         .status(HttpStatus.OK)
                                         .build();
+                } catch (DataException e) {
+                        return GlobalResponse.builder()
+                                        .error(e)
+                                        .status(HttpStatus.UNPROCESSABLE_ENTITY)
+                                        .build();
                 } catch (Exception e) {
-                        return GlobalResponse
-                                        .builder()
+                        return GlobalResponse.builder()
                                         .error(e)
                                         .status(HttpStatus.INTERNAL_SERVER_ERROR)
                                         .build();
                 }
-
-        }
-
-        public List<Schedule> getByRegionId(String name, Long branchId, Long regionId, String category, int page,
-                        int size, Date start_date,
-                        Date end_date) {
-                List<Schedule> response;
-                if (start_date != null || end_date != null) {
-                        response = repository.findByRegionId(regionId, category);
-                } else {
-                        response = repository.findScheduleInDateRangeByRegionId(regionId, category, start_date,
-                                        end_date);
-                }
-                return response;
 
         }
 
@@ -619,34 +265,6 @@ public class ScheduleService {
                                         .status(HttpStatus.INTERNAL_SERVER_ERROR)
                                         .build();
                 }
-        }
-
-        public GlobalResponse getByStatusSchedule(String name, Long branchId, Date startDate, Date endDate, int page,
-                        int size, String status) {
-                User getUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-                if (getUser.getLevel().getCode().equals("A") || getUser.getLevel().getCode().equals("A")) {
-                        return getReschedule(name, branchId, page, size, startDate, endDate, "REQUEST");
-                } else if (getUser.getLevel().getCode().equals("B")) {
-                        return getReschedule(name, branchId, page, size, startDate, endDate, "PENDING");
-                } else {
-                        return null;
-                }
-        }
-
-        public GlobalResponse getByStatus(String name, Long branchId, Date startDate, Date endDate, int page,
-                        int size) {
-                User getUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-                if (getUser.getLevel().getCode().equals("A") || getUser.getLevel().getCode().equals("A")) {
-                        return getReschedule(name, branchId, page, size, startDate, endDate, "REQUEST");
-                } else if (getUser.getLevel().getCode().equals("B")) {
-                        return getReschedule(name, branchId, page, size, startDate, endDate, "PENDING");
-                } else {
-                        return GlobalResponse.builder().message("Audit wilayah tidak dapat mengakses")
-                                        .status(HttpStatus.UNAUTHORIZED).build();
-                }
-
         }
 
         public List<Object> mappingListSchedule(List<Schedule> response) {
@@ -854,84 +472,6 @@ public class ScheduleService {
                 parentMap.put("sort", response.getSort());
                 parentMap.put("content", listSchedule);
                 return parentMap;
-        }
-
-        public GlobalResponse getByUserId(Long id, String category, int page, int size, Date start_date,
-                        Date end_date) {
-                try {
-                        Page<Schedule> response = null;
-                        if (start_date == null && end_date == null) {
-                                response = pagSchedule.findAllScheduleByUserId(id, category,
-                                                PageRequest.of(page, size));
-                        } else {
-                                response = pagSchedule.findScheduleInDateRangeByUserId(id, category, start_date,
-                                                end_date, PageRequest.of(page, size));
-                        }
-                        if (response.isEmpty()) {
-                                return GlobalResponse
-                                                .builder()
-                                                .message("Data not found")
-                                                .status(HttpStatus.OK).data(response)
-                                                .build();
-                        }
-                        return GlobalResponse
-                                        .builder()
-                                        .message("Berhasil menampilkan data")
-                                        .data(mappingPageSchedule(response))
-                                        .status(HttpStatus.OK)
-                                        .build();
-                } catch (DataException e) {
-                        return GlobalResponse.builder()
-                                        .error(e)
-                                        .status(HttpStatus.UNPROCESSABLE_ENTITY)
-                                        .build();
-                } catch (Exception e) {
-                        return GlobalResponse.builder()
-                                        .error(e)
-                                        .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                                        .build();
-                }
-
-        }
-
-        public GlobalResponse getByRangeDateAndUserId(Long id, String category, Date start_date, Date end_date,
-                        int page, int size) {
-                try {
-                        Page<Schedule> response;
-                        if (start_date == null || end_date == null) {
-                                response = pagSchedule.findAllScheduleByUserId(id, category,
-                                                PageRequest.of(page, size));
-                        } else {
-                                response = pagSchedule.findScheduleInDateRangeByUserId(id,
-                                                category,
-                                                start_date, end_date, PageRequest.of(page, size));
-                        }
-
-                        if (response.isEmpty()) {
-                                return GlobalResponse
-                                                .builder()
-                                                .message("Data not found")
-                                                .status(HttpStatus.OK).data(response)
-                                                .build();
-                        }
-                        return GlobalResponse
-                                        .builder()
-                                        .message("Berhasil menampilkan data")
-                                        .data(mappingPageSchedule(response))
-                                        .status(HttpStatus.OK)
-                                        .build();
-                } catch (DataException e) {
-                        return GlobalResponse.builder()
-                                        .error(e)
-                                        .status(HttpStatus.UNPROCESSABLE_ENTITY)
-                                        .build();
-                } catch (Exception e) {
-                        return GlobalResponse.builder()
-                                        .error(e)
-                                        .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                                        .build();
-                }
-
         }
 
         public Date getDateNow() {

@@ -13,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -30,10 +31,12 @@ import com.cms.audit.api.AuditDailyReport.repository.AuditDailyReportDetailRepos
 import com.cms.audit.api.AuditDailyReport.repository.AuditDailyReportRepository;
 import com.cms.audit.api.AuditDailyReport.repository.RevisionRepository;
 import com.cms.audit.api.AuditDailyReport.repository.pagAuditDailyReport;
+import com.cms.audit.api.AuditWorkingPaper.models.AuditWorkingPaper;
 import com.cms.audit.api.Clarifications.dto.response.NumberClarificationInterface;
 import com.cms.audit.api.Clarifications.models.Clarification;
 import com.cms.audit.api.Clarifications.models.EStatusClarification;
 import com.cms.audit.api.Clarifications.repository.ClarificationRepository;
+import com.cms.audit.api.Common.constant.SpecificationFIlter;
 import com.cms.audit.api.Common.constant.convertDateToRoman;
 import com.cms.audit.api.Common.exception.ResourceNotFoundException;
 import com.cms.audit.api.Common.response.GlobalResponse;
@@ -86,100 +89,31 @@ public class AuditDailyReportService {
         private FlagRepo flagRepo;
 
         @Autowired
-        private pagAuditDailyReport pagAuditDailyReport;
+        private pagAuditDailyReport pag;
 
         public GlobalResponse get(int page, int size, Date startDate, Date endDate, Long shcedule_id,
                         Long branch_id,
                         String name) {
                 try {
                         User getUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
                         Page<AuditDailyReport> response = null;
-                        if (getUser.getLevel().getCode().equals("C")) {
-                                if (startDate != null && endDate != null) {
-                                        response = pagAuditDailyReport.findLHAByUserInDateRange(getUser.getId(),
-                                                        startDate, endDate, PageRequest.of(page, size));
-                                } else if (shcedule_id != null) {
-                                        response = pagAuditDailyReport.findByUserIdAndSchedule(shcedule_id, branch_id,
-                                                        PageRequest.of(page, size));
-                                } else {
-                                        response = pagAuditDailyReport.findByUserId(getUser.getId(),
-                                                        PageRequest.of(page, size));
-                                }
-                        } else {
-                                if (name != null && branch_id != null && startDate != null && endDate != null) {
-                                        response = pagAuditDailyReport.findLHAByAll(branch_id, name, startDate, endDate,
-                                                        PageRequest.of(page, size));
-                                } else if (name != null && startDate != null && endDate != null) {
-                                        response = pagAuditDailyReport.findLHANameInDateRange(name, startDate, endDate,
-                                                        PageRequest.of(page, size));
-                                } else if (branch_id != null && startDate != null && endDate != null) {
-                                        response = pagAuditDailyReport.findAllLHAByBranchAndDateRange(branch_id,
-                                                        startDate, endDate, PageRequest.of(page, size));
-                                } else if (name != null && branch_id != null) {
-                                        response = pagAuditDailyReport.findLHANameAndBranch(name, branch_id,
-                                                        PageRequest.of(page, size));
-                                } else if (name != null) {
-                                        response = pagAuditDailyReport.findLHAName(name, PageRequest.of(page, size));
-                                } else if (branch_id != null) {
-                                        response = pagAuditDailyReport.findAllLHAByBranch(branch_id,
-                                                        PageRequest.of(page, size));
-                                } else if (shcedule_id != null) {
-                                        response = pagAuditDailyReport.findByScheduleId(shcedule_id,
-                                                        PageRequest.of(page, size));
-                                } else {
-                                        if (getUser.getLevel().getCode().equals("B")) {
-                                                Pageable pageable = PageRequest.of(page, size);
-                                                List<AuditDailyReport> lhaList = new ArrayList<>();
-                                                for (int i = 0; i < getUser.getRegionId().size(); i++) {
-                                                        List<AuditDailyReport> lhaAgain = new ArrayList<>();
-                                                        if (startDate != null && endDate != null) {
-                                                                lhaAgain = auditDailyReportRepository
-                                                                                .findByRegionIdAndDate(
-                                                                                                getUser.getRegionId()
-                                                                                                                .get(i),
-                                                                                                startDate, endDate);
-                                                        } else {
-                                                                lhaAgain = auditDailyReportRepository.findByRegionId(
-                                                                                getUser.getRegionId().get(i));
-                                                        }
-                                                        if (!lhaAgain.isEmpty()) {
-                                                                for (int u = 0; u < lhaAgain.size(); u++) {
-                                                                        lhaList.add(lhaAgain.get(u));
-                                                                }
-                                                        }
-                                                }
-                                                try {
-                                                        int start = (int) pageable.getOffset();
-                                                        int end = Math.min((start + pageable.getPageSize()),
-                                                                        lhaList.size());
-                                                        List<AuditDailyReport> pageContent = lhaList.subList(start,
-                                                                        end);
-                                                        Page<AuditDailyReport> response2 = new PageImpl<>(pageContent,
-                                                                        pageable,
-                                                                        lhaList.size());
-                                                        response = response2;
-                                                } catch (Exception e) {
-                                                        return GlobalResponse
-                                                                        .builder()
-                                                                        .error(e)
-                                                                        .status(HttpStatus.BAD_REQUEST)
-                                                                        .build();
-                                                }
-                                        } else if (getUser.getLevel().getCode().equals("A")) {
-                                                if (startDate != null || endDate != null) {
-                                                        response = pagAuditDailyReport.findLHAInDateRangeForLeader(
-                                                                        startDate,
-                                                                        endDate,
-                                                                        PageRequest.of(page, size));
-                                                } else {
-                                                        response = pagAuditDailyReport
-                                                                        .findAllLHAForLeader(
-                                                                                        PageRequest.of(page, size));
-                                                }
-                                        }
-                                }
+                        Specification<AuditDailyReport> spec = Specification
+                                        .where(new SpecificationFIlter<AuditDailyReport>().nameLike(name))
+                                        .and(new SpecificationFIlter<AuditDailyReport>().branchIdEqual(branch_id))
+                                        .and(new SpecificationFIlter<AuditDailyReport>().dateRange(startDate,
+                                                        endDate))
+                                        .and(new SpecificationFIlter<AuditDailyReport>().isNotDeleted());
+                        if (shcedule_id != null) {
+                                spec = spec.and(new SpecificationFIlter<AuditDailyReport>()
+                                                .scheduleIdEqual(shcedule_id));
                         }
+                        if (getUser.getLevel().getCode().equals("C")) {
+                                spec = spec.and(new SpecificationFIlter<AuditDailyReport>().userId(getUser.getId()));
+                        } else if (getUser.getLevel().getCode().equals("B")) {
+                                spec = spec.and(new SpecificationFIlter<AuditDailyReport>()
+                                                .getByRegionIds(getUser.getRegionId()));
+                        }
+                        response = pag.findAll(spec, PageRequest.of(page, size));
                         if (response.isEmpty()) {
                                 return GlobalResponse
                                                 .builder()
@@ -312,19 +246,19 @@ public class AuditDailyReportService {
                                 } else {
                                         builder.setIs_research(0);
                                 }
-                                if(getDetail.get(i).getStatus_flow() != null){
+                                if (getDetail.get(i).getStatus_flow() != null) {
                                         builder.setStatus_flow(getDetail.get(i).getStatus_flow());
-                                }else{
+                                } else {
                                         builder.setStatus_flow(0);
                                 }
-                                if(getDetail.get(i).getStatus_parsing() != null){
+                                if (getDetail.get(i).getStatus_parsing() != null) {
                                         builder.setStatus_parsing(getDetail.get(i).getStatus_parsing());
-                                }else{
+                                } else {
                                         builder.setStatus_parsing(0);
                                 }
-                                if(getDetail.get(i).getIs_revision() != null){
+                                if (getDetail.get(i).getIs_revision() != null) {
                                         builder.setIs_revision(getDetail.get(i).getIs_revision());
-                                }else{
+                                } else {
                                         builder.setIs_revision(0);
                                 }
                                 details.add(builder);
@@ -365,83 +299,6 @@ public class AuditDailyReportService {
                                         .builder()
                                         .message("Berhasil menampilkan data")
                                         .data(response)
-                                        .status(HttpStatus.OK)
-                                        .build();
-                } catch (ResponseStatusException e) {
-                        return GlobalResponse
-                                        .builder()
-                                        .error(e)
-                                        .status(HttpStatus.BAD_REQUEST)
-                                        .build();
-                } catch (DataException e) {
-                        return GlobalResponse
-                                        .builder()
-                                        .error(e)
-                                        .status(HttpStatus.UNPROCESSABLE_ENTITY)
-                                        .build();
-                } catch (Exception e) {
-                        return GlobalResponse
-                                        .builder()
-                                        .error(e)
-                                        .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                                        .build();
-                }
-        }
-
-        public GlobalResponse getByScheduleId(Long id, int page, int size) {
-                try {
-                        Page<AuditDailyReport> response = pagAuditDailyReport.findByScheduleId(id,
-                                        PageRequest.of(page, size));
-                        List<Object> listLha = new ArrayList<>();
-                        for (int i = 0; i < response.getContent().size(); i++) {
-                                Map<String, Object> responseS = new LinkedHashMap<>();
-                                responseS.put("id", response.getContent().get(i).getId());
-
-                                Map<String, Object> user = new LinkedHashMap<>();
-                                user.put("id", response.getContent().get(i).getUser().getId());
-                                user.put("fullname", response.getContent().get(i).getUser().getFullname());
-                                user.put("email", response.getContent().get(i).getUser().getEmail());
-                                user.put("initial_name", response.getContent().get(i).getUser().getInitial_name());
-                                user.put("level", response.getContent().get(i).getUser().getLevel());
-                                responseS.put("user", user);
-
-                                Map<String, Object> branch = new LinkedHashMap<>();
-                                branch.put("id", response.getContent().get(i).getBranch().getId());
-                                branch.put("name", response.getContent().get(i).getBranch().getName());
-                                responseS.put("branch", branch);
-
-                                Map<String, Object> schedule = new LinkedHashMap<>();
-                                schedule.put("id", response.getContent().get(i).getSchedule().getId());
-                                schedule.put("start_date", response.getContent().get(i).getSchedule().getStart_date());
-                                schedule.put("end_date", response.getContent().get(i).getSchedule().getEnd_date());
-                                responseS.put("schedule", schedule);
-
-                                responseS.put("is_research", response.getContent().get(i).getIs_research());
-                                listLha.add(responseS);
-                        }
-                        if (response.isEmpty()) {
-                                return GlobalResponse
-                                                .builder()
-                                                .message("Data not found")
-                                                .status(HttpStatus.OK).data(response)
-                                                .build();
-                        }
-                        Map<String, Object> parent = new LinkedHashMap<>();
-                        parent.put("pageable", response.getPageable());
-                        parent.put("totalPage", response.getTotalPages());
-                        parent.put("totalElement", response.getTotalElements());
-                        parent.put("size", response.getSize());
-                        parent.put("number", response.getNumber());
-                        parent.put("last", response.isLast());
-                        parent.put("first", response.isFirst());
-                        parent.put("numberOfElement", response.getNumberOfElements());
-                        parent.put("empty", response.isEmpty());
-                        parent.put("sort", response.getSort());
-                        parent.put("content", listLha);
-                        return GlobalResponse
-                                        .builder()
-                                        .message("Berhasil menampilkan data")
-                                        .data(parent)
                                         .status(HttpStatus.OK)
                                         .build();
                 } catch (ResponseStatusException e) {
@@ -686,7 +543,8 @@ public class AuditDailyReportService {
 
                         List<Schedule> checkShcedule = scheduleRepository.CheckIfScheduleisNow(dto.getSchedule_id());
                         if (checkShcedule.isEmpty()) {
-                                return GlobalResponse.builder().message("Tidak bisa memproses jadwal karena jadwal belum dimulai")
+                                return GlobalResponse.builder()
+                                                .message("Tidak bisa memproses jadwal karena jadwal belum dimulai")
                                                 .errorMessage("Jadwal belum dimulai, tidak dapat diproses")
                                                 .status(HttpStatus.BAD_REQUEST).build();
                         }
@@ -705,7 +563,8 @@ public class AuditDailyReportService {
                         Optional<Schedule> getschedule = scheduleRepository.findById(dto.getSchedule_id());
                         if (!getschedule.isPresent()) {
                                 return GlobalResponse.builder().errorMessage("Jadwal tidak ditemukan")
-                                                .message("Data jadwal dengan id : "+ dto.getSchedule_id()+" tidak ditemukan")
+                                                .message("Data jadwal dengan id : " + dto.getSchedule_id()
+                                                                + " tidak ditemukan")
                                                 .status(HttpStatus.BAD_REQUEST).build();
                         }
 
@@ -713,7 +572,9 @@ public class AuditDailyReportService {
                                         getschedule.get().getUser().getId(),
                                         getschedule.get().getStart_date());
                         if (!scheduleList.isEmpty()) {
-                                return GlobalResponse.builder().message("tidak bisa memperoses jadwal karena jadwal sebelumnya belum selesai").errorMessage("Tidak bisa memproses jadwal & LHA karena sebelumnya belum membuat KKA")
+                                return GlobalResponse.builder().message(
+                                                "tidak bisa memperoses jadwal karena jadwal sebelumnya belum selesai")
+                                                .errorMessage("Tidak bisa memproses jadwal & LHA karena sebelumnya belum membuat KKA")
                                                 .status(HttpStatus.BAD_REQUEST).build();
                         }
 

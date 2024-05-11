@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.data.domain.Pageable;
-
+import org.springframework.data.jpa.domain.Specification;
 import org.apache.coyote.BadRequestException;
 import org.apache.tomcat.util.http.fileupload.impl.IOFileUploadException;
 import org.hibernate.exception.DataException;
@@ -27,8 +27,10 @@ import com.cms.audit.api.AuditWorkingPaper.repository.AuditWorkingPaperRepositor
 import com.cms.audit.api.AuditWorkingPaper.repository.PagAuditWorkingPaper;
 import com.cms.audit.api.Common.constant.FileStorageKKA;
 import com.cms.audit.api.Common.constant.FolderPath;
+import com.cms.audit.api.Common.constant.SpecificationFIlter;
 import com.cms.audit.api.Common.constant.convertDateToRoman;
 import com.cms.audit.api.Common.response.GlobalResponse;
+import com.cms.audit.api.FollowUp.models.FollowUp;
 import com.cms.audit.api.InspectionSchedule.models.EStatus;
 import com.cms.audit.api.InspectionSchedule.models.Schedule;
 import com.cms.audit.api.InspectionSchedule.repository.ScheduleRepository;
@@ -60,73 +62,20 @@ public class AuditWorkingPaperService {
             User getUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
             Page<AuditWorkingPaper> response = null;
-            if (schedule_id != null) {
-                return GlobalResponse.builder().data(repository.findByScheduleId(schedule_id)).message("Berhasil menampilkan data")
-                        .status(HttpStatus.OK).build();
-            } else if (name != null && branchId != null && start_date != null && end_date != null) {
-                response = pag.findWorkingPaperByAllFilter(name, schedule_id, start_date, end_date,
-                        PageRequest.of(page, size));
-            } else if (name != null) {
-                if (branchId != null) {
-                    response = pag.findWorkingPaperByNameAndBranch(name, schedule_id, PageRequest.of(page, size));
-                } else if (start_date != null && end_date != null) {
-                    response = pag.findWorkingPaperByNameAndDate(name, start_date, end_date,
-                            PageRequest.of(page, size));
-                } else {
-                    response = pag.findWorkingPaperByName(name, PageRequest.of(page, size));
-                }
-            } else if (branchId != null) {
-                if (start_date != null && end_date != null) {
-                    response = pag.findWorkingPaperByBranchAndDate(branchId, start_date, end_date,
-                            PageRequest.of(page, size));
-                } else {
-                    response = pag.findWorkingPaperByBranch(branchId, PageRequest.of(page, size));
-                }
-            } else {
-                if (getUser.getLevel().getCode().equals("A") || getUser.getLevel().getCode().equals("A")) {
-                    if (start_date != null && end_date != null) {
-                        response = pag.findWorkingPaperInDateRange(start_date, end_date, PageRequest.of(page, size));
-                    } else {
-                        response = pag.findAllWorkingPaper(PageRequest.of(page, size));
-                    }
-                } else if (getUser.getLevel().getCode().equals("B")) {
-                    Pageable pageable = PageRequest.of(page, size);
-                    List<AuditWorkingPaper> lhaList = new ArrayList<>();
-                    for (int i = 0; i < getUser.getRegionId().size(); i++) {
-                        List<AuditWorkingPaper> kkaAgain = new ArrayList<>();
-                        kkaAgain = repository.findByRegionId(getUser.getRegionId().get(i));
-                        if (!kkaAgain.isEmpty()) {
-                            for (int u = 0; u < kkaAgain.size(); u++) {
-                                lhaList.add(kkaAgain.get(u));
-                            }
-                        }
-                    }
-                    try {
-                        int start = (int) pageable.getOffset();
-                        int end = Math.min((start + pageable.getPageSize()),
-                                lhaList.size());
-                        List<AuditWorkingPaper> pageContent = lhaList.subList(start, end);
-                        Page<AuditWorkingPaper> response2 = new PageImpl<>(pageContent, pageable,
-                                lhaList.size());
-                        response = response2;
-                    } catch (Exception e) {
-                        return GlobalResponse
-                                .builder()
-                                .error(e)
-                                .status(HttpStatus.BAD_REQUEST)
-                                .build();
-                    }
-                } else if (getUser.getLevel().getCode().equals("C")) {
-                    if (start_date != null && end_date != null) {
-                        response = pag.findAllWorkingPaperByUserIdAndDate(getUser.getId(), start_date, end_date,
-                                PageRequest.of(page, size));
-                    } else {
-                        response = pag.findAllWorkingPaperByUserId(getUser.getId(), PageRequest.of(page, size));
-                    }
-                } else {
-                    return GlobalResponse.builder().message("Cannot Access").status(HttpStatus.UNAUTHORIZED).build();
-                }
+            Specification<AuditWorkingPaper> spec = Specification
+                    .where(new SpecificationFIlter<AuditWorkingPaper>().nameLike(name))
+                    .and(new SpecificationFIlter<AuditWorkingPaper>().branchIdEqual(branchId))
+                    .and(new SpecificationFIlter<AuditWorkingPaper>().dateRange(start_date, end_date))
+                    .and(new SpecificationFIlter<AuditWorkingPaper>().isNotDeleted());
+            if(schedule_id != null) {
+                spec = spec.and(new SpecificationFIlter<AuditWorkingPaper>().scheduleIdEqual(schedule_id));
             }
+            if (getUser.getLevel().getCode().equals("C")) {
+                spec = spec.and(new SpecificationFIlter<AuditWorkingPaper>().userId(getUser.getId()));
+            } else if (getUser.getLevel().getCode().equals("B")) {
+                spec = spec.and(new SpecificationFIlter<AuditWorkingPaper>().getByRegionIds(getUser.getRegionId()));
+            }
+            response = pag.findAll(spec, PageRequest.of(page, size));
             List<Object> listKka = new ArrayList<>();
             for (int i = 0; i < response.getContent().size(); i++) {
                 AuditWorkingPaper kka = response.getContent().get(i);
@@ -153,6 +102,7 @@ public class AuditWorkingPaperService {
                 kkaMap.put("end_date", convertDateToRoman.convertDateToString(kka.getEnd_date()));
                 kkaMap.put("filename", kka.getFilename());
                 kkaMap.put("file_path", kka.getFile_path());
+                kkaMap.put("created_at", kka.getCreated_at());
 
                 listKka.add(kkaMap);
 
@@ -224,6 +174,7 @@ public class AuditWorkingPaperService {
             kkaMap.put("end_date", convertDateToRoman.convertDateToString(response.getEnd_date()));
             kkaMap.put("filename", response.getFilename());
             kkaMap.put("file_path", response.getFile_path());
+            kkaMap.put("created_at", response.getCreated_at());
             return GlobalResponse
                     .builder()
                     .message("Berhasil menampilkan data")

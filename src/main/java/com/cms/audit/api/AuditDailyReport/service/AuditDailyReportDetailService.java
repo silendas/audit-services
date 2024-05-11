@@ -13,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -32,6 +33,7 @@ import com.cms.audit.api.Clarifications.dto.response.NumberClarificationInterfac
 import com.cms.audit.api.Clarifications.models.Clarification;
 import com.cms.audit.api.Clarifications.models.EStatusClarification;
 import com.cms.audit.api.Clarifications.repository.ClarificationRepository;
+import com.cms.audit.api.Common.constant.SpecificationFIlter;
 import com.cms.audit.api.Common.constant.convertDateToRoman;
 import com.cms.audit.api.Common.exception.ResourceNotFoundException;
 import com.cms.audit.api.Common.response.GlobalResponse;
@@ -82,62 +84,21 @@ public class AuditDailyReportDetailService {
             User getUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
             Page<AuditDailyReportDetail> response = null;
-            if (lhaId != null && startDate != null && endDate != null) {
-                response = pag.findAllLHADetailByDateAndLhaId(lhaId, startDate, endDate, PageRequest.of(page, size));
-            } else if (lhaId != null) {
-                response = pag.findByLHAId(lhaId, PageRequest.of(page, size));
-            } else {
-                if (getUser.getLevel().getCode().equals("C")) {
-                    if (startDate != null && endDate != null) {
-                        response = pag.findByUserIdAndDate(getUser.getId(), startDate, endDate,
-                                PageRequest.of(page, size));
-                    } else {
-                        response = pag.findByUserId(getUser.getId(), PageRequest.of(page, size));
-                    }
-                } else if (getUser.getLevel().getCode().equals("B")) {
-                    Pageable pageable = PageRequest.of(page, size);
-                    List<AuditDailyReportDetail> lhaList = new ArrayList<>();
-                    for (int i = 0; i < getUser.getRegionId().size(); i++) {
-                        List<AuditDailyReportDetail> lhaAgain = new ArrayList<>();
-                        if (startDate != null && endDate != null) {
-                            lhaAgain = repository
-                                    .findAllLHAByRegionAndDate(getUser.getRegionId().get(i),
-                                            startDate, endDate);
-                        } else {
-                            lhaAgain = repository.findAllLHAByRegion(
-                                    getUser.getRegionId().get(i));
-                        }
-                        if (!lhaAgain.isEmpty()) {
-                            for (int u = 0; u < lhaAgain.size(); u++) {
-                                lhaList.add(lhaAgain.get(u));
-                            }
-                        }
-                    }
-                    try {
-                        int start = (int) pageable.getOffset();
-                        int end = Math.min((start + pageable.getPageSize()),
-                                lhaList.size());
-                        List<AuditDailyReportDetail> pageContent = lhaList.subList(start,
-                                end);
-                        Page<AuditDailyReportDetail> response2 = new PageImpl<>(pageContent,
-                                pageable,
-                                lhaList.size());
-                        response = response2;
-                    } catch (Exception e) {
-                        return GlobalResponse
-                                .builder()
-                                .error(e)
-                                .status(HttpStatus.BAD_REQUEST)
-                                .build();
-                    }
-                } else if (getUser.getLevel().getCode().equals("A")) {
-                    if (startDate != null && endDate != null) {
-                        response = pag.findAllLHADetailByDateForLeader(startDate, endDate, PageRequest.of(page, size));
-                    } else {
-                        response = pag.findAllLHADetailForLeader(PageRequest.of(page, size));
-                    }
-                }
+            Specification<AuditDailyReportDetail> spec = Specification
+                    .where(new SpecificationFIlter<AuditDailyReportDetail>().dateRange(startDate,
+                            endDate))
+                    .and(new SpecificationFIlter<AuditDailyReportDetail>().isNotDeleted());
+            if (lhaId != null) {
+                spec = spec.and(new SpecificationFIlter<AuditDailyReportDetail>()
+                        .lhaId(lhaId));
             }
+            if (getUser.getLevel().getCode().equals("C")) {
+                spec = spec.and(new SpecificationFIlter<AuditDailyReportDetail>().userId(getUser.getId()));
+            } else if (getUser.getLevel().getCode().equals("B")) {
+                spec = spec.and(new SpecificationFIlter<AuditDailyReportDetail>()
+                        .getByRegionIds(getUser.getRegionId()));
+            }
+            response = pag.findAll(spec, PageRequest.of(page, size));
             List<Object> details = new ArrayList<>();
             for (int i = 0; i < response.getContent().size(); i++) {
                 DetailResponse builder = new DetailResponse();
@@ -269,19 +230,19 @@ public class AuditDailyReportDetailService {
                 builder.put("is_research", 0);
             }
             if (response.get().getStatus_flow() != null) {
-                builder.put("status_flow",response.get().getStatus_flow());
+                builder.put("status_flow", response.get().getStatus_flow());
             } else {
-                builder.put("status_flow",0);
+                builder.put("status_flow", 0);
             }
             if (response.get().getStatus_parsing() != null) {
-                builder.put("status_parsing",response.get().getStatus_parsing());
+                builder.put("status_parsing", response.get().getStatus_parsing());
             } else {
-                builder.put("status_parsing",0);
+                builder.put("status_parsing", 0);
             }
             if (response.get().getIs_revision() != null) {
-                builder.put("is_revision",response.get().getIs_revision());
+                builder.put("is_revision", response.get().getIs_revision());
             } else {
-                builder.put("is_revision",0);
+                builder.put("is_revision", 0);
             }
             return GlobalResponse
                     .builder()
@@ -350,7 +311,7 @@ public class AuditDailyReportDetailService {
     public GlobalResponse getOneByLHAId(Long id) {
         try {
             Optional<AuditDailyReportDetail> response = repository.findOneByLHAId(id);
-            if(!response.isPresent()) {
+            if (!response.isPresent()) {
                 return GlobalResponse
                         .builder()
                         .message("Data not found").data(response)
@@ -535,16 +496,18 @@ public class AuditDailyReportDetailService {
         }
     }
 
-    public GlobalResponse ingnoreLhaDetail(Long lhaDetailId){
+    public GlobalResponse ingnoreLhaDetail(Long lhaDetailId) {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        if(!user.getLevel().getCode().equals("B") && !user.getLevel().getCode().equals("A")){
+        if (!user.getLevel().getCode().equals("B") && !user.getLevel().getCode().equals("A")) {
             return GlobalResponse.builder().message("TIdak dapat mengakses").status(HttpStatus.UNAUTHORIZED).build();
         }
 
         Optional<AuditDailyReportDetail> response = repository.findOneByLHADetailId(lhaDetailId);
-        if(!response.isPresent()){
-            return GlobalResponse.builder().message("LHA tidak ditemukan").errorMessage("LHA detail with id: "+ lhaDetailId + " tidak ditemukan").status(HttpStatus.BAD_REQUEST).build();
+        if (!response.isPresent()) {
+            return GlobalResponse.builder().message("LHA tidak ditemukan")
+                    .errorMessage("LHA detail with id: " + lhaDetailId + " tidak ditemukan")
+                    .status(HttpStatus.BAD_REQUEST).build();
         }
 
         AuditDailyReportDetail dto = response.get();
@@ -557,16 +520,18 @@ public class AuditDailyReportDetailService {
 
     }
 
-    public GlobalResponse sendToLeader(Long lhaDetailId){
+    public GlobalResponse sendToLeader(Long lhaDetailId) {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        if(!user.getLevel().getCode().equals("B") && !user.getLevel().getCode().equals("A")){
+        if (!user.getLevel().getCode().equals("B") && !user.getLevel().getCode().equals("A")) {
             return GlobalResponse.builder().message("TIdak dapat mengakses").status(HttpStatus.UNAUTHORIZED).build();
         }
 
         Optional<AuditDailyReportDetail> response = repository.findOneByLHADetailId(lhaDetailId);
-        if(!response.isPresent()){
-            return GlobalResponse.builder().errorMessage("LHA tidak ditemukan").message("LHA detail with id: "+ lhaDetailId + " tidak ditemukan").status(HttpStatus.BAD_REQUEST).build();
+        if (!response.isPresent()) {
+            return GlobalResponse.builder().errorMessage("LHA tidak ditemukan")
+                    .message("LHA detail with id: " + lhaDetailId + " tidak ditemukan").status(HttpStatus.BAD_REQUEST)
+                    .build();
         }
 
         AuditDailyReportDetail dto = response.get();
@@ -593,9 +558,11 @@ public class AuditDailyReportDetailService {
                         .build();
             }
 
-            if(user.getLevel().getCode().equals("C")){
-                if(getBefore.get().getIs_revision() == 1){
-                    return GlobalResponse.builder().message("Karena sudah direvisi oleh area maka tidak dapat diedit").errorMessage("Tidak bisa mengedit karena sudah direvisi").status(HttpStatus.BAD_REQUEST).build();
+            if (user.getLevel().getCode().equals("C")) {
+                if (getBefore.get().getIs_revision() == 1) {
+                    return GlobalResponse.builder().message("Karena sudah direvisi oleh area maka tidak dapat diedit")
+                            .errorMessage("Tidak bisa mengedit karena sudah direvisi").status(HttpStatus.BAD_REQUEST)
+                            .build();
                 }
             }
 
@@ -606,7 +573,8 @@ public class AuditDailyReportDetailService {
             }
             Optional<CaseCategory> setCCId = ccRepository.findById(dto.getCase_category_id());
             if (!setCCId.isPresent()) {
-                return GlobalResponse.builder().message("Case Caegory tidak ditemukan").errorMessage("Case Category not found")
+                return GlobalResponse.builder().message("Case Caegory tidak ditemukan")
+                        .errorMessage("Case Category not found")
                         .status(HttpStatus.BAD_REQUEST)
                         .build();
             }
@@ -665,7 +633,8 @@ public class AuditDailyReportDetailService {
             if (!getBefore.isPresent()) {
                 return GlobalResponse
                         .builder()
-                        .errorMessage("LHA detail tidak ditemukan").message("LHA detail dengan id : "+id+ " tidak ditemukan")
+                        .errorMessage("LHA detail tidak ditemukan")
+                        .message("LHA detail dengan id : " + id + " tidak ditemukan")
                         .status(HttpStatus.BAD_REQUEST)
                         .build();
             }

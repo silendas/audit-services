@@ -47,10 +47,10 @@ public class AuditDailyReportController {
                 String fullname = name.orElse(null);
                 Date startDate = start_date.orElse(null);
                 Date endDate = end_date.orElse(null);
-                if(startDate != null) {
+                if (startDate != null) {
                         startDate = convertDateToRoman.setTimeToZero(startDate);
                 }
-                if(endDate != null) {
+                if (endDate != null) {
                         endDate = convertDateToRoman.setTimeToLastSecond(endDate);
                 }
 

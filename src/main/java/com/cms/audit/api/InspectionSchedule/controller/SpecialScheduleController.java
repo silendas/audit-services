@@ -17,6 +17,7 @@ import com.cms.audit.api.Config.Jwt.JwtService;
 import com.cms.audit.api.InspectionSchedule.dto.EditScheduleDTO;
 import com.cms.audit.api.InspectionSchedule.dto.ScheduleRequest;
 import com.cms.audit.api.InspectionSchedule.models.ECategory;
+import com.cms.audit.api.InspectionSchedule.models.EStatus;
 import com.cms.audit.api.InspectionSchedule.service.ScheduleService;
 
 import jakarta.annotation.Nonnull;
@@ -45,6 +46,7 @@ public class SpecialScheduleController {
     public ResponseEntity<Object> getAll(
             @RequestParam("branch_id") Optional<Long> branch_id,
             @RequestParam("name") Optional<String> name,
+            @RequestParam("status") Optional<EStatus> status,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Optional<Date> start_date,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Optional<Date> end_date,
             @RequestParam("page") Optional<Integer> page,
@@ -59,9 +61,9 @@ public class SpecialScheduleController {
         if (endDate != null) {
             endDate = convertDateToRoman.setTimeToLastSecond(endDate);
         }
-        GlobalResponse response = scheduleService.getSpecialSchedule(branchId, fullname, page.orElse(0),
+        GlobalResponse response = scheduleService.getSchedule(branchId, fullname, page.orElse(0),
                 size.orElse(10),
-                startDate, endDate);
+                startDate, endDate, "SPECIAL", status.orElse(null));
         return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(), null);
     }
 

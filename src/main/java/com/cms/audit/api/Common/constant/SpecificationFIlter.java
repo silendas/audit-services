@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.data.jpa.domain.Specification;
 
+import com.cms.audit.api.InspectionSchedule.models.EStatus;
 import com.cms.audit.api.Management.Office.AreaOffice.models.Area;
 import com.cms.audit.api.Management.Office.BranchOffice.models.Branch;
 import com.cms.audit.api.Management.Office.RegionOffice.models.Region;
@@ -34,9 +35,24 @@ public class SpecificationFIlter<T> {
         };
     }
 
+    public Specification<T> lhaId(Long id) {
+        return (root, query, criteriaBuilder) -> {
+            if (id != null) {
+                return criteriaBuilder.equal(root.get("auditDailyReport").get("id"), id);
+            }
+            return null;
+        };
+    }
+
     public Specification<T> branchIdEqual(Long branchId) {
         return (root, query, criteriaBuilder) -> branchId == null ? null
                 : criteriaBuilder.equal(root.get("branch").get("id"), branchId);
+    }
+
+    
+    public Specification<T> scheduleIdEqual(Long shceduleId) {
+        return (root, query, criteriaBuilder) -> shceduleId == null ? null
+                : criteriaBuilder.equal(root.get("schedule").get("id"), shceduleId);
     }
 
     public Specification<T> dateRange(Date start_date, Date end_date) {
@@ -81,10 +97,20 @@ public class SpecificationFIlter<T> {
         };
     }
 
-    public Specification<T> getByStatus(String status) {
+    public Specification<T> getByStatus(EStatus status) {
         return (Root<T> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) -> {
             // Membuat predikat untuk status yang cocok
             Predicate predicate = criteriaBuilder.equal(root.get("status"), status);
+
+            // Mengembalikan predikat
+            return predicate;
+        };
+    }
+
+    public Specification<T> getByCategory(String category) {
+        return (Root<T> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) -> {
+            // Membuat predikat untuk category yang cocok
+            Predicate predicate = criteriaBuilder.equal(root.get("category"), category);
 
             // Mengembalikan predikat
             return predicate;

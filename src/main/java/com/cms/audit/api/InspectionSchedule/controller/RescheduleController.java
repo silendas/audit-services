@@ -21,6 +21,7 @@ import com.cms.audit.api.Common.response.GlobalResponse;
 import com.cms.audit.api.Common.response.ResponseEntittyHandler;
 import com.cms.audit.api.Config.Jwt.JwtService;
 import com.cms.audit.api.InspectionSchedule.dto.RequestReschedule;
+import com.cms.audit.api.InspectionSchedule.models.EStatus;
 import com.cms.audit.api.InspectionSchedule.service.ScheduleService;
 
 import io.micrometer.common.lang.NonNull;
@@ -45,7 +46,7 @@ public class RescheduleController {
     public ResponseEntity<Object> get(
             @RequestParam("branch_id") Optional<Long> branch_id,
             @RequestParam("name") Optional<String> name,
-            @RequestParam("status") Optional<String> status,
+            @RequestParam("status") Optional<EStatus> status,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Optional<Date> start_date,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Optional<Date> end_date,
             @NonNull HttpServletRequest request,
@@ -61,8 +62,7 @@ public class RescheduleController {
         if (endDate != null) {
             endDate = convertDateToRoman.setTimeToLastSecond(endDate);
         }
-        GlobalResponse response = scheduleService.getByStatus(fullname, branchId, startDate, endDate, page.orElse(0),
-                size.orElse(10));
+        GlobalResponse response = scheduleService.getReschedule(branchId,fullname, page.orElse(0),size.orElse(10), startDate, endDate, status.orElse(null));
         return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(),
                 response.getError());
     }
