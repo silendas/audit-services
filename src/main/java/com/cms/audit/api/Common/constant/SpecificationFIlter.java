@@ -1,6 +1,8 @@
 package com.cms.audit.api.Common.constant;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.data.jpa.domain.Specification;
 
@@ -58,6 +60,16 @@ public class SpecificationFIlter<T> {
         return (Root<T> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) -> {
             query.orderBy(criteriaBuilder.asc(root.get("id"))); // Urutkan berdasarkan ID secara descending
             return criteriaBuilder.conjunction();
+        };
+    }
+
+    public Specification<T> regionIdsIn(List<Long> regionIds) {
+        return (Root<T> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            for (Long regionId : regionIds) {
+                predicates.add(criteriaBuilder.equal(root.get("branch").get("area").get("region").get("id"), regionId));
+            }
+            return criteriaBuilder.or(predicates.toArray(new Predicate[0]));
         };
     }
 

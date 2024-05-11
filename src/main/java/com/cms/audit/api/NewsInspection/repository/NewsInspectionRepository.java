@@ -17,7 +17,7 @@ public interface NewsInspectionRepository extends JpaRepository<NewsInspection, 
     @Query(value = "SELECT c.report_number, c.code, EXTRACT(YEAR FROM c.created_at) as created_year FROM news_inspection c WHERE c.user_id = :userId ORDER BY c.id DESC LIMIT 1;", nativeQuery = true)
     Optional<NumberClarificationInterface> checkNumberBAP(@Param("userId") Long id);
 
-    @Query(value = "SELECT u.* FROM news_inspection u INNER JOIN branch_office bo ON u.branch_id=bo.id INNER JOIN area_office ao ON bo.area_id=ao.id INNER JOIN region_office ro ON ao.region_id=ro.id WHERE ro.id = :regionId ORDER BY u.id DESC ",nativeQuery=true)
+    @Query(value = "SELECT u.* FROM news_inspection u INNER JOIN branch_office bo ON u.branch_id=bo.id INNER JOIN area_office ao ON bo.area_id=ao.id INNER JOIN region_office ro ON ao.region_id=ro.id WHERE ro.id = :regionId ORDER BY u.id ASC ",nativeQuery=true)
     List<NewsInspection> findByRegionId(@Param("regionId")Long id);
 
     Optional<NewsInspection> findByFileName(String fileName);

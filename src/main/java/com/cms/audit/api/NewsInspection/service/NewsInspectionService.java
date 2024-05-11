@@ -53,57 +53,22 @@ public class NewsInspectionService {
         try {
             User getUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             Page<NewsInspection> response = null;
-            if (name != null || branch != null || start_date != null || end_date != null) {
-                Specification<NewsInspection> spec = Specification
-                        .where(new SpecificationFIlter<NewsInspection>().nameLike(name))
-                        .and(new SpecificationFIlter<NewsInspection>().branchIdEqual(branch))
-                        .and(new SpecificationFIlter<NewsInspection>().dateRange(start_date, end_date))
-                        .and(new SpecificationFIlter<NewsInspection>().orderByIdDesc());
-                response = pag.findAll(spec, PageRequest.of(page, size));
-            } else {
-                if (getUser.getLevel().getCode().equals("C")) {
-                    Specification<NewsInspection> spec = Specification
-                            .where(new SpecificationFIlter<NewsInspection>().userId(getUser.getId()))
-                            .and(new SpecificationFIlter<NewsInspection>().orderByIdDesc());
-                    response = pag.findAll(spec, PageRequest.of(page, size));
-                } else if (getUser.getLevel().getCode().equals("B")) {
-                    Pageable pageable = PageRequest.of(page, size);
-                    List<NewsInspection> lhaList = new ArrayList<>();
-                    for (int i = 0; i < getUser.getRegionId().size(); i++) {
-                        List<NewsInspection> clAgain = new ArrayList<>();
-                        clAgain = repository.findByRegionId(getUser.getRegionId().get(i));
-                        if (!clAgain.isEmpty()) {
-                            for (int u = 0; u < clAgain.size(); u++) {
-                                lhaList.add(clAgain.get(u));
-                            }
-                        }
-                    }
-                    try {
-                        int start = (int) pageable.getOffset();
-                        int end = Math.min((start + pageable.getPageSize()),
-                                lhaList.size());
-                        List<NewsInspection> pageContent = lhaList.subList(start, end);
-                        Page<NewsInspection> response2 = new PageImpl<>(pageContent, pageable,
-                                lhaList.size());
-                        response = response2;
-                    } catch (Exception e) {
-                        return GlobalResponse
-                                .builder()
-                                .error(e)
-                                .status(HttpStatus.BAD_REQUEST)
-                                .build();
-                    }
-                } else if (getUser.getLevel().getCode().equals("A")) {
-                    Specification<NewsInspection> spec = Specification.where( new SpecificationFIlter<NewsInspection>().orderByIdDesc());
-                    response = pag.findAll(spec,PageRequest.of(page, size));
-                }
+            Specification<NewsInspection> spec = Specification
+                    .where(new SpecificationFIlter<NewsInspection>().nameLike(name))
+                    .and(new SpecificationFIlter<NewsInspection>().branchIdEqual(branch))
+                    .and(new SpecificationFIlter<NewsInspection>().dateRange(start_date, end_date))
+                    .and(new SpecificationFIlter<NewsInspection>().orderByIdDesc());
+            if (getUser.getLevel().getCode().equals("C")) {
+                spec.and(new SpecificationFIlter<NewsInspection>().userId(getUser.getId()));
+            } else if (getUser.getLevel().getCode().equals("B")) {
+                spec.and(new SpecificationFIlter<NewsInspection>().regionIdsIn(getUser.getRegionId()));
             }
+            response = pag.findAll(spec, PageRequest.of(page, size));
             List<Object> listBAP = new ArrayList<>();
             for (int i = 0; i < response.getContent().size(); i++) {
                 NewsInspection bap = response.getContent().get(i);
                 Map<String, Object> kkaMap = new LinkedHashMap<>();
                 kkaMap.put("id", bap.getId());
-
                 Map<String, Object> user = new LinkedHashMap<>();
                 user.put("id", bap.getUser().getId());
                 user.put("email", bap.getUser().getEmail());

@@ -90,83 +90,17 @@ public class ClarificationService {
                         User getUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
                         Page<Clarification> response = null;
-                        if (branchId != null && name != null && start_date != null && end_date != null) {
-                                Specification<Clarification> spec = Specification
-                                                .where(new SpecificationFIlter<Clarification>().nameLike(name))
-                                                .and(new SpecificationFIlter<Clarification>().branchIdEqual(branchId))
-                                                .and(new SpecificationFIlter<Clarification>().dateRange(start_date,
-                                                                end_date))
-                                                .and(new SpecificationFIlter<Clarification>().orderByIdDesc());
-                                response = pag.findAll(spec, PageRequest.of(page, size));
-                        } else {
-                                if (getUser.getLevel().getCode().equals("C")) {
-                                        if (start_date != null && end_date != null) {
-                                                Specification<Clarification> spec = Specification
-                                                                .where(new SpecificationFIlter<Clarification>()
-                                                                                .userId(getUser.getId()))
-                                                                .and(new SpecificationFIlter<Clarification>()
-                                                                                .dateRange(start_date, end_date))
-                                                                .and(new SpecificationFIlter<Clarification>()
-                                                                                .orderByIdDesc());
-                                                response = pag.findAll(spec, PageRequest.of(page, size));
-                                        } else {
-                                                Specification<Clarification> spec = Specification
-                                                                .where(new SpecificationFIlter<Clarification>()
-                                                                                .userId(getUser.getId()))
-                                                                .and(new SpecificationFIlter<Clarification>()
-                                                                                .orderByIdDesc());
-                                                response = pag.findAll(spec, PageRequest.of(page, size));
-                                        }
-                                } else if (getUser.getLevel().getCode().equals("B")) {
-                                        Pageable pageable = PageRequest.of(page, size);
-                                        List<Clarification> lhaList = new ArrayList<>();
-                                        for (int i = 0; i < getUser.getRegionId().size(); i++) {
-                                                List<Clarification> clAgain = new ArrayList<>();
-                                                if (start_date != null && end_date != null) {
-                                                        response = pag.findByRegionIdAndDate(
-                                                                        getUser.getRegionId().get(i), start_date,
-                                                                        end_date,
-                                                                        PageRequest.of(page, size));
-                                                } else {
-                                                        clAgain = repository
-                                                                        .findByRegionId(getUser.getRegionId().get(i));
-
-                                                }
-                                                if (!clAgain.isEmpty()) {
-                                                        for (int u = 0; u < clAgain.size(); u++) {
-                                                                lhaList.add(clAgain.get(u));
-                                                        }
-                                                }
-                                        }
-                                        try {
-                                                int start = (int) pageable.getOffset();
-                                                int end = Math.min((start + pageable.getPageSize()),
-                                                                lhaList.size());
-                                                List<Clarification> pageContent = lhaList.subList(start, end);
-                                                Page<Clarification> response2 = new PageImpl<>(pageContent, pageable,
-                                                                lhaList.size());
-                                                response = response2;
-                                        } catch (Exception e) {
-                                                return GlobalResponse
-                                                                .builder()
-                                                                .error(e)
-                                                                .status(HttpStatus.BAD_REQUEST)
-                                                                .build();
-                                        }
-                                } else if (getUser.getLevel().getCode().equals("A")) {
-                                        if (start_date != null && end_date != null) {
-                                                Specification<Clarification> spec = Specification
-                                                                .where(new SpecificationFIlter<Clarification>()
-                                                                                .dateRange(start_date, end_date))
-                                                                .and(new SpecificationFIlter<Clarification>().orderByIdDesc());
-                                                response = pag.findAll(spec, PageRequest.of(page, size));
-                                        } else {
-                                                Specification<Clarification> spec = Specification
-                                                .where(new SpecificationFIlter<Clarification>().orderByIdDesc());
-                                                response = pag.findAll(spec,PageRequest.of(page, size));
-                                        }
-                                }
+                        Specification<Clarification> spec = Specification
+                                        .where(new SpecificationFIlter<Clarification>().nameLike(name))
+                                        .and(new SpecificationFIlter<Clarification>().branchIdEqual(branchId))
+                                        .and(new SpecificationFIlter<Clarification>().dateRange(start_date, end_date))
+                                        .and(new SpecificationFIlter<Clarification>().orderByIdDesc());
+                        if (getUser.getLevel().getCode().equals("C")) {
+                                spec.and(new SpecificationFIlter<Clarification>().userId(getUser.getId()));
+                        } else if (getUser.getLevel().getCode().equals("B")) {
+                                spec.and(new SpecificationFIlter<Clarification>().regionIdsIn(getUser.getRegionId()));
                         }
+                        response = pag.findAll(spec, PageRequest.of(page, size));
                         List<Object> listCl = new ArrayList<>();
                         for (int i = 0; i < response.getContent().size(); i++) {
                                 Map<String, Object> clarification = new LinkedHashMap<>();
@@ -328,35 +262,37 @@ public class ClarificationService {
                 }
         }
 
-        // public GlobalResponse getByDateRange(Date start_date, Date end_date, int page, int size) {
-        //         try {
-        //                 Page<Clarification> response = pag.findClarificationInDateRange(start_date, end_date,
-        //                                 PageRequest.of(page, size));
-        //                 return GlobalResponse
-        //                                 .builder()
-        //                                 .message("Berhasil menampilkan data")
-        //                                 .data(response)
-        //                                 .status(HttpStatus.OK)
-        //                                 .build();
-        //         } catch (ResponseStatusException e) {
-        //                 return GlobalResponse
-        //                                 .builder()
-        //                                 .error(e)
-        //                                 .status(HttpStatus.BAD_REQUEST)
-        //                                 .build();
-        //         } catch (DataException e) {
-        //                 return GlobalResponse
-        //                                 .builder()
-        //                                 .error(e)
-        //                                 .status(HttpStatus.UNPROCESSABLE_ENTITY)
-        //                                 .build();
-        //         } catch (Exception e) {
-        //                 return GlobalResponse
-        //                                 .builder()
-        //                                 .error(e)
-        //                                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
-        //                                 .build();
-        //         }
+        // public GlobalResponse getByDateRange(Date start_date, Date end_date, int
+        // page, int size) {
+        // try {
+        // Page<Clarification> response = pag.findClarificationInDateRange(start_date,
+        // end_date,
+        // PageRequest.of(page, size));
+        // return GlobalResponse
+        // .builder()
+        // .message("Berhasil menampilkan data")
+        // .data(response)
+        // .status(HttpStatus.OK)
+        // .build();
+        // } catch (ResponseStatusException e) {
+        // return GlobalResponse
+        // .builder()
+        // .error(e)
+        // .status(HttpStatus.BAD_REQUEST)
+        // .build();
+        // } catch (DataException e) {
+        // return GlobalResponse
+        // .builder()
+        // .error(e)
+        // .status(HttpStatus.UNPROCESSABLE_ENTITY)
+        // .build();
+        // } catch (Exception e) {
+        // return GlobalResponse
+        // .builder()
+        // .error(e)
+        // .status(HttpStatus.INTERNAL_SERVER_ERROR)
+        // .build();
+        // }
         // }
 
         public GlobalResponse generateCK(GenerateCKDTO dto) {
