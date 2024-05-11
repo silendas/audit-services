@@ -68,20 +68,19 @@ public class SpecificationFIlter<T> {
         };
     }
 
-    public Specification<T> regionIdsIn(List<Long> regionIds) {
+    public Specification<T> getByRegionIds(List<Long> regionIds) {
         return (Root<T> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) -> {
-            // Membuat daftar kriteria untuk setiap ID region
-            Predicate[] predicates = new Predicate[regionIds.size()];
-            int index = 0;
-            for (Long regionId : regionIds) {
-                predicates[index++] = criteriaBuilder.equal(root.get("branch").get("area").get("region").get("id"), regionId);
-            }
+            Join<T, Branch> branchJoin = root.join("branch");
+            Join<Branch, Area> areaJoin = branchJoin.join("area");
+            Join<Area, Region> regionJoin = areaJoin.join("region");
             
-            // Menggabungkan semua kriteria dengan operator OR
-            return criteriaBuilder.or(predicates);
+            // Creating predicate for region IDs
+            Predicate predicate = regionJoin.get("id").in(regionIds);
+
+            // Returning the predicate
+            return predicate;
         };
     }
-
     public Specification<T> isNotDeleted() {
         return (root, query, criteriaBuilder) -> {
             return criteriaBuilder.notEqual(root.get("is_delete"), 1);

@@ -7,15 +7,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.domain.Specification;
 import org.apache.tomcat.util.http.fileupload.impl.IOFileUploadException;
 import org.hibernate.exception.DataException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -90,31 +87,15 @@ public class ClarificationService {
                         User getUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
                         Page<Clarification> response = null;
-                        Specification<Clarification> spec = null;
+                        Specification<Clarification> spec = Specification
+                                        .where(new SpecificationFIlter<Clarification>().nameLike(name))
+                                        .and(new SpecificationFIlter<Clarification>().branchIdEqual(branchId))
+                                        .and(new SpecificationFIlter<Clarification>().dateRange(start_date, end_date));
+
                         if (getUser.getLevel().getCode().equals("C")) {
-                                spec = Specification
-                                                .where(new SpecificationFIlter<Clarification>().nameLike(name))
-                                                .and(new SpecificationFIlter<Clarification>().branchIdEqual(branchId))
-                                                .and(new SpecificationFIlter<Clarification>().dateRange(start_date,
-                                                                end_date))
-                                                .and(new SpecificationFIlter<Clarification>().orderByIdDesc())
-                                                .and(new SpecificationFIlter<Clarification>().userId(getUser.getId()));
+                                spec = spec.and(new SpecificationFIlter<Clarification>().userId(getUser.getId()));
                         } else if (getUser.getLevel().getCode().equals("B")) {
-                                Specification
-                                                .where(new SpecificationFIlter<Clarification>().nameLike(name))
-                                                .and(new SpecificationFIlter<Clarification>().branchIdEqual(branchId))
-                                                .and(new SpecificationFIlter<Clarification>().dateRange(start_date,
-                                                                end_date))
-                                                .and(new SpecificationFIlter<Clarification>().orderByIdDesc())
-                                                .and(new SpecificationFIlter<Clarification>()
-                                                                .regionIdsIn(getUser.getRegionId()));
-                        } else {
-                                Specification
-                                                .where(new SpecificationFIlter<Clarification>().nameLike(name))
-                                                .and(new SpecificationFIlter<Clarification>().branchIdEqual(branchId))
-                                                .and(new SpecificationFIlter<Clarification>().dateRange(start_date,
-                                                                end_date))
-                                                .and(new SpecificationFIlter<Clarification>().orderByIdDesc());
+                                spec = spec.and(new SpecificationFIlter<Clarification>().getByRegionIds(getUser.getRegionId()));
                         }
                         response = pag.findAll(spec, PageRequest.of(page, size));
                         List<Object> listCl = new ArrayList<>();

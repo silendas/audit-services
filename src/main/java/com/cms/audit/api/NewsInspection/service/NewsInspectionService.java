@@ -54,33 +54,16 @@ public class NewsInspectionService {
         try {
             User getUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             Page<NewsInspection> response = null;
-            Specification<NewsInspection> spec = null;
-                        if (getUser.getLevel().getCode().equals("C")) {
-                                spec = Specification
-                                                .where(new SpecificationFIlter<NewsInspection>().nameLike(name))
-                                                .and(new SpecificationFIlter<NewsInspection>().branchIdEqual(branch))
-                                                .and(new SpecificationFIlter<NewsInspection>().dateRange(start_date,
-                                                                end_date))
-                                                .and(new SpecificationFIlter<NewsInspection>().orderByIdDesc())
-                                                .and(new SpecificationFIlter<NewsInspection>().userId(getUser.getId()));
-                        } else if (getUser.getLevel().getCode().equals("B")) {
-                                Specification
-                                                .where(new SpecificationFIlter<NewsInspection>().nameLike(name))
-                                                .and(new SpecificationFIlter<NewsInspection>().branchIdEqual(branch))
-                                                .and(new SpecificationFIlter<NewsInspection>().dateRange(start_date,
-                                                                end_date))
-                                                .and(new SpecificationFIlter<NewsInspection>().orderByIdDesc())
-                                                .and(new SpecificationFIlter<NewsInspection>()
-                                                                .regionIdsIn(getUser.getRegionId()));
-                        } else {
-                                Specification
-                                                .where(new SpecificationFIlter<NewsInspection>().nameLike(name))
-                                                .and(new SpecificationFIlter<NewsInspection>().branchIdEqual(branch))
-                                                .and(new SpecificationFIlter<NewsInspection>().dateRange(start_date,
-                                                                end_date))
-                                                .and(new SpecificationFIlter<NewsInspection>().orderByIdDesc());
-                        }
-                        response = pag.findAll(spec, PageRequest.of(page, size));
+            Specification<NewsInspection> spec = Specification
+                    .where(new SpecificationFIlter<NewsInspection>().nameLike(name))
+                    .and(new SpecificationFIlter<NewsInspection>().branchIdEqual(branch))
+                    .and(new SpecificationFIlter<NewsInspection>().dateRange(start_date, end_date));
+            if (getUser.getLevel().getCode().equals("C")) {
+                spec = spec.and(new SpecificationFIlter<NewsInspection>().userId(getUser.getId()));
+            } else if (getUser.getLevel().getCode().equals("B")) {
+                spec = spec.and(new SpecificationFIlter<NewsInspection>().getByRegionIds(getUser.getRegionId()));
+            }
+            response = pag.findAll(spec, PageRequest.of(page, size));
             List<Object> listBAP = new ArrayList<>();
             for (int i = 0; i < response.getContent().size(); i++) {
                 NewsInspection bap = response.getContent().get(i);
