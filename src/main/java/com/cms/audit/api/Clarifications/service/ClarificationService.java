@@ -90,15 +90,31 @@ public class ClarificationService {
                         User getUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
                         Page<Clarification> response = null;
-                        Specification<Clarification> spec = Specification
-                                        .where(new SpecificationFIlter<Clarification>().nameLike(name))
-                                        .and(new SpecificationFIlter<Clarification>().branchIdEqual(branchId))
-                                        .and(new SpecificationFIlter<Clarification>().dateRange(start_date, end_date))
-                                        .and(new SpecificationFIlter<Clarification>().orderByIdDesc());
+                        Specification<Clarification> spec = null;
                         if (getUser.getLevel().getCode().equals("C")) {
-                                spec.and(new SpecificationFIlter<Clarification>().userId(getUser.getId()));
+                                spec = Specification
+                                                .where(new SpecificationFIlter<Clarification>().nameLike(name))
+                                                .and(new SpecificationFIlter<Clarification>().branchIdEqual(branchId))
+                                                .and(new SpecificationFIlter<Clarification>().dateRange(start_date,
+                                                                end_date))
+                                                .and(new SpecificationFIlter<Clarification>().orderByIdDesc())
+                                                .and(new SpecificationFIlter<Clarification>().userId(getUser.getId()));
                         } else if (getUser.getLevel().getCode().equals("B")) {
-                                spec.and(new SpecificationFIlter<Clarification>().regionIdsIn(getUser.getRegionId()));
+                                Specification
+                                                .where(new SpecificationFIlter<Clarification>().nameLike(name))
+                                                .and(new SpecificationFIlter<Clarification>().branchIdEqual(branchId))
+                                                .and(new SpecificationFIlter<Clarification>().dateRange(start_date,
+                                                                end_date))
+                                                .and(new SpecificationFIlter<Clarification>().orderByIdDesc())
+                                                .and(new SpecificationFIlter<Clarification>()
+                                                                .regionIdsIn(getUser.getRegionId()));
+                        } else {
+                                Specification
+                                                .where(new SpecificationFIlter<Clarification>().nameLike(name))
+                                                .and(new SpecificationFIlter<Clarification>().branchIdEqual(branchId))
+                                                .and(new SpecificationFIlter<Clarification>().dateRange(start_date,
+                                                                end_date))
+                                                .and(new SpecificationFIlter<Clarification>().orderByIdDesc());
                         }
                         response = pag.findAll(spec, PageRequest.of(page, size));
                         List<Object> listCl = new ArrayList<>();

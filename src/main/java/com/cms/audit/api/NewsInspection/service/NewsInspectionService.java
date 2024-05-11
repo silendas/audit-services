@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.cms.audit.api.Clarifications.models.Clarification;
 import com.cms.audit.api.Common.constant.FileStorageBAP;
 import com.cms.audit.api.Common.constant.FolderPath;
 import com.cms.audit.api.Common.constant.SpecificationFIlter;
@@ -53,17 +54,33 @@ public class NewsInspectionService {
         try {
             User getUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             Page<NewsInspection> response = null;
-            Specification<NewsInspection> spec = Specification
-                    .where(new SpecificationFIlter<NewsInspection>().nameLike(name))
-                    .and(new SpecificationFIlter<NewsInspection>().branchIdEqual(branch))
-                    .and(new SpecificationFIlter<NewsInspection>().dateRange(start_date, end_date))
-                    .and(new SpecificationFIlter<NewsInspection>().orderByIdDesc());
-            if (getUser.getLevel().getCode().equals("C")) {
-                spec.and(new SpecificationFIlter<NewsInspection>().userId(getUser.getId()));
-            } else if (getUser.getLevel().getCode().equals("B")) {
-                spec.and(new SpecificationFIlter<NewsInspection>().regionIdsIn(getUser.getRegionId()));
-            }
-            response = pag.findAll(spec, PageRequest.of(page, size));
+            Specification<NewsInspection> spec = null;
+                        if (getUser.getLevel().getCode().equals("C")) {
+                                spec = Specification
+                                                .where(new SpecificationFIlter<NewsInspection>().nameLike(name))
+                                                .and(new SpecificationFIlter<NewsInspection>().branchIdEqual(branch))
+                                                .and(new SpecificationFIlter<NewsInspection>().dateRange(start_date,
+                                                                end_date))
+                                                .and(new SpecificationFIlter<NewsInspection>().orderByIdDesc())
+                                                .and(new SpecificationFIlter<NewsInspection>().userId(getUser.getId()));
+                        } else if (getUser.getLevel().getCode().equals("B")) {
+                                Specification
+                                                .where(new SpecificationFIlter<NewsInspection>().nameLike(name))
+                                                .and(new SpecificationFIlter<NewsInspection>().branchIdEqual(branch))
+                                                .and(new SpecificationFIlter<NewsInspection>().dateRange(start_date,
+                                                                end_date))
+                                                .and(new SpecificationFIlter<NewsInspection>().orderByIdDesc())
+                                                .and(new SpecificationFIlter<NewsInspection>()
+                                                                .regionIdsIn(getUser.getRegionId()));
+                        } else {
+                                Specification
+                                                .where(new SpecificationFIlter<NewsInspection>().nameLike(name))
+                                                .and(new SpecificationFIlter<NewsInspection>().branchIdEqual(branch))
+                                                .and(new SpecificationFIlter<NewsInspection>().dateRange(start_date,
+                                                                end_date))
+                                                .and(new SpecificationFIlter<NewsInspection>().orderByIdDesc());
+                        }
+                        response = pag.findAll(spec, PageRequest.of(page, size));
             List<Object> listBAP = new ArrayList<>();
             for (int i = 0; i < response.getContent().size(); i++) {
                 NewsInspection bap = response.getContent().get(i);
