@@ -14,13 +14,16 @@ import org.hibernate.exception.DataException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.cms.audit.api.Common.constant.FileStorageFU;
 import com.cms.audit.api.Common.constant.FolderPath;
+import com.cms.audit.api.Common.constant.SpecificationFIlter;
 import com.cms.audit.api.Common.constant.convertDateToRoman;
 import com.cms.audit.api.Common.pdf.GeneratePdf;
 import com.cms.audit.api.Common.response.GlobalResponse;
@@ -32,6 +35,7 @@ import com.cms.audit.api.FollowUp.repository.FollowUpRepository;
 import com.cms.audit.api.FollowUp.repository.PagFollowup;
 import com.cms.audit.api.Management.Penalty.models.Penalty;
 import com.cms.audit.api.Management.Penalty.repository.PenaltyRepository;
+import com.cms.audit.api.Management.User.models.User;
 
 import jakarta.transaction.Transactional;
 
@@ -45,7 +49,7 @@ public class FollowupService {
     private FileStorageFU fileStorageService;
 
     @Autowired
-    private PagFollowup pagination;
+    private PagFollowup pag;
 
     @Autowired
     private PenaltyRepository penaltyRepository;
@@ -54,31 +58,20 @@ public class FollowupService {
 
     public GlobalResponse getAll(String name, Long branch, int page, int size, Date start_date, Date end_date) {
         try {
+            User getUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
             Page<FollowUp> response = null;
-            if (name != null && branch != null && start_date != null && end_date != null) {
-                response = pagination.findFollowUpInAllFilter(name, branch, start_date, end_date,
-                        PageRequest.of(page, size));
-            } else if (name != null) {
-                if (branch != null) {
-                    response = pagination.findFollowUpInNameAndBranch(name, branch, PageRequest.of(page, size));
-                } else if (start_date != null && end_date != null) {
-                    response = pagination.findFollowUpInNameAndDate(name, start_date, end_date,
-                            PageRequest.of(page, size));
-                } else {
-                    response = pagination.findFollowUpInName(name, PageRequest.of(page, size));
-                }
-            } else if (branch != null) {
-                if (start_date != null && end_date != null) {
-                    response = pagination.findFollowUpInBranchAndDateRange(branch, start_date, end_date,
-                            PageRequest.of(page, size));
-                } else {
-                    response = pagination.findFollowUpInBranch(branch, PageRequest.of(page, size));
-                }
-            } else if (start_date != null || end_date != null) {
-                response = pagination.findFollowUpInDateRange(start_date, end_date, PageRequest.of(page, size));
-            } else {
-                response = pagination.findFollowUpAll(PageRequest.of(page, size));
+            Specification<FollowUp> spec = Specification
+                    .where(new SpecificationFIlter<FollowUp>().nameLike(name))
+                    .and(new SpecificationFIlter<FollowUp>().branchIdEqual(branch))
+                    .and(new SpecificationFIlter<FollowUp>().dateRange(start_date, end_date));
+
+            if (getUser.getLevel().getCode().equals("C")) {
+                spec = spec.and(new SpecificationFIlter<FollowUp>().userId(getUser.getId()));
+            } else if (getUser.getLevel().getCode().equals("B")) {
+                spec = spec.and(new SpecificationFIlter<FollowUp>().getByRegionIds(getUser.getRegionId()));
             }
+            response = pag.findAll(spec, PageRequest.of(page, size));
             List<Object> listFU = new ArrayList<>();
             for (int i = 0; i < response.getContent().size(); i++) {
                 FollowUp fu = response.getContent().get(i);
@@ -342,7 +335,7 @@ public class FollowupService {
                 String filePath = path;
                 followUp.setFilename(fileName);
                 followUp.setFilePath(filePath);
-                //file.transferTo(new File(filePath));
+                // file.transferTo(new File(filePath));
             }
 
             FollowUp getResponse = repository.save(followUp);

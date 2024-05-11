@@ -1,6 +1,5 @@
 package com.cms.audit.api.Common.constant;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -81,6 +80,17 @@ public class SpecificationFIlter<T> {
             return predicate;
         };
     }
+
+    public Specification<T> getByStatus(String status) {
+        return (Root<T> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) -> {
+            // Membuat predikat untuk status yang cocok
+            Predicate predicate = criteriaBuilder.equal(root.get("status"), status);
+
+            // Mengembalikan predikat
+            return predicate;
+        };
+    }
+
     public Specification<T> isNotDeleted() {
         return (root, query, criteriaBuilder) -> {
             return criteriaBuilder.notEqual(root.get("is_delete"), 1);
