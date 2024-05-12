@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.data.jpa.domain.Specification;
 
+import com.cms.audit.api.InspectionSchedule.models.ECategory;
 import com.cms.audit.api.InspectionSchedule.models.EStatus;
 import com.cms.audit.api.Management.Office.AreaOffice.models.Area;
 import com.cms.audit.api.Management.Office.BranchOffice.models.Branch;
@@ -97,23 +98,21 @@ public class SpecificationFIlter<T> {
         };
     }
 
-    public Specification<T> getByStatus(EStatus status) {
+    public Specification<T> getByStatus(List<EStatus> statuses) {
         return (Root<T> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) -> {
-            // Membuat predikat untuk status yang cocok
-            Predicate predicate = criteriaBuilder.equal(root.get("status"), status);
-
-            // Mengembalikan predikat
-            return predicate;
+            if (statuses != null && !statuses.isEmpty()) {
+                return root.get("status").in(statuses);
+            }
+            return null;
         };
     }
 
-    public Specification<T> getByCategory(String category) {
+    public Specification<T> getByCategory(ECategory category) {
         return (Root<T> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) -> {
-            // Membuat predikat untuk category yang cocok
-            Predicate predicate = criteriaBuilder.equal(root.get("category"), category);
-
-            // Mengembalikan predikat
-            return predicate;
+            if (category != null) {
+                return criteriaBuilder.equal(root.get("category"), category);
+            }
+            return null;
         };
     }
 

@@ -62,7 +62,7 @@ public class MainScheduleConroller {
             endDate = convertDateToRoman.setTimeToLastSecond(endDate);
         }
         GlobalResponse response = scheduleService.getSchedule(branchId, fullname, page.orElse(0), size.orElse(10),
-                startDate, endDate, "REGULAR", status.orElse(null));
+                startDate, endDate, ECategory.REGULAR, status.orElse(null));
         return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(), null);
     }
 

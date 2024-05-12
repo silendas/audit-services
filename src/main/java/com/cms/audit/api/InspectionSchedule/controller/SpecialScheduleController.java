@@ -63,7 +63,7 @@ public class SpecialScheduleController {
         }
         GlobalResponse response = scheduleService.getSchedule(branchId, fullname, page.orElse(0),
                 size.orElse(10),
-                startDate, endDate, "SPECIAL", status.orElse(null));
+                startDate, endDate, ECategory.SPECIAL, status.orElse(null));
         return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(), null);
     }
 

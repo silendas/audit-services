@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.TimeZone;
 
 public class convertDateToRoman {
 
@@ -18,6 +19,14 @@ public class convertDateToRoman {
             ex.printStackTrace();
         }
         return null;
+    }
+
+    public static Date dateAddTime(Date dateToConvert) {
+        // Mengatur zona waktu ke UTC
+        TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
+
+        // Kembalikan tanggal dengan waktu T00:00:00
+        return dateToConvert;
     }
 
     public static Date setTimeToLastSecond(Date date) {

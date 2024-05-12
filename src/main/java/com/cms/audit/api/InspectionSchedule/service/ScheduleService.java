@@ -1,6 +1,9 @@
 package com.cms.audit.api.InspectionSchedule.service;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedHashMap;
@@ -32,7 +35,6 @@ import com.cms.audit.api.Common.exception.ResourceNotFoundException;
 import com.cms.audit.api.Common.response.GlobalResponse;
 import com.cms.audit.api.Flag.model.Flag;
 import com.cms.audit.api.Flag.repository.FlagRepo;
-import com.cms.audit.api.FollowUp.models.FollowUp;
 import com.cms.audit.api.InspectionSchedule.dto.EditScheduleDTO;
 import com.cms.audit.api.InspectionSchedule.dto.RequestReschedule;
 import com.cms.audit.api.InspectionSchedule.dto.ScheduleDTO;
@@ -93,20 +95,20 @@ public class ScheduleService {
                 Specification<Schedule> spec = Specification
                                 .where(new SpecificationFIlter<Schedule>().nameLike(name))
                                 .and(new SpecificationFIlter<Schedule>().branchIdEqual(branch_id))
-                                .and(new SpecificationFIlter<Schedule>().dateBetween(start_date, end_date))
                                 .and(new SpecificationFIlter<Schedule>().isNotDeleted())
                                 .and(new SpecificationFIlter<Schedule>().orderByIdDesc());
+                if (start_date != null && end_date != null) {
+                        spec = spec.and(new SpecificationFIlter<Schedule>().dateBetween(start_date, end_date));
+                }
                 if (status != null) {
-                        spec = spec.and(new SpecificationFIlter<Schedule>().getByStatus(status));
+                        List<EStatus> statuses = Arrays.asList(status);
+                        spec = spec.and(new SpecificationFIlter<Schedule>().getByStatus(statuses));
                 } else if (getUser.getLevel().getCode().equals("B")) {
-                        spec = spec.and(new SpecificationFIlter<Schedule>().getByStatus(EStatus.PENDING));
-                        spec = spec.and(new SpecificationFIlter<Schedule>().getByStatus(EStatus.APPROVE));
-                        spec = spec.and(new SpecificationFIlter<Schedule>().getByStatus(EStatus.REJECTED));
-
+                        List<EStatus> statuses = Arrays.asList(EStatus.APPROVE, EStatus.REQUEST, EStatus.PENDING);
+                        spec = spec.and(new SpecificationFIlter<Schedule>().getByStatus(statuses));
                 } else if (getUser.getLevel().getCode().equals("A")) {
-                        spec = spec.and(new SpecificationFIlter<Schedule>().getByStatus(EStatus.APPROVE));
-                        spec = spec.and(new SpecificationFIlter<Schedule>().getByStatus(EStatus.REJECTED));
-                        spec = spec.and(new SpecificationFIlter<Schedule>().getByStatus(EStatus.REQUEST));
+                        List<EStatus> statuses = Arrays.asList(EStatus.APPROVE, EStatus.REQUEST, EStatus.REJECTED);
+                        spec = spec.and(new SpecificationFIlter<Schedule>().getByStatus(statuses));
                 }
                 Page<Schedule> response = pag.findAll(spec, PageRequest.of(page, size));
                 if (response.isEmpty()) {
@@ -126,32 +128,58 @@ public class ScheduleService {
 
         }
 
+        public static void convertDate(String dateToConvert) {
+                // String tanggal dalam format "yyyy-MM-dd"
+                String dateString = dateToConvert;
+
+                // Mendapatkan waktu saat ini
+                LocalDateTime currentTime = LocalDateTime.now();
+
+                // Parsing string tanggal menjadi LocalDateTime
+                LocalDateTime date = LocalDateTime.parse(dateString + "T00:00:00");
+
+                // Mengatur waktu objek LocalDateTime menjadi waktu saat ini
+                date = date.withHour(currentTime.getHour())
+                                .withMinute(currentTime.getMinute())
+                                .withSecond(currentTime.getSecond())
+                                .withNano(currentTime.getNano());
+
+                // Mengonversi LocalDateTime ke string dalam format yang diinginkan
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+                String formattedDate = date.format(formatter);
+
+                // Menampilkan hasil
+                System.out.println("Tanggal yang telah diubah: " + formattedDate);
+        }
+
         public GlobalResponse getSchedule(Long branch_id, String name, int page, int size, Date start_date,
-                        Date end_date, String category, EStatus status) {
+                        Date end_date, ECategory category, EStatus status) {
                 try {
                         User getUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
                         Specification<Schedule> spec = Specification
                                         .where(new SpecificationFIlter<Schedule>().nameLike(name))
                                         .and(new SpecificationFIlter<Schedule>().branchIdEqual(branch_id))
-                                        .and(new SpecificationFIlter<Schedule>().dateBetween(start_date, end_date))
                                         .and(new SpecificationFIlter<Schedule>().getByCategory(category))
                                         .and(new SpecificationFIlter<Schedule>().isNotDeleted());
+                        if (start_date != null && end_date != null) {
+                                spec = spec.and(new SpecificationFIlter<Schedule>().dateBetween(start_date, end_date));
+                        }
                         if (status != null) {
-                                spec = spec.and(new SpecificationFIlter<Schedule>().getByStatus(status));
+                                List<EStatus> statuses = Arrays.asList(status);
+                                spec = spec.and(new SpecificationFIlter<Schedule>().getByStatus(statuses));
                         } else {
-                                spec = spec.and(new SpecificationFIlter<Schedule>().getByStatus(EStatus.TODO));
-                                spec = spec.and(new SpecificationFIlter<Schedule>().getByStatus(EStatus.PROGRESS));
-                                spec = spec.and(new SpecificationFIlter<Schedule>().getByStatus(EStatus.DONE));
-                                spec = spec.and(new SpecificationFIlter<Schedule>().getByStatus(EStatus.PENDING));
+                                List<EStatus> statuses = Arrays.asList(EStatus.TODO, EStatus.PROGRESS, EStatus.DONE,
+                                                EStatus.PENDING);
+                                spec = spec.and(new SpecificationFIlter<Schedule>().getByStatus(statuses));
                         }
                         if (getUser.getLevel().getCode().equals("C")) {
-                                spec = spec.and(new SpecificationFIlter<Schedule>().userId(getUser.getId()))
-                                                .and(new SpecificationFIlter<Schedule>().orderByIdDesc());
-                        } else if (getUser.getLevel().getCode().equals("B")) {
+                                spec = spec.and(new SpecificationFIlter<Schedule>().userId(getUser.getId()));
+                        }
+                        if (getUser.getLevel().getCode().equals("B")) {
                                 spec = spec.and(new SpecificationFIlter<Schedule>()
                                                 .getByRegionIds(getUser.getRegionId()));
                         }
-                        
+                        spec = spec.and(new SpecificationFIlter<Schedule>().orderByIdDesc());
                         Page<Schedule> response = pag.findAll(spec, PageRequest.of(page, size));
                         if (response.isEmpty()) {
                                 return GlobalResponse

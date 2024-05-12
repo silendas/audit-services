@@ -52,19 +52,19 @@ public class Schedule {
     private String description;
 
     //@JsonFormat(pattern="yyyy-MM-dd")
-    @Column(name = "start_date",columnDefinition = "DATE")
+    @Column(name = "start_date")
     private Date start_date;
 
     //@JsonFormat(pattern="yyyy-MM-dd")
-    @Column(name = "end_date",columnDefinition = "DATE")
+    @Column(name = "end_date")
     private Date end_date;
 
    // @JsonFormat(pattern="yyyy-MM-dd")
-    @Column(name = "start_date_realization", columnDefinition = "DATE")
+    @Column(name = "start_date_realization")
     private Date start_date_realization;
 
     //@JsonFormat(pattern="yyyy-MM-dd")
-    @Column(name = "end_date_realization", columnDefinition = "DATE")
+    @Column(name = "end_date_realization")
     private Date end_date_realization;
 
     @Enumerated(EnumType.STRING)
