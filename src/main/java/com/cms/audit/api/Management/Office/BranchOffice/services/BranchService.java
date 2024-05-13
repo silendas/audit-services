@@ -57,7 +57,7 @@ public class BranchService {
             if (response.isEmpty()) {
                 return GlobalResponse
                         .builder()
-                        .message("Data not found")
+                        .message("Data tidak ditemukan")
                         .status(HttpStatus.OK)
                         .data(response)
                         .build();
@@ -109,7 +109,7 @@ public class BranchService {
             if (response.isEmpty()) {
                 return GlobalResponse
                         .builder()
-                        .message("Data not found")
+                        .message("Data tidak ditemukan")
                         .status(HttpStatus.OK)
                         .data(response)
                         .build();
@@ -142,7 +142,7 @@ public class BranchService {
             if (response.isEmpty()) {
                 return GlobalResponse
                         .builder()
-                        .message("Data not found")
+                        .message("Data tidak ditemukan")
                         .status(HttpStatus.BAD_REQUEST)
                         .data(response)
                         .build();
@@ -183,7 +183,7 @@ public class BranchService {
             if (response.isEmpty()) {
                 return GlobalResponse
                         .builder()
-                        .message("Data not found")
+                        .message("Data tidak ditemukan")
                         .status(HttpStatus.OK)
                         .data(response)
                         .build();
@@ -243,7 +243,7 @@ public class BranchService {
             if (response.isEmpty()) {
                 return GlobalResponse
                         .builder()
-                        .message("Data not found")
+                        .message("Data tidak ditemukan")
                         .status(HttpStatus.OK)
                         .data(response)
                         .build();
@@ -283,7 +283,7 @@ public class BranchService {
             if (response.isEmpty()) {
                 return GlobalResponse
                         .builder()
-                        .message("Data not found")
+                        .message("Data tidak ditemukan")
                         .status(HttpStatus.OK)
                         .data(response)
                         .build();
@@ -358,7 +358,7 @@ public class BranchService {
             Optional<User> getUser = userRepository.findById(userId);
             if (!getUser.isPresent()) {
                 return GlobalResponse.builder().message("User tidak ditemukan")
-                        .errorMessage("User with id:" + userId + " is not found")
+                        .errorMessage("User dengan id :" + userId + " tidak ditemukan")
                         .status(HttpStatus.BAD_REQUEST).build();
             }
             List<Branch> getBranch = new ArrayList<>();
@@ -401,7 +401,7 @@ public class BranchService {
             if (response.isEmpty()) {
                 return GlobalResponse
                         .builder()
-                        .message("Data not found")
+                        .message("Data tidak ditemukan")
                         .status(HttpStatus.OK)
                         .data(response)
                         .build();
@@ -434,7 +434,7 @@ public class BranchService {
             if (response.isEmpty()) {
                 return GlobalResponse
                         .builder()
-                        .message("Data not found")
+                        .message("Data tidak ditemukan")
                         .status(HttpStatus.OK)
                         .data(response)
                         .build();

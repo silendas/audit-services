@@ -96,7 +96,7 @@ public class RevisionService {
                 List<Revision> response = repository.findAll();
                 if (response.isEmpty()) {
                     if (response.isEmpty()) {
-                        return GlobalResponse.builder().message("Data not found").status(HttpStatus.OK).data(response)
+                        return GlobalResponse.builder().message("Data tidak ditemukan").status(HttpStatus.OK).data(response)
                                 .build();
                     }
                 }
@@ -106,7 +106,7 @@ public class RevisionService {
                 List<Revision> response = repository.findByDetailIdAll(detaild);
                 if (response.isEmpty()) {
                     if (response.isEmpty()) {
-                        return GlobalResponse.builder().message("Data not found").status(HttpStatus.OK).data(response)
+                        return GlobalResponse.builder().message("Data tidak ditemukan").status(HttpStatus.OK).data(response)
                                 .build();
                     }
                 }

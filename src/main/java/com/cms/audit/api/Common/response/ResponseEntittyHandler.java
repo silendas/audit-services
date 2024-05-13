@@ -1,88 +1,59 @@
 package com.cms.audit.api.Common.response;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-
 public class ResponseEntittyHandler {
+
     public static ResponseEntity<Object> authSuccess(String message, String token, HttpStatus status) {
-
-        Map<String, Object> meta = new LinkedHashMap<>();
-        meta.put("timestamp", new Date());
-        meta.put("api_version", "0.0.1");
-
-        Map<String, Object> data = new LinkedHashMap<>();
+        Map<String, Object> response = createResponse(message, status);
         if (token != null) {
+            Map<String, Object> data = new LinkedHashMap<>();
             data.put("token", token);
-            data.put("refresh", null);
+            response.put("data", data);
         }
-
-        Map<String, Object> map = new LinkedHashMap<>();
-        map.put("meta", meta);
-        map.put("message", message);
-        map.put("status", status.value());
-        if (token != null) {
-            map.put("data", data);
-        }
-
-        return new ResponseEntity<Object>(map, status);
+        return new ResponseEntity<>(response, status);
     }
 
-    public static ResponseEntity<Object> errorResponse(String errors, String message, HttpStatus status) {
-
-        Map<String, Object> meta = new LinkedHashMap<>();
-        meta.put("timestamp", new Date());
-        meta.put("api_version", "0.0.1");
-
-        Map<String, Object> errora = new LinkedHashMap<>();
-        errora.put("error", message);
-
-        Map<String, Object> map = new LinkedHashMap<>();
-
-        map.put("meta", meta);
-        map.put("message", errors);
-        map.put("status", status.value());
-        map.put("details", errora);
-
-        return new ResponseEntity<Object>(map, status);
+    public static ResponseEntity<Object> errorResponse(String errorMessage, String message, HttpStatus status) {
+        Map<String, Object> response = createResponse(message, status);
+        Map<String, Object> details = new LinkedHashMap<>();
+        details.put("error", errorMessage);
+        response.put("details", details);
+        return new ResponseEntity<>(response, status);
     }
 
     public static ResponseEntity<Object> allHandler(Object data, String message, HttpStatus status, Exception error) {
+        Map<String, Object> response = createResponse(message, status);
+        if (error != null) {
+            Map<String, Object> errorDetails = new LinkedHashMap<>();
+            errorDetails.put("name", error.getClass().getName());
+            errorDetails.put("message", error.getMessage());
+            errorDetails.put("cause", error.getStackTrace());
+            response.put("error", errorDetails);
+        }
+        if (data != null) {
+            response.put("data", data);
+        }
+        return new ResponseEntity<>(response, status);
+    }
 
+    private static Map<String, Object> createResponse(String message, HttpStatus status) {
+        Map<String, Object> response = new LinkedHashMap<>();
+        response.put("meta", createMeta());
+        response.put("message", message);
+        response.put("status", status.value());
+        return response;
+    }
+
+    private static Map<String, Object> createMeta() {
         Map<String, Object> meta = new LinkedHashMap<>();
         meta.put("timestamp", new Date());
         meta.put("api_version", "0.0.1");
-
-        Map<String, Object> map = new LinkedHashMap<>();
-
-        if (error != null) {
-            Map<String, Object> err = new LinkedHashMap<>();
-            err.put("name", error.getClass());
-            if (message != null) {
-                err.put("message", message);
-            } else {
-                err.put("message", error.getMessage());
-            }
-            err.put("cause", error.getStackTrace());
-
-            map.put("meta", meta);
-            map.put("status", status.value());
-            map.put("error", err);
-        }
-
-        if (message != null) {
-            map.put("meta", meta);
-            map.put("message", message);
-            map.put("status", status.value());
-            if (data != null) {
-                map.put("data", data);
-            }
-        }
-
-        return new ResponseEntity<Object>(map, status);
+        return meta;
     }
-
 }

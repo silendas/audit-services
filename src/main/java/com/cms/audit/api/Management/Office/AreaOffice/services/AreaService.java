@@ -60,7 +60,7 @@ public class AreaService {
             if (response.isEmpty()) {
                 return GlobalResponse
                         .builder()
-                        .message("Data not found")
+                        .message("Data tidak ditemukan")
                         .status(HttpStatus.OK)
                         .data(response)
                         .build();
@@ -109,7 +109,7 @@ public class AreaService {
             if (response.isEmpty()) {
                 return GlobalResponse
                         .builder()
-                        .message("Data not found")
+                        .message("Data tidak ditemukan")
                         .status(HttpStatus.OK)
                         .data(response)
                         .build();
@@ -142,7 +142,7 @@ public class AreaService {
             if (!response.isPresent()) {
                 return GlobalResponse
                         .builder()
-                        .message("Data not found")
+                        .message("Data tidak ditemukan")
                         .status(HttpStatus.BAD_REQUEST)
                         .data(response)
                         .build();
@@ -183,7 +183,7 @@ public class AreaService {
             if (response.isEmpty()) {
                 return GlobalResponse
                         .builder()
-                        .message("Data not found")
+                        .message("Data tidak ditemukan")
                         .status(HttpStatus.OK)
                         .data(response)
                         .build();
@@ -216,7 +216,7 @@ public class AreaService {
             if (response.isEmpty()) {
                 return GlobalResponse
                         .builder()
-                        .message("Data not found")
+                        .message("Data tidak ditemukan")
                         .status(HttpStatus.OK)
                         .data(response)
                         .build();

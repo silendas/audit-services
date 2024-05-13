@@ -117,7 +117,7 @@ public class AuditDailyReportService {
                         if (response.isEmpty()) {
                                 return GlobalResponse
                                                 .builder()
-                                                .message("Data not found")
+                                                .message("Data tidak ditemukan")
                                                 .data(response)
                                                 .status(HttpStatus.OK)
                                                 .build();
@@ -427,7 +427,7 @@ public class AuditDailyReportService {
                 if (response.isEmpty()) {
                         return GlobalResponse
                                         .builder()
-                                        .message("Data Not found")
+                                        .message("Data tidak ditemukan")
                                         .data(response)
                                         .status(HttpStatus.OK)
                                         .build();
@@ -530,7 +530,7 @@ public class AuditDailyReportService {
                         } catch (Exception e) {
                                 return GlobalResponse
                                                 .builder()
-                                                .message("Data not found")
+                                                .message("Data tidak ditemukan")
                                                 .status(HttpStatus.OK).data(response)
                                                 .build();
                         }
@@ -648,7 +648,7 @@ public class AuditDailyReportService {
 
                                         Case getCase = caseRepository.findById(dto.getLha_detail().get(i).getCase_id())
                                                         .orElseThrow(() -> new ResponseStatusException(HttpStatus.OK,
-                                                                        "Data not found"));
+                                                                        "Data tidak ditemukan"));
 
                                         Long reportNumber = null;
                                         String rptNum = null;

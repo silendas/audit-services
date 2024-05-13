@@ -142,7 +142,7 @@ public class ClarificationService {
                         if (response.isEmpty()) {
                                 return GlobalResponse
                                                 .builder()
-                                                .message("Data not found")
+                                                .message("Data tidak ditemukan")
                                                 .status(HttpStatus.OK).data(response)
                                                 .build();
                         }
@@ -185,7 +185,7 @@ public class ClarificationService {
                         if (response == null) {
                                 return GlobalResponse
                                                 .builder()
-                                                .message("Data not found")
+                                                .message("Data tidak ditemukan")
                                                 .status(HttpStatus.BAD_REQUEST).data(response)
                                                 .build();
                         }

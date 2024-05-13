@@ -1,7 +1,5 @@
 package com.cms.audit.api.InspectionSchedule.service;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -14,9 +12,7 @@ import java.util.Optional;
 import org.hibernate.exception.DataException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -126,30 +122,6 @@ public class ScheduleService {
                                 .status(HttpStatus.OK)
                                 .build();
 
-        }
-
-        public static void convertDate(String dateToConvert) {
-                // String tanggal dalam format "yyyy-MM-dd"
-                String dateString = dateToConvert;
-
-                // Mendapatkan waktu saat ini
-                LocalDateTime currentTime = LocalDateTime.now();
-
-                // Parsing string tanggal menjadi LocalDateTime
-                LocalDateTime date = LocalDateTime.parse(dateString + "T00:00:00");
-
-                // Mengatur waktu objek LocalDateTime menjadi waktu saat ini
-                date = date.withHour(currentTime.getHour())
-                                .withMinute(currentTime.getMinute())
-                                .withSecond(currentTime.getSecond())
-                                .withNano(currentTime.getNano());
-
-                // Mengonversi LocalDateTime ke string dalam format yang diinginkan
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
-                String formattedDate = date.format(formatter);
-
-                // Menampilkan hasil
-                System.out.println("Tanggal yang telah diubah: " + formattedDate);
         }
 
         public GlobalResponse getSchedule(Long branch_id, String name, int page, int size, Date start_date,
@@ -666,14 +638,6 @@ public class ScheduleService {
                                 // check if schedule already exist?
 
                                 Schedule response = repository.save(schedule);
-                                if (response == null) {
-                                        return GlobalResponse
-                                                        .builder()
-                                                        .message("Failed")
-                                                        .status(HttpStatus.UNPROCESSABLE_ENTITY)
-                                                        .build();
-                                }
-
                                 logService.save(response.getCreatedBy(), response.getDescription(), response.getId(),
                                                 ECategory.REGULAR, response.getStatus());
                         }
@@ -1218,14 +1182,6 @@ public class ScheduleService {
                         schedule.setUpdated_at(new Date());
 
                         Schedule response = repository.save(schedule);
-                        if (response == null) {
-                                return GlobalResponse
-                                                .builder()
-                                                .message("Failed")
-                                                .status(HttpStatus.UNPROCESSABLE_ENTITY)
-                                                .build();
-                        }
-
                         logService.edit(response.getCreatedBy(), response.getDescription(), response.getId(),
                                         response.getCategory(), response.getStatus());
 
@@ -1266,9 +1222,6 @@ public class ScheduleService {
                         schedule.setUpdated_at(new Date());
 
                         Schedule response = repository.save(schedule);
-                        if (response == null) {
-                                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Bad Request");
-                        }
                         logService.delete(response.getCreatedBy(), response.getDescription(), response.getId(),
                                         response.getCategory(), response.getStatus());
                         return GlobalResponse

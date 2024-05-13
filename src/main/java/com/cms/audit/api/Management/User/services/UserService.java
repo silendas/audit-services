@@ -190,7 +190,7 @@ public class UserService {
                 } catch (Exception e) {
                         return GlobalResponse
                                         .builder()
-                                        .message("Data not found")
+                                        .message("Data tidak ditemukan")
                                         .data(user)
                                         .status(HttpStatus.OK)
                                         .build();
@@ -250,7 +250,7 @@ public class UserService {
                 try {
                         Optional<User> response = userRepository.findById(id);
                         if (!response.isPresent()) {
-                                return GlobalResponse.builder().message("Data not found").status(HttpStatus.BAD_REQUEST)
+                                return GlobalResponse.builder().message("Data tidak ditemukan").status(HttpStatus.BAD_REQUEST)
                                                 .data(response)
                                                 .build();
                         }
@@ -311,7 +311,7 @@ public class UserService {
                 try {
                         Optional<User> response = userRepository.findByUsername(username);
                         if (!response.isPresent()) {
-                                return GlobalResponse.builder().message("Data not found").status(HttpStatus.BAD_REQUEST)
+                                return GlobalResponse.builder().message("Data tidak ditemukan").status(HttpStatus.BAD_REQUEST)
                                                 .data(response)
                                                 .build();
                         }
@@ -386,7 +386,7 @@ public class UserService {
                         Page<User> response = pagUser.findByMain(setMain.get(), PageRequest.of(page, size));
                         if (response.isEmpty()) {
                                 if (response.isEmpty()) {
-                                        return GlobalResponse.builder().message("Data not found").status(HttpStatus.OK)
+                                        return GlobalResponse.builder().message("Data tidak ditemukan").status(HttpStatus.OK)
                                                         .data(response).build();
                                 }
                         }
@@ -432,7 +432,7 @@ public class UserService {
                         List<User> response = userRepository.findUserExceptItSelf(id);
                         List<Object> listResponse = new ArrayList<>();
                         if (response.isEmpty()) {
-                                return GlobalResponse.builder().message("Data not found").data(response)
+                                return GlobalResponse.builder().message("Data tidak ditemukan").data(response)
                                                 .status(HttpStatus.OK)
                                                 .build();
                         }
@@ -535,7 +535,7 @@ public class UserService {
                                 }
                         }
                         if (response.isEmpty()) {
-                                return GlobalResponse.builder().message("Data not found").data(response)
+                                return GlobalResponse.builder().message("Data tidak ditemukan").data(response)
                                                 .status(HttpStatus.OK)
                                                 .build();
                         }
@@ -557,7 +557,7 @@ public class UserService {
                 try {
                         List<DropDownUser> response = userRepository.findDropDownByMain(id);
                         if (response.isEmpty()) {
-                                return GlobalResponse.builder().message("Data not found").status(HttpStatus.OK)
+                                return GlobalResponse.builder().message("Data tidak ditemukan").status(HttpStatus.OK)
                                                 .build();
                         }
                         return GlobalResponse

@@ -30,7 +30,7 @@ public class PenaltyService {
             if (response.isEmpty()) {
                 return GlobalResponse
                         .builder()
-                        .message("Data not found").data(response)
+                        .message("Data tidak ditemukan").data(response)
                         .status(HttpStatus.OK)
                         .build();
             }
@@ -62,7 +62,7 @@ public class PenaltyService {
             if (response.isEmpty()) {
                 return GlobalResponse
                         .builder()
-                        .message("Data not found").data(response)
+                        .message("Data tidak ditemukan").data(response)
                         .status(HttpStatus.OK)
                         .build();
             }
@@ -94,7 +94,7 @@ public class PenaltyService {
             if(!response.isPresent()) {
                 return GlobalResponse
                         .builder()
-                        .message("Data not found").data(response)
+                        .message("Data tidak ditemukan").data(response)
                         .status(HttpStatus.BAD_REQUEST)
                         .build();
             }
