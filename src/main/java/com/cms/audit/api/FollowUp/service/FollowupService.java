@@ -264,8 +264,8 @@ public class FollowupService {
 
             FollowUp followUp = getFollowUp.get();
             followUp.setPenalty(listPenalty);
-            if (dto.getCharging_costs() != null && !dto.getCharging_costs().equals("")) {
-                followUp.setCharging_costs(dto.getCharging_costs());
+            if (dto.getCharging_costs() != null && !dto.getCharging_costs().equals(0)) {
+                followUp.setCharging_costs(String.valueOf(dto.getCharging_costs()));
             } else {
                 followUp.setCharging_costs(String.valueOf(0));
             }

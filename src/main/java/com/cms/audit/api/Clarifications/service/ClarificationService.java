@@ -532,7 +532,7 @@ public class ClarificationService {
                                         getBefore.get().getReportType(),
                                         getBefore.get().getReport_number(),
                                         getBefore.get().getCode(),
-                                        dto.getNominal_loss(),
+                                        String.valueOf(dto.getNominal_loss()),
                                         getBefore.get().getEvaluation_limitation(),
                                         getBefore.get().getLocation(),
                                         getBefore.get().getAuditee(),
@@ -556,8 +556,7 @@ public class ClarificationService {
 
                         Map<String, Object> returnResponse = new LinkedHashMap<>();
 
-                        if (!dto.getNominal_loss().isEmpty() || dto.getNominal_loss() != "") {
-
+                        if (dto.getNominal_loss() != 0  || dto.getNominal_loss() != null) {
                                 Optional<NumberClarificationInterface> checkClBefore = newsInspectionRepository
                                                 .checkNumberBAP(response.getUser().getId());
                                 if (checkClBefore.isPresent()) {

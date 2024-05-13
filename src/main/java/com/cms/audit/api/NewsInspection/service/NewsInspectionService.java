@@ -163,8 +163,7 @@ public class NewsInspectionService {
             clarification.put("id", bap.getClarification().getId());
             clarification.put("code", bap.getClarification().getCode());
             clarification.put("nominal_loss", bap.getClarification().getNominal_loss());
-            clarification.put("evaluation_limitation",
-                    convertDateToRoman.convertDateToString(bap.getClarification().getEvaluation_limitation()));
+            clarification.put("evaluation_limitation",bap.getClarification().getEvaluation_limitation());
             kkaMap.put("clarification", clarification);
 
             kkaMap.put("code", bap.getCode());

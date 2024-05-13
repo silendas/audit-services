@@ -22,7 +22,7 @@ public class ClarificationDTO {
     private Long report_type_id;
     private Long report_number;
     private String code;
-    private String nominal_loss;
+    private Long nominal_loss;
     private Date evaluation_limitation;
     private String supervisor;
     private String auditee_leader;

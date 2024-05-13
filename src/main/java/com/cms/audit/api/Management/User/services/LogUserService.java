@@ -115,8 +115,6 @@ public class LogUserService {
                 }
             }
 
-            Optional<User> createdBy = userRepository.findById(response.get(u).getId());
-
             List<Area> area = new ArrayList<>();
             if (!response.get(u).getAreaId().isEmpty()) {
                 for (int i = 0; i < response.get(u).getAreaId().size(); i++) {
@@ -147,6 +145,8 @@ public class LogUserService {
             user.setNip(response.get(u).getNip());
             user.setIs_active(response.get(u).getIs_active());
             user.setCreated_at(response.get(u).getCreated_at());
+
+            Optional<User> createdBy = userRepository.findById(response.get(u).getId());
 
             Map<String, Object> objUser = new LinkedHashMap<>();
             objUser.put("id", createdBy.get().getId());
@@ -185,7 +185,7 @@ public class LogUserService {
             return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(),
                     null);
         } catch (Exception e) {
-            return ResponseEntittyHandler.errorResponse("Terjadi kesalahan", "Err: " + e,
+            return ResponseEntittyHandler.errorResponse("Err: " + e,"Terjadi kesalahan",
                     HttpStatus.INTERNAL_SERVER_ERROR);
 
         }

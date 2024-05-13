@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 public class IdentificationDTO {
     private Long clarification_id;
     private Long evaluation;
-    private String nominal_loss = "";
+    private Long nominal_loss;
     private String recommendation;
     private Long is_followup;
 }
