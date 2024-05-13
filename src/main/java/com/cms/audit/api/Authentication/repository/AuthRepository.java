@@ -14,8 +14,9 @@ import com.cms.audit.api.Management.User.models.User;
 public interface AuthRepository extends JpaRepository<User, Long>{
     @Query(value = "SELECT u.* FROM users u where (u.email = :email or u.username = :username) AND u.is_delete <> 1 AND u.is_active <> 0", nativeQuery = true)
     Optional<User> findOneUsersByEmailOrUsername(@Param("email") String email, @Param("username") String username);
-
+    @Query("SELECT u FROM User u WHERE u.email = :email AND u.is_delete <> 1")
     Optional<User> findByEmail(String email);
-
+    
+    @Query("SELECT u FROM User u WHERE u.username = :username AND u.is_delete <> 1")
     Optional<User> findByUsername(String username);
 }

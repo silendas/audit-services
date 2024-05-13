@@ -63,13 +63,13 @@ public class User implements UserDetails {
     @Column(name = "branch_id",nullable = true)
     private List<Long> branchId;
 
-    @Column(name = "email")
+    @Column(name = "email", unique = true)
     private String email;
 
-    @Column(name = "nip")
+    @Column(name = "nip", unique = true)
     private String nip;
 
-    @Column(name = "username")
+    @Column(name = "username", unique = true)
     private String username;
 
     @JsonIgnore
@@ -79,7 +79,7 @@ public class User implements UserDetails {
     @Column(name = "fullname")
     private String fullname;
 
-    @Column(name = "initial_name")
+    @Column(name = "initial_name", unique = true)
     private String initial_name;
 
     @Column(name = "is_active", length = 2, nullable = true)

@@ -1093,7 +1093,7 @@ public class UserService {
                         if (dto.getUsername() == getUser.getUsername() || dto.getEmail() == getUser.getEmail()) {
                                 return GlobalResponse
                                                 .builder()
-                                                .message("User already exist")
+                                                .message("User sudah ada")
                                                 .status(HttpStatus.BAD_REQUEST)
                                                 .build();
                         }
