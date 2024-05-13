@@ -67,7 +67,7 @@ public class NewsInspection {
     private String code;
 
     @Column(name = "nominal_loss")
-    private String nominal_loss;
+    private Long nominal_loss;
     
     @Column(name = "created_by")
     private Long created_by;

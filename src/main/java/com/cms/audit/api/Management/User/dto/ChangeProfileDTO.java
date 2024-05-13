@@ -12,6 +12,6 @@ import lombok.ToString;
 @Getter
 @NoArgsConstructor
 public class ChangeProfileDTO {
-    private String username;
+    private String fullname;
     private String email;
 }

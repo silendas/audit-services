@@ -63,7 +63,7 @@ public class Clarification {
     private String code;
 
     @Column(name = "nominal_loss")
-    private String nominal_loss;
+    private Long nominal_loss;
 
     @Column(name = "evaluation_limitation", columnDefinition = "DATE")
     private Date evaluation_limitation;

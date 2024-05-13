@@ -4,8 +4,8 @@ import java.text.NumberFormat;
 
 public class FormatNumber {
     
-    public static String formatString(String input){
-        double number = Double.parseDouble(input);
+    public static String formatString(Long input) {
+        long number = input;
         NumberFormat numberFormat = NumberFormat.getInstance();
         return numberFormat.format(number);
     }

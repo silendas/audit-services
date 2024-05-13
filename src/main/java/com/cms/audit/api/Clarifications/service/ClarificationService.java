@@ -95,7 +95,8 @@ public class ClarificationService {
                         if (getUser.getLevel().getCode().equals("C")) {
                                 spec = spec.and(new SpecificationFIlter<Clarification>().userId(getUser.getId()));
                         } else if (getUser.getLevel().getCode().equals("B")) {
-                                spec = spec.and(new SpecificationFIlter<Clarification>().getByRegionIds(getUser.getRegionId()));
+                                spec = spec.and(new SpecificationFIlter<Clarification>()
+                                                .getByRegionIds(getUser.getRegionId()));
                         }
                         response = pag.findAll(spec, PageRequest.of(page, size));
                         List<Object> listCl = new ArrayList<>();
@@ -532,7 +533,7 @@ public class ClarificationService {
                                         getBefore.get().getReportType(),
                                         getBefore.get().getReport_number(),
                                         getBefore.get().getCode(),
-                                        String.valueOf(dto.getNominal_loss()),
+                                        dto.getNominal_loss(),
                                         getBefore.get().getEvaluation_limitation(),
                                         getBefore.get().getLocation(),
                                         getBefore.get().getAuditee(),
@@ -556,7 +557,7 @@ public class ClarificationService {
 
                         Map<String, Object> returnResponse = new LinkedHashMap<>();
 
-                        if (dto.getNominal_loss() != 0  || dto.getNominal_loss() != null) {
+                        if (dto.getNominal_loss() != 0 || dto.getNominal_loss() != null) {
                                 Optional<NumberClarificationInterface> checkClBefore = newsInspectionRepository
                                                 .checkNumberBAP(response.getUser().getId());
                                 if (checkClBefore.isPresent()) {

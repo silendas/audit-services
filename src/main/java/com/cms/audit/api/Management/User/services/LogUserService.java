@@ -22,7 +22,6 @@ import com.cms.audit.api.Management.Office.BranchOffice.repository.BranchReposit
 import com.cms.audit.api.Management.Office.RegionOffice.models.Region;
 import com.cms.audit.api.Management.Office.RegionOffice.repository.RegionRepository;
 import com.cms.audit.api.Management.User.dto.response.LogUserResponse;
-import com.cms.audit.api.Management.User.models.EStatusLog;
 import com.cms.audit.api.Management.User.models.LogUser;
 import com.cms.audit.api.Management.User.models.User;
 import com.cms.audit.api.Management.User.repository.LogUserRepository;
@@ -84,7 +83,6 @@ public class LogUserService {
         user.setEmail(response.getEmail());
         user.setUsername(response.getUsername());
         user.setFullname(response.getFullname());
-        user.setAction(response.getAction());
         user.setInitial_name(response.getInitial_name());
         user.setNip(response.getNip());
         user.setIs_active(response.getIs_active());
@@ -138,7 +136,6 @@ public class LogUserService {
             user.setArea(area);
             user.setBranch(branch);
             user.setEmail(response.get(u).getEmail());
-            user.setAction(response.get(u).getAction());
             user.setUsername(response.get(u).getUsername());
             user.setFullname(response.get(u).getFullname());
             user.setInitial_name(response.get(u).getInitial_name());
@@ -210,7 +207,7 @@ public class LogUserService {
         }
     }
 
-    public void insertAuto(User dto, EStatusLog status) {
+    public void insertAuto(User dto) {
 
         User getUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
@@ -226,7 +223,6 @@ public class LogUserService {
         setLog.setIs_active(dto.getIs_active());
         setLog.setIs_delete(dto.getIs_delete());
         setLog.setLevel(dto.getLevel());
-        setLog.setAction(status);
         setLog.setNip(dto.getNip());
         setLog.setPassword(dto.getPassword());
         setLog.setRole(dto.getRole());

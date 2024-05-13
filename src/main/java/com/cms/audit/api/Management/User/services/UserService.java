@@ -41,7 +41,6 @@ import com.cms.audit.api.Management.User.dto.EditUserDTO;
 import com.cms.audit.api.Management.User.dto.UserDTO;
 import com.cms.audit.api.Management.User.dto.response.DropDownUser;
 import com.cms.audit.api.Management.User.dto.response.UserResponse;
-import com.cms.audit.api.Management.User.models.EStatusLog;
 import com.cms.audit.api.Management.User.models.User;
 import com.cms.audit.api.Management.User.repository.PagUser;
 import com.cms.audit.api.Management.User.repository.UserRepository;
@@ -750,7 +749,7 @@ public class UserService {
                                                         .build();
                                 }
                                 User response = userRepository.save(user);
-                                logService.insertAuto(response, EStatusLog.CREATE);
+                                logService.insertAuto(response);
                         } catch (SqlScriptException e) {
                                 return GlobalResponse.builder().error(e).status(HttpStatus.BAD_REQUEST).build();
                         }
@@ -977,7 +976,7 @@ public class UserService {
                                         }
                                 }
                                 User response = userRepository.save(user);
-                                logService.insertAuto(response, EStatusLog.EDIT);
+                                logService.insertAuto(response);
                         } catch (DataIntegrityViolationException e) {
                                 return GlobalResponse
                                                 .builder()
@@ -1034,7 +1033,7 @@ public class UserService {
                         user.setIs_active(0);
                         user.setUpdated_at(new Date());
                         User response = userRepository.save(user);
-                        logService.insertAuto(response, EStatusLog.DELETE);
+                        logService.insertAuto(response);
                         if (response == null) {
                                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Bad Request");
                         }
@@ -1064,7 +1063,7 @@ public class UserService {
                                 user.setPassword(passwordEncoder.encode(changePasswordDTO.getNew_password()));
                                 user.setUpdated_at(new Date());
                                 User response = userRepository.save(user);
-                                logService.insertAuto(response, EStatusLog.EDIT);
+                                logService.insertAuto(response);
                         } else {
                                 return GlobalResponse
                                                 .builder()
@@ -1090,21 +1089,21 @@ public class UserService {
                         User getUser = userRepository.findByUsername(username)
                                         .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
-                        if (dto.getUsername() == getUser.getUsername() || dto.getEmail() == getUser.getEmail()) {
+                        if (dto.getEmail() == getUser.getEmail()) {
                                 return GlobalResponse
                                                 .builder()
-                                                .message("User sudah ada")
+                                                .message("Email sama")
                                                 .status(HttpStatus.BAD_REQUEST)
                                                 .build();
                         }
 
                         User user = getUser;
-                        user.setUsername(dto.getUsername());
+                        user.setFullname(dto.getFullname());
                         user.setEmail(dto.getEmail());
 
                         try {
                                 User response = userRepository.save(user);
-                                logService.insertAuto(response, EStatusLog.EDIT);
+                                logService.insertAuto(response);
                         } catch (Exception e) {
                                 return GlobalResponse.builder().error(e).status(HttpStatus.BAD_REQUEST).build();
                         }

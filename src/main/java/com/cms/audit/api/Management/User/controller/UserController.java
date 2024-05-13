@@ -61,7 +61,6 @@ public class UserController {
     @PostMapping
     public ResponseEntity<Object> save(
             @RequestBody UserDTO userDTO) {
-        
         if (userDTO.getRegion_id() != null) {
             if (CollectionUtils.isEmpty(userDTO.getRegion_id())) {
                 userDTO.setRegion_id(null);
@@ -77,8 +76,6 @@ public class UserController {
                 userDTO.setArea_id(null);
             }
         }
-        
-
         GlobalResponse response = userService.save(userDTO);
         if (response.getStatus().equals(HttpStatus.BAD_REQUEST)) {
             return ResponseEntittyHandler.errorResponse(response.getErrorMessage(), response.getMessage(),
