@@ -21,8 +21,8 @@ public class LogUserController {
     @Autowired
     private LogUserService service;
 
-    @GetMapping()
-    public ResponseEntity<Object> getAll(@RequestParam("user_id") Optional<Long> user_id
+    @GetMapping
+    public ResponseEntity<Object> getAll(@RequestParam(required = false) Optional<Long> user_id
     ) {
         return service.getLogByUserId(user_id.orElse(null));
     }

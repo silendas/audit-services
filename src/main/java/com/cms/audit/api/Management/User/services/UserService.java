@@ -1034,9 +1034,7 @@ public class UserService {
                         user.setUpdated_at(new Date());
                         User response = userRepository.save(user);
                         logService.insertAuto(response);
-                        if (response == null) {
-                                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Bad Request");
-                        }
+     
                         return GlobalResponse
                                         .builder()
                                         .message("Berhasil menghapus data user")

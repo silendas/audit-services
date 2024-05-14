@@ -38,10 +38,10 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query(value = "SELECT * FROM users u WHERE u.initial_name = :in", nativeQuery = true)
     List<User> findByInitialName(@Param("in") String in);
 
-    @Query("SELECT u FROM User u WHERE u.email = :email AND u.is_delete <> 1")
+    @Query("SELECT u FROM User u WHERE u.email = :email AND u.is_delete <> 1  AND u.is_active = 1")
     Optional<User> findByEmail(String email);
     
-    @Query("SELECT u FROM User u WHERE u.username = :username AND u.is_delete <> 1")
+    @Query("SELECT u FROM User u WHERE u.username = :username AND u.is_delete <> 1  AND u.is_active = 1")
     Optional<User> findByUsername(String username);
 
     List<User> findByFullnameContainingIgnoreCase(String name);

@@ -33,6 +33,7 @@ import jakarta.transaction.Transactional;
 @Transactional
 public class LogUserService {
 
+   
     @Autowired
     private LogUserRepository repository;
 
@@ -49,37 +50,13 @@ public class LogUserService {
     private BranchRepository branchRepository;
 
     public LogUserResponse objUserDetail(LogUser response) {
-
-        List<Region> region = new ArrayList<>();
-        if (!response.getRegionId().isEmpty()) {
-            for (int i = 0; i < response.getRegionId().size(); i++) {
-                region.add(regionRepository.findById(response.getRegionId().get(i))
-                        .orElse(null));
-            }
-        }
-        Optional<User> createdBy = userRepository.findById(response.getId());
-        List<Area> area = new ArrayList<>();
-        if (!response.getAreaId().isEmpty()) {
-            for (int i = 0; i < response.getAreaId().size(); i++) {
-                area.add(areaRepository.findById(response.getAreaId().get(i))
-                        .orElse(null));
-            }
-        }
-        List<Branch> branch = new ArrayList<>();
-        if (!response.getBranchId().isEmpty()) {
-            for (int i = 0; i < response.getBranchId().size(); i++) {
-                branch.add(branchRepository.findById(response.getBranchId().get(i))
-                        .orElse(null));
-            }
-        }
-
         LogUserResponse user = new LogUserResponse();
         user.setId(response.getId());
         user.setLevel(response.getLevel());
         user.setMain(response.getMain());
-        user.setRegion(region);
-        user.setArea(area);
-        user.setBranch(branch);
+        user.setRegion(fetchRegions(response.getRegionId()));
+        user.setArea(fetchAreas(response.getAreaId()));
+        user.setBranch(fetchBranches(response.getBranchId()));
         user.setEmail(response.getEmail());
         user.setUsername(response.getUsername());
         user.setFullname(response.getFullname());
@@ -87,77 +64,53 @@ public class LogUserService {
         user.setNip(response.getNip());
         user.setIs_active(response.getIs_active());
         user.setCreated_at(response.getCreated_at());
-
-        Map<String, Object> objUser = new LinkedHashMap<>();
-        objUser.put("id", createdBy.get().getId());
-        objUser.put("fullname", createdBy.get().getFullname());
-        objUser.put("initial_name", createdBy.get().getInitial_name());
-        objUser.put("nip", createdBy.get().getNip());
-        objUser.put("level", createdBy.get().getLevel());
-
-        user.setCreated_by(objUser);
-
+        user.setCreated_by(fetchUser(response.getId()));
         return user;
-
     }
 
-    public List<LogUserResponse> pageUserDetail(List<LogUser> response) {
+    private List<Region> fetchRegions(List<Long> regionIds) {
+        List<Region> regions = new ArrayList<>();
+        if (regionIds != null && !regionIds.isEmpty()) {
+            regions = regionRepository.findAllById(regionIds);
+        }
+        return regions;
+    }
 
-        List<LogUserResponse> listUser = new ArrayList<>();
-        for (int u = 0; u < response.size(); u++) {
-            List<Region> region = new ArrayList<>();
-            if (!response.get(u).getRegionId().isEmpty()) {
-                for (int i = 0; i < response.get(u).getRegionId().size(); i++) {
-                    region.add(regionRepository.findById(response.get(u).getRegionId().get(i))
-                            .orElse(null));
-                }
-            }
+    private List<Area> fetchAreas(List<Long> areaIds) {
+        List<Area> areas = new ArrayList<>();
+        if (areaIds != null && !areaIds.isEmpty()) {
+            areas = areaRepository.findAllById(areaIds);
+        }
+        return areas;
+    }
 
-            List<Area> area = new ArrayList<>();
-            if (!response.get(u).getAreaId().isEmpty()) {
-                for (int i = 0; i < response.get(u).getAreaId().size(); i++) {
-                    area.add(areaRepository.findById(response.get(u).getAreaId().get(i))
-                            .orElse(null));
-                }
-            }
-            List<Branch> branch = new ArrayList<>();
-            if (!response.get(u).getBranchId().isEmpty()) {
-                for (int i = 0; i < response.get(u).getBranchId().size(); i++) {
-                    branch.add(branchRepository.findById(response.get(u).getBranchId().get(i))
-                            .orElse(null));
-                }
-            }
+    private List<Branch> fetchBranches(List<Long> branchIds) {
+        List<Branch> branches = new ArrayList<>();
+        if (branchIds != null && !branchIds.isEmpty()) {
+            branches = branchRepository.findAllById(branchIds);
+        }
+        return branches;
+    }
 
-            LogUserResponse user = new LogUserResponse();
-            user.setId(response.get(u).getId());
-            user.setLevel(response.get(u).getLevel());
-            user.setMain(response.get(u).getMain());
-            user.setRegion(region);
-            user.setArea(area);
-            user.setBranch(branch);
-            user.setEmail(response.get(u).getEmail());
-            user.setUsername(response.get(u).getUsername());
-            user.setFullname(response.get(u).getFullname());
-            user.setInitial_name(response.get(u).getInitial_name());
-            user.setNip(response.get(u).getNip());
-            user.setIs_active(response.get(u).getIs_active());
-            user.setCreated_at(response.get(u).getCreated_at());
-
-            Optional<User> createdBy = userRepository.findById(response.get(u).getId());
-
-            Map<String, Object> objUser = new LinkedHashMap<>();
+    private Map<String, Object> fetchUser(Long userId) {
+        Map<String, Object> objUser = new LinkedHashMap<>();
+        Optional<User> createdBy = userRepository.findById(userId);
+        if (createdBy.isPresent()) {
             objUser.put("id", createdBy.get().getId());
             objUser.put("fullname", createdBy.get().getFullname());
             objUser.put("initial_name", createdBy.get().getInitial_name());
             objUser.put("nip", createdBy.get().getNip());
             objUser.put("level", createdBy.get().getLevel());
-
-            user.setCreated_by(objUser);
-
-            listUser.add(user);
-
         }
+        return objUser;
+    }
 
+    public List<LogUserResponse> pageUserDetail(List<LogUser> response) {
+        List<LogUserResponse> listUser = new ArrayList<>();
+        for (LogUser user : response) {
+            LogUserResponse userResponse = objUserDetail(user);
+            listUser.add(userResponse);
+        }
         return listUser;
     }
 
@@ -179,6 +132,7 @@ public class LogUserService {
                         .message("Data berhasil ditampilkan")
                         .status(HttpStatus.OK).build();
             }
+
             return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(),
                     null);
         } catch (Exception e) {
@@ -208,7 +162,6 @@ public class LogUserService {
     }
 
     public void insertAuto(User dto) {
-
         User getUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         LogUser setLog = new LogUser();
@@ -229,6 +182,7 @@ public class LogUserService {
         setLog.setUsername(dto.getUsername());
         setLog.setCreated_at(new Date());
         setLog.setCreated_by(getUser.getId());
+
         repository.save(setLog);
 
     }

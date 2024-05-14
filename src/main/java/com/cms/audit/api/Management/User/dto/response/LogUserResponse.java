@@ -7,7 +7,6 @@ import com.cms.audit.api.Management.Office.AreaOffice.models.Area;
 import com.cms.audit.api.Management.Office.BranchOffice.models.Branch;
 import com.cms.audit.api.Management.Office.MainOffice.models.Main;
 import com.cms.audit.api.Management.Office.RegionOffice.models.Region;
-import com.cms.audit.api.Management.User.models.User;
 
 import lombok.Data;
 import lombok.Getter;
@@ -35,5 +34,4 @@ public class LogUserResponse {
     private Integer is_active;
     private Object created_by;
     private Date created_at;
-    private Date updated_at;
 }

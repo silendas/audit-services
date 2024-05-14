@@ -24,7 +24,7 @@ import jakarta.annotation.Nullable;
 import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
-@RequestMapping(path = BasePath.BASE_PATH_PROFILE)
+@RequestMapping(value = BasePath.BASE_PATH_PROFILE)
 public class ProfileController {
 
     @Autowired
