@@ -34,10 +34,10 @@ public class AuthController {
     public ResponseEntity<Object> logout(@NonNull HttpServletRequest request) {
         final String tokenHeader = request.getHeader("Authorization");
         if (tokenHeader == null) {
-            return ResponseEntittyHandler.allHandler(null, "No token", HttpStatus.BAD_REQUEST, null);
+            return ResponseEntittyHandler.allHandler(null, "Tidak ada token", HttpStatus.BAD_REQUEST, null);
         }
         String jwtToken = tokenHeader.substring(7);
         authService.logout(jwtToken);
-        return ResponseEntittyHandler.authSuccess("Berhasil Login",null, HttpStatus.OK);
+        return ResponseEntittyHandler.authSuccess("Berhasil Logout",null, HttpStatus.OK);
     }
 }
