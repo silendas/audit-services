@@ -260,39 +260,6 @@ public class ClarificationService {
                 }
         }
 
-        // public GlobalResponse getByDateRange(Date start_date, Date end_date, int
-        // page, int size) {
-        // try {
-        // Page<Clarification> response = pag.findClarificationInDateRange(start_date,
-        // end_date,
-        // PageRequest.of(page, size));
-        // return GlobalResponse
-        // .builder()
-        // .message("Berhasil menampilkan data")
-        // .data(response)
-        // .status(HttpStatus.OK)
-        // .build();
-        // } catch (ResponseStatusException e) {
-        // return GlobalResponse
-        // .builder()
-        // .error(e)
-        // .status(HttpStatus.BAD_REQUEST)
-        // .build();
-        // } catch (DataException e) {
-        // return GlobalResponse
-        // .builder()
-        // .error(e)
-        // .status(HttpStatus.UNPROCESSABLE_ENTITY)
-        // .build();
-        // } catch (Exception e) {
-        // return GlobalResponse
-        // .builder()
-        // .error(e)
-        // .status(HttpStatus.INTERNAL_SERVER_ERROR)
-        // .build();
-        // }
-        // }
-
         public GlobalResponse generateCK(GenerateCKDTO dto) {
                 try {
                         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();

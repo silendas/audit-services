@@ -16,18 +16,6 @@ import com.cms.audit.api.InspectionSchedule.models.Schedule;
 public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
         // this is for select
 
-        @Query(value = "SELECT * FROM inspection_schedule u WHERE u.category = 'REGULAR' ORDER BY u.id DESC ", nativeQuery = true)
-        public List<Schedule> findAllRowRegularSchedule();
-
-        @Query(value = "SELECT * FROM inspection_schedule u WHERE u.category = 'SPECIAL' ORDER BY u.id DESC ", nativeQuery = true)
-        public List<Schedule> findAllRowSpecialSchedule();
-
-        @Query(value = "SELECT * FROM inspection_schedule u WHERE u.category = 'REGULAR' AND u.status <> 'REJECTED' AND u.is_delete = 0 ORDER BY u.id DESC ", nativeQuery = true)
-        public List<Schedule> findAllScheduleForRegular();
-
-        @Query(value = "SELECT * FROM inspection_schedule u WHERE u.category = 'SPECIAL' AND u.status <> 'REJECTED' AND u.is_delete = 0 ORDER BY u.id DESC ", nativeQuery = true)
-        public List<Schedule> findAllScheduleForSpecial();
-
         @Query(value = "SELECT * FROM inspection_schedule u WHERE u.user_id = :userId AND u.category = :category AND u.is_delete = 0 ORDER BY u.id DESC ", nativeQuery = true)
         public List<Schedule> findAllScheduleByUserId(@Param("userId") Long id, @Param("category") String ucategory);
 
@@ -76,7 +64,7 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
                         @Param("branchId") Long branchId, @Param("start_date") Date start_date,
                         @Param("end_date") Date end_date);
 
-        @Query(value = "Select * from inspection_schedule u where u.id= :id AND CURRENT_TIMESTAMP BETWEEN u.start_date AND u.end_date ;", nativeQuery = true)
+        @Query(value = "SELECT * FROM inspection_schedule u WHERE u.id = :id AND DATE(CURRENT_TIMESTAMP) BETWEEN DATE(u.start_date) AND DATE(u.end_date);", nativeQuery = true)
         public List<Schedule> CheckIfScheduleisNow(@Param("id") Long id);
 
         @Query(value = "SELECT u.* FROM inspection_schedule u INNER JOIN branch_office bo ON u.branch_id = bo.id INNER JOIN area_office ao ON bo.area_id = ao.id INNER JOIN region_office ro ON ao.region_id = ro.id WHERE ro.id = :regionId AND u.category = :category AND u.is_delete <> 1 ORDER BY u.id DESC ;", nativeQuery = true)

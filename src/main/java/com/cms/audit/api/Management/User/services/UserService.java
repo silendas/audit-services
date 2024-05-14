@@ -1089,10 +1089,11 @@ public class UserService {
                         User getUser = userRepository.findByUsername(username)
                                         .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
-                        if (dto.getEmail() == getUser.getEmail()) {
+                        Optional<User> checkEmail = userRepository.findByEmail(dto.getEmail());
+                        if(checkEmail.isPresent()) {
                                 return GlobalResponse
-                                                .builder()
-                                                .message("Email sama")
+                                                .builder()      
+                                                .message("Email sudah tesedia")
                                                 .status(HttpStatus.BAD_REQUEST)
                                                 .build();
                         }

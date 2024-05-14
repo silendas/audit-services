@@ -217,7 +217,6 @@ public class GeneratePdf {
                         nestedbody2.addCell(new Cell().add("Minor").setFontSize(5)
                                         .setTextAlignment(TextAlignment.CENTER).setBorderBottom(Border.NO_BORDER));
                 }
-                ;
                 if (response.getPriority() == EPriority.OI) {
                         nestedbody2.addCell(new Cell().add("OI").setFontSize(5).setTextAlignment(TextAlignment.CENTER)
                                         .setBorderRight(Border.NO_BORDER).setBorderBottom(Border.NO_BORDER)
