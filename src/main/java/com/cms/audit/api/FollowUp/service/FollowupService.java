@@ -126,7 +126,7 @@ public class FollowupService {
                 fuMap.put("filename", fu.getFilename());
                 fuMap.put("file_path", fu.getFilePath());
                 fuMap.put("is_penalty", fu.getIsPenalty());
-                fuMap.put("created_at", fu.getCreatedAt());
+                fuMap.put("created_at", fu.getCreated_at());
 
                 listFU.add(fuMap);
 
@@ -223,7 +223,7 @@ public class FollowupService {
             fuMap.put("filename", fu.getFilename());
             fuMap.put("file_path", fu.getFilePath());
             fuMap.put("is_penalty", fu.getIsPenalty());
-            fuMap.put("created_at", fu.getCreatedAt());
+            fuMap.put("created_at", fu.getCreated_at());
             return GlobalResponse
                     .builder()
                     .data(fuMap)

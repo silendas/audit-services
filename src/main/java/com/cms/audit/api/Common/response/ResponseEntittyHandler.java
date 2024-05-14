@@ -3,6 +3,8 @@ package com.cms.audit.api.Common.response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import com.cms.audit.api.Common.dto.ErrorDetail;
+
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -26,6 +28,16 @@ public class ResponseEntittyHandler {
         response.put("details", details);
         return new ResponseEntity<>(response, status);
     }
+
+    // Harsunya kek gini NOTED
+    // (@ w @)
+
+    // public static ResponseEntity<Object> errorResponse(String errorMessage, String message, HttpStatus status, List<ErrorDetail> errorDetails) {
+    //     Map<String, Object> response = createResponse(message, status);
+    //     response.put("details", errorDetails);
+    //     return new ResponseEntity<>(response, status);
+    // }
+
 
     public static ResponseEntity<Object> allHandler(Object data, String message, HttpStatus status, Exception error) {
         Map<String, Object> response = createResponse(message, status);

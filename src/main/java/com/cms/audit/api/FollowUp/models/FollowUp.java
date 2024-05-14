@@ -81,8 +81,7 @@ public class FollowUp {
     @Column(name = "created_by")
     private Long created_by;
 
-    @JsonFormat(pattern="yyyy-MM-dd")
-    @Column(name = "created_at")
-    private Date createdAt;
+    @Column(name = "created_at", columnDefinition = "DATE")
+    private Date created_at;
     
 }
