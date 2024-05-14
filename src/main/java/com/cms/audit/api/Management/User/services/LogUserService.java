@@ -64,7 +64,7 @@ public class LogUserService {
         user.setNip(response.getNip());
         user.setIs_active(response.getIs_active());
         user.setCreated_at(response.getCreated_at());
-        user.setCreated_by(fetchUser(response.getId()));
+        user.setCreated_by(fetchUser(response.getCreated_by()));
         return user;
     }
 
