@@ -636,7 +636,7 @@ public class ClarificationService {
                                 followUp.setCode(reportCode2);
                                 followUp.setStatus(EStatusFollowup.CREATE);
                                 followUp.setCreated_by(response.getUser().getId());
-                                followUp.setCreatedAt(new Date());
+                                followUp.setCreated_at(new Date());
 
                                 followUpRepository.save(followUp);
                         }
