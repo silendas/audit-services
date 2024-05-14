@@ -877,8 +877,9 @@ public class ScheduleService {
                                                 .build();
                         }
 
-                        List<Schedule> checkDatefExist = repository.findScheduleInDateRangeByUserIdNoCategory(
+                        List<Schedule> checkDatefExist = repository.findScheduleInDateRangeByUserIdNoCategoryEdit(
                                         dto.getUser_id(),
+                                        dto.getSchedule_id(),
                                         dto.getStart_date(),
                                         dto.getEnd_date());
                         if (!checkDatefExist.isEmpty()) {
@@ -988,11 +989,12 @@ public class ScheduleService {
                         if (!checkIfExist.isEmpty()) {
                                 return GlobalResponse
                                                 .builder()
-                                                .message("Jadwal sudah ada ")
+                                                .message("Jadwal sudah ada")
                                                 .errorMessage("Jadwal duplikat")
                                                 .status(HttpStatus.BAD_REQUEST)
                                                 .build();
                         }
+                        
                         if (dto.getStart_date().after(dto.getEnd_date())) {
                                 return GlobalResponse
                                                 .builder()
@@ -1005,8 +1007,9 @@ public class ScheduleService {
                         if (getSchedule.getStart_date() != dto.getStart_date()
                                         && getSchedule.getEnd_date() != dto.getEnd_date()) {
                                 List<Schedule> checkDatefExist = repository
-                                                .findScheduleInDateRangeByUserIdNoCategory(
+                                                .findScheduleInDateRangeByUserIdNoCategoryEdit(
                                                                 dto.getUser_id(),
+                                                                id,
                                                                 dto.getStart_date(),
                                                                 dto.getEnd_date());
                                 if (!checkDatefExist.isEmpty()) {
