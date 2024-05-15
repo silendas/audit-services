@@ -249,7 +249,8 @@ public class UserService {
                 try {
                         Optional<User> response = userRepository.findById(id);
                         if (!response.isPresent()) {
-                                return GlobalResponse.builder().message("Data tidak ditemukan").status(HttpStatus.BAD_REQUEST)
+                                return GlobalResponse.builder().message("Data tidak ditemukan")
+                                                .status(HttpStatus.BAD_REQUEST)
                                                 .data(response)
                                                 .build();
                         }
@@ -310,7 +311,8 @@ public class UserService {
                 try {
                         Optional<User> response = userRepository.findByUsername(username);
                         if (!response.isPresent()) {
-                                return GlobalResponse.builder().message("Data tidak ditemukan").status(HttpStatus.BAD_REQUEST)
+                                return GlobalResponse.builder().message("Data tidak ditemukan")
+                                                .status(HttpStatus.BAD_REQUEST)
                                                 .data(response)
                                                 .build();
                         }
@@ -385,7 +387,8 @@ public class UserService {
                         Page<User> response = pagUser.findByMain(setMain.get(), PageRequest.of(page, size));
                         if (response.isEmpty()) {
                                 if (response.isEmpty()) {
-                                        return GlobalResponse.builder().message("Data tidak ditemukan").status(HttpStatus.OK)
+                                        return GlobalResponse.builder().message("Data tidak ditemukan")
+                                                        .status(HttpStatus.OK)
                                                         .data(response).build();
                                 }
                         }
@@ -449,9 +452,9 @@ public class UserService {
                                                 if (getBranch.isPresent()) {
                                                         Map<String, Object> objBranch = new LinkedHashMap<>();
                                                         objBranch.put("id", getBranch.get().getId());
-                                                        objBranch.put("name", getBranch.get().getName());                                                        
-                                                        objBranch.put("area", getBranch.get().getArea()); 
-                                                        listBranch.add(objBranch);                                                       
+                                                        objBranch.put("name", getBranch.get().getName());
+                                                        objBranch.put("area", getBranch.get().getArea());
+                                                        listBranch.add(objBranch);
                                                 }
                                         }
                                         oneUser.put("office", listBranch);
@@ -1034,7 +1037,7 @@ public class UserService {
                         user.setUpdated_at(new Date());
                         User response = userRepository.save(user);
                         logService.insertAuto(response);
-     
+
                         return GlobalResponse
                                         .builder()
                                         .message("Berhasil menghapus data user")
@@ -1087,13 +1090,15 @@ public class UserService {
                         User getUser = userRepository.findByUsername(username)
                                         .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
-                        Optional<User> checkEmail = userRepository.findByEmail(dto.getEmail());
-                        if(checkEmail.isPresent()) {
-                                return GlobalResponse
-                                                .builder()      
-                                                .message("Email sudah tesedia")
-                                                .status(HttpStatus.BAD_REQUEST)
-                                                .build();
+                        if (!dto.getEmail().equals(getUser.getEmail())) {
+                                Optional<User> checkEmail = userRepository.findByEmail(dto.getEmail());
+                                if (checkEmail.isPresent()) {
+                                        return GlobalResponse
+                                                        .builder()
+                                                        .message("Email sudah tesedia")
+                                                        .status(HttpStatus.BAD_REQUEST)
+                                                        .build();
+                                }
                         }
 
                         User user = getUser;
