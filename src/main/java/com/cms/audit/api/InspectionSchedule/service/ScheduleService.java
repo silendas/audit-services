@@ -102,6 +102,8 @@ public class ScheduleService {
                 } else if (getUser.getLevel().getCode().equals("B")) {
                         List<EStatus> statuses = Arrays.asList(EStatus.APPROVE, EStatus.REQUEST, EStatus.PENDING);
                         spec = spec.and(new SpecificationFIlter<Schedule>().getByStatus(statuses));
+                        spec = spec.and(new SpecificationFIlter<Schedule>()
+                                                .getByRegionIds(getUser.getRegionId()));
                 } else if (getUser.getLevel().getCode().equals("A")) {
                         List<EStatus> statuses = Arrays.asList(EStatus.APPROVE, EStatus.REQUEST, EStatus.REJECTED);
                         spec = spec.and(new SpecificationFIlter<Schedule>().getByStatus(statuses));

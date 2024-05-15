@@ -1098,6 +1098,7 @@ public class UserService {
                                                         .message("Email sudah tesedia")
                                                         .status(HttpStatus.BAD_REQUEST)
                                                         .build();
+                                                        
                                 }
                         }
 
