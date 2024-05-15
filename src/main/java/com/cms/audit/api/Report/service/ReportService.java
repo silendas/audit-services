@@ -3,10 +3,8 @@ package com.cms.audit.api.Report.service;
 import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -17,7 +15,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -32,7 +29,6 @@ import com.cms.audit.api.AuditDailyReport.repository.AuditDailyReportDetailRepos
 import com.cms.audit.api.AuditDailyReport.repository.AuditDailyReportRepository;
 import com.cms.audit.api.AuditDailyReport.repository.RevisionRepository;
 import com.cms.audit.api.Clarifications.models.Clarification;
-import com.cms.audit.api.Common.constant.SpecificationFIlter;
 import com.cms.audit.api.Common.constant.convertDateToRoman;
 import com.cms.audit.api.Common.pdf.LHAReport;
 import com.cms.audit.api.Common.response.GlobalResponse;
@@ -162,8 +158,7 @@ public class ReportService {
             if (response.isEmpty()) {
                 return GlobalResponse.builder().message("Data Empty").status(HttpStatus.OK).build();
             }
-            return GlobalResponse.builder().data(response).message("Berhasil menampilkan data").status(HttpStatus.OK)
-                    .build();
+            return GlobalResponse.builder().data(response).message("Berhasil menampilkan data").status(HttpStatus.OK).build();
         } catch (Exception e) {
             return GlobalResponse.builder().error(e).status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
@@ -181,8 +176,7 @@ public class ReportService {
             if (response.isEmpty()) {
                 return GlobalResponse.builder().message("Data Empty").status(HttpStatus.OK).build();
             }
-            return GlobalResponse.builder().data(response).message("Berhasil menampilkan data").status(HttpStatus.OK)
-                    .build();
+            return GlobalResponse.builder().data(response).message("Berhasil menampilkan data").status(HttpStatus.OK).build();
         } catch (Exception e) {
             return GlobalResponse.builder().error(e).status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
@@ -200,8 +194,7 @@ public class ReportService {
             if (response.isEmpty()) {
                 return GlobalResponse.builder().message("Data Empty").status(HttpStatus.OK).build();
             }
-            return GlobalResponse.builder().data(response).message("Berhasil menampilkan data").status(HttpStatus.OK)
-                    .build();
+            return GlobalResponse.builder().data(response).message("Berhasil menampilkan data").status(HttpStatus.OK).build();
         } catch (Exception e) {
             return GlobalResponse.builder().error(e).status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
@@ -214,8 +207,7 @@ public class ReportService {
             if (response.isEmpty()) {
                 return GlobalResponse.builder().message("Data Empty").status(HttpStatus.OK).build();
             }
-            return GlobalResponse.builder().data(response).message("Berhasil menampilkan data").status(HttpStatus.OK)
-                    .build();
+            return GlobalResponse.builder().data(response).message("Berhasil menampilkan data").status(HttpStatus.OK).build();
         } catch (Exception e) {
             return GlobalResponse.builder().error(e).status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
@@ -227,8 +219,7 @@ public class ReportService {
             if (!response.isPresent()) {
                 return GlobalResponse.builder().message("Data Empty").status(HttpStatus.OK).build();
             }
-            return GlobalResponse.builder().data(response).message("Berhasil menampilkan data").status(HttpStatus.OK)
-                    .build();
+            return GlobalResponse.builder().data(response).message("Berhasil menampilkan data").status(HttpStatus.OK).build();
         } catch (Exception e) {
             return GlobalResponse.builder().error(e).message("Error").status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
@@ -267,23 +258,56 @@ public class ReportService {
         User getUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         List<AuditDailyReport> response = new ArrayList<>();
+        // LhaReportDTO dto = new LhaReportDTO();
+        // List<ListLhaDTO> list = new ArrayList<>();
         List<LhaReportDTO> listAllReport = new ArrayList<>();
 
-        Specification<AuditDailyReport> spec = Specification
-                .where(new SpecificationFIlter<AuditDailyReport>().dateRange(start_date,
-                        end_date))
-                .and(new SpecificationFIlter<AuditDailyReport>().isNotDeleted());
-        if (getUser.getLevel().getCode().equals("C")) {
-            spec = spec.and(new SpecificationFIlter<AuditDailyReport>().getByRegionIds(Arrays.asList(regionId)));
-            spec = spec.and(new SpecificationFIlter<AuditDailyReport>().userId(getUser.getId()));
-        } else if (getUser.getLevel().getCode().equals("B")) {
-            spec = spec.and(new SpecificationFIlter<AuditDailyReport>().getByRegionIds(getUser.getRegionId()));
-        } else if (getUser.getLevel().getCode().equals("A")) {
-            spec = spec.and(new SpecificationFIlter<AuditDailyReport>().getByRegionIds(Arrays.asList(regionId)));
+        if (user_id != null && regionId != null && start_date != null && end_date != null) {
+            response = lhaRepository.findLHAByAll(regionId, user_id, start_date, end_date);
+        } else if (regionId != null && start_date != null && end_date != null) {
+            response = lhaRepository.findLHAByRegionInDateRange(regionId, start_date, end_date);
+        } else if (user_id != null && start_date != null && end_date != null) {
+            response = lhaRepository.findAllLHAByUserIdInDateRange(user_id, start_date, end_date);
+        } else if (user_id != null) {
+            response = lhaRepository.findAllLHAByUserId(user_id);
+        } else if (regionId != null) {
+            response = lhaRepository.findLHAByRegion(regionId);
+        } else {
+            if (getUser.getLevel().getCode().equals("B")  ) {
+                for (int i = 0; i < getUser.getRegionId().size(); i++) {
+                    List<AuditDailyReport> listLHA;
+                    if (start_date != null && end_date != null) {
+                        listLHA = lhaRepository.findLHAInDateRangeAndRegion(getUser.getRegionId().get(i), start_date, end_date);
+                    } else {
+                        listLHA = lhaRepository
+                                .findLHAByRegion(getUser.getRegionId().get(i));
+                    }
+                    for (int u = 0; u < listLHA.size(); u++) {
+                        response.add(listLHA.get(u));
+                    }
+                }
+            } else if (getUser.getLevel().getCode().equals("C") ) {
+                for (int i = 0; i < getUser.getBranchId().size(); i++) {
+                    List<AuditDailyReport> listLHA;
+                    if (start_date != null && end_date != null) {
+                        listLHA = lhaRepository.findAllLHAByUserIdInDateRange(getUser.getId(), start_date, end_date);
+                    } else {
+                        listLHA = lhaRepository.findAllLHAByUserId(getUser.getId());
+                    }
+                    for (int u = 0; u < listLHA.size(); u++) {
+                        response.add(listLHA.get(u));
+                    }
+                }
+            } else if (getUser.getLevel().getCode().equals("A") ){
+                if (start_date != null && end_date != null) {
+                    response = lhaRepository.findLHAInDateRange(start_date, end_date);
+                }else{
+                    response = lhaRepository.findAll();
+                }
+            } else {
+                response = null;
+            }
         }
-
-        response = lhaRepository.findAll(spec);
-
         if (response.isEmpty()) {
             ByteArrayInputStream pdf = LHAReport.generateIfNoData();
             InputStreamResource isr = new InputStreamResource(pdf);
@@ -299,27 +323,26 @@ public class ReportService {
         if (regionId != null) {
             for (int i = 0; i < response.size(); i++) {
                 List<AuditDailyReportDetail> detail = lhaDetailRepository.findByLHAIdForLeader(response.get(i).getId());
-                if (detail.isEmpty()) {
+                if(detail.isEmpty()){
                     continue;
                 }
                 String regionuser_id = response.get(i).getBranch().getArea().getRegion().getName();
                 String datereport;
-                if (response.get(i) != null) {
+                if(response.get(i) != null){
                     datereport = convertDateToRoman.convertDateHehe(response.get(i).getCreated_at());
-                } else {
+                }else{
                     datereport = "-";
                 }
                 String fulluser_id;
-                if (getUser.getFullname() != null) {
+                if(getUser.getFullname() != null){
                     fulluser_id = response.get(i).getUser().getFullname();
-                } else {
+                }else{
                     fulluser_id = "-";
                 }
 
                 boolean foundRegion = false;
                 for (int x = 0; x < listAllReport.size(); x++) {
-                    if (regionuser_id.equals(listAllReport.get(x).getArea_name())
-                            && datereport.equals(listAllReport.get(x).getDate())) {
+                    if (regionuser_id.equals(listAllReport.get(x).getArea_name()) && datereport.equals(listAllReport.get(x).getDate())) {
                         foundRegion = true;
                         List<ListLhaDTO> lhaDetails = listAllReport.get(x).getLha_detail();
                         boolean foundUser = false;
@@ -434,27 +457,26 @@ public class ReportService {
         } else {
             for (int i = 0; i < response.size(); i++) {
                 List<AuditDailyReportDetail> detail = lhaDetailRepository.findByLHAIdForLeader(response.get(i).getId());
-                if (detail.isEmpty()) {
+                if(detail.isEmpty()){
                     continue;
                 }
                 String regionuser_id = response.get(i).getBranch().getArea().getRegion().getName();
                 String datereport;
-                if (response.get(i) != null) {
+                if(response.get(i) != null){
                     datereport = convertDateToRoman.convertDateHehe(response.get(i).getCreated_at());
-                } else {
+                }else{
                     datereport = "-";
                 }
                 String fulluser_id;
-                if (getUser.getFullname() != null) {
+                if(getUser.getFullname() != null){
                     fulluser_id = response.get(i).getUser().getFullname();
-                } else {
+                }else{
                     fulluser_id = "-";
                 }
 
                 boolean foundRegion = false;
                 for (int x = 0; x < listAllReport.size(); x++) {
-                    if (regionuser_id.equals(listAllReport.get(x).getArea_name())
-                            && datereport.equals(listAllReport.get(x).getDate())) {
+                    if (regionuser_id.equals(listAllReport.get(x).getArea_name()) && datereport.equals(listAllReport.get(x).getDate())) {
                         foundRegion = true;
                         List<ListLhaDTO> lhaDetails = listAllReport.get(x).getLha_detail();
                         boolean foundUser = false;
