@@ -535,15 +535,15 @@ public class ScheduleService {
                                         listRequestSchedule.add(scheduleDTO.getSchedules().get(i));
                                 }
 
-                                if (scheduleDTO.getSchedules().get(i).getStart_date()
-                                                .equals(scheduleDTO.getSchedules().get(i).getEnd_date())) {
-                                        return GlobalResponse
-                                                        .builder()
-                                                        .message("Anda menginput tanggal yang sama")
-                                                        .errorMessage("Tidak bisa menambahkan jadwal dengan tanggal yang sama")
-                                                        .status(HttpStatus.BAD_REQUEST)
-                                                        .build();
-                                }
+                                // if (scheduleDTO.getSchedules().get(i).getStart_date()
+                                //                 .equals(scheduleDTO.getSchedules().get(i).getEnd_date())) {
+                                //         return GlobalResponse
+                                //                         .builder()
+                                //                         .message("Anda menginput tanggal yang sama")
+                                //                         .errorMessage("Tidak bisa menambahkan jadwal dengan tanggal yang sama")
+                                //                         .status(HttpStatus.BAD_REQUEST)
+                                //                         .build();
+                                // }
 
                                 if (scheduleDTO.getSchedules().get(i).getStart_date().before(getDateNow())
                                                 || scheduleDTO.getSchedules().get(i).getEnd_date()
@@ -721,15 +721,15 @@ public class ScheduleService {
                                         listRequestSchedule.add(scheduleDTO.getSchedules().get(i));
                                 }
 
-                                if (scheduleDTO.getSchedules().get(i).getStart_date()
-                                                .equals(scheduleDTO.getSchedules().get(i).getEnd_date())) {
-                                        return GlobalResponse
-                                                        .builder()
-                                                        .message("Anda menginput tanggal yang sama")
-                                                        .errorMessage("Tidak bisa menambahkan jadwal dengan tanggal yang sama")
-                                                        .status(HttpStatus.BAD_REQUEST)
-                                                        .build();
-                                }
+                                // if (scheduleDTO.getSchedules().get(i).getStart_date()
+                                //                 .equals(scheduleDTO.getSchedules().get(i).getEnd_date())) {
+                                //         return GlobalResponse
+                                //                         .builder()
+                                //                         .message("Anda menginput tanggal yang sama")
+                                //                         .errorMessage("Tidak bisa menambahkan jadwal dengan tanggal yang sama")
+                                //                         .status(HttpStatus.BAD_REQUEST)
+                                //                         .build();
+                                // }
 
                                 if (scheduleDTO.getSchedules().get(i).getStart_date().before(getDateNow())
                                                 || scheduleDTO.getSchedules().get(i).getEnd_date()
