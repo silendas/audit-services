@@ -877,9 +877,8 @@ public class ScheduleService {
                                                 .build();
                         }
 
-                        List<Schedule> checkDatefExist = repository.findScheduleInDateRangeByUserIdNoCategoryEdit(
+                        List<Schedule> checkDatefExist = repository.findScheduleInDateRangeByUserIdNoCategory(
                                         dto.getUser_id(),
-                                        dto.getSchedule_id(),
                                         dto.getStart_date(),
                                         dto.getEnd_date());
                         if (!checkDatefExist.isEmpty()) {
