@@ -212,7 +212,7 @@ public class GeneratePdf {
                 if (response.getPriority() == EPriority.Minor) {
                         nestedbody2.addCell(new Cell().add("Minor").setFontSize(5)
                                         .setTextAlignment(TextAlignment.CENTER).setBorderBottom(Border.NO_BORDER)
-                                        .setBackgroundColor(Color.RED));
+                                        .setBackgroundColor(Color.YELLOW));
                 } else {
                         nestedbody2.addCell(new Cell().add("Minor").setFontSize(5)
                                         .setTextAlignment(TextAlignment.CENTER).setBorderBottom(Border.NO_BORDER));
@@ -220,7 +220,7 @@ public class GeneratePdf {
                 if (response.getPriority() == EPriority.OI) {
                         nestedbody2.addCell(new Cell().add("OI").setFontSize(5).setTextAlignment(TextAlignment.CENTER)
                                         .setBorderRight(Border.NO_BORDER).setBorderBottom(Border.NO_BORDER)
-                                        .setBackgroundColor(Color.RED));
+                                        .setBackgroundColor(Color.GREEN));
                 } else {
                         nestedbody2.addCell(new Cell().add("OI").setFontSize(5).setTextAlignment(TextAlignment.CENTER)
                                         .setBorderRight(Border.NO_BORDER).setBorderBottom(Border.NO_BORDER));

@@ -98,6 +98,7 @@ public class AuditDailyReportDetailService {
                 spec = spec.and(new SpecificationFIlter<AuditDailyReportDetail>()
                         .getByRegionIds(getUser.getRegionId()));
             } else if (getUser.getLevel().getCode().equals("A")) {
+                spec = spec.and(new SpecificationFIlter<AuditDailyReportDetail>().statusFlow(1L));
                 spec = spec.and(new SpecificationFIlter<AuditDailyReportDetail>().statusFlow(2L));
             }
             response = pag.findAll(spec, PageRequest.of(page, size));
