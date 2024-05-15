@@ -33,7 +33,7 @@ public class AuthService {
                 Optional<User> response = authRepository.findOneUsersByEmailOrUsername(signinDTO.getUsername(),
                                 signinDTO.getUsername());
                 if (!response.isPresent()) {
-                        return AuthResponse.builder().message("Wrong username or email")
+                        return AuthResponse.builder().message("Username dan email salah")
                                         .status(HttpStatus.BAD_REQUEST).build();
                 };
 
@@ -45,7 +45,7 @@ public class AuthService {
                                                         signinDTO.getPassword())
                                         );
                 } catch (BadCredentialsException e) {
-                        return AuthResponse.builder().message("Invalid password")
+                        return AuthResponse.builder().message("Password salah")
                                         .status(HttpStatus.BAD_REQUEST).build();
                 }
 
