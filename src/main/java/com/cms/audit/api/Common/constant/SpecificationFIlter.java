@@ -36,6 +36,15 @@ public class SpecificationFIlter<T> {
         };
     }
 
+    public Specification<T> statusFlow(Long status) {
+        return (root, query, criteriaBuilder) -> {
+            if (status != null) {
+                return criteriaBuilder.equal(root.get("status_flow"), status);
+            }
+            return null;
+        };
+    }
+
     public Specification<T> lhaId(Long id) {
         return (root, query, criteriaBuilder) -> {
             if (id != null) {

@@ -97,6 +97,8 @@ public class AuditDailyReportDetailService {
             } else if (getUser.getLevel().getCode().equals("B")) {
                 spec = spec.and(new SpecificationFIlter<AuditDailyReportDetail>()
                         .getByRegionIds(getUser.getRegionId()));
+            } else if (getUser.getLevel().getCode().equals("A")) {
+                spec = spec.and(new SpecificationFIlter<AuditDailyReportDetail>().statusFlow(2L));
             }
             response = pag.findAll(spec, PageRequest.of(page, size));
             List<Object> details = new ArrayList<>();
