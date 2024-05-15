@@ -281,6 +281,9 @@ public class ReportService {
         } else if (getUser.getLevel().getCode().equals("A")) {
             spec = spec.and(new SpecificationFIlter<AuditDailyReport>().getByRegionIds(Arrays.asList(regionId)));
         }
+
+        response = lhaRepository.findAll(spec);
+
         if (response.isEmpty()) {
             ByteArrayInputStream pdf = LHAReport.generateIfNoData();
             InputStreamResource isr = new InputStreamResource(pdf);
