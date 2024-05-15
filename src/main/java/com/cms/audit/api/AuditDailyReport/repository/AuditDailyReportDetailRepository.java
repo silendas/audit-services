@@ -17,11 +17,12 @@ public interface AuditDailyReportDetailRepository extends JpaRepository<AuditDai
     @Query(value = "SELECT * FROM audit_daily_report_detail u WHERE u.audit_daily_report_id = :id AND u.is_delete <> 1", nativeQuery = true)
     List<AuditDailyReportDetail> findByLHAId(@Param("id") Long id);
 
-    // @Query(value = "SELECT * FROM audit_daily_report_detail u WHERE u.audit_daily_report_id = :id AND u.status_parsing <> 1 AND u.status_flow <> 0 AND u.is_delete <> 1", nativeQuery = true)
-    // List<AuditDailyReportDetail> findByLHAIdForLeader(@Param("id") Long id);
-
     @Query(value = "SELECT * FROM audit_daily_report_detail u WHERE u.audit_daily_report_id = :id AND u.status_parsing <> 1 AND u.status_flow = 2 AND u.is_delete <> 1", nativeQuery = true)
     List<AuditDailyReportDetail> findByLHAIdForLeader(@Param("id") Long id);
+
+    
+    @Query(value = "SELECT * FROM audit_daily_report_detail u WHERE u.audit_daily_report_id = :id AND u.status_flow = 2 AND u.is_delete <> 1", nativeQuery = true)
+    List<AuditDailyReportDetail> findByLHAIdLeader(@Param("id") Long id);
 
     @Query(value = "SELECT * FROM audit_daily_report_detail u WHERE u.audit_daily_report_id = :id AND u.is_delete <> 1 ORDER BY u.id DESC LIMIT 1", nativeQuery = true)
     Optional<AuditDailyReportDetail> findOneByLHAId(@Param("id") Long id);

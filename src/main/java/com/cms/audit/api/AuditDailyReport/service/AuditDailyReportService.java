@@ -211,13 +211,21 @@ public class AuditDailyReportService {
 
         public GlobalResponse getById(Long id) {
                 try {
+                        User getUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
                         Optional<AuditDailyReport> getLha = auditDailyReportRepository.findOneByLHAId(id);
                         if (!getLha.isPresent()) {
                                 return GlobalResponse.builder().message("LHA with id: " + id + " is not found")
                                                 .status(HttpStatus.BAD_REQUEST).build();
                         }
+                        List<AuditDailyReportDetail> getDetail = new ArrayList<>();
+                        if (getUser.getLevel().getCode().equals("C") || getUser.getLevel().getCode().equals("B")) {
+                                getDetail = auditDailyReportDetailRepository
+                                                .findByLHAId(id);
+                        }else if (getUser.getLevel().getCode().equals("A")) {
+                                getDetail = auditDailyReportDetailRepository.findByLHAIdLeader(id);
+                        }
 
-                        List<AuditDailyReportDetail> getDetail = auditDailyReportDetailRepository.findByLHAId(id);
                         List<DetailResponse> details = new ArrayList<>();
                         Integer is_flag = 0;
                         for (int i = 0; i < getDetail.size(); i++) {
