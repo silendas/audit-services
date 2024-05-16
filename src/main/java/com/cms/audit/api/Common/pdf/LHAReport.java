@@ -320,13 +320,13 @@ public class LHAReport {
                                                                         .getCases()
                                                                         .getCode())
                                                         .setBackgroundColor(Color.WHITE)
-                                                        .setFontSize(5).setTextAlignment(TextAlignment.CENTER));
+                                                        .setFontSize(5).setTextAlignment(TextAlignment.CENTER).setVerticalAlignment(VerticalAlignment.MIDDLE));
                                         bodyNested2.addCell(new Cell()
                                                         .add(dto.get(o).getLha_detail().get(i).getDetails().get(u)
                                                                         .getCaseCategory()
                                                                         .getName())
                                                         .setBackgroundColor(Color.WHITE)
-                                                        .setFontSize(5).setTextAlignment(TextAlignment.CENTER));
+                                                        .setFontSize(5).setTextAlignment(TextAlignment.CENTER).setVerticalAlignment(VerticalAlignment.MIDDLE));
                                         if (dto.get(o).getLha_detail().get(i).getDetails().get(u)
                                                         .getDescription() != null) {
                                                 bodyNested2.addCell(new Cell()
@@ -334,12 +334,12 @@ public class LHAReport {
                                                                                 .get(u)
                                                                                 .getDescription())
                                                                 .setBackgroundColor(Color.WHITE)
-                                                                .setFontSize(5).setTextAlignment(TextAlignment.CENTER));
+                                                                .setFontSize(5).setTextAlignment(TextAlignment.CENTER).setVerticalAlignment(VerticalAlignment.MIDDLE));
                                         } else {
                                                 bodyNested2.addCell(new Cell()
                                                                 .add("-")
                                                                 .setBackgroundColor(Color.WHITE)
-                                                                .setFontSize(5).setTextAlignment(TextAlignment.CENTER));
+                                                                .setFontSize(5).setTextAlignment(TextAlignment.CENTER).setVerticalAlignment(VerticalAlignment.MIDDLE));
                                         }
                                         if (dto.get(o).getLha_detail().get(i).getDetails().get(u)
                                                         .getTemporary_recommendations() != null) {
@@ -348,12 +348,12 @@ public class LHAReport {
                                                                                 .get(u)
                                                                                 .getTemporary_recommendations())
                                                                 .setBackgroundColor(Color.WHITE)
-                                                                .setFontSize(5).setTextAlignment(TextAlignment.CENTER));
+                                                                .setFontSize(5).setTextAlignment(TextAlignment.CENTER).setVerticalAlignment(VerticalAlignment.MIDDLE));
                                         } else {
                                                 bodyNested2.addCell(new Cell()
                                                                 .add("-")
                                                                 .setBackgroundColor(Color.WHITE)
-                                                                .setFontSize(5).setTextAlignment(TextAlignment.CENTER));
+                                                                .setFontSize(5).setTextAlignment(TextAlignment.CENTER).setVerticalAlignment(VerticalAlignment.MIDDLE));
                                         }
                                         if (dto.get(o).getLha_detail().get(i).getDetails().get(u)
                                                         .getPermanent_recommendations() != null) {
@@ -362,12 +362,12 @@ public class LHAReport {
                                                                                 .get(u)
                                                                                 .getPermanent_recommendations())
                                                                 .setBackgroundColor(Color.WHITE)
-                                                                .setFontSize(5).setTextAlignment(TextAlignment.CENTER));
+                                                                .setFontSize(5).setTextAlignment(TextAlignment.CENTER).setVerticalAlignment(VerticalAlignment.MIDDLE));
                                         } else {
                                                 bodyNested2.addCell(new Cell()
                                                                 .add("-")
                                                                 .setBackgroundColor(Color.WHITE)
-                                                                .setFontSize(5).setTextAlignment(TextAlignment.CENTER));
+                                                                .setFontSize(5).setTextAlignment(TextAlignment.CENTER).setVerticalAlignment(VerticalAlignment.MIDDLE));
                                         }
                                 }
                                 bodyNested.addCell(
