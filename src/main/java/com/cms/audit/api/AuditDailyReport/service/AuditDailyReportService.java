@@ -126,14 +126,18 @@ public class AuditDailyReportService {
                         for (int i = 0; i < response.getContent().size(); i++) {
                                 List<AuditDailyReportDetail> getDetail = auditDailyReportDetailRepository
                                                 .findByLHAId(response.getContent().get(i).getId());
+                                Integer ifFlow = 0;
                                 Integer flag = 0;
                                 for (int u = 0; u < getDetail.size(); u++) {
                                         if (getUser.getLevel().getCode().equals("A")) {
-                                                if(getDetail.get(u).getStatus_flow() == 1){
+                                                if (getDetail.get(u).getStatus_flow() == 1) {
                                                         if (getDetail.isEmpty()) {
+                                                                ifFlow = 1;
                                                                 continue;
                                                         }
-                                                }else {
+                                                        ifFlow = 0;
+                                                } else {
+                                                        ifFlow = 1;
                                                         continue;
                                                 }
                                         }
@@ -152,6 +156,9 @@ public class AuditDailyReportService {
                                                         }
                                                 }
                                         }
+                                }
+                                if (ifFlow == 1) {
+                                        continue;
                                 }
                                 Map<String, Object> responseS = new LinkedHashMap<>();
                                 responseS.put("id", response.getContent().get(i).getId());
