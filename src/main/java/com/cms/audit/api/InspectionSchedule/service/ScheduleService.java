@@ -511,7 +511,7 @@ public class ScheduleService {
                                                                                 .after(existingSchedule
                                                                                                 .getEnd_date())) {
                                                         return GlobalResponse.builder()
-                                                                        .message("Anda menginput jadwal yang sama ")
+                                                                        .message("Anda menginput jadwal dengan tanggal yang bersilangan")
                                                                         .errorMessage("Tidak bisa menambahkan jadwal yang bersilangan")
                                                                         .status(HttpStatus.BAD_REQUEST)
                                                                         .build();
@@ -526,7 +526,7 @@ public class ScheduleService {
                                                                                 .equals(existingSchedule
                                                                                                 .getEnd_date())) {
                                                         return GlobalResponse.builder()
-                                                                        .message("Anda menginput jadwal yang sama")
+                                                                        .message("Anda menginput jadwal dengan tanggal yang sama")
                                                                         .errorMessage("Tidak bisa menambahkan jadwal yang sama")
                                                                         .status(HttpStatus.BAD_REQUEST)
                                                                         .build();
@@ -552,8 +552,8 @@ public class ScheduleService {
                                                                 .before(getDateNow())) {
                                         return GlobalResponse
                                                         .builder()
-                                                        .message("Tidak boleh input jadwal kemarin")
-                                                        .errorMessage("Tidak bisa menambahkan jadwal kemarin")
+                                                        .message("Tidak boleh input jadwal dengan tanggal sebelumnya")
+                                                        .errorMessage("Tidak bisa menambahkan jadwal dengan tanggal sebelumnya")
                                                         .status(HttpStatus.BAD_REQUEST)
                                                         .build();
                                 }
@@ -566,8 +566,8 @@ public class ScheduleService {
                                 if (!checkIfExist.isEmpty()) {
                                         return GlobalResponse
                                                         .builder()
-                                                        .message("Anda menginput tanggal yang sudah ada")
-                                                        .errorMessage("Tanggal duplikat")
+                                                        .message("Anda menginput jadwal yang sudah ada")
+                                                        .errorMessage("Jadwal sudah tersedia")
                                                         .status(HttpStatus.BAD_REQUEST)
                                                         .build();
                                 }
@@ -576,8 +576,8 @@ public class ScheduleService {
                                                 .after(scheduleDTO.getSchedules().get(i).getEnd_date())) {
                                         return GlobalResponse
                                                         .builder()
-                                                        .message("Tanggal mulai lebih besar dari tanggal berakhir")
-                                                        .errorMessage("Start date lebih besar dari end date")
+                                                        .errorMessage("Anda menginput jadwal dengan tanggal mulai lebih besar dari tanggal berakhir")
+                                                        .message("Start date lebih besar dari end date")
                                                         .status(HttpStatus.BAD_REQUEST)
                                                         .build();
                                 }
@@ -589,16 +589,29 @@ public class ScheduleService {
                                 if (!checkDatefExist.isEmpty()) {
                                         return GlobalResponse
                                                         .builder()
-                                                        .message("Tanggal sudah tersedia")
-                                                        .errorMessage("Tanggal dengan start_date:"
+                                                        .message("Jadwal sudah tersedia")
+                                                        .errorMessage("Jadwal dengan tanggal mulai :"
                                                                         + convertDateToRoman.convertDateHehe(scheduleDTO
                                                                                         .getSchedules().get(i)
                                                                                         .getStart_date())
-                                                                        + " and end_date:"
+                                                                        + " and tanggal berakhir :"
                                                                         + convertDateToRoman.convertDateHehe(scheduleDTO
                                                                                         .getSchedules().get(i)
                                                                                         .getEnd_date())
-                                                                        + ", sudah terbuat sebelumnya")
+                                                                        + ", sudah terbuat atau bersilangan dengan jadwal sebelumnya")
+                                                        .status(HttpStatus.BAD_REQUEST)
+                                                        .build();
+                                }
+                                
+                                List<Schedule> checkBranchisExist = repository.findScheduleInDateRangeByUserIdNoCategory(
+                                                scheduleDTO.getSchedules().get(i).getBranch_id(),
+                                                scheduleDTO.getSchedules().get(i).getStart_date(),
+                                                scheduleDTO.getSchedules().get(i).getEnd_date());
+                                if (!checkBranchisExist.isEmpty()) {
+                                        return GlobalResponse
+                                                        .builder()
+                                                        .message("Branch sudah ada auditornya")
+                                                        .errorMessage("Pada branch tersebut sudah ditempati oleh auditor lain")
                                                         .status(HttpStatus.BAD_REQUEST)
                                                         .build();
                                 }
@@ -609,11 +622,11 @@ public class ScheduleService {
                                                 .findById(scheduleDTO.getSchedules().get(i).getBranch_id());
                                 if (!branchId.isPresent()) {
                                         return GlobalResponse.builder()
-                                                        .message("Branch tidak ditemukan")
-                                                        .errorMessage("Branch with id: "
+                                                        .errorMessage("Branch tidak ditemukan")
+                                                        .message("Branch dengan id : "
                                                                         + scheduleDTO.getSchedules().get(i)
                                                                                         .getBranch_id()
-                                                                        + " is not found")
+                                                                        + " tidak ditemukan")
                                                         .status(HttpStatus.BAD_REQUEST)
                                                         .build();
                                 }
@@ -622,10 +635,10 @@ public class ScheduleService {
                                                 .findById(scheduleDTO.getSchedules().get(i).getUser_id());
                                 if (!userId.isPresent()) {
                                         return GlobalResponse.builder()
-                                                        .message("User tidak ditemukan")
-                                                        .errorMessage("User with id: "
+                                                        .errorMessage("User tidak ditemukan")
+                                                        .message("User dengan id : "
                                                                         + scheduleDTO.getSchedules().get(i).getUser_id()
-                                                                        + " is not found")
+                                                                        + " tidak ditemukan")
                                                         .status(HttpStatus.BAD_REQUEST)
                                                         .build();
                                 }
@@ -697,8 +710,8 @@ public class ScheduleService {
                                                                                 .after(existingSchedule
                                                                                                 .getEnd_date())) {
                                                         return GlobalResponse.builder()
-                                                                        .message("Anda menginput jadwal yang sama ")
-                                                                        .errorMessage("Tidak bisa menambahkan jadwal yang bersilangan")
+                                                                        .errorMessage("Anda menginput jadwal dengan tanggal yang bersilangan")
+                                                                        .message("Tidak bisa menambahkan jadwal yang bersilangan")
                                                                         .status(HttpStatus.BAD_REQUEST)
                                                                         .build();
                                                 }
@@ -712,8 +725,8 @@ public class ScheduleService {
                                                                                 .equals(existingSchedule
                                                                                                 .getEnd_date())) {
                                                         return GlobalResponse.builder()
-                                                                        .message("Anda menginput jadwal yang sama")
-                                                                        .errorMessage("Tidak bisa menambahkan jadwal yang sama")
+                                                                        .errorMessage("Anda menginput jadwal dengan tanggal yang sama")
+                                                                        .message("Tidak bisa menambahkan jadwal yang sama")
                                                                         .status(HttpStatus.BAD_REQUEST)
                                                                         .build();
                                                 }
@@ -739,7 +752,7 @@ public class ScheduleService {
                                         return GlobalResponse
                                                         .builder()
                                                         .message("Tanggal yang diinput adalah tanggal sebelumnya")
-                                                        .errorMessage("Tidak bisa menambahkan jadwal kemarin")
+                                                        .errorMessage("Tidak bisa menambahkan jadwal dengan tanggal kemarin")
                                                         .status(HttpStatus.BAD_REQUEST)
                                                         .build();
                                 }
@@ -752,8 +765,8 @@ public class ScheduleService {
                                 if (!checkIfExist.isEmpty()) {
                                         return GlobalResponse
                                                         .builder()
-                                                        .message("Tanggal sudah ada")
-                                                        .errorMessage("Tanggal duplikat")
+                                                        .message("jadwal sudah pernah dibuat")
+                                                        .errorMessage("jadwal sudah tersedia")
                                                         .status(HttpStatus.BAD_REQUEST)
                                                         .build();
                                 }
@@ -762,19 +775,40 @@ public class ScheduleService {
                                                 .after(scheduleDTO.getSchedules().get(i).getEnd_date())) {
                                         return GlobalResponse
                                                         .builder()
-                                                        .message("Tanggal mulai lebih besar dari tanggal berakhir")
-                                                        .errorMessage("Start date lebih besar dari end date")
+                                                        .errorMessage("Anda menginput jadwal dengan tanggal mulai lebih besar dari tanggal berakhir")
+                                                        .message("Start date lebih besar dari end date")
                                                         .status(HttpStatus.BAD_REQUEST)
                                                         .build();
                                 }
+
+                                // List<Schedule> checkDatefExist = repository.findScheduleInDateRangeByUserIdNoCategoryForSpecial(
+                                //                 scheduleDTO.getSchedules().get(i).getUser_id(),
+                                //                 scheduleDTO.getSchedules().get(i).getStart_date(),
+                                //                 scheduleDTO.getSchedules().get(i).getEnd_date());
+                                // if (!checkDatefExist.isEmpty()) {
+                                //         return GlobalResponse
+                                //                         .builder()
+                                //                         .message("Tanggal sudah tersedia")
+                                //                         .errorMessage("Tanggal dengan tanggal mulai :"
+                                //                                         + convertDateToRoman.convertDateHehe(scheduleDTO
+                                //                                                         .getSchedules().get(i)
+                                //                                                         .getStart_date())
+                                //                                         + " and tanggal berakhir :"
+                                //                                         + convertDateToRoman.convertDateHehe(scheduleDTO
+                                //                                                         .getSchedules().get(i)
+                                //                                                         .getEnd_date())
+                                //                                         + ", sudah terbuat atau bersilangan dengan jadwal sebelumnya")
+                                //                         .status(HttpStatus.BAD_REQUEST)
+                                //                         .build();
+                                // }
                         }
                         for (int i = 0; i < scheduleDTO.getSchedules().size(); i++) {
                                 Optional<Branch> branchId = branchRepository
                                                 .findById(scheduleDTO.getSchedules().get(i).getBranch_id());
                                 if (!branchId.isPresent()) {
                                         return GlobalResponse.builder()
-                                                        .message("Branch tidak ditemukan")
-                                                        .errorMessage("Branch with id: "
+                                                        .errorMessage("Branch tidak ditemukan")
+                                                        .message("Branch with id: "
                                                                         + scheduleDTO.getSchedules().get(i)
                                                                                         .getBranch_id()
                                                                         + " is not found")
@@ -786,8 +820,8 @@ public class ScheduleService {
                                                 .findById(scheduleDTO.getSchedules().get(i).getUser_id());
                                 if (!userId.isPresent()) {
                                         return GlobalResponse.builder()
-                                                        .message("User tidak ditemukan")
-                                                        .errorMessage("User with id: "
+                                                        .errorMessage("User tidak ditemukan")
+                                                        .message("User with id: "
                                                                         + scheduleDTO.getSchedules().get(i).getUser_id()
                                                                         + " is not found")
                                                         .status(HttpStatus.BAD_REQUEST)

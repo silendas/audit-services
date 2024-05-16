@@ -614,6 +614,9 @@ public class AuditDailyReportService {
                                 Case setCaseId = Case.builder().id(dto.getLha_detail().get(i).getCase_id()).build();
                                 CaseCategory setCaseCategoryId = CaseCategory.builder()
                                                 .id(dto.getLha_detail().get(i).getCase_category_id()).build();
+                                if(dto.getLha_detail().get(i).getIs_research() == null){
+                                        dto.getLha_detail().get(i).setIs_research(0);
+                                }
                                 AuditDailyReportDetail auditDailyReportDetail = new AuditDailyReportDetail(
                                                 null,
                                                 setId,
