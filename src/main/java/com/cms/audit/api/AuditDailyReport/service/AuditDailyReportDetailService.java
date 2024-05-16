@@ -544,7 +544,7 @@ public class AuditDailyReportDetailService {
         dto.setUpdate_at(new Date());
         repository.save(dto);
 
-        return GlobalResponse.builder().message("Berhasil mengirim ke leader").status(HttpStatus.OK).build();
+        return GlobalResponse.builder().message("Berhasil mengirim ke leader atau pusat").status(HttpStatus.OK).build();
 
     }
 
