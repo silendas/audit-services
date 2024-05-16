@@ -515,8 +515,8 @@ public class ScheduleService {
                                                                                 .after(existingSchedule
                                                                                                 .getEnd_date())) {
                                                         return GlobalResponse.builder()
-                                                                        .message("Anda menginput jadwal dengan tanggal yang bersilangan")
-                                                                        .errorMessage("Tidak bisa menambahkan jadwal yang bersilangan")
+                                                                        .errorMessage("Anda menginput jadwal dengan tanggal yang bersilangan")
+                                                                        .message("Tidak bisa menambahkan jadwal yang bersilangan")
                                                                         .status(HttpStatus.BAD_REQUEST)
                                                                         .build();
                                                 }
@@ -530,8 +530,8 @@ public class ScheduleService {
                                                                                 .equals(existingSchedule
                                                                                                 .getEnd_date())) {
                                                         return GlobalResponse.builder()
-                                                                        .message("Anda menginput jadwal dengan tanggal yang sama")
-                                                                        .errorMessage("Tidak bisa menambahkan jadwal yang sama")
+                                                                        .errorMessage("Anda menginput jadwal dengan tanggal yang sama")
+                                                                        .message("Tidak bisa menambahkan jadwal yang sama")
                                                                         .status(HttpStatus.BAD_REQUEST)
                                                                         .build();
                                                 }
@@ -571,7 +571,7 @@ public class ScheduleService {
                                         return GlobalResponse
                                                         .builder()
                                                         .message("Anda menginput jadwal yang sudah ada")
-                                                        .errorMessage("Jadwal sudah tersedia")
+                                                        .errorMessage("Jadwal sudah terbuat sebelumnya")
                                                         .status(HttpStatus.BAD_REQUEST)
                                                         .build();
                                 }
@@ -716,7 +716,7 @@ public class ScheduleService {
                                                                                                 .getEnd_date())) {
                                                         return GlobalResponse.builder()
                                                                         .errorMessage("Anda menginput jadwal dengan tanggal yang bersilangan")
-                                                                        .message("Tidak bisa menambahkan jadwal yang bersilangan")
+                                                                        .message("Tidak bisa menambahkan jadwal dengan tanggal yang bersilangan")
                                                                         .status(HttpStatus.BAD_REQUEST)
                                                                         .build();
                                                 }
@@ -731,7 +731,7 @@ public class ScheduleService {
                                                                                                 .getEnd_date())) {
                                                         return GlobalResponse.builder()
                                                                         .errorMessage("Anda menginput jadwal dengan tanggal yang sama")
-                                                                        .message("Tidak bisa menambahkan jadwal yang sama")
+                                                                        .message("Tidak bisa menambahkan jadwal dengan tanggal yang sama")
                                                                         .status(HttpStatus.BAD_REQUEST)
                                                                         .build();
                                                 }
@@ -756,7 +756,7 @@ public class ScheduleService {
                                                                 .before(getDateNow())) {
                                         return GlobalResponse
                                                         .builder()
-                                                        .message("Tanggal yang diinput adalah tanggal sebelumnya")
+                                                        .message("jadwal yang diinput adalah tanggal sebelumnya")
                                                         .errorMessage("Tidak bisa menambahkan jadwal dengan tanggal kemarin")
                                                         .status(HttpStatus.BAD_REQUEST)
                                                         .build();
@@ -771,7 +771,7 @@ public class ScheduleService {
                                         return GlobalResponse
                                                         .builder()
                                                         .message("jadwal sudah pernah dibuat")
-                                                        .errorMessage("jadwal sudah tersedia")
+                                                        .errorMessage("jadwal sudah terbuat sebelumnya")
                                                         .status(HttpStatus.BAD_REQUEST)
                                                         .build();
                                 }
@@ -794,7 +794,7 @@ public class ScheduleService {
                                         return GlobalResponse
                                                         .builder()
                                                         .message("Tanggal sudah tersedia")
-                                                        .errorMessage("Tanggal dengan tanggal mulai :"
+                                                        .errorMessage("Jadwal dengan tanggal mulai :"
                                                                         + convertDateToRoman.convertDateHehe(scheduleDTO
                                                                                         .getSchedules().get(i)
                                                                                         .getStart_date())
@@ -913,7 +913,7 @@ public class ScheduleService {
                         if (dto.getStart_date().after(dto.getEnd_date())) {
                                 return GlobalResponse
                                                 .builder()
-                                                .message("Tanggal mulai lebih besar dari tanggal berakhir")
+                                                .message("Jadwal mulai lebih besar dari tanggal berakhir")
                                                 .errorMessage("Start date lebih besar dari end date")
                                                 .status(HttpStatus.BAD_REQUEST)
                                                 .build();
@@ -926,8 +926,8 @@ public class ScheduleService {
                         if (!checkDatefExist.isEmpty()) {
                                 return GlobalResponse
                                                 .builder()
-                                                .message("Tanggal sudah tersedia")
-                                                .errorMessage("Tanggal dengan start_date:"
+                                                .message("Jadwal sudah tersedia")
+                                                .errorMessage("Jadwal dengan start_date:"
                                                                 + convertDateToRoman
                                                                                 .convertDateHehe(dto.getStart_date())
                                                                 + " and end_date:"
@@ -1039,7 +1039,7 @@ public class ScheduleService {
                         if (dto.getStart_date().after(dto.getEnd_date())) {
                                 return GlobalResponse
                                                 .builder()
-                                                .message("Tanggal mulai lebih besar dari tanggal berakhir")
+                                                .message("Jadwal mulai lebih besar dari tanggal berakhir")
                                                 .errorMessage("Start date lebih besar dari end date")
                                                 .status(HttpStatus.BAD_REQUEST)
                                                 .build();
@@ -1057,7 +1057,7 @@ public class ScheduleService {
                                         return GlobalResponse
                                                         .builder()
                                                         .message("Jadwal sudah ada ")
-                                                        .errorMessage("Tanggal dengan start_date:"
+                                                        .errorMessage("Jadwal dengan start_date:"
                                                                         + convertDateToRoman
                                                                                         .convertDateHehe(dto
                                                                                                         .getStart_date())
@@ -1157,7 +1157,7 @@ public class ScheduleService {
                 if (getTrx.getStart_date().after(getTrx.getEnd_date())) {
                         return GlobalResponse
                                         .builder()
-                                        .message("Tanggal mulai lebih besar dari tanggal berakhir")
+                                        .message("Jadwal mulai lebih besar dari tanggal berakhir")
                                         .errorMessage("Start date lebih besar dari end date")
                                         .status(HttpStatus.BAD_REQUEST)
                                         .build();
@@ -1170,10 +1170,10 @@ public class ScheduleService {
                 if (!checkDatefExist.isEmpty()) {
                         return GlobalResponse
                                         .builder()
-                                        .message("Tanggal sudah ada")
-                                        .errorMessage("Tanggal dengan start_date:"
+                                        .message("Jadwal sudah ada")
+                                        .errorMessage("Jadwal dengan jadwal mulai :"
                                                         + convertDateToRoman.convertDateHehe(getTrx.getStart_date())
-                                                        + " and end_date:"
+                                                        + " and jadwal berakhir:"
                                                         + convertDateToRoman.convertDateHehe(getTrx.getEnd_date())
                                                         + ", sudah terbuat sebelumnya")
                                         .status(HttpStatus.BAD_REQUEST)
@@ -1225,7 +1225,6 @@ public class ScheduleService {
                 repository.save(editSchedule);
 
                 return GlobalResponse.builder().message("Berhasil mengubah menjadi revisi").status(HttpStatus.OK).build();
-
         }
 
         public GlobalResponse rejected(Long id, EditReschedule dto) throws Exception {
