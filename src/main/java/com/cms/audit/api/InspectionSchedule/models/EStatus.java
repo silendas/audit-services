@@ -7,5 +7,6 @@ public enum EStatus {
     DONE,
     REQUEST,
     APPROVE,
+    REVISION,
     REJECTED
 }

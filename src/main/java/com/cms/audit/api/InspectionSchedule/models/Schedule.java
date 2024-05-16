@@ -48,8 +48,11 @@ public class Schedule {
     @JoinColumn(name = "branch_id", referencedColumnName = "id")
     private Branch branch;
 
-    @Column(name = "description")
+    @Column(name = "description", columnDefinition = "TEXT")
     private String description;
+
+    @Column(name = "suggestion", columnDefinition = "TEXT")
+    private String suggestion;
 
     //@JsonFormat(pattern="yyyy-MM-dd")
     @Column(name = "start_date")

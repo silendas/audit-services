@@ -41,7 +41,6 @@ public class User implements UserDetails {
     @Column(name = "id")
     private Long id;
 
-    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "role_id")
     private Role role;
