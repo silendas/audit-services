@@ -45,6 +45,7 @@ public class SpecificationFIlter<T> {
         };
     }
 
+
     public Specification<T> lhaId(Long id) {
         return (root, query, criteriaBuilder) -> {
             if (id != null) {

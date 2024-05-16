@@ -126,8 +126,14 @@ public class AuditDailyReportService {
                         for (int i = 0; i < response.getContent().size(); i++) {
                                 List<AuditDailyReportDetail> getDetail = auditDailyReportDetailRepository
                                                 .findByLHAId(response.getContent().get(i).getId());
-                                if (getDetail.isEmpty()) {
-                                        continue;
+                                if (getUser.getLevel().getCode().equals("A")) {
+                                        if(getDetail.get(i).getStatus_flow() == 1){
+                                                if (getDetail.isEmpty()) {
+                                                        continue;
+                                                }
+                                        }else {
+                                                continue;
+                                        }
                                 }
                                 Integer flag = 0;
                                 for (int u = 0; u < getDetail.size(); u++) {

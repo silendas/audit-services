@@ -96,7 +96,8 @@ public class RevisionService {
                 List<Revision> response = repository.findAll();
                 if (response.isEmpty()) {
                     if (response.isEmpty()) {
-                        return GlobalResponse.builder().message("Data tidak ditemukan").status(HttpStatus.OK).data(response)
+                        return GlobalResponse.builder().message("Data tidak ditemukan").status(HttpStatus.OK)
+                                .data(response)
                                 .build();
                     }
                 }
@@ -106,7 +107,8 @@ public class RevisionService {
                 List<Revision> response = repository.findByDetailIdAll(detaild);
                 if (response.isEmpty()) {
                     if (response.isEmpty()) {
-                        return GlobalResponse.builder().message("Data tidak ditemukan").status(HttpStatus.OK).data(response)
+                        return GlobalResponse.builder().message("Data tidak ditemukan").status(HttpStatus.OK)
+                                .data(response)
                                 .build();
                     }
                 }
@@ -173,24 +175,21 @@ public class RevisionService {
                     .status(HttpStatus.BAD_REQUEST).build();
         }
 
-        if (user.getLevel().getCode().equals("C")) {
-            if (detail.get().getIs_revision() == 1) {
-                return GlobalResponse.builder()
-                        .message(
-                                "Karena sudah direvisi oleh audit area maka tidak dapat direvisi lagi oleh area")
-                        .errorMessage("Tidak bisa merevisi karena sudah direvisi area")
-                        .status(HttpStatus.BAD_REQUEST).build();
-            }
+        if (user.getLevel().getCode().equals("C") && detail.get().getIs_revision() == 1) {
+            return GlobalResponse.builder()
+                    .message(
+                            "Karena sudah direvisi oleh audit area maka tidak dapat direvisi lagi oleh area")
+                    .errorMessage("Tidak bisa merevisi karena sudah direvisi area")
+                    .status(HttpStatus.BAD_REQUEST).build();
         }
 
-        if (user.getLevel().getCode().equals("B")) {
-            if (detail.get().getIs_revision() == 2) {
-                return GlobalResponse.builder()
-                        .message(
-                                "Karena sudah direvisi oleh pusat atau leader maka tidak dapat direvisi lagi oleh area")
-                        .errorMessage("Tidak bisa merevisi karena sudah direvisi leader atau pusat")
-                        .status(HttpStatus.BAD_REQUEST).build();
-            }
+        if (user.getLevel().getCode().equals("B") && detail.get().getIs_revision() == 2) {
+            return GlobalResponse.builder()
+                    .message(
+                            "Karena sudah direvisi oleh pusat atau leader maka tidak dapat direvisi lagi oleh area")
+                    .errorMessage("Tidak bisa merevisi karena sudah direvisi leader atau pusat")
+                    .status(HttpStatus.BAD_REQUEST).build();
+
         }
 
         AuditDailyReportDetail auditDailyReportDetail = detail.get();
@@ -201,12 +200,11 @@ public class RevisionService {
         auditDailyReportDetail.setUpdated_by(user.getId());
         auditDailyReportDetail.setUpdate_at(new Date());
 
-        if (user.getId() == detail.get().getAuditDailyReport().getUser().getId() && user.getLevel().getCode().equals("C")) {
+        if (user.getId() == detail.get().getAuditDailyReport().getUser().getId()
+                && user.getLevel().getCode().equals("C")) {
             auditDailyReportDetail.setStatus_flow(detail.get().getStatus_flow());
         } else {
-            if (user.getLevel().getCode().equals("A")) {
-                auditDailyReportDetail.setStatus_flow(2);
-            } else if (user.getLevel().getCode().equals("B")) {
+            if (user.getLevel().getCode().equals("B") || user.getLevel().getCode().equals("A")) {
                 auditDailyReportDetail.setStatus_flow(1);
             }
         }
