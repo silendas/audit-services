@@ -31,6 +31,7 @@ import com.cms.audit.api.Common.exception.ResourceNotFoundException;
 import com.cms.audit.api.Common.response.GlobalResponse;
 import com.cms.audit.api.Flag.model.Flag;
 import com.cms.audit.api.Flag.repository.FlagRepo;
+import com.cms.audit.api.InspectionSchedule.dto.EditReschedule;
 import com.cms.audit.api.InspectionSchedule.dto.EditScheduleDTO;
 import com.cms.audit.api.InspectionSchedule.dto.RequestReschedule;
 import com.cms.audit.api.InspectionSchedule.dto.ScheduleDTO;
@@ -100,12 +101,12 @@ public class ScheduleService {
                         List<EStatus> statuses = Arrays.asList(status);
                         spec = spec.and(new SpecificationFIlter<Schedule>().getByStatus(statuses));
                 } else if (getUser.getLevel().getCode().equals("B")) {
-                        List<EStatus> statuses = Arrays.asList(EStatus.APPROVE, EStatus.REQUEST, EStatus.PENDING);
+                        List<EStatus> statuses = Arrays.asList(EStatus.APPROVE, EStatus.REQUEST, EStatus.PENDING, EStatus.REJECTED, EStatus.REVISION);
                         spec = spec.and(new SpecificationFIlter<Schedule>().getByStatus(statuses));
                         spec = spec.and(new SpecificationFIlter<Schedule>()
                                                 .getByRegionIds(getUser.getRegionId()));
                 } else if (getUser.getLevel().getCode().equals("A")) {
-                        List<EStatus> statuses = Arrays.asList(EStatus.APPROVE, EStatus.REQUEST, EStatus.REJECTED);
+                        List<EStatus> statuses = Arrays.asList(EStatus.APPROVE, EStatus.REQUEST, EStatus.REJECTED, EStatus.REVISION);
                         spec = spec.and(new SpecificationFIlter<Schedule>().getByStatus(statuses));
                 }
                 Page<Schedule> response = pag.findAll(spec, PageRequest.of(page, size));
@@ -288,6 +289,7 @@ public class ScheduleService {
                         mapParent.put("branch", response.get(i).getBranch());
 
                         mapParent.put("description", response.get(i).getDescription());
+                        mapParent.put("suggestion", response.get(i).getSuggestion());
                         mapParent.put("status", response.get(i).getStatus());
                         mapParent.put("category", response.get(i).getCategory());
                         if (response.get(i).getScheduleTrx() != null) {
@@ -353,6 +355,7 @@ public class ScheduleService {
                 map.put("branch", response.getBranch());
 
                 map.put("description", response.getDescription());
+                map.put("suggestion", response.getSuggestion());
                 map.put("status", response.getStatus());
                 map.put("category", response.getCategory());
                 if (response.getScheduleTrx() != null) {
@@ -1202,7 +1205,30 @@ public class ScheduleService {
 
         }
 
-        public GlobalResponse rejected(Long id) throws Exception {
+        public GlobalResponse revision(Long id, EditReschedule dto) throws Exception {
+                User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+                if (!user.getLevel().getName().equals("LEAD")) {
+                        return GlobalResponse.builder().message("Selain audit leader tidak dapat akses")
+                                        .status(HttpStatus.UNAUTHORIZED).build();
+                }
+                Optional<Schedule> getSchedule = repository.findById(id);
+                if (!getSchedule.isPresent()) {
+                        return GlobalResponse.builder().errorMessage("Schedule with id : " + id + " is not found")
+                                        .message("Jadwal tidak ditemukan").status(HttpStatus.BAD_REQUEST).build();
+                }
+
+                Schedule editSchedule = getSchedule.get();
+                editSchedule.setStatus(EStatus.REVISION);
+                editSchedule.setSuggestion(dto.getSuggestion());
+                editSchedule.setUpdatedBy(user.getId());
+                editSchedule.setUpdated_at(new Date());
+                repository.save(editSchedule);
+
+                return GlobalResponse.builder().message("Berhasil mengubah menjadi revisi").status(HttpStatus.OK).build();
+
+        }
+
+        public GlobalResponse rejected(Long id, EditReschedule dto) throws Exception {
                 User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
                 if (!user.getLevel().getName().equals("LEAD")) {
                         return GlobalResponse.builder().message("Selain audit leader tidak dapat akses")
@@ -1216,6 +1242,7 @@ public class ScheduleService {
 
                 Schedule editSchedule = getSchedule.get();
                 editSchedule.setStatus(EStatus.REJECTED);
+                editSchedule.setSuggestion(dto.getSuggestion());
                 editSchedule.setUpdatedBy(user.getId());
                 editSchedule.setUpdated_at(new Date());
                 repository.save(editSchedule);

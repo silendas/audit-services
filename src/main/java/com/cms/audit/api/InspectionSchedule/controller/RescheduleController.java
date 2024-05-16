@@ -20,6 +20,7 @@ import com.cms.audit.api.Common.constant.convertDateToRoman;
 import com.cms.audit.api.Common.response.GlobalResponse;
 import com.cms.audit.api.Common.response.ResponseEntittyHandler;
 import com.cms.audit.api.Config.Jwt.JwtService;
+import com.cms.audit.api.InspectionSchedule.dto.EditReschedule;
 import com.cms.audit.api.InspectionSchedule.dto.RequestReschedule;
 import com.cms.audit.api.InspectionSchedule.models.EStatus;
 import com.cms.audit.api.InspectionSchedule.service.ScheduleService;
@@ -100,9 +101,20 @@ public class RescheduleController {
         }
     }
 
+    @PatchMapping("/revision-schedule/{id}")
+    public ResponseEntity<Object> rescheduleRevision(@PathVariable("id") Long id, @RequestBody EditReschedule dto) throws Exception {
+        GlobalResponse response = scheduleService.revision(id,dto);
+        if (response.getStatus().equals(HttpStatus.BAD_REQUEST)) {
+            return ResponseEntittyHandler.errorResponse(response.getErrorMessage(), response.getMessage(),
+                    response.getStatus());
+        } else {
+            return ResponseEntittyHandler.allHandler(null, response.getMessage(), response.getStatus(), null);
+        }
+    }
+
     @PatchMapping("/reject/{id}")
-    public ResponseEntity<Object> rescheduleRejected(@PathVariable("id") Long id) throws Exception {
-        GlobalResponse response = scheduleService.rejected(id);
+    public ResponseEntity<Object> rescheduleRejected(@PathVariable("id") Long id, @RequestBody EditReschedule dto) throws Exception {
+        GlobalResponse response = scheduleService.rejected(id, dto);
         if (response.getStatus().equals(HttpStatus.BAD_REQUEST)) {
             return ResponseEntittyHandler.errorResponse(response.getErrorMessage(), response.getMessage(),
                     response.getStatus());
