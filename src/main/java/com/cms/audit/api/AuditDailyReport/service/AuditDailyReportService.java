@@ -126,17 +126,17 @@ public class AuditDailyReportService {
                         for (int i = 0; i < response.getContent().size(); i++) {
                                 List<AuditDailyReportDetail> getDetail = auditDailyReportDetailRepository
                                                 .findByLHAId(response.getContent().get(i).getId());
-                                if (getUser.getLevel().getCode().equals("A")) {
-                                        if(getDetail.get(i).getStatus_flow() == 1){
-                                                if (getDetail.isEmpty()) {
-                                                        continue;
-                                                }
-                                        }else {
-                                                continue;
-                                        }
-                                }
                                 Integer flag = 0;
                                 for (int u = 0; u < getDetail.size(); u++) {
+                                        if (getUser.getLevel().getCode().equals("A")) {
+                                                if(getDetail.get(u).getStatus_flow() == 1){
+                                                        if (getDetail.isEmpty()) {
+                                                                continue;
+                                                        }
+                                                }else {
+                                                        continue;
+                                                }
+                                        }
                                         if (response.getContent().get(i).getIs_research() != 1) {
                                                 if (getDetail.get(u).getIs_research() == 1) {
                                                         Flag isFlag = flagRepo.findOneByAuditDailyReportDetailId(
