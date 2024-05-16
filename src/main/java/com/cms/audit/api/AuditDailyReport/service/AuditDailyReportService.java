@@ -126,6 +126,9 @@ public class AuditDailyReportService {
                         for (int i = 0; i < response.getContent().size(); i++) {
                                 List<AuditDailyReportDetail> getDetail = auditDailyReportDetailRepository
                                                 .findByLHAId(response.getContent().get(i).getId());
+                                if (getDetail.isEmpty()) {
+                                        continue;
+                                }
                                 Integer flag = 0;
                                 for (int u = 0; u < getDetail.size(); u++) {
                                         if (response.getContent().get(i).getIs_research() != 1) {
@@ -222,7 +225,7 @@ public class AuditDailyReportService {
                         if (getUser.getLevel().getCode().equals("C") || getUser.getLevel().getCode().equals("B")) {
                                 getDetail = auditDailyReportDetailRepository
                                                 .findByLHAId(id);
-                        }else if (getUser.getLevel().getCode().equals("A")) {
+                        } else if (getUser.getLevel().getCode().equals("A")) {
                                 getDetail = auditDailyReportDetailRepository.findByLHAIdLeader(id);
                         }
 
@@ -614,7 +617,7 @@ public class AuditDailyReportService {
                                 Case setCaseId = Case.builder().id(dto.getLha_detail().get(i).getCase_id()).build();
                                 CaseCategory setCaseCategoryId = CaseCategory.builder()
                                                 .id(dto.getLha_detail().get(i).getCase_category_id()).build();
-                                if(dto.getLha_detail().get(i).getIs_research() == null){
+                                if (dto.getLha_detail().get(i).getIs_research() == null) {
                                         dto.getLha_detail().get(i).setIs_research(0);
                                 }
                                 AuditDailyReportDetail auditDailyReportDetail = new AuditDailyReportDetail(

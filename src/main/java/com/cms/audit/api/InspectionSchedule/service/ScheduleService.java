@@ -606,8 +606,7 @@ public class ScheduleService {
                                                         .status(HttpStatus.BAD_REQUEST)
                                                         .build();
                                 }
-                                
-                                List<Schedule> checkBranchisExist = repository.findScheduleInDateRangeByUserIdNoCategory(
+                                List<Schedule> checkBranchisExist = repository.findScheduleInDateRangeByBranchIdNoCategory(
                                                 scheduleDTO.getSchedules().get(i).getBranch_id(),
                                                 scheduleDTO.getSchedules().get(i).getStart_date(),
                                                 scheduleDTO.getSchedules().get(i).getEnd_date());
