@@ -130,7 +130,7 @@ public class AuditDailyReportService {
                                 Integer flag = 0;
                                 for (int u = 0; u < getDetail.size(); u++) {
                                         if (getUser.getLevel().getCode().equals("A")) {
-                                                if (getDetail.get(u).getStatus_flow() == 1 && getDetail.get(u).getStatus_parsing() != 1) {
+                                                if (getDetail.get(u).getStatus_flow() == 1) {
                                                         if (getDetail.isEmpty()) {
                                                                 ifFlow = 1;
                                                                 continue;
