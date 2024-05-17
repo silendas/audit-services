@@ -213,9 +213,10 @@ public class NewsInspectionService {
                         .errorMessage("BAP dengna id : " + id + " tidak ditemukan").status(HttpStatus.BAD_REQUEST)
                         .build();
             }
-
-            // String fileName = randomValueNumber.randomNumberGenerator() + "-" +
-            // file.getOriginalFilename();
+            if(getBAP.get().getFileName() != null) {
+                return GlobalResponse.builder().message("BAP sudah dibuat, tidak dapat upload file")
+                        .status(HttpStatus.BAD_REQUEST).build();
+            }
 
             String fileName = fileStorageService.storeFile(file);
             String path = FOLDER_PATH + fileName;

@@ -207,13 +207,17 @@ public class AuditWorkingPaperService {
 
             Optional<Schedule> getSchedule = scheduleRepository.findById(id);
             if (!getSchedule.isPresent()) {
-                return GlobalResponse.builder().message("Jadwal tidak ditemukan").errorMessage("Schedule with id:" + id + " is not found")
-                        .status(HttpStatus.BAD_REQUEST).build();
+                return GlobalResponse.builder().errorMessage("Jadwal tidak ditemukan").message("Schedule with id:" + id + " is not found").status(HttpStatus.BAD_REQUEST).build();
             }
 
             List<AuditWorkingPaper> checkKKA = repository.findListByScheduleId(id);
             if (!checkKKA.isEmpty()) {
-                return GlobalResponse.builder().message("KKA is already exist").status(HttpStatus.FOUND).build();
+                return GlobalResponse.builder().message("KKA sudah ada").status(HttpStatus.FOUND).build();
+            }
+            for(AuditWorkingPaper kka : checkKKA) {
+                if(kka.getFilename() != null) {
+                    return GlobalResponse.builder().message("KKA sudah dibuat, tidak dapat upload file").status(HttpStatus.BAD_REQUEST).build();
+                }
             }
 
             String fileName = fileStorageService.storeFile(file);

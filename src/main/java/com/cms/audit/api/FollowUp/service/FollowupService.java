@@ -323,7 +323,11 @@ public class FollowupService {
                         .status(HttpStatus.BAD_REQUEST)
                         .message("Follow up with id:" + id + " is not found").build();
             }
-
+            if(getFollowUp.get().getStatus().equals(EStatusFollowup.CLOSE)){
+                return GlobalResponse.builder().errorMessage("Tindak lanjut sudah ditutup")
+                        .status(HttpStatus.BAD_REQUEST)
+                        .message("Follow up with id:" + id + " is closed").build();
+            }
             FollowUp followUp = getFollowUp.get();
             followUp.setStatus(EStatusFollowup.CLOSE);
 

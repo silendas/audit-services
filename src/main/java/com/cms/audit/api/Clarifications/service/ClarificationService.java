@@ -669,6 +669,15 @@ public class ClarificationService {
                                                 .status(HttpStatus.BAD_REQUEST)
                                                 .build();
                         }
+
+                        if(getClarification.get().getStatus() == EStatusClarification.IDENTIFICATION) {
+                                return GlobalResponse
+                                                .builder()
+                                                .message("Clarification sudah diidentifikasi, tidak dapat upload file")
+                                                .status(HttpStatus.BAD_REQUEST)
+                                                .build();
+                        }
+
                         String fileName = fileStorageService.storeFile(file);
 
                         String path = UPLOAD_FOLDER_PATH + fileName;
