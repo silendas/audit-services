@@ -12,9 +12,8 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -26,14 +25,13 @@ import com.cms.audit.api.AuditDailyReport.models.AuditDailyReport;
 import com.cms.audit.api.AuditDailyReport.models.AuditDailyReportDetail;
 import com.cms.audit.api.AuditDailyReport.models.Revision;
 import com.cms.audit.api.AuditDailyReport.repository.AuditDailyReportDetailRepository;
-import com.cms.audit.api.AuditDailyReport.repository.AuditDailyReportRepository;
 import com.cms.audit.api.AuditDailyReport.repository.RevisionRepository;
 import com.cms.audit.api.Clarifications.models.Clarification;
+import com.cms.audit.api.Common.constant.SpecificationFIlter;
 import com.cms.audit.api.Common.constant.convertDateToRoman;
 import com.cms.audit.api.Common.pdf.LHAReport;
 import com.cms.audit.api.Common.response.GlobalResponse;
 import com.cms.audit.api.Common.util.ExcelUtil;
-import com.cms.audit.api.Management.Office.RegionOffice.models.Region;
 import com.cms.audit.api.Management.Office.RegionOffice.repository.RegionRepository;
 import com.cms.audit.api.Management.User.models.User;
 import com.cms.audit.api.Report.dto.LhaReportDTO;
@@ -69,159 +67,29 @@ public class ReportService {
     public GlobalResponse getAll(Long region_id, Long branchId, Long user_id, int page, int size, Date start_date,
             Date end_date) {
         try {
-            User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
             Page<Clarification> response;
-            if (user.getLevel().getCode().equals("C")) {
-                if (start_date != null && end_date != null) {
-                    response = pagRepository.findByUserInDateRange(user.getId(), start_date, end_date,
-                            PageRequest.of(page, size));
-                } else {
-                    response = pagRepository.findByUserId(user.getId(), PageRequest.of(page, size));
-                }
-            } else if (user.getLevel().getCode().equals("B") || user.getLevel().getCode().equals("A")) {
-                if (region_id != null && branchId != null && user_id != null && start_date != null
-                        && end_date != null) {
-                    return GlobalResponse.builder()
-                            .data(pagRepository.findByAllFilter(user_id, region_id, branchId, start_date,
-                                    end_date, PageRequest.of(page, size)))
-                            .status(HttpStatus.OK).message("Berhasil menampilkan data").build();
-                } else if (user_id != null) {
-                    if (start_date != null && end_date != null) {
-                        response = pagRepository.findByUserInDateRange(user.getId(), start_date, end_date,
-                                PageRequest.of(page, size));
-                    } else {
-                        response = pagRepository.findByUserId(user.getId(), PageRequest.of(page, size));
-                    }
-                } else if (branchId != null) {
-                    return getByBranchAllByDate(branchId, start_date, end_date, page, size);
-                } else {
-                    Pageable pageable = PageRequest.of(page, size);
-                    List<Clarification> clarificationList = new ArrayList<>();
-                    if (start_date == null || end_date == null) {
-                        if (user.getLevel().getCode().equals("A")) {
-                            return GlobalResponse.builder().data(pagRepository.findAll(PageRequest.of(page, size)))
-                                    .message("Berhasil menampilkan data").status(HttpStatus.OK).build();
-                        }
-                        for (int i = 0; i < user.getRegionId().size(); i++) {
-                            List<Clarification> getByRegion = repository.findByRegionId(user.getRegionId().get(i));
-                            for (int u = 0; u < getByRegion.size(); u++) {
-                                if (!clarificationList.contains(getByRegion.get(u))) {
-                                    clarificationList.add(getByRegion.get(u));
-                                }
-                            }
-                        }
-                    } else {
-                        if (user.getLevel().getCode().equals("A")) {
-                            return GlobalResponse.builder()
-                                    .data(pagRepository.findClarificationInDateRange(start_date, end_date,
-                                            PageRequest.of(page, size)))
-                                    .message("Berhasil menampilkan data").status(HttpStatus.OK).build();
-                        }
-                        for (int i = 0; i < user.getRegionId().size(); i++) {
-                            List<Clarification> getByRegion = repository
-                                    .findByRegionIdAndDate(user.getRegionId().get(i), start_date, end_date);
-                            for (int u = 0; u < getByRegion.size(); u++) {
-                                if (!clarificationList.contains(getByRegion.get(u))) {
-                                    clarificationList.add(getByRegion.get(u));
-                                }
-                            }
-                        }
-                    }
-                    try {
-                        int start = (int) pageable.getOffset();
-                        int end = Math.min((start + pageable.getPageSize()), clarificationList.size());
-                        List<Clarification> pageContent = clarificationList.subList(start, end);
-                        Page<Clarification> response2 = new PageImpl<>(pageContent, pageable, clarificationList.size());
-                        return GlobalResponse
-                                .builder()
-                                .message("Berhasil menampilkan data")
-                                .data(response2)
-                                .status(HttpStatus.OK)
-                                .build();
-                    } catch (Exception e) {
-                        return GlobalResponse
-                                .builder()
-                                .error(e)
-                                .status(HttpStatus.BAD_REQUEST)
-                                .build();
-                    }
-                }
-            } else {
-                if (start_date == null || end_date == null) {
-                    response = pagRepository.findAll(PageRequest.of(page, size));
-                } else {
-                    response = pagRepository.findClarificationInDateRange(start_date, end_date,
-                            PageRequest.of(page, size));
-                }
+            User getUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    
+            Specification<Clarification> spec = Specification
+                    .where(new SpecificationFIlter<Clarification>().userId(user_id))
+                    .and(new SpecificationFIlter<Clarification>().branchIdEqual(branchId))
+                    .and(new SpecificationFIlter<Clarification>().dateRange(start_date, end_date));
+    
+            if (getUser.getLevel().getCode().equals("C")) {
+                spec = spec.and(new SpecificationFIlter<Clarification>().userId(getUser.getId()));
+            } else if (getUser.getLevel().getCode().equals("B")) {
+                spec = spec.and(new SpecificationFIlter<Clarification>()
+                        .getByRegionIds(getUser.getRegionId()));
             }
+            response = pagRepository.findAll(spec, PageRequest.of(page, size));
+
             if (response.isEmpty()) {
                 return GlobalResponse.builder().message("Data Empty").status(HttpStatus.OK).build();
             }
-            return GlobalResponse.builder().data(response).message("Berhasil menampilkan data").status(HttpStatus.OK).build();
+            return GlobalResponse.builder().data(response).message("Berhasil menampilkan data").status(HttpStatus.OK)
+                    .build();
         } catch (Exception e) {
             return GlobalResponse.builder().error(e).status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
-    }
-
-    public GlobalResponse getByUserAllByDate(Long userId, Date start_date, Date end_date, int page, int size) {
-        try {
-            Page<Clarification> response;
-            if (start_date == null || end_date == null) {
-                response = pagRepository.findByUserId(userId, PageRequest.of(page, size));
-            } else {
-                response = pagRepository.findByUserInDateRange(userId, start_date, end_date,
-                        PageRequest.of(page, size));
-            }
-            if (response.isEmpty()) {
-                return GlobalResponse.builder().message("Data Empty").status(HttpStatus.OK).build();
-            }
-            return GlobalResponse.builder().data(response).message("Berhasil menampilkan data").status(HttpStatus.OK).build();
-        } catch (Exception e) {
-            return GlobalResponse.builder().error(e).status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
-    }
-
-    public GlobalResponse getByBranchAllByDate(Long branchId, Date start_date, Date end_date, int page, int size) {
-        try {
-            Page<Clarification> response;
-            if (start_date == null || end_date == null) {
-                response = pagRepository.findByBranchId(branchId, PageRequest.of(page, size));
-            } else {
-                response = pagRepository.findByBranchInDateRange(branchId, start_date, end_date,
-                        PageRequest.of(page, size));
-            }
-            if (response.isEmpty()) {
-                return GlobalResponse.builder().message("Data Empty").status(HttpStatus.OK).build();
-            }
-            return GlobalResponse.builder().data(response).message("Berhasil menampilkan data").status(HttpStatus.OK).build();
-        } catch (Exception e) {
-            return GlobalResponse.builder().error(e).status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
-    }
-
-    public GlobalResponse getAllByDate(Date start_date, Date end_date, int page, int size) {
-        try {
-            Page<Clarification> response = pagRepository.findClarificationInDateRange(start_date, end_date,
-                    PageRequest.of(page, size));
-            if (response.isEmpty()) {
-                return GlobalResponse.builder().message("Data Empty").status(HttpStatus.OK).build();
-            }
-            return GlobalResponse.builder().data(response).message("Berhasil menampilkan data").status(HttpStatus.OK).build();
-        } catch (Exception e) {
-            return GlobalResponse.builder().error(e).status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
-    }
-
-    public GlobalResponse getOne(Long id) {
-        try {
-            Optional<Clarification> response = repository.findById(id);
-            if (!response.isPresent()) {
-                return GlobalResponse.builder().message("Data Empty").status(HttpStatus.OK).build();
-            }
-            return GlobalResponse.builder().data(response).message("Berhasil menampilkan data").status(HttpStatus.OK).build();
-        } catch (Exception e) {
-            return GlobalResponse.builder().error(e).message("Error").status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
@@ -230,25 +98,20 @@ public class ReportService {
             Date end_date)
             throws IOException {
         List<Clarification> response;
-        if (user_id != null && region_id != null && branchId != null && start_date != null && end_date != null) {
-            response = repository.findByAllFilters(user_id, region_id, branchId, start_date, end_date);
-        } else if (region_id != null && start_date != null && end_date != null) {
-            response = repository.findByRegionIdAndDate(branchId, start_date, end_date);
-        } else if (branchId != null && start_date != null && end_date != null) {
-            response = repository.findByBranchInDateRange(branchId, start_date, end_date);
-        } else if (user_id != null && start_date != null && end_date != null) {
-            response = repository.findByUserInDateRange(user_id, start_date, end_date);
-        } else if (user_id != null) {
-            response = repository.findByUserId(user_id);
-        } else if (branchId != null) {
-            response = repository.findByBranchId(branchId);
-        } else if (region_id != null) {
-            response = repository.findByRegionId(region_id);
-        } else if (start_date != null && end_date != null) {
-            response = repository.findClarificationInDateRange(start_date, end_date);
-        } else {
-            response = repository.findClarificationInDateRange(new Date(), new Date());
+        User getUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        Specification<Clarification> spec = Specification
+                .where(new SpecificationFIlter<Clarification>().userId(user_id))
+                .and(new SpecificationFIlter<Clarification>().branchIdEqual(branchId))
+                .and(new SpecificationFIlter<Clarification>().dateRange(start_date, end_date));
+
+        if (getUser.getLevel().getCode().equals("C")) {
+            spec = spec.and(new SpecificationFIlter<Clarification>().userId(getUser.getId()));
+        } else if (getUser.getLevel().getCode().equals("B")) {
+            spec = spec.and(new SpecificationFIlter<Clarification>()
+                    .getByRegionIds(getUser.getRegionId()));
         }
+        response = repository.findAll(spec);
         ByteArrayInputStream data = ExcelUtil.dataToExcel(response);
         return data;
     }
@@ -273,11 +136,12 @@ public class ReportService {
         } else if (regionId != null) {
             response = lhaRepository.findLHAByRegion(regionId);
         } else {
-            if (getUser.getLevel().getCode().equals("B")  ) {
+            if (getUser.getLevel().getCode().equals("B")) {
                 for (int i = 0; i < getUser.getRegionId().size(); i++) {
                     List<AuditDailyReport> listLHA;
                     if (start_date != null && end_date != null) {
-                        listLHA = lhaRepository.findLHAInDateRangeAndRegion(getUser.getRegionId().get(i), start_date, end_date);
+                        listLHA = lhaRepository.findLHAInDateRangeAndRegion(getUser.getRegionId().get(i), start_date,
+                                end_date);
                     } else {
                         listLHA = lhaRepository
                                 .findLHAByRegion(getUser.getRegionId().get(i));
@@ -286,7 +150,7 @@ public class ReportService {
                         response.add(listLHA.get(u));
                     }
                 }
-            } else if (getUser.getLevel().getCode().equals("C") ) {
+            } else if (getUser.getLevel().getCode().equals("C")) {
                 for (int i = 0; i < getUser.getBranchId().size(); i++) {
                     List<AuditDailyReport> listLHA;
                     if (start_date != null && end_date != null) {
@@ -298,10 +162,10 @@ public class ReportService {
                         response.add(listLHA.get(u));
                     }
                 }
-            } else if (getUser.getLevel().getCode().equals("A") ){
+            } else if (getUser.getLevel().getCode().equals("A")) {
                 if (start_date != null && end_date != null) {
                     response = lhaRepository.findLHAInDateRange(start_date, end_date);
-                }else{
+                } else {
                     response = lhaRepository.findAll();
                 }
             } else {
@@ -323,26 +187,27 @@ public class ReportService {
         if (regionId != null) {
             for (int i = 0; i < response.size(); i++) {
                 List<AuditDailyReportDetail> detail = lhaDetailRepository.findByLHAIdForLeader(response.get(i).getId());
-                if(detail.isEmpty()){
+                if (detail.isEmpty()) {
                     continue;
                 }
                 String regionuser_id = response.get(i).getBranch().getArea().getRegion().getName();
                 String datereport;
-                if(response.get(i) != null){
+                if (response.get(i) != null) {
                     datereport = convertDateToRoman.convertDateHehe(response.get(i).getCreated_at());
-                }else{
+                } else {
                     datereport = "-";
                 }
                 String fulluser_id;
-                if(getUser.getFullname() != null){
+                if (getUser.getFullname() != null) {
                     fulluser_id = response.get(i).getUser().getFullname();
-                }else{
+                } else {
                     fulluser_id = "-";
                 }
 
                 boolean foundRegion = false;
                 for (int x = 0; x < listAllReport.size(); x++) {
-                    if (regionuser_id.equals(listAllReport.get(x).getArea_name()) && datereport.equals(listAllReport.get(x).getDate())) {
+                    if (regionuser_id.equals(listAllReport.get(x).getArea_name())
+                            && datereport.equals(listAllReport.get(x).getDate())) {
                         foundRegion = true;
                         List<ListLhaDTO> lhaDetails = listAllReport.get(x).getLha_detail();
                         boolean foundUser = false;
@@ -457,26 +322,27 @@ public class ReportService {
         } else {
             for (int i = 0; i < response.size(); i++) {
                 List<AuditDailyReportDetail> detail = lhaDetailRepository.findByLHAIdForLeader(response.get(i).getId());
-                if(detail.isEmpty()){
+                if (detail.isEmpty()) {
                     continue;
                 }
                 String regionuser_id = response.get(i).getBranch().getArea().getRegion().getName();
                 String datereport;
-                if(response.get(i) != null){
+                if (response.get(i) != null) {
                     datereport = convertDateToRoman.convertDateHehe(response.get(i).getCreated_at());
-                }else{
+                } else {
                     datereport = "-";
                 }
                 String fulluser_id;
-                if(getUser.getFullname() != null){
+                if (getUser.getFullname() != null) {
                     fulluser_id = response.get(i).getUser().getFullname();
-                }else{
+                } else {
                     fulluser_id = "-";
                 }
 
                 boolean foundRegion = false;
                 for (int x = 0; x < listAllReport.size(); x++) {
-                    if (regionuser_id.equals(listAllReport.get(x).getArea_name()) && datereport.equals(listAllReport.get(x).getDate())) {
+                    if (regionuser_id.equals(listAllReport.get(x).getArea_name())
+                            && datereport.equals(listAllReport.get(x).getDate())) {
                         foundRegion = true;
                         List<ListLhaDTO> lhaDetails = listAllReport.get(x).getLha_detail();
                         boolean foundUser = false;

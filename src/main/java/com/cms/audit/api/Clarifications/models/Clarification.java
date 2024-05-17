@@ -62,7 +62,7 @@ public class Clarification {
     @Column(name = "code")
     private String code;
 
-    @Column(name = "nominal_loss")
+    @Column(name = "nominal_loss", columnDefinition = "integer default 0")
     private Long nominal_loss;
 
     @Column(name = "evaluation_limitation", columnDefinition = "DATE")

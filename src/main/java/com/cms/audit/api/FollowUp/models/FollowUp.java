@@ -60,7 +60,7 @@ public class FollowUp {
     @Column(name = "code")
     private String code;
 
-    @Column(name = "charging_costs")
+    @Column(name = "charging_costs", columnDefinition = "integer default 0")
     private Long charging_costs;
 
     @Column(name = "description", columnDefinition = "TEXT")

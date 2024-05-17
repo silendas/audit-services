@@ -409,7 +409,7 @@ public class ClarificationService {
                                         setReportTypeId,
                                         getClarification.get().getReport_number(),
                                         getClarification.get().getCode(),
-                                        null,
+                                        0L,
                                         dto.getEvaluation_limitation(),
                                         dto.getLocation(),
                                         dto.getAuditee(),
@@ -490,7 +490,9 @@ public class ClarificationService {
                         if (dto.getIs_followup() == null) {
                                 dto.setIs_followup(0L);
                         }
-
+                        if (dto.getNominal_loss() == null) {
+                                dto.setNominal_loss(0L);
+                        }
                         Clarification clarification = new Clarification(
                                         dto.getClarification_id(),
                                         getBefore.get().getUser(),

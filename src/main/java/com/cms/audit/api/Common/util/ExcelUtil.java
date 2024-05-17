@@ -42,10 +42,10 @@ public class ExcelUtil {
                 row1.createCell(1).setCellValue(c.getUser().getFullname());
                 row1.createCell(2).setCellValue(c.getCases().getName());
                 row1.createCell(3).setCellValue(c.getCaseCategory().getName());
-                if(c.getNominal_loss() != null){
+                if(c.getNominal_loss() != null && c.getNominal_loss() != 0){
                     row1.createCell(4).setCellValue(c.getNominal_loss());
                 }else{
-                    row1.createCell(4).setCellValue("-");
+                    row1.createCell(4).setCellValue(0L);
                 }
                 row1.createCell(5).setCellValue(c.getEvaluation_limitation());
                 row1.createCell(6).setCellValue(c.getLocation());
