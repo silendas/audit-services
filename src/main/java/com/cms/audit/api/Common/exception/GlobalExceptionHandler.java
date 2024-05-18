@@ -4,6 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
@@ -12,11 +13,24 @@ import com.cms.audit.api.Common.constant.ReturnCode;
 import com.cms.audit.api.Common.dto.BaseResponse;
 import com.cms.audit.api.Common.dto.ErrorObjectDto;
 import com.cms.audit.api.Common.dto.Meta;
+import com.cms.audit.api.Common.response.ResponseEntittyHandler;
 
 import java.util.Date;
 
 @ControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
+
+    @ExceptionHandler(value = { IllegalArgumentException.class, IllegalStateException.class })
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    protected ResponseEntity<Object> handleConflict(RuntimeException ex, WebRequest request) {
+        return ResponseEntittyHandler.errorResponse(ex.getMessage(), "Request belum sesuai dengan kriteria", HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(value = { Exception.class })
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    protected ResponseEntity<Object> handleInternalServerError(Exception ex, WebRequest request) {
+        return ResponseEntittyHandler.allHandler(null, "Internal Server Error", HttpStatus.INTERNAL_SERVER_ERROR, ex);
+    }
 
     @ExceptionHandler(NullPointerException.class)
     public ResponseEntity<Object> handleNullException(NullPointerException ex, WebRequest request) {

@@ -699,8 +699,6 @@ public class ClarificationService {
                         clarification.setUpdated_at(new Date());
                         Clarification getResponse = repository.save(clarification);
 
-                        // file.transferTo(new File(filePath));
-
                         Map<String, Object> returnResponse = new LinkedHashMap<>();
                         Map<String, Object> mappingRes = new LinkedHashMap<>();
                         mappingRes.put("id", getResponse.getId());

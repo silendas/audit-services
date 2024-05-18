@@ -323,11 +323,14 @@ public class FollowupService {
                         .status(HttpStatus.BAD_REQUEST)
                         .message("Follow up with id:" + id + " is not found").build();
             }
-            if(getFollowUp.get().getStatus().equals(EStatusFollowup.CLOSE)){
-                return GlobalResponse.builder().errorMessage("Tindak lanjut sudah ditutup")
-                        .status(HttpStatus.BAD_REQUEST)
-                        .message("Follow up with id:" + id + " is closed").build();
+
+            if (getFollowUp.get().getFilePath() != null) {
+                File oldFile = new File(getFollowUp.get().getFilePath());
+                if (oldFile.exists()) {
+                    oldFile.delete();
+                }
             }
+
             FollowUp followUp = getFollowUp.get();
             followUp.setStatus(EStatusFollowup.CLOSE);
 
@@ -337,7 +340,6 @@ public class FollowupService {
                 String filePath = path;
                 followUp.setFilename(fileName);
                 followUp.setFilePath(filePath);
-                // file.transferTo(new File(filePath));
             }
 
             FollowUp getResponse = repository.save(followUp);
