@@ -527,7 +527,7 @@ public class ClarificationService {
 
                         Map<String, Object> returnResponse = new LinkedHashMap<>();
 
-                        if (dto.getNominal_loss() != 0 || dto.getNominal_loss() != null) {
+                        if (dto.getNominal_loss() != 0 || dto.getNominal_loss() != null || !dto.getNominal_loss().equals(0L)) {
                                 Optional<NumberClarificationInterface> checkClBefore = newsInspectionRepository
                                                 .checkNumberBAP(response.getUser().getId());
                                 if (checkClBefore.isPresent()) {
