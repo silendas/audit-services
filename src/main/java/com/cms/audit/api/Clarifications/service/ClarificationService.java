@@ -265,15 +265,15 @@ public class ClarificationService {
                 try {
                         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-                        if (dto.getBranch_id() == null) {
+                        if(dto.getBranch_id() == null) {
                                 return GlobalResponse.builder().errorMessage("Branch harus diisi")
                                                 .message("Branch harus diisi")
                                                 .status(HttpStatus.BAD_REQUEST).build();
-                        } else if (dto.getCase_category_id() == null) {
+                        } else if(dto.getCase_category_id() == null) {
                                 return GlobalResponse.builder().errorMessage("Kategori harus diisi")
                                                 .message("Kategori harus diisi")
                                                 .status(HttpStatus.BAD_REQUEST).build();
-                        } else if (dto.getCase_id() == null) {
+                        } else if(dto.getCase_id() == null) {
                                 return GlobalResponse.builder().errorMessage("Divisi harus diisi")
                                                 .message("Divisi harus diisi")
                                                 .status(HttpStatus.BAD_REQUEST).build();
@@ -396,56 +396,56 @@ public class ClarificationService {
 
         public GlobalResponse inputClarification(InputClarificationDTO dto) {
                 try {
-                        if (dto.getAuditee() == null) {
+                        if(dto.getAuditee() == null) {
                                 return GlobalResponse
                                                 .builder()
                                                 .message("Auditee harus diisi")
                                                 .errorMessage("Auditee harus diisi")
                                                 .status(HttpStatus.BAD_REQUEST)
                                                 .build();
-                        } else if (dto.getClarification_id() == null) {
+                        } else if(dto.getClarification_id() == null) {
                                 return GlobalResponse
                                                 .builder()
                                                 .message("Id klarifikasi harus diisi")
                                                 .errorMessage("Id klarifikasi harus diisi")
                                                 .status(HttpStatus.BAD_REQUEST)
                                                 .build();
-                        } else if (dto.getAuditee() == null) {
+                        } else if(dto.getAuditee() == null) {
                                 return GlobalResponse
                                                 .builder()
                                                 .message("Auditee harus diisi")
                                                 .errorMessage("Auditee harus diisi")
                                                 .status(HttpStatus.BAD_REQUEST)
                                                 .build();
-                        } else if (dto.getAuditee_leader() == null) {
+                        } else if(dto.getAuditee_leader() == null) {
                                 return GlobalResponse
                                                 .builder()
                                                 .message("Leader harus diisi")
                                                 .errorMessage("Leader harus diisi")
                                                 .status(HttpStatus.BAD_REQUEST)
                                                 .build();
-                        } else if (dto.getDescription() == null) {
+                        } else if(dto.getDescription() == null) {
                                 return GlobalResponse
                                                 .builder()
                                                 .message("Deskripsi harus diisi")
                                                 .errorMessage("Deskripsi harus diisi")
                                                 .status(HttpStatus.BAD_REQUEST)
                                                 .build();
-                        } else if (dto.getEvaluation_limitation() == null) {
+                        } else if(dto.getEvaluation_limitation() == null) {
                                 return GlobalResponse
                                                 .builder()
                                                 .message("Limitasi evaluasi harus diisi")
                                                 .errorMessage("Limitasi evaluasi harus diisi")
                                                 .status(HttpStatus.BAD_REQUEST)
                                                 .build();
-                        } else if (dto.getLocation() == null) {
+                        } else if(dto.getLocation() == null) {
                                 return GlobalResponse
                                                 .builder()
                                                 .message("Lokasi harus diisi")
                                                 .errorMessage("Lokasi harus diisi")
                                                 .status(HttpStatus.BAD_REQUEST)
                                                 .build();
-                        } else if (dto.getPriority() == null) {
+                        } else if(dto.getPriority() == null) {
                                 return GlobalResponse
                                                 .builder()
                                                 .message("Prioritas harus diisi")
@@ -548,35 +548,35 @@ public class ClarificationService {
 
         public GlobalResponse identificationClarification(IdentificationDTO dto) {
                 try {
-                        if (dto.getClarification_id() == null) {
+                        if(dto.getClarification_id() == null) {
                                 return GlobalResponse
                                                 .builder()
                                                 .message("Clarification harus diisi")
                                                 .errorMessage("Clarification harus diisi")
                                                 .status(HttpStatus.BAD_REQUEST)
                                                 .build();
-                        } else if (dto.getNominal_loss() == null) {
+                        } else if(dto.getNominal_loss() == null) {
                                 return GlobalResponse
                                                 .builder()
                                                 .message("Nominal loss harus diisi")
                                                 .errorMessage("Nominal loss harus diisi")
                                                 .status(HttpStatus.BAD_REQUEST)
                                                 .build();
-                        } else if (dto.getIs_followup() == null) {
+                        } else if(dto.getIs_followup() == null) {
                                 return GlobalResponse
                                                 .builder()
                                                 .message("Is followup harus diisi")
                                                 .errorMessage("Is followup harus diisi")
                                                 .status(HttpStatus.BAD_REQUEST)
                                                 .build();
-                        } else if (dto.getEvaluation() == null) {
+                        } else if(dto.getEvaluation() == null) {
                                 return GlobalResponse
                                                 .builder()
                                                 .message("Evaluation harus diisi")
                                                 .errorMessage("Evaluation harus diisi")
                                                 .status(HttpStatus.BAD_REQUEST)
                                                 .build();
-                        } else if (dto.getRecommendation() == null) {
+                        } else if(dto.getRecommendation() == null) {
                                 return GlobalResponse
                                                 .builder()
                                                 .message("Recommendation harus diisi")
@@ -768,7 +768,7 @@ public class ClarificationService {
 
         public GlobalResponse uploadFile(MultipartFile file, Long id) {
                 try {
-                        if (file == null) {
+                        if(file == null) {
                                 return GlobalResponse
                                                 .builder()
                                                 .message("File tidak boleh kosong")
@@ -786,15 +786,14 @@ public class ClarificationService {
                                                 .build();
                         }
 
-                        if (getClarification.get().getFilename() != null) {
-                                if (getClarification.get().getStatus() == EStatusClarification.DONE || getClarification
-                                                .get().getStatus() == EStatusClarification.IDENTIFICATION) {
+                        if(getClarification.get().getFilename() != null) {
+                                if(getClarification.get().getStatus() == EStatusClarification.DONE || getClarification.get().getStatus() == EStatusClarification.IDENTIFICATION){
                                         return GlobalResponse
-                                                        .builder()
-                                                        .message("File sudah di upload")
-                                                        .errorMessage("File sudah di upload")
-                                                        .status(HttpStatus.BAD_REQUEST)
-                                                        .build();
+                                        .builder()
+                                        .message("File sudah di upload")
+                                        .errorMessage("File sudah di upload")
+                                        .status(HttpStatus.BAD_REQUEST)
+                                        .build();
                                 }
                         }
 
