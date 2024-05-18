@@ -26,12 +26,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return ResponseEntittyHandler.errorResponse(ex.getMessage(), "Request belum sesuai dengan kriteria", HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(value = { Exception.class })
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    protected ResponseEntity<Object> handleInternalServerError(Exception ex, WebRequest request) {
-        return ResponseEntittyHandler.allHandler(null, "Internal Server Error", HttpStatus.INTERNAL_SERVER_ERROR, ex);
-    }
-
     @ExceptionHandler(NullPointerException.class)
     public ResponseEntity<Object> handleNullException(NullPointerException ex, WebRequest request) {
         ErrorObjectDto theErrorObject = new ErrorObjectDto();
