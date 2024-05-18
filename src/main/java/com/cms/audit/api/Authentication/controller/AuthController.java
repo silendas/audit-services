@@ -15,6 +15,7 @@ import com.cms.audit.api.Common.response.ResponseEntittyHandler;
 
 import io.micrometer.common.lang.NonNull;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -25,7 +26,7 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/login")
-    public ResponseEntity<Object> login(@RequestBody SigninDTO signinDTO) {
+    public ResponseEntity<Object> login(@Valid @RequestBody SigninDTO signinDTO) {
         AuthResponse response = authService.login(signinDTO);
         return ResponseEntittyHandler.authSuccess(response.getMessage(),response.getToken(), response.getStatus());
     }

@@ -1,7 +1,12 @@
 package com.cms.audit.api.Common.exception;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -16,14 +21,15 @@ import com.cms.audit.api.Common.dto.Meta;
 import com.cms.audit.api.Common.response.ResponseEntittyHandler;
 
 import java.util.Date;
-
 @ControllerAdvice
-public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
+@Order(Ordered.HIGHEST_PRECEDENCE)
+public class GlobalExceptionHandler extends ResponseEntityExceptionHandler { 
 
     @ExceptionHandler(value = { IllegalArgumentException.class, IllegalStateException.class })
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    protected ResponseEntity<Object> handleConflict(RuntimeException ex, WebRequest request) {
-        return ResponseEntittyHandler.errorResponse(ex.getMessage(), "Request belum sesuai dengan kriteria", HttpStatus.BAD_REQUEST);
+    public ResponseEntity<Object> handleConflict(RuntimeException ex, WebRequest request) {
+        return ResponseEntittyHandler.errorResponse(ex.getMessage(), "Request belum sesuai dengan kriteria",
+                HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(NullPointerException.class)
@@ -32,7 +38,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         theErrorObject.setStatusCode(HttpStatus.NOT_FOUND.value());
         theErrorObject.setMessage(ex.getMessage());
         theErrorObject.setTimeStamp(new Date());
-        BaseResponse<ErrorObjectDto> baseResponse = new BaseResponse<>(theErrorObject, new Meta(ReturnCode.FAILED_NOT_FOUND.getStatusCode(), ReturnCode.FAILED_NOT_FOUND.getMessage(), ""));
+        BaseResponse<ErrorObjectDto> baseResponse = new BaseResponse<>(theErrorObject,
+                new Meta(ReturnCode.FAILED_NOT_FOUND.getStatusCode(), ReturnCode.FAILED_NOT_FOUND.getMessage(), ""));
         return new ResponseEntity<>(baseResponse.getCustomizeResponse("error"), HttpStatus.NOT_FOUND);
     }
 
@@ -42,17 +49,21 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         theErrorObject.setStatusCode(HttpStatus.CONFLICT.value());
         theErrorObject.setMessage(ex.getMessage());
         theErrorObject.setTimeStamp(new Date());
-        BaseResponse<ErrorObjectDto> baseResponse = new BaseResponse<>(theErrorObject, new Meta(ReturnCode.FAILED_DATA_ALREADY_EXISTS.getStatusCode(), ReturnCode.FAILED_DATA_ALREADY_EXISTS.getMessage(), ""));
+        BaseResponse<ErrorObjectDto> baseResponse = new BaseResponse<>(theErrorObject,
+                new Meta(ReturnCode.FAILED_DATA_ALREADY_EXISTS.getStatusCode(),
+                        ReturnCode.FAILED_DATA_ALREADY_EXISTS.getMessage(), ""));
         return new ResponseEntity<>(baseResponse.getCustomizeResponse("error"), HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    public ResponseEntity<Object> handleMethodArgumentException(MethodArgumentTypeMismatchException ex, WebRequest request) {
+    public ResponseEntity<Object> handleMethodArgumentException(MethodArgumentTypeMismatchException ex,
+            WebRequest request) {
         ErrorObjectDto errorObject = new ErrorObjectDto();
         errorObject.setStatusCode(HttpStatus.BAD_REQUEST.value());
         errorObject.setMessage(ex.getMessage());
         errorObject.setTimeStamp(new Date());
-        BaseResponse<ErrorObjectDto> baseResponse = new BaseResponse<>(errorObject, new Meta(ReturnCode.FAILED_BAD_REQUEST.getStatusCode(), ReturnCode.FAILED_BAD_REQUEST.getMessage(), ""));
+        BaseResponse<ErrorObjectDto> baseResponse = new BaseResponse<>(errorObject, new Meta(
+                ReturnCode.FAILED_BAD_REQUEST.getStatusCode(), ReturnCode.FAILED_BAD_REQUEST.getMessage(), ""));
         return new ResponseEntity<>(baseResponse.getCustomizeResponse("error"), HttpStatus.BAD_REQUEST);
     }
 
@@ -62,7 +73,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         errorObject.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
         errorObject.setMessage(ex.getMessage());
         errorObject.setTimeStamp(new Date());
-        BaseResponse<ErrorObjectDto> baseResponse = new BaseResponse<>(errorObject, new Meta(ReturnCode.FAILED_SERVER_INTERNAL_SERVER_ERROR.getStatusCode(), ex.getMessage(), ""));
+        BaseResponse<ErrorObjectDto> baseResponse = new BaseResponse<>(errorObject,
+                new Meta(ReturnCode.FAILED_SERVER_INTERNAL_SERVER_ERROR.getStatusCode(), ex.getMessage(), ""));
         return new ResponseEntity<>(baseResponse.getCustomizeResponse("error"), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
@@ -72,27 +84,32 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         dto.setMessage(e.getMessage());
         dto.setStatusCode(HttpStatus.NOT_FOUND.value());
         dto.setTimeStamp(new Date());
-        BaseResponse<ErrorObjectDto> baseResponse = new BaseResponse<>(dto, new Meta(ReturnCode.FAILED_NOT_FOUND.getStatusCode(), e.getMessage(), ""));
+        BaseResponse<ErrorObjectDto> baseResponse = new BaseResponse<>(dto,
+                new Meta(ReturnCode.FAILED_NOT_FOUND.getStatusCode(), e.getMessage(), ""));
         return new ResponseEntity<>(baseResponse.getCustomizeResponse("error"), HttpStatus.NOT_FOUND);
     }
 
-
     // @ExceptionHandler(MethodArgumentNotValidException.class)
-    // protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
-    //     Map<String, Object> body = new LinkedHashMap<>();
-    //     body.put("timestamp", new Date());
-    //     body.put("statusCode", HttpStatus.BAD_REQUEST.value());
+    // protected ResponseEntity<Object>
+    // handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders
+    // headers, HttpStatus status, WebRequest request) {
+    // Map<String, Object> body = new LinkedHashMap<>();
+    // body.put("timestamp", new Date());
+    // body.put("statusCode", HttpStatus.BAD_REQUEST.value());
 
-    //     List<String> errors = ex.getBindingResult()
-    //             .getFieldErrors()
-    //             .stream()
-    //             .map(x -> x.getDefaultMessage())
-    //             .collect(Collectors.toList());
+    // List<String> errors = ex.getBindingResult()
+    // .getFieldErrors()
+    // .stream()
+    // .map(x -> x.getDefaultMessage())
+    // .collect(Collectors.toList());
 
-    //     body.put("messages", errors);
+    // body.put("messages", errors);
 
-    //     BaseResponse<Object> baseResponse = new BaseResponse<>(body.get("messages"), new Meta(ReturnCode.FAILED_BAD_REQUEST.getStatusCode(), ex.getMessage(), ""));
-    //     return new ResponseEntity<>(baseResponse.getCustomizeResponse("error"), HttpStatus.NOT_FOUND);
+    // BaseResponse<Object> baseResponse = new BaseResponse<>(body.get("messages"),
+    // new Meta(ReturnCode.FAILED_BAD_REQUEST.getStatusCode(), ex.getMessage(),
+    // ""));
+    // return new ResponseEntity<>(baseResponse.getCustomizeResponse("error"),
+    // HttpStatus.NOT_FOUND);
     // }
 
 }

@@ -527,7 +527,7 @@ public class ClarificationService {
 
                         Map<String, Object> returnResponse = new LinkedHashMap<>();
 
-                        if (dto.getNominal_loss() != 0 || dto.getNominal_loss() != null || !dto.getNominal_loss().equals(0L)) {
+                        if (dto.getNominal_loss() != 0 && dto.getNominal_loss() != null) {
                                 Optional<NumberClarificationInterface> checkClBefore = newsInspectionRepository
                                                 .checkNumberBAP(response.getUser().getId());
                                 if (checkClBefore.isPresent()) {
@@ -588,7 +588,7 @@ public class ClarificationService {
                                 returnResponse.put("bap", mappingFU);
                         }
 
-                        if (dto.getIs_followup() != 0 || dto.getIs_followup() != null
+                        if (dto.getIs_followup() != 0 && dto.getIs_followup() != null
                                         || dto.getIs_followup().toString() != "") {
                                 Optional<NumberClarificationInterface> checkTLBefore = followUpRepository
                                                 .checkNumberFollowUp(response.getUser().getId());

@@ -16,9 +16,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class SigninDTO {
-    @NotBlank(message = "username should not be empty")
+    @NotBlank(message = "username tidak boleh kosong")
     private String username;
-    @NotBlank(message = "password should not be empty")
-    @Size(min = 8, message = "Password should be atleast 8 char")
+    @NotBlank(message = "password tidak boleh kosong")
+    @Size(min = 8, message = "Password harus setidaknya 8 character")
     private String password;
 }

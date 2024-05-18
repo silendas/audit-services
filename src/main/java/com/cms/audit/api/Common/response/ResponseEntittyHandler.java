@@ -3,8 +3,6 @@ package com.cms.audit.api.Common.response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import com.cms.audit.api.Common.dto.ErrorDetail;
-
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
