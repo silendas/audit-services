@@ -1,5 +1,6 @@
 package com.cms.audit.api.NewsInspection.service;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashMap;
@@ -163,7 +164,7 @@ public class NewsInspectionService {
             clarification.put("id", bap.getClarification().getId());
             clarification.put("code", bap.getClarification().getCode());
             clarification.put("nominal_loss", bap.getClarification().getNominal_loss());
-            clarification.put("evaluation_limitation",bap.getClarification().getEvaluation_limitation());
+            clarification.put("evaluation_limitation", bap.getClarification().getEvaluation_limitation());
             kkaMap.put("clarification", clarification);
 
             kkaMap.put("code", bap.getCode());
@@ -213,9 +214,17 @@ public class NewsInspectionService {
                         .errorMessage("BAP dengna id : " + id + " tidak ditemukan").status(HttpStatus.BAD_REQUEST)
                         .build();
             }
-            if(getBAP.get().getFileName() != null) {
-                return GlobalResponse.builder().message("BAP sudah dibuat, tidak dapat upload file")
-                        .status(HttpStatus.BAD_REQUEST).build();
+            // if(getBAP.get().getFileName() != null) {
+            // return GlobalResponse.builder().message("BAP sudah dibuat, tidak dapat upload
+            // file")
+            // .status(HttpStatus.BAD_REQUEST).build();
+            // }
+
+            if (getBAP.get().getFile_path() != null) {
+                File oldFile = new File(getBAP.get().getFile_path());
+                if (oldFile.exists()) {
+                    oldFile.delete();
+                }
             }
 
             String fileName = fileStorageService.storeFile(file);

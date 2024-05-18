@@ -1,5 +1,6 @@
 package com.cms.audit.api.Clarifications.service;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashMap;
@@ -670,12 +671,21 @@ public class ClarificationService {
                                                 .build();
                         }
 
-                        if(getClarification.get().getStatus() == EStatusClarification.IDENTIFICATION) {
-                                return GlobalResponse
-                                                .builder()
-                                                .message("Clarification sudah diidentifikasi, tidak dapat upload file")
-                                                .status(HttpStatus.BAD_REQUEST)
-                                                .build();
+                        // if(getClarification.get().getStatus() == EStatusClarification.IDENTIFICATION)
+                        // {
+                        // return GlobalResponse
+                        // .builder()
+                        // .message("Clarification sudah diidentifikasi, tidak dapat upload file")
+                        // .status(HttpStatus.BAD_REQUEST)
+                        // .build();
+                        // }
+
+                        // Hapus file lama jika ada
+                        if (getClarification.get().getFile_path() != null) {
+                                File oldFile = new File(getClarification.get().getFile_path());
+                                if (oldFile.exists()) {
+                                        oldFile.delete();
+                                }
                         }
 
                         String fileName = fileStorageService.storeFile(file);
