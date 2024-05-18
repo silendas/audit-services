@@ -3,6 +3,7 @@ package com.cms.audit.api.Management.Case.controller;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,9 +30,9 @@ public class CaseController {
 
     @GetMapping
     public ResponseEntity<Object> findAll(
-        @RequestParam("name") Optional<String> name,
-        @RequestParam("page") Optional<Integer> page,
-        @RequestParam("size") Optional<Integer> size) {
+            @RequestParam("name") Optional<String> name,
+            @RequestParam("page") Optional<Integer> page,
+            @RequestParam("size") Optional<Integer> size) {
         GlobalResponse response = caseService.findAll(name.orElse(null), page.orElse(0), size.orElse(10));
         if (response.getError() != null) {
             return ResponseEntittyHandler.allHandler(null, null, response.getStatus(), response.getError());
@@ -51,8 +52,9 @@ public class CaseController {
     @PostMapping
     public ResponseEntity<Object> save(@RequestBody CaseDTO caseDTO) {
         GlobalResponse response = caseService.save(caseDTO);
-        if (response.getError() != null) {
-            return ResponseEntittyHandler.allHandler(null, null, response.getStatus(), response.getError());
+        if (response.getStatus() == HttpStatus.BAD_REQUEST) {
+            return ResponseEntittyHandler.errorResponse(response.getErrorMessage(), response.getMessage(),
+                    response.getStatus());
         }
         return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(), null);
     }
@@ -60,8 +62,9 @@ public class CaseController {
     @PutMapping("/{id}")
     public ResponseEntity<Object> edit(@RequestBody CaseDTO caseDTO, @PathVariable("id") Long id) {
         GlobalResponse response = caseService.edit(caseDTO, id);
-        if (response.getError() != null) {
-            return ResponseEntittyHandler.allHandler(null, null, response.getStatus(), response.getError());
+        if (response.getStatus() == HttpStatus.BAD_REQUEST) {
+            return ResponseEntittyHandler.errorResponse(response.getErrorMessage(), response.getMessage(),
+                    response.getStatus());
         }
         return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(), null);
     }

@@ -214,6 +214,11 @@ public class CaseCategoryService {
 
     public GlobalResponse save(CaseCategoryDTO caseCategoryDTO) {
         try {
+            if(caseCategoryDTO.getCase_id() == null) {
+                return GlobalResponse.builder().errorMessage("Case id tidak boleh kosong").message("Case tidak boleh kosong").status(HttpStatus.BAD_REQUEST).build();
+            } else if(caseCategoryDTO.getName() != null) {
+                return GlobalResponse.builder().errorMessage("Case name tidak boleh ada").message("Case name tidak boleh ada").status(HttpStatus.BAD_REQUEST).build();
+            }
 
             Optional<Case> caseId = caseRepository.findById(caseCategoryDTO.getCase_id());
             if (!caseId.isPresent()) {
@@ -229,13 +234,6 @@ public class CaseCategoryService {
                     caseId.get());
 
             CaseCategory response = caseCategoryRepository.save(caseCategoryEntity);
-            if (response == null) {
-                return GlobalResponse
-                        .builder()
-                        .message("Failed")
-                        .status(HttpStatus.BAD_REQUEST)
-                        .build();
-            }
             return GlobalResponse
                     .builder()
                     .message("Berhasil menambahkan data")
@@ -274,13 +272,6 @@ public class CaseCategoryService {
                     caseId.get());
 
             CaseCategory response = caseCategoryRepository.save(caseCategoryEntity);
-            if (response == null) {
-                return GlobalResponse
-                        .builder()
-                        .message("Failed")
-                        .status(HttpStatus.BAD_REQUEST)
-                        .build();
-            }
             return GlobalResponse
                     .builder()
                     .message("Berhasil mengubah data")
@@ -319,13 +310,6 @@ public class CaseCategoryService {
                     caseId);
 
             CaseCategory response = caseCategoryRepository.save(caseCategoryEntity);
-            if (response == null) {
-                return GlobalResponse
-                        .builder()
-                        .message("Failed")
-                        .status(HttpStatus.BAD_REQUEST)
-                        .build();
-            }
             return GlobalResponse
                     .builder()
                     .message("Berhasil menghapus data")

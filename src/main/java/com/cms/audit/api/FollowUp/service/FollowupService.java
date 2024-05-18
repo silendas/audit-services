@@ -241,6 +241,28 @@ public class FollowupService {
 
     public GlobalResponse save(FollowUpDTO dto) {
         try {
+            if(dto.getFollowup_id() == null) {
+                return GlobalResponse.builder().errorMessage("Tindak lanjut harus diisi")
+                        .message("Follow Up with id:" + dto.getFollowup_id() + " is not found")
+                        .status(HttpStatus.BAD_REQUEST)
+                        .build();
+            } else if (dto.getPenalty_id() == null) {
+                return GlobalResponse.builder().errorMessage("Penalty harus diisi")
+                        .message("Follow Up with id:" + dto.getFollowup_id() + " is not found")
+                        .status(HttpStatus.BAD_REQUEST)
+                        .build();
+            } else if (dto.getDescription() == null) {
+                return GlobalResponse.builder().errorMessage("Deskripsi harus diisi")
+                        .message("Follow Up with id:" + dto.getFollowup_id() + " is not found")
+                        .status(HttpStatus.BAD_REQUEST)
+                        .build();
+            } else if (dto.getCharging_costs() == null) {
+                return GlobalResponse.builder().errorMessage("Biaya harus diisi")
+                        .message("Follow Up with id:" + dto.getFollowup_id() + " is not found")
+                        .status(HttpStatus.BAD_REQUEST)
+                        .build();
+            }
+
             Optional<FollowUp> getFollowUp = repository.findById(dto.getFollowup_id());
             if (!getFollowUp.isPresent()) {
                 return GlobalResponse.builder().errorMessage("TIndak lanjut tidak ditemukan")
@@ -264,7 +286,7 @@ public class FollowupService {
 
             FollowUp followUp = getFollowUp.get();
             followUp.setPenalty(listPenalty);
-            if (dto.getCharging_costs() != null && !dto.getCharging_costs().equals("")) {
+            if (dto.getCharging_costs() != null) {
                 followUp.setCharging_costs(dto.getCharging_costs());
             } else {
                 followUp.setCharging_costs(0L);
@@ -317,11 +339,23 @@ public class FollowupService {
 
     public GlobalResponse uploadFile(MultipartFile file, Long id) {
         try {
+
+            if (file == null) {
+                return GlobalResponse.builder().message("File tidak boleh kosong").errorMessage("File tidak boleh kosong")
+                        .status(HttpStatus.BAD_REQUEST).build();
+            }
+
             Optional<FollowUp> getFollowUp = repository.findById(id);
             if (!getFollowUp.isPresent()) {
                 return GlobalResponse.builder().errorMessage("Tindak lanjut tidak ditemukan")
                         .status(HttpStatus.BAD_REQUEST)
                         .message("Follow up with id:" + id + " is not found").build();
+            }
+
+            if(getFollowUp.get().getFilename() != null && getFollowUp.get().getStatus() == EStatusFollowup.CLOSE) {
+                return GlobalResponse.builder().errorMessage("File sudah di upload")
+                        .status(HttpStatus.BAD_REQUEST)
+                        .message("File sudah di upload").build();
             }
 
             if (getFollowUp.get().getFilePath() != null) {

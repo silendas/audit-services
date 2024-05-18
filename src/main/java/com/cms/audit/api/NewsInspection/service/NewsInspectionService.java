@@ -208,17 +208,22 @@ public class NewsInspectionService {
 
     public GlobalResponse uploadFile(MultipartFile file, Long id) {
         try {
+            if (file == null) {
+                return GlobalResponse.builder()
+                        .message("File tidak boleh kosong")
+                        .errorMessage("File tidak boleh kosong")
+                        .status(HttpStatus.BAD_REQUEST).build();
+            }
             Optional<NewsInspection> getBAP = repository.findById(id);
             if (!getBAP.isPresent()) {
                 return GlobalResponse.builder().message("BAP tidak ditemukan")
                         .errorMessage("BAP dengna id : " + id + " tidak ditemukan").status(HttpStatus.BAD_REQUEST)
                         .build();
             }
-            // if(getBAP.get().getFileName() != null) {
-            // return GlobalResponse.builder().message("BAP sudah dibuat, tidak dapat upload
-            // file")
-            // .status(HttpStatus.BAD_REQUEST).build();
-            // }
+            if(getBAP.get().getFileName() != null ) {
+            return GlobalResponse.builder().errorMessage("BAP sudah ada file, tidak dapat upload file").message("BAP sudah dibuat, tidak dapat upload file")
+            .status(HttpStatus.BAD_REQUEST).build();
+            }
 
             if (getBAP.get().getFile_path() != null) {
                 File oldFile = new File(getBAP.get().getFile_path());

@@ -198,6 +198,13 @@ public class AuditWorkingPaperService {
 
     public GlobalResponse uploadFile(MultipartFile file, Long id) {
         try {
+            if (file == null) {
+                return GlobalResponse.builder()
+                .message("File tidak boleh kosong")
+                .errorMessage("File tidak boleh kosong")
+                .status(HttpStatus.BAD_REQUEST).build();
+            }
+
             List<Schedule> checkShcedule = scheduleRepository.CheckIfScheduleisNow(id);
             if (checkShcedule.isEmpty()) {
                 return GlobalResponse.builder().message("Tidak bisa memproses jadwal karena jadwal belum dimulai")
@@ -214,6 +221,7 @@ public class AuditWorkingPaperService {
             if (!checkKKA.isEmpty()) {
                 return GlobalResponse.builder().message("KKA sudah ada").status(HttpStatus.FOUND).build();
             }
+            
             for(AuditWorkingPaper kka : checkKKA) {
                 if(kka.getFilename() != null) {
                     return GlobalResponse.builder().message("KKA sudah dibuat, tidak dapat upload file").status(HttpStatus.BAD_REQUEST).build();

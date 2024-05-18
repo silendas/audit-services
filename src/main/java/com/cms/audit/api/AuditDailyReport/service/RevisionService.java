@@ -167,6 +167,25 @@ public class RevisionService {
     public GlobalResponse insertNewRevision(RevisionDTO dto) {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
+        if(dto.getAudit_daily_report_detail_id() == null){
+            return GlobalResponse.builder().errorMessage("LHA detail id tidak ditemukan")
+                    .message("LHA detail id not found")
+                    .status(HttpStatus.BAD_REQUEST).build();
+        } else if (dto.getDescription() == null) {
+            return GlobalResponse.builder().errorMessage("Deskripsi tidak ditemukan")
+                    .message("Description not found")
+                    .status(HttpStatus.BAD_REQUEST).build();
+        } else if (dto.getPermanent_recommendations() == null) {
+            return GlobalResponse.builder().errorMessage("Permanent Recommendations tidak ditemukan")
+                    .message("Permanent Recommendations not found")
+                    .status(HttpStatus.BAD_REQUEST).build();
+        } else if (dto.getTemporary_recommendations() == null) {
+            return GlobalResponse.builder().errorMessage("Temporary Recommendations tidak ditemukan")
+                    .message("Temporary Recommendations not found") 
+                    .status(HttpStatus.BAD_REQUEST).build();
+        }
+            
+
         Optional<AuditDailyReportDetail> detail = auditDailyReportDetailRepository
                 .findById(dto.getAudit_daily_report_detail_id());
         if (!detail.isPresent()) {

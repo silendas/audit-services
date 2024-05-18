@@ -500,6 +500,25 @@ public class ScheduleService {
                                         .orElseThrow(() -> new ResourceNotFoundException("user not found"));
                         List<ScheduleDTO> listRequestSchedule = new ArrayList<>();
                         for (int i = 0; i < scheduleDTO.getSchedules().size(); i++) {
+                                if(scheduleDTO.getSchedules().get(i).getStart_date() == null || scheduleDTO.getSchedules().get(i).getEnd_date() == null) {
+                                        return GlobalResponse.builder()
+                                                        .errorMessage("Tanggal harus diisi")
+                                                        .message("Tanggal harus diisi")
+                                                        .status(HttpStatus.BAD_REQUEST)
+                                                        .build();
+                                } else if(scheduleDTO.getSchedules().get(i).getBranch_id() == null) {
+                                        return GlobalResponse.builder()
+                                                        .errorMessage("Cabang harus diisi")
+                                                        .message("Cabang harus diisi")
+                                                        .status(HttpStatus.BAD_REQUEST)
+                                                        .build();
+                                } else if(scheduleDTO.getSchedules().get(i).getUser_id() == null) {
+                                        return GlobalResponse.builder()
+                                                        .errorMessage("User harus diisi")
+                                                        .message("User harus diisi")
+                                                        .status(HttpStatus.BAD_REQUEST)
+                                                        .build();
+                                }
 
                                 if (listRequestSchedule.isEmpty()) {
                                         listRequestSchedule.add(scheduleDTO.getSchedules().get(i));
@@ -695,11 +714,31 @@ public class ScheduleService {
         @Transactional(value = TxType.REQUIRES_NEW)
         public GlobalResponse insertSpecialSchedule(ScheduleRequest scheduleDTO, String username) {
                 try {
+
                         User getUser = userRepository.findByUsername(username)
                                         .orElseThrow(() -> new ResourceNotFoundException("user not found"));
 
                         List<ScheduleDTO> listRequestSchedule = new ArrayList<>();
                         for (int i = 0; i < scheduleDTO.getSchedules().size(); i++) {
+                                if(scheduleDTO.getSchedules().get(i).getStart_date() == null || scheduleDTO.getSchedules().get(i).getEnd_date() == null) {
+                                        return GlobalResponse.builder()
+                                                        .errorMessage("Tanggal harus diisi")
+                                                        .message("Tanggal harus diisi")
+                                                        .status(HttpStatus.BAD_REQUEST)
+                                                        .build();
+                                } else if(scheduleDTO.getSchedules().get(i).getBranch_id() == null) {
+                                        return GlobalResponse.builder()
+                                                        .errorMessage("Cabang harus diisi")
+                                                        .message("Cabang harus diisi")
+                                                        .status(HttpStatus.BAD_REQUEST)
+                                                        .build();
+                                } else if(scheduleDTO.getSchedules().get(i).getUser_id() == null) {
+                                        return GlobalResponse.builder()
+                                                        .errorMessage("User harus diisi")
+                                                        .message("User harus diisi")
+                                                        .status(HttpStatus.BAD_REQUEST)
+                                                        .build();
+                                }
                                 if (listRequestSchedule.isEmpty()) {
                                         listRequestSchedule.add(scheduleDTO.getSchedules().get(i));
                                 } else {

@@ -138,6 +138,21 @@ public class CaseService {
 
     public GlobalResponse save(CaseDTO caseDTO) {
         try {
+            if(caseDTO.getCode() == null){
+                return GlobalResponse
+                        .builder()
+                        .errorMessage("Code harus diisi")
+                        .message("Code harus diisi")
+                        .status(HttpStatus.BAD_REQUEST)
+                        .build();
+            } else if(caseDTO.getName() == null){
+                return GlobalResponse
+                        .builder()
+                        .errorMessage("Name harus diisi")
+                        .message("Name harus diisi")
+                        .status(HttpStatus.BAD_REQUEST)
+                        .build();
+            }
 
             Case caseEntity = new Case(
                     null,
@@ -148,13 +163,6 @@ public class CaseService {
                     new Date());
 
             Case response = caseRepository.save(caseEntity);
-            if (response == null) {
-                return GlobalResponse
-                        .builder()
-                        .message("Failed")
-                        .status(HttpStatus.BAD_REQUEST)
-                        .build();
-            }
             return GlobalResponse
                     .builder()
                     .message("Berhasil menambahkan data")
@@ -194,13 +202,6 @@ public class CaseService {
                     new Date());
 
             Case response = caseRepository.save(caseEntity);
-            if (response == null) {
-                return GlobalResponse
-                        .builder()
-                        .message("Failed")
-                        .status(HttpStatus.BAD_REQUEST)
-                        .build();
-            }
             return GlobalResponse
                     .builder()
                     .message("Berhasil mengubah data")

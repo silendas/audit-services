@@ -3,6 +3,7 @@ package com.cms.audit.api.Management.CaseCategory.controller;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -53,8 +54,9 @@ public class CaseCategoryController {
     @PostMapping
     public ResponseEntity<Object> save(@RequestBody CaseCategoryDTO caseCategoryDTO){
         GlobalResponse response =  caseCategoryService.save(caseCategoryDTO);
-        if(response.getError() != null){
-            return ResponseEntittyHandler.allHandler(null, null, response.getStatus(), response.getError());
+       if (response.getStatus() == HttpStatus.BAD_REQUEST) {
+            return ResponseEntittyHandler.errorResponse(response.getErrorMessage(), response.getMessage(),
+                    response.getStatus());
         }
         return ResponseEntittyHandler.allHandler(response.getData(),response.getMessage(), response.getStatus(), null);
     }
@@ -62,8 +64,9 @@ public class CaseCategoryController {
     @PutMapping("/{id}")
     public ResponseEntity<Object> edit(@RequestBody CaseCategoryDTO caseCategoryDTO, @PathVariable("id") Long id){
         GlobalResponse response =  caseCategoryService.edit(caseCategoryDTO, id);
-        if(response.getError() != null){
-            return ResponseEntittyHandler.allHandler(null, null, response.getStatus(), response.getError());
+        if (response.getStatus() == HttpStatus.BAD_REQUEST) {
+            return ResponseEntittyHandler.errorResponse(response.getErrorMessage(), response.getMessage(),
+                    response.getStatus());
         }
         return ResponseEntittyHandler.allHandler(response.getData(),response.getMessage(), response.getStatus(), null);
     }

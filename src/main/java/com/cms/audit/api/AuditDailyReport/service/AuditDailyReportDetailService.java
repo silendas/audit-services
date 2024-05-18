@@ -352,6 +352,50 @@ public class AuditDailyReportDetailService {
         try {
             User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
+            if (dto.getCase_id() == null) {
+                return GlobalResponse
+                        .builder()
+                        .message("tidak ditemukan").errorMessage("Divisi tidak boleh kosong")
+                        .status(HttpStatus.BAD_REQUEST)
+                        .build();
+            } else if (dto.getCase_category_id() == null) {
+                return GlobalResponse
+                        .builder()
+                        .message("tidak ditemukan").errorMessage("Kategori divisi tidak boleh kosong")
+                        .status(HttpStatus.BAD_REQUEST)
+                        .build();
+            } else if (dto.getAudit_daily_report_id() == null) {
+                return GlobalResponse
+                        .builder()
+                        .message("tidak ditemukan").errorMessage("LHA tidak boleh kosong")
+                        .status(HttpStatus.BAD_REQUEST)
+                        .build();
+            } else if (dto.getDescription() == null) {
+                return GlobalResponse
+                        .builder()
+                        .message("tidak ditemukan").errorMessage("Deskripsi tidak boleh kosong")
+                        .status(HttpStatus.BAD_REQUEST)
+                        .build();
+            } else if (dto.getIs_research() == null) {
+                return GlobalResponse
+                        .builder()
+                        .message("tidak ditemukan").errorMessage("Is research tidak boleh kosong")
+                        .status(HttpStatus.BAD_REQUEST)
+                        .build();
+            } else if (dto.getPermanent_recommendations() == null) {
+                return GlobalResponse
+                        .builder()
+                        .message("tidak ditemukan").errorMessage("Rekomendasi permanen tidak boleh kosong")
+                        .status(HttpStatus.BAD_REQUEST)
+                        .build();
+            } else if (dto.getTemporary_recommendations() == null) {
+                return GlobalResponse
+                        .builder()
+                        .message("tidak ditemukan").errorMessage("Rekomendasi temporary tidak boleh kosong")
+                        .status(HttpStatus.BAD_REQUEST)
+                        .build();
+            } 
+
             Optional<AuditDailyReport> setId = lhaReportsitory.findById(dto.getAudit_daily_report_id());
             if (!setId.isPresent()) {
                 return GlobalResponse.builder().message("Lha tidak ditemukan")
@@ -551,6 +595,38 @@ public class AuditDailyReportDetailService {
     public GlobalResponse edit(EditAuditDailyReportDetailDTO dto, Long id) {
         try {
             User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+            if (dto.getCase_id() == null) {
+                return GlobalResponse
+                        .builder()
+                        .message("tidak ditemukan").errorMessage("Case tidak boleh kosong")
+                        .status(HttpStatus.BAD_REQUEST)
+                        .build();
+            } else if (dto.getCase_category_id() == null) {
+                return GlobalResponse
+                        .builder()
+                        .message("tidak ditemukan").errorMessage("Case Category tidak boleh kosong")
+                        .status(HttpStatus.BAD_REQUEST)
+                        .build();
+            } else if (dto.getDescription() == null) {
+                return GlobalResponse
+                        .builder()
+                        .message("tidak ditemukan").errorMessage("Description tidak boleh kosong")
+                        .status(HttpStatus.BAD_REQUEST)
+                        .build();
+            } else if(dto.getPermanent_recommendations() == null) {
+                return GlobalResponse
+                        .builder()
+                        .message("tidak ditemukan").errorMessage("Permanent Recommendations tidak boleh kosong")
+                        .status(HttpStatus.BAD_REQUEST)
+                        .build();
+            } else if(dto.getTemporary_recommendations() == null) {
+                return GlobalResponse
+                        .builder()
+                        .message("tidak ditemukan").errorMessage("Temporary Recommendations tidak boleh kosong")
+                        .status(HttpStatus.BAD_REQUEST)
+                        .build();
+            } 
 
             Optional<AuditDailyReportDetail> getBefore = repository.findById(id);
             if (!getBefore.isPresent()) {
