@@ -123,6 +123,10 @@ public class PenaltyService {
     public GlobalResponse save(PenaltyDTO PenaltyDTO) {
         try {
 
+            if(PenaltyDTO.getName() == null) {
+                return GlobalResponse.builder().message("Data tidak boleh kosong").errorMessage("Data tidak boleh kosong").status(HttpStatus.BAD_REQUEST).build();
+            }
+
             Penalty Penalty = new Penalty(
                 null,
                 PenaltyDTO.getName(),

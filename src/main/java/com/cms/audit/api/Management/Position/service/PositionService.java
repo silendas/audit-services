@@ -59,6 +59,9 @@ public class PositionService {
 
     public ResponseEntity<Object> create(PositionDTO position) {
         try {
+            if(position.getName() == null) {
+                return ResponseEntittyHandler.errorResponse("Data name tidak boleh kosong","Data name cannot be empty",HttpStatus.BAD_REQUEST);
+            }
             Position position1 = new Position();
             position1.setName(position.getName());
             Optional<Level> level = levelRepository.findById(position.getLevel_id());

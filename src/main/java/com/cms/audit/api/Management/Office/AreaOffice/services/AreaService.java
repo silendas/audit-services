@@ -246,6 +246,14 @@ public class AreaService {
     public GlobalResponse save(AreaDTO dto) {
         try {
 
+            if(dto.getName() == null){
+                return GlobalResponse.builder().message("Data tidak boleh kosong").errorMessage("Data tidak boleh kosong").status(HttpStatus.BAD_REQUEST).build();
+            } 
+
+            if(dto.getRegion_id() == null){
+                return GlobalResponse.builder().message("Region tidak boleh kosong").errorMessage("Region tidak boleh kosong").status(HttpStatus.BAD_REQUEST).build();
+            }
+
             Optional<Region> regionId = regionRepository.findById(dto.getRegion_id());
             if (!regionId.isPresent()) {
                 return GlobalResponse.builder().message("Data region not found").status(HttpStatus.BAD_REQUEST).build();

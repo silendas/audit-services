@@ -122,6 +122,16 @@ public class RoleService {
     public GlobalResponse save(RoleDTO roleDTO) {
         try {
 
+
+            if(roleDTO.getName() == null){
+                return GlobalResponse
+                        .builder()
+                        .message("ROle tidak boleh kosong")
+                        .errorMessage("ROle tidak boleh kosong")
+                        .status(HttpStatus.BAD_REQUEST)
+                        .build();
+            }
+
             Role role = new Role(
                     null,
                     roleDTO.getName(),

@@ -144,6 +144,10 @@ public class MainService {
     public GlobalResponse save(MainDTO mainDTO) {
         try {
 
+            if(mainDTO.getName() == null) {
+                return GlobalResponse
+                .builder().message("Nama tidak boleh kosong").errorMessage("Nama tidak boleh kosong").status(HttpStatus.BAD_REQUEST).build();
+            }
             Main main = new Main(
                 null,
                 mainDTO.getName(),

@@ -229,6 +229,13 @@ public class RegionService {
     public GlobalResponse save(RegionDTO dto) {
         try {
 
+            if(dto.getMain_id() == null) {
+                return GlobalResponse.builder().message("main tidak boleh kosong").errorMessage("main tidak boleh kosong").status(HttpStatus.BAD_REQUEST).build();
+            }
+            if(dto.getName() == null) {
+                return GlobalResponse.builder().message("name tidak boleh kosong").errorMessage("name tidak boleh kosong").status(HttpStatus.BAD_REQUEST).build();
+            }
+
             Optional<Main> mainId = mainRepository.findById(dto.getMain_id());
             if (!mainId.isPresent()) {
                 return GlobalResponse.builder().message("Data main not found").status(HttpStatus.BAD_REQUEST).build();

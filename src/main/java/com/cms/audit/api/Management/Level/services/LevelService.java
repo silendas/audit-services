@@ -123,6 +123,15 @@ public class LevelService {
     public GlobalResponse save(LevelDTO dto) {
         try {
 
+            if(dto.getName() == null || dto.getCode() == null){
+                return GlobalResponse
+                        .builder()
+                        .message("Data tidak boleh kosong")
+                        .errorMessage("Data tidak boleh kosong")
+                        .status(HttpStatus.BAD_REQUEST)
+                        .build();
+            }
+            
             Level level = new Level(
                     null,
                     dto.getName(),
@@ -132,13 +141,6 @@ public class LevelService {
                     new Date());
 
             Level response = levelRepository.save(level);
-            if (response == null) {
-                return GlobalResponse
-                        .builder()
-                        .message("Failed")
-                        .status(HttpStatus.BAD_REQUEST)
-                        .build();
-            }
             return GlobalResponse
                     .builder()
                     .message("Berhasil menambahkan data")
@@ -180,13 +182,6 @@ public class LevelService {
                     new Date());
 
             Level response = levelRepository.save(level);
-            if (response == null) {
-                return GlobalResponse
-                        .builder()
-                        .message("Failed")
-                        .status(HttpStatus.BAD_REQUEST)
-                        .build();
-            }
             return GlobalResponse
                     .builder()
                     .message("Berhasil mengubah data")
@@ -228,13 +223,6 @@ public class LevelService {
                     new Date());
 
             Level response = levelRepository.save(level);
-            if (response == null) {
-                return GlobalResponse
-                        .builder()
-                        .message("Failed")
-                        .status(HttpStatus.BAD_REQUEST)
-                        .build();
-            }
             return GlobalResponse
                     .builder()
                     .message("Berhasil menghapus data")

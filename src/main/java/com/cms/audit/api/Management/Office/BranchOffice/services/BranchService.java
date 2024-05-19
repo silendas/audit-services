@@ -464,6 +464,12 @@ public class BranchService {
     public GlobalResponse save(BranchDTO branchDTO) {
         try {
 
+            if(branchDTO.getArea_id() == null){
+                return GlobalResponse.builder().message("Area tidak boleh kosong").errorMessage("Area tidak diisi").status(HttpStatus.BAD_REQUEST).build();
+            }
+            if(branchDTO.getName() == null){
+                return GlobalResponse.builder().message("Name tidak boleh kosong").errorMessage("Name tidak diisi").status(HttpStatus.BAD_REQUEST).build();
+            }
             Optional<Area> areaId = areaRepository.findById(branchDTO.getArea_id());
             if (!areaId.isPresent()) {
                 return GlobalResponse.builder().message("Data area not found").status(HttpStatus.BAD_REQUEST).build();
