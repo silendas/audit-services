@@ -1090,7 +1090,7 @@ public class ScheduleService {
                         }
 
                         if (getSchedule.getStart_date() != dto.getStart_date()
-                                        && getSchedule.getEnd_date() != dto.getEnd_date()) {
+                                        || getSchedule.getEnd_date() != dto.getEnd_date()) {
                                 if (getSchedule.getCategory() == ECategory.REGULAR) {
                                         List<Schedule> checkDatefExist = repository
                                                         .findScheduleInDateRangeByUserIdNoCategoryEdit(

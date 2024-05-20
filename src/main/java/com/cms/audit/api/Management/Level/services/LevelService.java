@@ -123,6 +123,19 @@ public class LevelService {
     public GlobalResponse save(LevelDTO dto) {
         try {
 
+            List<Level> check = levelRepository.findAllLevel();
+
+            for (Level level : check) {
+                if (level.getName().equals(dto.getName())) {
+                    return GlobalResponse
+                            .builder()
+                            .errorMessage("Data sudah ada")
+                            .message("Data sudah ada")
+                            .status(HttpStatus.BAD_REQUEST)
+                            .build();
+                }
+            }
+
             if(dto.getName() == null || dto.getCode() == null || dto.getName() == "" || dto.getCode() == ""){
                 return GlobalResponse
                         .builder()
@@ -163,6 +176,23 @@ public class LevelService {
 
     public GlobalResponse edit(LevelDTO dto, Long id) {
         try {
+
+            List<Level> check = levelRepository.findAllLevel();
+
+            Optional<Level> checkId = levelRepository.findById(id);
+            if(!dto.getName().equals(checkId.get().getName())){
+                for (Level level : check) {
+                    if (level.getName().equals(dto.getName())) {
+                        return GlobalResponse
+                                .builder()
+                                .errorMessage("Data sudah ada")
+                                .message("Data sudah ada")
+                                .status(HttpStatus.BAD_REQUEST)
+                                .build();
+                    }
+                }
+            }
+
             if(id == 4 || id == 3 || id == 2 || id == 1){
                 return GlobalResponse
                         .builder()
