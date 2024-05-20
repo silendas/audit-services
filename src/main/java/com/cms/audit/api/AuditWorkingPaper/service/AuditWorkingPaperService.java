@@ -1,5 +1,6 @@
 package com.cms.audit.api.AuditWorkingPaper.service;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashMap;
@@ -67,7 +68,7 @@ public class AuditWorkingPaperService {
                     .and(new SpecificationFIlter<AuditWorkingPaper>().branchIdEqual(branchId))
                     .and(new SpecificationFIlter<AuditWorkingPaper>().dateRange(start_date, end_date))
                     .and(new SpecificationFIlter<AuditWorkingPaper>().isNotDeleted());
-            if(schedule_id != null) {
+            if (schedule_id != null) {
                 spec = spec.and(new SpecificationFIlter<AuditWorkingPaper>().scheduleIdEqual(schedule_id));
             }
             if (getUser.getLevel().getCode().equals("C")) {
@@ -90,7 +91,6 @@ public class AuditWorkingPaperService {
                 kkaMap.put("user", user);
 
                 kkaMap.put("branch", kka.getBranch());
-
 
                 Map<String, Object> schedule = new LinkedHashMap<>();
                 schedule.put("id", kka.getSchedule().getId());
@@ -200,32 +200,44 @@ public class AuditWorkingPaperService {
         try {
             if (file == null) {
                 return GlobalResponse.builder()
-                .message("File tidak boleh kosong")
-                .errorMessage("File tidak boleh kosong")
-                .status(HttpStatus.BAD_REQUEST).build();
+                        .message("File tidak boleh kosong")
+                        .errorMessage("File tidak boleh kosong")
+                        .status(HttpStatus.BAD_REQUEST).build();
             }
 
             // List<Schedule> checkShcedule = scheduleRepository.CheckIfScheduleisNow(id);
             // if (checkShcedule.isEmpty()) {
-            //     return GlobalResponse.builder().message("Tidak bisa memproses jadwal karena jadwal belum dimulai")
-            //             .errorMessage("Jadwal belum dimulai, tidak dapat diproses")
-            //             .status(HttpStatus.BAD_REQUEST).build();
+            // return GlobalResponse.builder().message("Tidak bisa memproses jadwal karena
+            // jadwal belum dimulai")
+            // .errorMessage("Jadwal belum dimulai, tidak dapat diproses")
+            // .status(HttpStatus.BAD_REQUEST).build();
             // }
 
             Optional<Schedule> getSchedule = scheduleRepository.findById(id);
             if (!getSchedule.isPresent()) {
-                return GlobalResponse.builder().errorMessage("Jadwal tidak ditemukan").message("Schedule with id:" + id + " is not found").status(HttpStatus.BAD_REQUEST).build();
+                return GlobalResponse.builder().errorMessage("Jadwal tidak ditemukan")
+                        .message("Schedule with id:" + id + " is not found").status(HttpStatus.BAD_REQUEST).build();
             }
 
             List<AuditWorkingPaper> checkKKA = repository.findListByScheduleId(id);
             if (!checkKKA.isEmpty()) {
                 return GlobalResponse.builder().message("KKA sudah ada").status(HttpStatus.FOUND).build();
             }
-            
-            for(AuditWorkingPaper kka : checkKKA) {
-                if(kka.getFilename() != null) {
-                    return GlobalResponse.builder().message("KKA sudah dibuat, tidak dapat upload file").status(HttpStatus.BAD_REQUEST).build();
+
+            for (AuditWorkingPaper kka : checkKKA) {
+                if (kka.getFilename() != null) {
+                    return GlobalResponse.builder().message("KKA sudah dibuat, tidak dapat upload file")
+                            .status(HttpStatus.BAD_REQUEST).build();
                 }
+            }
+
+            for(int i = 0; i < checkKKA.size(); i++) {
+                if (checkKKA.get(i).getFile_path() != null) {
+                    File oldFile = new File(checkKKA.get(i).getFile_path());
+                    if (oldFile.exists()) {
+                            oldFile.delete();
+                    }
+            }
             }
 
             String fileName = fileStorageService.storeFile(file);
