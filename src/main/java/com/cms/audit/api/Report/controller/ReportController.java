@@ -39,13 +39,13 @@ public class ReportController {
                         throws IOException {
                 String fileName;
                 if (start_date != null && end_date != null) {
-                        fileName = convertDateToRoman.convertDateHehe(start_date.orElse(null)) + "-"
-                                        + convertDateToRoman.convertDateHehe(end_date.orElse(null)) + "-report.xlsx";
+                        fileName = convertDateToRoman.convertDateHehe(start_date.orElse(new Date())) + "-"
+                                        + convertDateToRoman.convertDateHehe(end_date.orElse(new Date())) + "-report.xlsx";
                 } else {
                         fileName = "all-report.xlsx";
                 }
-                Date startDate = start_date.orElse(null);
-                Date endDate = end_date.orElse(null);
+                Date startDate = start_date.orElse(new Date());
+                Date endDate = end_date.orElse(new Date());
                 if (startDate != null) {
                         startDate = convertDateToRoman.setTimeToZero(startDate);
                 }
@@ -71,8 +71,8 @@ public class ReportController {
                         @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Optional<Date> start_date,
                         @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Optional<Date> end_date)
                         throws IOException {
-                Date startDate = start_date.orElse(null);
-                Date endDate = end_date.orElse(null);
+                Date startDate = start_date.orElse(new Date());
+                Date endDate = end_date.orElse(new Date());
                 if (startDate != null) {
                         startDate = convertDateToRoman.setTimeToZero(startDate);
                 }

@@ -69,12 +69,12 @@ public class ReportService {
         try {
             Page<Clarification> response;
             User getUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-    
+
             Specification<Clarification> spec = Specification
                     .where(new SpecificationFIlter<Clarification>().userId(user_id))
                     .and(new SpecificationFIlter<Clarification>().branchIdEqual(branchId))
                     .and(new SpecificationFIlter<Clarification>().dateRange(start_date, end_date));
-    
+
             if (getUser.getLevel().getCode().equals("C")) {
                 spec = spec.and(new SpecificationFIlter<Clarification>().userId(getUser.getId()));
             } else if (getUser.getLevel().getCode().equals("B")) {
@@ -166,8 +166,6 @@ public class ReportService {
                 } else {
                     response = lhaRepository.findAll();
                 }
-            } else {
-                response = null;
             }
         }
         if (response.isEmpty()) {
@@ -181,7 +179,7 @@ public class ReportService {
                     .contentType(MediaType.parseMediaType("application/pdf")).body(isr);
             return responses;
         }
-        ByteArrayInputStream pdf;
+        ByteArrayInputStream pdf = null;
         if (regionId != null) {
             for (int i = 0; i < response.size(); i++) {
                 List<AuditDailyReportDetail> detail = lhaDetailRepository.findByLHAIdForLeader(response.get(i).getId());
@@ -451,11 +449,26 @@ public class ReportService {
                     listAllReport.add(reportDto);
                 }
             }
-            pdf = LHAReport.generateAllLHAPDF(listAllReport);
+            if (listAllReport.size() > 0) {
+                pdf = LHAReport.generateAllLHAPDF(listAllReport);
+            }
         }
         // String path = pdf.getFilePath();
         // File file = new File(path);
         // InputStream inputStream = new FileInputStream(file);
+        if(pdf == null){
+            if (response.isEmpty()) {
+                ByteArrayInputStream file = LHAReport.generateIfNoData();
+                InputStreamResource isr = new InputStreamResource(file);
+    
+                String filename = "No-Data-Report.pdf";
+    
+                ResponseEntity<InputStreamResource> responses = ResponseEntity.ok()
+                        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=" + filename)
+                        .contentType(MediaType.parseMediaType("application/pdf")).body(isr);
+                return responses;
+            }
+        }
         InputStreamResource isr = new InputStreamResource(pdf);
 
         // HttpHeaders httpHeaders = new HttpHeaders();
