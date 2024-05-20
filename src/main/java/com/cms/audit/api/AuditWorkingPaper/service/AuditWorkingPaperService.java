@@ -205,12 +205,12 @@ public class AuditWorkingPaperService {
                 .status(HttpStatus.BAD_REQUEST).build();
             }
 
-            List<Schedule> checkShcedule = scheduleRepository.CheckIfScheduleisNow(id);
-            if (checkShcedule.isEmpty()) {
-                return GlobalResponse.builder().message("Tidak bisa memproses jadwal karena jadwal belum dimulai")
-                        .errorMessage("Jadwal belum dimulai, tidak dapat diproses")
-                        .status(HttpStatus.BAD_REQUEST).build();
-            }
+            // List<Schedule> checkShcedule = scheduleRepository.CheckIfScheduleisNow(id);
+            // if (checkShcedule.isEmpty()) {
+            //     return GlobalResponse.builder().message("Tidak bisa memproses jadwal karena jadwal belum dimulai")
+            //             .errorMessage("Jadwal belum dimulai, tidak dapat diproses")
+            //             .status(HttpStatus.BAD_REQUEST).build();
+            // }
 
             Optional<Schedule> getSchedule = scheduleRepository.findById(id);
             if (!getSchedule.isPresent()) {
