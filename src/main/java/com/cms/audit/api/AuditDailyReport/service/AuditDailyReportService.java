@@ -599,14 +599,14 @@ public class AuditDailyReportService {
                                                                 .errorMessage("Is Research harus diisi")
                                                                 .status(HttpStatus.BAD_REQUEST)
                                                                 .build();
-                                        } else if(dto.getLha_detail().get(i).getPermanent_recommendations() == null) {
+                                        } else if(dto.getLha_detail().get(i).getPermanent_recommendations() == null || dto.getLha_detail().get(i).getPermanent_recommendations() == "") {
                                                 return GlobalResponse
                                                                 .builder()
                                                                 .message("Rekomendasi permanen harus diisi")
                                                                 .errorMessage("Rekomendasi permanen harus diisi")
                                                                 .status(HttpStatus.BAD_REQUEST)
                                                                 .build();
-                                        } else if(dto.getLha_detail().get(i).getTemporary_recommendations() == null) {
+                                        } else if(dto.getLha_detail().get(i).getTemporary_recommendations() == null || dto.getLha_detail().get(i).getTemporary_recommendations() == "") {
                                                 return GlobalResponse
                                                                 .builder()
                                                                 .message("Rekomendasi temporary harus diisi")
@@ -642,6 +642,11 @@ public class AuditDailyReportService {
                                                                 + " tidak ditemukan")
                                                 .status(HttpStatus.BAD_REQUEST).build();
                         }
+                        if( getschedule.get().getStatus().equals(EStatus.PENDING) || getschedule.get().getStatus().equals(EStatus.REQUEST) || getschedule.get().getStatus().equals(EStatus.REJECTED) || getschedule.get().getStatus().equals(EStatus.APPROVE)) {
+                                return GlobalResponse.builder().message("Tidak bisa memperoses jadwal")
+                                                .errorMessage("Tidak bisa memproses jadwal")
+                                                .status(HttpStatus.BAD_REQUEST).build();
+                        }
 
                         List<Schedule> scheduleList = scheduleRepository.findForScheduleList(
                                         getschedule.get().getUser().getId(),
@@ -649,7 +654,7 @@ public class AuditDailyReportService {
                         if (!scheduleList.isEmpty()) {
                                 return GlobalResponse.builder().message(
                                                 "tidak bisa memperoses jadwal karena jadwal sebelumnya belum selesai")
-                                                .errorMessage("Tidak bisa memproses jadwal & LHA karena sebelumnya belum membuat KKA")
+                                                .errorMessage("Tidak bisa memproses jadwal karena jadwal sebelumnya belum membuat KKA atau belum selesai")
                                                 .status(HttpStatus.BAD_REQUEST).build();
                         }
 

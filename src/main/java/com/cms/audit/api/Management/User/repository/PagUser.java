@@ -2,6 +2,7 @@ package com.cms.audit.api.Management.User.repository;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
@@ -10,7 +11,7 @@ import com.cms.audit.api.Management.User.models.User;
 import java.util.List;
 
 
-public interface PagUser extends PagingAndSortingRepository<User, Long>{
+public interface PagUser extends PagingAndSortingRepository<User, Long>, JpaSpecificationExecutor<User>{
     @Query("SELECT u FROM User u WHERE u.is_delete <> 1")
     Page<User> findAllUser(Pageable pageable);
 

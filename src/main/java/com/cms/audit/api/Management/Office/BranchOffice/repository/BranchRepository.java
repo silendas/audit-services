@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -12,7 +13,7 @@ import com.cms.audit.api.Management.Office.BranchOffice.dto.response.BranchInter
 import com.cms.audit.api.Management.Office.BranchOffice.models.Branch;
 
 @Repository
-public interface BranchRepository extends JpaRepository<Branch, Long> {
+public interface BranchRepository extends JpaRepository<Branch, Long>, JpaSpecificationExecutor<Branch> {
 
     @Query(value = "SELECT * FROM branch_office u WHERE u.is_delete <> 1", nativeQuery = true)
     public List<Branch> findAllBranch();

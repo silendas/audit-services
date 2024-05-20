@@ -127,6 +127,19 @@ public class PenaltyService {
                 return GlobalResponse.builder().message("Data tidak boleh kosong").errorMessage("Data tidak boleh kosong").status(HttpStatus.BAD_REQUEST).build();
             }
 
+            List<Penalty> check = PenaltyRepository.findAllPenalty();
+
+            for (Penalty penalty : check) {
+                if (penalty.getName().equals(PenaltyDTO.getName())) {
+                    return GlobalResponse
+                            .builder()
+                            .errorMessage("Data sudah ada")
+                            .message("Data sudah ada")
+                            .status(HttpStatus.BAD_REQUEST)
+                            .build();
+                }
+            }
+
             Penalty Penalty = new Penalty(
                 null,
                 PenaltyDTO.getName(),
@@ -136,13 +149,7 @@ public class PenaltyService {
             );
 
             Penalty response = PenaltyRepository.save(Penalty);
-            if (response == null) {
-                return GlobalResponse
-                        .builder()
-                        .message("Failed")
-                        .status(HttpStatus.BAD_REQUEST)
-                        .build();
-            }
+
             return GlobalResponse
                     .builder()
                     .message("Berhasil menambahkan data")
@@ -167,6 +174,21 @@ public class PenaltyService {
         try {
             Penalty getPenalty = PenaltyRepository.findById(id).get();
 
+            List<Penalty> check = PenaltyRepository.findAllPenalty();
+
+            if(!getPenalty.getName().equals(PenaltyDTO.getName())){
+                for (Penalty penalty : check) {
+                    if (penalty.getName().equals(PenaltyDTO.getName())) {
+                        return GlobalResponse
+                                .builder()
+                                .errorMessage("Data sudah ada")
+                                .message("Data sudah ada")
+                                .status(HttpStatus.BAD_REQUEST)
+                                .build();
+                    }
+                }
+            }
+
             Penalty penalty = new Penalty(
                 id,
                 PenaltyDTO.getName(),
@@ -176,13 +198,7 @@ public class PenaltyService {
             );
 
             Penalty response = PenaltyRepository.save(penalty);
-            if (response == null) {
-                return GlobalResponse
-                        .builder()
-                        .message("Failed")
-                        .status(HttpStatus.BAD_REQUEST)
-                        .build();
-            }
+
             return GlobalResponse
                     .builder()
                     .message("Berhasil mengubah data")
@@ -215,13 +231,7 @@ public class PenaltyService {
                 new Date()
             );
             Penalty response = PenaltyRepository.save(penalty);
-            if (response == null) {
-                return GlobalResponse
-                        .builder()
-                        .message("Failed")
-                        .status(HttpStatus.BAD_REQUEST)
-                        .build();
-            }
+
             return GlobalResponse
                     .builder()
                     .message("Berhasil menghapus data")

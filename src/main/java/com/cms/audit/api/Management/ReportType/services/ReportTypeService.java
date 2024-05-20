@@ -132,6 +132,19 @@ public class ReportTypeService {
                         .build();
             }   
 
+            List<ReportType> check = reportTypeRepository.findAllReportType();
+
+            for (ReportType reportType : check) {
+                if (reportType.getName().equals(dto.getName()) || reportType.getCode().equals(dto.getCode())) {
+                    return GlobalResponse
+                            .builder()
+                            .message("Data sudah ada")
+                            .errorMessage("Data sudah ada")
+                            .status(HttpStatus.BAD_REQUEST)
+                            .build();
+                }
+            }
+
             ReportType reportType = new ReportType(
                     null,
                     dto.getName(),
@@ -141,13 +154,7 @@ public class ReportTypeService {
                     new Date());
 
             ReportType response = reportTypeRepository.save(reportType);
-            if (response == null) {
-                return GlobalResponse
-                        .builder()
-                        .message("Failed")
-                        .status(HttpStatus.BAD_REQUEST)
-                        .build();
-            }
+
             return GlobalResponse
                     .builder()
                     .message("Berhasil menambahkan data")
@@ -172,6 +179,30 @@ public class ReportTypeService {
         try {
 
             Optional<ReportType> getReport = reportTypeRepository.findById(id);
+
+            if(!getReport.isPresent()) {
+                return GlobalResponse
+                        .builder()
+                        .message("Data tidak ditemukan")
+                        .status(HttpStatus.BAD_REQUEST)
+                        .build();
+            }
+
+            if(!getReport.get().getName().equals(dto.getName()) || !getReport.get().getCode().equals(dto.getCode())) {
+
+                List<ReportType> check = reportTypeRepository.findAllReportType();
+
+                for (ReportType reportType : check) {
+                    if (reportType.getName().equals(dto.getName()) || reportType.getCode().equals(dto.getCode())) {
+                        return GlobalResponse
+                                .builder()
+                                .errorMessage("Data sudah ada")
+                                .message("Data sudah ada")
+                                .status(HttpStatus.BAD_REQUEST)
+                                .build();
+                    }
+                }
+            }
 
             ReportType reportType = getReport.get();
             reportType.setName(dto.getName());
@@ -214,13 +245,7 @@ public class ReportTypeService {
                     getReport.getCreated_at(),
                     new Date());
             ReportType response = reportTypeRepository.save(reportType);
-            if (response == null) {
-                return GlobalResponse
-                        .builder()
-                        .message("Failed")
-                        .status(HttpStatus.BAD_REQUEST)
-                        .build();
-            }
+
             return GlobalResponse
                     .builder()
                     .message("Berhasil menghapus data")

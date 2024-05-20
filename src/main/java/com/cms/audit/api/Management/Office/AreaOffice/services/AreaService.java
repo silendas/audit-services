@@ -9,11 +9,14 @@ import org.hibernate.exception.DataException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import com.cms.audit.api.Common.constant.SpecificationFIlter;
 import com.cms.audit.api.Common.response.GlobalResponse;
+import com.cms.audit.api.InspectionSchedule.models.Schedule;
 import com.cms.audit.api.Management.Office.AreaOffice.dto.AreaDTO;
 import com.cms.audit.api.Management.Office.AreaOffice.dto.response.AreaInterface;
 import com.cms.audit.api.Management.Office.AreaOffice.models.Area;
@@ -47,16 +50,15 @@ public class AreaService {
     @Autowired
     private RegionRepository regionRepository;
 
-    public GlobalResponse findAll(String name, int page, int size, Long regionId) {
+    public GlobalResponse findAll(String name, int page, int size, Long regionId, String regionName) {
         try {
-            Page<Area> response;
-            if (name != null) {
-                response = pagArea.findByNameContaining(name, PageRequest.of(page, size));
-            } else if (regionId != null) {
-                response = pagArea.findAreaByRegionId(regionId, PageRequest.of(page, size));
-            } else {
-                response = pagArea.findAllArea(PageRequest.of(page, size));
-            }
+            Specification<Area> spec = Specification
+                    .where(new SpecificationFIlter<Area>().byNameLike(name))
+                    .and(new SpecificationFIlter<Area>().regionIdEqual(regionId))
+                    .and(new SpecificationFIlter<Area>().regionNameLike(regionName))
+                    .and(new SpecificationFIlter<Area>().isNotDeleted())
+                    .and(new SpecificationFIlter<Area>().orderByIdAsc());
+            Page<Area> response = pagArea.findAll(spec, PageRequest.of(page, size));
             if (response.isEmpty()) {
                 return GlobalResponse
                         .builder()
@@ -92,7 +94,7 @@ public class AreaService {
             User getUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
             List<AreaInterface> response = new ArrayList<>();
-            if (getUser.getLevel().getCode().equals("B") ) {
+            if (getUser.getLevel().getCode().equals("B")) {
                 for (int i = 0; i < getUser.getRegionId().size(); i++) {
                     List<AreaInterface> getBranch = areaRepository
                             .findSpecificAreaByRegionId(getUser.getRegionId().get(i));
@@ -100,7 +102,7 @@ public class AreaService {
                         response.add(getBranch.get(u));
                     }
                 }
-            } else if (getUser.getLevel().getCode().equals("A")  || getUser.getLevel().getCode().equals("A") ) {
+            } else if (getUser.getLevel().getCode().equals("A") || getUser.getLevel().getCode().equals("A")) {
                 response = areaRepository.findSpecificArea();
             } else {
                 return GlobalResponse.builder().message("Selain audit Area, Pusat dan Leader tidak bisa mengakses ini")
@@ -246,12 +248,14 @@ public class AreaService {
     public GlobalResponse save(AreaDTO dto) {
         try {
 
-            if(dto.getName() == null || dto.getName() == ""){
-                return GlobalResponse.builder().message("Data tidak boleh kosong").errorMessage("Data tidak boleh kosong").status(HttpStatus.BAD_REQUEST).build();
-            } 
+            if (dto.getName() == null || dto.getName() == "") {
+                return GlobalResponse.builder().message("Data tidak boleh kosong")
+                        .errorMessage("Data tidak boleh kosong").status(HttpStatus.BAD_REQUEST).build();
+            }
 
-            if(dto.getRegion_id() == null){
-                return GlobalResponse.builder().message("Region tidak boleh kosong").errorMessage("Region tidak boleh kosong").status(HttpStatus.BAD_REQUEST).build();
+            if (dto.getRegion_id() == null) {
+                return GlobalResponse.builder().message("Region tidak boleh kosong")
+                        .errorMessage("Region tidak boleh kosong").status(HttpStatus.BAD_REQUEST).build();
             }
 
             Optional<Region> regionId = regionRepository.findById(dto.getRegion_id());

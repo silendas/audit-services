@@ -11,10 +11,12 @@ import org.hibernate.exception.DataException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import com.cms.audit.api.Common.constant.SpecificationFIlter;
 import com.cms.audit.api.Common.response.GlobalResponse;
 import com.cms.audit.api.Management.Office.AreaOffice.models.Area;
 import com.cms.audit.api.Management.Office.AreaOffice.repository.AreaRepository;
@@ -23,6 +25,7 @@ import com.cms.audit.api.Management.Office.BranchOffice.dto.response.BranchInter
 import com.cms.audit.api.Management.Office.BranchOffice.models.Branch;
 import com.cms.audit.api.Management.Office.BranchOffice.repository.BranchRepository;
 import com.cms.audit.api.Management.Office.BranchOffice.repository.PagBranch;
+import com.cms.audit.api.Management.Office.MainOffice.models.Main;
 import com.cms.audit.api.Management.User.models.User;
 import com.cms.audit.api.Management.User.repository.UserRepository;
 
@@ -44,16 +47,16 @@ public class BranchService {
     @Autowired
     private PagBranch pagBranch;
 
-    public GlobalResponse findAll(String name, int page, int size, Long areaId) {
+    public GlobalResponse findAll(String name, int page, int size, Long areaId, String areaName) {
         try {
-            Page<Branch> response;
-            if (name != null) {
-                response = pagBranch.findByNameContaining(name, PageRequest.of(page, size));
-            } else if (areaId != null) {
-                response = pagBranch.findBranchByAreaId(areaId, PageRequest.of(page, size));
-            } else {
-                response = pagBranch.findAllBranch(PageRequest.of(page, size));
-            }
+            Specification<Branch> spec = Specification
+                    .where(new SpecificationFIlter<Branch>().byNameLike(name))
+                    .and(new SpecificationFIlter<Branch>().areaIdEqual(areaId))
+                    .and(new SpecificationFIlter<Branch>().areaNameLike(areaName))
+                    .and(new SpecificationFIlter<Branch>().isNotDeleted())
+                    .and(new SpecificationFIlter<Branch>().orderByIdAsc());
+
+            Page<Branch> response = pagBranch.findAll(spec, PageRequest.of(page, size));
             if (response.isEmpty()) {
                 return GlobalResponse
                         .builder()
@@ -464,11 +467,13 @@ public class BranchService {
     public GlobalResponse save(BranchDTO branchDTO) {
         try {
 
-            if(branchDTO.getArea_id() == null){
-                return GlobalResponse.builder().message("Area tidak boleh kosong").errorMessage("Area tidak diisi").status(HttpStatus.BAD_REQUEST).build();
+            if (branchDTO.getArea_id() == null) {
+                return GlobalResponse.builder().message("Area tidak boleh kosong").errorMessage("Area tidak diisi")
+                        .status(HttpStatus.BAD_REQUEST).build();
             }
-            if(branchDTO.getName() == null || branchDTO.getName() == ""){
-                return GlobalResponse.builder().message("Name tidak boleh kosong").errorMessage("Name tidak diisi").status(HttpStatus.BAD_REQUEST).build();
+            if (branchDTO.getName() == null || branchDTO.getName() == "") {
+                return GlobalResponse.builder().message("Name tidak boleh kosong").errorMessage("Name tidak diisi")
+                        .status(HttpStatus.BAD_REQUEST).build();
             }
             Optional<Area> areaId = areaRepository.findById(branchDTO.getArea_id());
             if (!areaId.isPresent()) {

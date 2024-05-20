@@ -101,12 +101,14 @@ public class ScheduleService {
                         List<EStatus> statuses = Arrays.asList(status);
                         spec = spec.and(new SpecificationFIlter<Schedule>().getByStatus(statuses));
                 } else if (getUser.getLevel().getCode().equals("B")) {
-                        List<EStatus> statuses = Arrays.asList(EStatus.APPROVE, EStatus.REQUEST, EStatus.PENDING, EStatus.REJECTED, EStatus.REVISION);
+                        List<EStatus> statuses = Arrays.asList(EStatus.APPROVE, EStatus.REQUEST, EStatus.PENDING,
+                                        EStatus.REJECTED, EStatus.REVISION);
                         spec = spec.and(new SpecificationFIlter<Schedule>().getByStatus(statuses));
                         spec = spec.and(new SpecificationFIlter<Schedule>()
-                                                .getByRegionIds(getUser.getRegionId()));
+                                        .getByRegionIds(getUser.getRegionId()));
                 } else if (getUser.getLevel().getCode().equals("A")) {
-                        List<EStatus> statuses = Arrays.asList(EStatus.APPROVE, EStatus.REQUEST, EStatus.REJECTED, EStatus.REVISION);
+                        List<EStatus> statuses = Arrays.asList(EStatus.APPROVE, EStatus.REQUEST, EStatus.REJECTED,
+                                        EStatus.REVISION);
                         spec = spec.and(new SpecificationFIlter<Schedule>().getByStatus(statuses));
                 }
                 Page<Schedule> response = pag.findAll(spec, PageRequest.of(page, size));
@@ -500,19 +502,20 @@ public class ScheduleService {
                                         .orElseThrow(() -> new ResourceNotFoundException("user not found"));
                         List<ScheduleDTO> listRequestSchedule = new ArrayList<>();
                         for (int i = 0; i < scheduleDTO.getSchedules().size(); i++) {
-                                if(scheduleDTO.getSchedules().get(i).getStart_date() == null || scheduleDTO.getSchedules().get(i).getEnd_date() == null) {
+                                if (scheduleDTO.getSchedules().get(i).getStart_date() == null
+                                                || scheduleDTO.getSchedules().get(i).getEnd_date() == null) {
                                         return GlobalResponse.builder()
                                                         .errorMessage("Tanggal harus diisi")
                                                         .message("Tanggal harus diisi")
                                                         .status(HttpStatus.BAD_REQUEST)
                                                         .build();
-                                } else if(scheduleDTO.getSchedules().get(i).getBranch_id() == null) {
+                                } else if (scheduleDTO.getSchedules().get(i).getBranch_id() == null) {
                                         return GlobalResponse.builder()
                                                         .errorMessage("Cabang harus diisi")
                                                         .message("Cabang harus diisi")
                                                         .status(HttpStatus.BAD_REQUEST)
                                                         .build();
-                                } else if(scheduleDTO.getSchedules().get(i).getUser_id() == null) {
+                                } else if (scheduleDTO.getSchedules().get(i).getUser_id() == null) {
                                         return GlobalResponse.builder()
                                                         .errorMessage("User harus diisi")
                                                         .message("User harus diisi")
@@ -561,13 +564,13 @@ public class ScheduleService {
                                 }
 
                                 // if (scheduleDTO.getSchedules().get(i).getStart_date()
-                                //                 .equals(scheduleDTO.getSchedules().get(i).getEnd_date())) {
-                                //         return GlobalResponse
-                                //                         .builder()
-                                //                         .message("Anda menginput tanggal yang sama")
-                                //                         .errorMessage("Tidak bisa menambahkan jadwal dengan tanggal yang sama")
-                                //                         .status(HttpStatus.BAD_REQUEST)
-                                //                         .build();
+                                // .equals(scheduleDTO.getSchedules().get(i).getEnd_date())) {
+                                // return GlobalResponse
+                                // .builder()
+                                // .message("Anda menginput tanggal yang sama")
+                                // .errorMessage("Tidak bisa menambahkan jadwal dengan tanggal yang sama")
+                                // .status(HttpStatus.BAD_REQUEST)
+                                // .build();
                                 // }
 
                                 if (scheduleDTO.getSchedules().get(i).getStart_date().before(getDateNow())
@@ -625,10 +628,11 @@ public class ScheduleService {
                                                         .status(HttpStatus.BAD_REQUEST)
                                                         .build();
                                 }
-                                List<Schedule> checkBranchisExist = repository.findScheduleInDateRangeByBranchIdNoCategory(
-                                                scheduleDTO.getSchedules().get(i).getBranch_id(),
-                                                scheduleDTO.getSchedules().get(i).getStart_date(),
-                                                scheduleDTO.getSchedules().get(i).getEnd_date());
+                                List<Schedule> checkBranchisExist = repository
+                                                .findScheduleInDateRangeByBranchIdNoCategory(
+                                                                scheduleDTO.getSchedules().get(i).getBranch_id(),
+                                                                scheduleDTO.getSchedules().get(i).getStart_date(),
+                                                                scheduleDTO.getSchedules().get(i).getEnd_date());
                                 if (!checkBranchisExist.isEmpty()) {
                                         return GlobalResponse
                                                         .builder()
@@ -720,19 +724,20 @@ public class ScheduleService {
 
                         List<ScheduleDTO> listRequestSchedule = new ArrayList<>();
                         for (int i = 0; i < scheduleDTO.getSchedules().size(); i++) {
-                                if(scheduleDTO.getSchedules().get(i).getStart_date() == null || scheduleDTO.getSchedules().get(i).getEnd_date() == null) {
+                                if (scheduleDTO.getSchedules().get(i).getStart_date() == null
+                                                || scheduleDTO.getSchedules().get(i).getEnd_date() == null) {
                                         return GlobalResponse.builder()
                                                         .errorMessage("Tanggal harus diisi")
                                                         .message("Tanggal harus diisi")
                                                         .status(HttpStatus.BAD_REQUEST)
                                                         .build();
-                                } else if(scheduleDTO.getSchedules().get(i).getBranch_id() == null) {
+                                } else if (scheduleDTO.getSchedules().get(i).getBranch_id() == null) {
                                         return GlobalResponse.builder()
                                                         .errorMessage("Cabang harus diisi")
                                                         .message("Cabang harus diisi")
                                                         .status(HttpStatus.BAD_REQUEST)
                                                         .build();
-                                } else if(scheduleDTO.getSchedules().get(i).getUser_id() == null) {
+                                } else if (scheduleDTO.getSchedules().get(i).getUser_id() == null) {
                                         return GlobalResponse.builder()
                                                         .errorMessage("User harus diisi")
                                                         .message("User harus diisi")
@@ -780,13 +785,13 @@ public class ScheduleService {
                                 }
 
                                 // if (scheduleDTO.getSchedules().get(i).getStart_date()
-                                //                 .equals(scheduleDTO.getSchedules().get(i).getEnd_date())) {
-                                //         return GlobalResponse
-                                //                         .builder()
-                                //                         .message("Anda menginput tanggal yang sama")
-                                //                         .errorMessage("Tidak bisa menambahkan jadwal dengan tanggal yang sama")
-                                //                         .status(HttpStatus.BAD_REQUEST)
-                                //                         .build();
+                                // .equals(scheduleDTO.getSchedules().get(i).getEnd_date())) {
+                                // return GlobalResponse
+                                // .builder()
+                                // .message("Anda menginput tanggal yang sama")
+                                // .errorMessage("Tidak bisa menambahkan jadwal dengan tanggal yang sama")
+                                // .status(HttpStatus.BAD_REQUEST)
+                                // .build();
                                 // }
 
                                 if (scheduleDTO.getSchedules().get(i).getStart_date().before(getDateNow())
@@ -824,10 +829,11 @@ public class ScheduleService {
                                                         .build();
                                 }
 
-                                List<Schedule> checkDatefExist = repository.findScheduleInDateRangeByUserIdNoCategoryForSpecial(
-                                                scheduleDTO.getSchedules().get(i).getUser_id(),
-                                                scheduleDTO.getSchedules().get(i).getStart_date(),
-                                                scheduleDTO.getSchedules().get(i).getEnd_date());
+                                List<Schedule> checkDatefExist = repository
+                                                .findScheduleInDateRangeByUserIdNoCategoryForSpecial(
+                                                                scheduleDTO.getSchedules().get(i).getUser_id(),
+                                                                scheduleDTO.getSchedules().get(i).getStart_date(),
+                                                                scheduleDTO.getSchedules().get(i).getEnd_date());
                                 if (!checkDatefExist.isEmpty()) {
                                         return GlobalResponse
                                                         .builder()
@@ -1068,12 +1074,12 @@ public class ScheduleService {
                         if (!checkIfExist.isEmpty()) {
                                 return GlobalResponse
                                                 .builder()
-                                                .message("Jadwal sudah ada")
-                                                .errorMessage("Jadwal duplikat")
+                                                .message("Tidak ada perubahan pada data")
+                                                .errorMessage("Tidak ada perubahan pada data")
                                                 .status(HttpStatus.BAD_REQUEST)
                                                 .build();
                         }
-                        
+
                         if (dto.getStart_date().after(dto.getEnd_date())) {
                                 return GlobalResponse
                                                 .builder()
@@ -1085,26 +1091,59 @@ public class ScheduleService {
 
                         if (getSchedule.getStart_date() != dto.getStart_date()
                                         && getSchedule.getEnd_date() != dto.getEnd_date()) {
-                                List<Schedule> checkDatefExist = repository
-                                                .findScheduleInDateRangeByUserIdNoCategoryEdit(
-                                                                dto.getUser_id(),
-                                                                id,
-                                                                dto.getStart_date(),
-                                                                dto.getEnd_date());
-                                if (!checkDatefExist.isEmpty()) {
-                                        return GlobalResponse
-                                                        .builder()
-                                                        .message("Jadwal sudah ada ")
-                                                        .errorMessage("Jadwal dengan start_date:"
-                                                                        + convertDateToRoman
-                                                                                        .convertDateHehe(dto
-                                                                                                        .getStart_date())
-                                                                        + " and end_date:"
-                                                                        + convertDateToRoman.convertDateHehe(
-                                                                                        dto.getEnd_date())
-                                                                        + ", sudah terbuat sebelumnya")
-                                                        .status(HttpStatus.BAD_REQUEST)
-                                                        .build();
+                                if (getSchedule.getCategory() == ECategory.REGULAR) {
+                                        List<Schedule> checkDatefExist = repository
+                                                        .findScheduleInDateRangeByUserIdNoCategoryEdit(
+                                                                        dto.getUser_id(),
+                                                                        id,
+                                                                        dto.getStart_date(),
+                                                                        dto.getEnd_date());
+                                        if (!checkDatefExist.isEmpty()) {
+                                                return GlobalResponse
+                                                                .builder()
+                                                                .message("Jadwal dengan start_date:"
+                                                                                + convertDateToRoman
+                                                                                                .convertDateHehe(dto
+                                                                                                                .getStart_date())
+                                                                                + " and end_date:"
+                                                                                + convertDateToRoman.convertDateHehe(
+                                                                                                dto.getEnd_date())
+                                                                                + ", sudah terbuat sebelumnya")
+                                                                .errorMessage("Jadwal dengan start_date:"
+                                                                                + convertDateToRoman
+                                                                                                .convertDateHehe(dto
+                                                                                                                .getStart_date())
+                                                                                + " and end_date:"
+                                                                                + convertDateToRoman.convertDateHehe(
+                                                                                                dto.getEnd_date())
+                                                                                + ", sudah terbuat sebelumnya")
+                                                                .status(HttpStatus.BAD_REQUEST)
+                                                                .build();
+                                        }
+                                } else {
+                                        List<Schedule> checkDatefExist = repository
+                                                        .findScheduleInDateRangeByUserIdNoCategoryForSpecial(
+                                                                        dto.getUser_id(),
+                                                                        dto.getStart_date(),
+                                                                        dto.getEnd_date());
+                                        if (!checkDatefExist.isEmpty()) {
+                                                return GlobalResponse
+                                                                .builder()
+                                                                .message("Tanggal sudah tersedia")
+                                                                .errorMessage("Jadwal dengan tanggal mulai :"
+                                                                                + convertDateToRoman.convertDateHehe(
+                                                                                                dto
+
+                                                                                                                .getStart_date())
+                                                                                + " and tanggal berakhir :"
+                                                                                + convertDateToRoman.convertDateHehe(
+                                                                                                dto
+
+                                                                                                                .getEnd_date())
+                                                                                + ", sudah terbuat atau bersilangan dengan jadwal sebelumnya")
+                                                                .status(HttpStatus.BAD_REQUEST)
+                                                                .build();
+                                        }
                                 }
                         }
 
@@ -1128,6 +1167,12 @@ public class ScheduleService {
                         schedule.setUpdatedBy(getUser.getId());
                         schedule.setUpdated_at(new Date());
 
+
+                        repository.editStatusPendingScheduleByDate(
+                                                dto.getUser_id(),
+                                                getUser.getId(), dto.getStart_date(),
+                                                dto.getEnd_date());
+                                                
                         Schedule response = repository.save(schedule);
 
                         logService.edit(response.getCreatedBy(), response.getDescription(), response.getId(),
@@ -1262,7 +1307,8 @@ public class ScheduleService {
                 editSchedule.setUpdated_at(new Date());
                 repository.save(editSchedule);
 
-                return GlobalResponse.builder().message("Berhasil mengubah menjadi revisi").status(HttpStatus.OK).build();
+                return GlobalResponse.builder().message("Berhasil mengubah menjadi revisi").status(HttpStatus.OK)
+                                .build();
         }
 
         public GlobalResponse rejected(Long id, EditReschedule dto) throws Exception {

@@ -9,14 +9,17 @@ import org.hibernate.exception.DataException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import com.cms.audit.api.Common.constant.SpecificationFIlter;
 import com.cms.audit.api.Common.response.GlobalResponse;
 import com.cms.audit.api.Management.Office.AreaOffice.models.Area;
 import com.cms.audit.api.Management.Office.AreaOffice.repository.AreaRepository;
 import com.cms.audit.api.Management.Office.AreaOffice.services.AreaService;
+import com.cms.audit.api.Management.Office.BranchOffice.models.Branch;
 import com.cms.audit.api.Management.Office.MainOffice.models.Main;
 import com.cms.audit.api.Management.Office.MainOffice.repository.MainRepository;
 import com.cms.audit.api.Management.Office.RegionOffice.dto.RegionDTO;
@@ -51,16 +54,15 @@ public class RegionService {
     @Autowired
     private PagRegion pagRegion;
 
-    public GlobalResponse findAll(String name, int page, int size, Long mainId) {
+    public GlobalResponse findAll(String name, int page, int size, Long mainId, String mainName) {
         try {
-            Page<Region> response;
-            if (name != null) {
-                response = pagRegion.findByNameContaining(name, PageRequest.of(page, size));
-            } else if (mainId != null) {
-                response = pagRegion.findRegionByMainId(mainId, PageRequest.of(page, size));
-            } else {
-                response = pagRegion.findAllRegion(PageRequest.of(page, size));
-            }
+             Specification<Region> spec = Specification
+                    .where(new SpecificationFIlter<Region>().byNameLike(name))
+                    .and(new SpecificationFIlter<Region>().areaIdEqual(mainId))
+                    .and(new SpecificationFIlter<Region>().mainNameLike(mainName))
+                    .and(new SpecificationFIlter<Region>().isNotDeleted())
+                    .and(new SpecificationFIlter<Region>().orderByIdAsc());
+            Page<Region> response = pagRegion.findAll(spec, PageRequest.of(page, size));
             if (response.isEmpty()) {
                 return GlobalResponse
                         .builder()

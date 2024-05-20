@@ -8,9 +8,11 @@ import org.hibernate.exception.DataException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import com.cms.audit.api.Common.constant.SpecificationFIlter;
 import com.cms.audit.api.Common.response.GlobalResponse;
 import com.cms.audit.api.Management.Case.models.Case;
 import com.cms.audit.api.Management.Case.repository.CaseRepository;
@@ -19,6 +21,7 @@ import com.cms.audit.api.Management.CaseCategory.dto.response.CaseCategoryInterf
 import com.cms.audit.api.Management.CaseCategory.models.CaseCategory;
 import com.cms.audit.api.Management.CaseCategory.repository.CaseCategoryRepository;
 import com.cms.audit.api.Management.CaseCategory.repository.PagCaseCategory;
+import com.cms.audit.api.Management.Office.AreaOffice.models.Area;
 
 import jakarta.transaction.Transactional;
 
@@ -35,17 +38,15 @@ public class CaseCategoryService {
     @Autowired
     private CaseRepository caseRepository;
 
-    public GlobalResponse findAll(Long caseId, String name, int page, int size) {
+    public GlobalResponse findAll(Long caseId, String name, int page, int size, String code) {
         try {
-            if (caseId != null) {
-                return findOneByCasesId(caseId, page, size);
-            }
-            Page<CaseCategory> response = null;
-            if (name != null) {
-                response = pagCaseCategory.findByNameContaining(name, PageRequest.of(page, size));
-            } else {
-                response = pagCaseCategory.findAllCC(PageRequest.of(page, size));
-            }
+             Specification<CaseCategory> spec = Specification
+                    .where(new SpecificationFIlter<CaseCategory>().byNameLike(name))
+                    .and(new SpecificationFIlter<CaseCategory>().getByCasesId(caseId))
+                    .and(new SpecificationFIlter<CaseCategory>().codeLike(code))
+                    .and(new SpecificationFIlter<CaseCategory>().isNotDeleted())
+                    .and(new SpecificationFIlter<CaseCategory>().orderByIdAsc());
+            Page<CaseCategory> response = pagCaseCategory.findAll(spec, PageRequest.of(page, size));
             if (response.isEmpty()) {
                 return GlobalResponse
                         .builder()
@@ -223,6 +224,17 @@ public class CaseCategoryService {
             Optional<Case> caseId = caseRepository.findById(caseCategoryDTO.getCase_id());
             if (!caseId.isPresent()) {
                 return GlobalResponse.builder().message("Data case with id: "+caseCategoryDTO.getCase_id()+" not found").status(HttpStatus.BAD_REQUEST).build();
+            }
+            List<CaseCategory> check = caseCategoryRepository.findAll();
+            for (CaseCategory caseCategory : check) {
+                if (caseCategory.getName().equals(caseCategoryDTO.getName())) {
+                    return GlobalResponse
+                            .builder()
+                            .errorMessage("Data sudah ada")
+                            .message("Data sudah ada")
+                            .status(HttpStatus.BAD_REQUEST)
+                            .build();
+                }
             }
 
             CaseCategory caseCategoryEntity = new CaseCategory(

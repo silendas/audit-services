@@ -2,6 +2,7 @@ package com.cms.audit.api.Management.Office.AreaOffice.repository;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;
@@ -9,7 +10,7 @@ import org.springframework.data.repository.query.Param;
 import com.cms.audit.api.Management.Office.AreaOffice.models.Area;
 import com.cms.audit.api.Management.Office.RegionOffice.models.Region;
 
-public interface PagArea extends PagingAndSortingRepository<Area, Long> {
+public interface PagArea extends PagingAndSortingRepository<Area, Long>, JpaSpecificationExecutor<Area> {
 
     Page<Area> findByNameContaining(String name, Pageable pageable);
 

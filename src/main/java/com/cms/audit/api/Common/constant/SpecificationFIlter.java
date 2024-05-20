@@ -3,6 +3,7 @@ package com.cms.audit.api.Common.constant;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.poi.ss.formula.functions.T;
 import org.springframework.data.jpa.domain.Specification;
 
 import com.cms.audit.api.InspectionSchedule.models.ECategory;
@@ -16,12 +17,22 @@ import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Subquery;
 
 public class SpecificationFIlter<T> {
     public Specification<T> nameLike(String name) {
         return (root, query, criteriaBuilder) -> {
             if (name != null) {
                 return criteriaBuilder.like(root.get("user").get("fullname"), "%" +name+"%");
+            }
+            return null;
+        };
+    }
+
+    public Specification<T> byNameLike(String name) {
+        return (root, query, criteriaBuilder) -> {
+            if (name != null) {
+                return criteriaBuilder.like(root.get("name"), "%" +name+"%");
             }
             return null;
         };
@@ -45,6 +56,15 @@ public class SpecificationFIlter<T> {
         };
     }
 
+    public Specification<T> getByRegionIdList(List<Long> regionIds) {
+        return (Root<T> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) -> {
+            if (regionIds != null && !regionIds.isEmpty()) {
+                return root.get("area").get("region").get("id").in(regionIds);
+            }
+            return null;
+        };
+    }
+
 
     public Specification<T> lhaId(Long id) {
         return (root, query, criteriaBuilder) -> {
@@ -60,6 +80,47 @@ public class SpecificationFIlter<T> {
                 : criteriaBuilder.equal(root.get("branch").get("id"), branchId);
     }
 
+    public Specification<T> branchNameLike(String branchName) {
+        return (root, query, criteriaBuilder) -> branchName == null ? null
+                : criteriaBuilder.like(root.get("branch").get("name"), "%" +branchName+"%");
+    }
+
+    public Specification<T> regionIdEqual(Long branchId) {
+        return (root, query, criteriaBuilder) -> branchId == null ? null
+                : criteriaBuilder.equal(root.get("region").get("id"), branchId);
+    }
+
+    public Specification<T> regionNameLike(String regionName) {
+        return (root, query, criteriaBuilder) -> regionName == null ? null
+                : criteriaBuilder.like(root.get("region").get("name"), "%" +regionName+"%");
+    }
+
+    public Specification<T> areaIdEqual(Long areaId) {
+        return (root, query, criteriaBuilder) -> areaId == null ? null
+                : criteriaBuilder.equal(root.get("area").get("id"), areaId);
+    }
+
+    public Specification<T> areaNameLike(String areaName) {
+        return (root, query, criteriaBuilder) -> areaName == null ? null
+                : criteriaBuilder.like(root.get("area").get("name"), "%" +areaName+"%");
+    }
+
+    public Specification<T> mainIdEqual(Long mainId) {
+        return (root, query, criteriaBuilder) -> mainId == null ? null
+                : criteriaBuilder.equal(root.get("main").get("id"), mainId);
+    }
+
+    public Specification<T> mainNameLike(String mainName) {
+        return (root, query, criteriaBuilder) -> mainName == null ? null
+                : criteriaBuilder.like(root.get("main").get("name"), "%" +mainName+"%");
+    }
+
+
+    public Specification<T> codeLike(String code) {
+        return (root, query, criteriaBuilder) -> code == null ? null
+                : criteriaBuilder.like(root.get("code"), "%" +code+"%");
+    }
+    
     
     public Specification<T> scheduleIdEqual(Long shceduleId) {
         return (root, query, criteriaBuilder) -> shceduleId == null ? null
@@ -96,8 +157,7 @@ public class SpecificationFIlter<T> {
 
     public Specification<T> getByRegionIds(List<Long> regionIds) {
         return (Root<T> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) -> {
-            Join<T, Branch> branchJoin = root.join("branch");
-            Join<Branch, Area> areaJoin = branchJoin.join("area");
+            Join<T, Area> areaJoin =root.join("area");
             Join<Area, Region> regionJoin = areaJoin.join("region");
             
             // Creating predicate for region IDs
@@ -123,6 +183,33 @@ public class SpecificationFIlter<T> {
                 return criteriaBuilder.equal(root.get("category"), category);
             }
             return null;
+        };
+    }
+
+    public Specification<T> getByCasesId(Long id) {
+        return (Root<T> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) -> {
+            if (id != null) {
+                return criteriaBuilder.equal(root.get("cases").get("id"), id);
+            }
+            return null;
+        };
+    }
+
+
+    public Specification<T> getByBranchIds(List<Long> branchIds) {
+        return (root, query, criteriaBuilder) -> {
+            if (branchIds == null || branchIds.isEmpty()) {
+                return criteriaBuilder.conjunction();
+            }
+
+            // Create a predicate that checks if the branch ID array contains any of the provided branch IDs
+            String branchIdsString = branchIds.toString().replaceAll("[\\[\\]]", ""); // Convert list to comma-separated string
+            return criteriaBuilder.isTrue(criteriaBuilder.function(
+                "arrayoverlap",
+                Boolean.class,
+                root.get("branchId"),
+                criteriaBuilder.literal("{" + branchIdsString + "}")
+            ));
         };
     }
 

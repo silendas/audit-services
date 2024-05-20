@@ -38,9 +38,9 @@ public class CaseService {
     public GlobalResponse findAll(String name, int page, int size) {
         try {
             Page<Case> response = null;
-            if(name != null){
+            if (name != null) {
                 response = pagCase.findAllCasesByName(name, PageRequest.of(page, size));
-            }else{
+            } else {
                 response = pagCase.findAllCases(PageRequest.of(page, size));
             }
             if (response.isEmpty()) {
@@ -138,20 +138,32 @@ public class CaseService {
 
     public GlobalResponse save(CaseDTO caseDTO) {
         try {
-            if(caseDTO.getCode() == null || caseDTO.getCode() == ""){
+            if (caseDTO.getCode() == null || caseDTO.getCode() == "") {
                 return GlobalResponse
                         .builder()
                         .errorMessage("Code harus diisi")
                         .message("Code harus diisi")
                         .status(HttpStatus.BAD_REQUEST)
                         .build();
-            } else if(caseDTO.getName() == null || caseDTO.getName() == ""){
+            } else if (caseDTO.getName() == null || caseDTO.getName() == "") {
                 return GlobalResponse
                         .builder()
                         .errorMessage("Name harus diisi")
                         .message("Name harus diisi")
                         .status(HttpStatus.BAD_REQUEST)
                         .build();
+            }
+
+            List<Case> caseGet = caseRepository.findAllCase();
+            for (Case c : caseGet) {
+                if (c.getCode().equals(caseDTO.getCode())) {
+                    return GlobalResponse
+                            .builder()
+                            .errorMessage("Code harus unik")
+                            .message("Code harus unik")
+                            .status(HttpStatus.BAD_REQUEST)
+                            .build();
+                }
             }
 
             Case caseEntity = new Case(
@@ -162,7 +174,7 @@ public class CaseService {
                     new Date(),
                     new Date());
 
-            Case response = caseRepository.save(caseEntity);
+            caseRepository.save(caseEntity);
             return GlobalResponse
                     .builder()
                     .message("Berhasil menambahkan data")
@@ -192,6 +204,21 @@ public class CaseService {
                         .message("Case with id :" + id + " no found")
                         .status(HttpStatus.BAD_REQUEST)
                         .build();
+            }
+            if(caseDTO.getCode() != null && caseDTO.getCode() != "") {
+                if(!caseGet.getCode().equals(caseDTO.getCode())) {
+                    List<Case> caseGet2 = caseRepository.findAllCase();
+                    for (Case c : caseGet2) {
+                        if (c.getCode().equals(caseDTO.getCode())) {
+                            return GlobalResponse
+                                    .builder()
+                                    .errorMessage("Code harus unik")
+                                    .message("Code harus unik")
+                                    .status(HttpStatus.BAD_REQUEST)
+                                    .build();
+                        }
+                    }
+                }
             }
             Case caseEntity = new Case(
                     id,

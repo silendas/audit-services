@@ -15,12 +15,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.cms.audit.api.Common.constant.SpecificationFIlter;
 import com.cms.audit.api.Common.exception.ResourceNotFoundException;
 import com.cms.audit.api.Common.response.GlobalResponse;
 import com.cms.audit.api.Management.Level.models.Level;
@@ -82,118 +84,39 @@ public class UserService {
                 User getUser = userRepository.findByUsername(username)
                                 .orElseThrow(() -> new ResourceNotFoundException(
                                                 "user with username " + username + " is not found"));
+
                 Pageable pageable = PageRequest.of(page, size);
-                List<User> user = new ArrayList<>();
+                Specification<User> spec = Specification.where(new SpecificationFIlter<User>().isNotDeleted())
+                                .and(new SpecificationFIlter<User>().orderByIdAsc());
+
                 if (getUser.getLevel().getCode().equals("A")) {
-                        user = userRepository.findAllUser();
+                        // No additional filter for level A, retrieves all users
                 } else if (getUser.getLevel().getCode().equals("B")) {
-                        if (getUser.getRegionId() != null) {
-                                List<User> userAgain = userRepository.findAllUser();
-                                for (int u = 0; u < userAgain.size(); u++) {
-                                        for (int i = 0; i < getUser.getRegionId().size(); i++) {
-                                                Long regionId = getUser.getRegionId().get(i);
-                                                if (userAgain.get(u).getRegionId().size() == 0
-                                                                || userAgain.get(u).getRegionId() == null) {
-                                                        if (userAgain.get(u).getBranchId() != null
-                                                                        || userAgain.get(u).getBranchId().size() != 0) {
-                                                                for (int e = 0; e < userAgain.get(u).getBranchId()
-                                                                                .size(); e++) {
-                                                                        Optional<Branch> branchAgain = branchRepository
-                                                                                        .findById(userAgain.get(u)
-                                                                                                        .getBranchId()
-                                                                                                        .get(e));
-                                                                        if (branchAgain.get().getArea().getRegion()
-                                                                                        .getId() == regionId) {
-                                                                                if (!user.contains(userAgain.get(u))) {
-                                                                                        user.add(userAgain.get(u));
-                                                                                }
-                                                                        }
-
-                                                                }
-                                                        }
-                                                } else {
-                                                        for (int o = 0; o < userAgain.get(u).getRegionId()
-                                                                        .size(); o++) {
-                                                                if (regionId == userAgain.get(u).getRegionId().get(o)) {
-                                                                        if (!user.contains(userAgain.get(u))) {
-                                                                                user.add(userAgain.get(u));
-                                                                        }
-                                                                }
-                                                        }
-                                                }
-                                        }
+                        if (getUser.getRegionId() != null && !getUser.getRegionId().isEmpty()) {
+                                Specification<Branch> specBranch = Specification.where(new SpecificationFIlter<Branch>().isNotDeleted())
+                                .and(new SpecificationFIlter<Branch>().getByRegionIds(getUser.getRegionId()));
+                                List<Branch> getBranch = branchRepository.findAll(specBranch);
+                                List<Long> branchIds = new ArrayList<>();
+                                for (int i = 0; i < getBranch.size(); i++) {
+                                        branchIds.add(getBranch.get(i).getId());
                                 }
-                        } else {
-                                List<User> userAgain = userRepository.findAllUser();
-                                Long lastId = null;
-                                for (int i = 0; i < getUser.getBranchId().size(); i++) {
-                                        Branch getBranch = branchRepository
-                                                        .findById(getUser.getBranchId().get(i)).orElseThrow();
-                                        Long regionId = getBranch.getArea().getRegion().getId();
-                                        if (lastId != regionId) {
-                                                for (int u = 0; u < userAgain.size(); u++) {
-                                                        if (userAgain.get(u).getRegionId() == null) {
-                                                                if (userAgain.get(u).getBranchId() != null) {
-                                                                        for (int e = 0; e < userAgain.get(u)
-                                                                                        .getBranchId().size(); e++) {
-                                                                                Branch branchAgain = branchRepository
-                                                                                                .findById(userAgain
-                                                                                                                .get(u)
-                                                                                                                .getBranchId()
-                                                                                                                .get(e))
-                                                                                                .orElseThrow();
-                                                                                if (regionId == branchAgain.getArea()
-                                                                                                .getRegion().getId()) {
-
-                                                                                        if (!user.contains(userAgain
-                                                                                                        .get(u))) {
-                                                                                                user.add(userAgain.get(
-                                                                                                                u));
-                                                                                        }
-                                                                                        break;
-                                                                                }
-                                                                        }
-                                                                }
-                                                        } else {
-                                                                for (int o = 0; o < userAgain.get(u).getRegionId()
-                                                                                .size(); o++) {
-                                                                        if (regionId == userAgain.get(u).getRegionId()
-                                                                                        .get(o)) {
-                                                                                if (!user.contains(userAgain.get(u))) {
-                                                                                        user.add(userAgain.get(u));
-                                                                                }
-                                                                        }
-                                                                }
-                                                        }
-                                                }
-                                        }
-                                        lastId = regionId;
-                                }
+                                spec = spec.and(new SpecificationFIlter<User>().getByBranchIds(branchIds));
                         }
                 } else if (getUser.getLevel().getCode().equals("C")) {
                         return GlobalResponse.builder().message("Audit wilayah tidak dapat akses")
                                         .status(HttpStatus.BAD_REQUEST).build();
                 }
-                try {
-                        List<UserResponse> listResponses = pageUserDetail(user);
-                        int start = (int) pageable.getOffset();
-                        int end = Math.min((start + pageable.getPageSize()), listResponses.size());
-                        List<UserResponse> pageContent = listResponses.subList(start, end);
-                        Page<UserResponse> response = new PageImpl<>(pageContent, pageable, listResponses.size());
-                        return GlobalResponse
-                                        .builder()
-                                        .message("Berhasil meanmpilkan data")
-                                        .data(response)
-                                        .status(HttpStatus.OK)
-                                        .build();
-                } catch (Exception e) {
-                        return GlobalResponse
-                                        .builder()
-                                        .message("Data tidak ditemukan")
-                                        .data(user)
-                                        .status(HttpStatus.OK)
-                                        .build();
-                }
+
+                Page<User> usersPage = pagUser.findAll(spec, pageable);
+
+                List<UserResponse> listResponses = pageUserDetail(usersPage.getContent());
+                Page<UserResponse> response = new PageImpl<>(listResponses, pageable, usersPage.getTotalElements());
+
+                return GlobalResponse.builder()
+                                .message("Berhasil menampilkan data")
+                                .data(response)
+                                .status(HttpStatus.OK)
+                                .build();
         }
 
         public List<UserResponse> pageUserDetail(List<User> response) {
@@ -827,7 +750,7 @@ public class UserService {
                                 } else if (userDTO.getBranch_id() != null || userDTO.getMain_id() != null
                                                 || userDTO.getArea_id() != null) {
                                         return GlobalResponse.builder().message("Hanya region office")
-                                                        .errorMessage("Hanya REgion id saja yang diisi")
+                                                        .errorMessage("Hanya Region id saja yang diisi")
                                                         .status(HttpStatus.BAD_REQUEST).build();
                                 }
                         } else if (userDTO.getLevel_id() == 3) {
@@ -936,44 +859,48 @@ public class UserService {
                                         userGet.get().getCreated_at(),
                                         new Date());
                         try {
-                                if (!user.getEmail().equals(userDTO.getEmail())) {
+                                if (!userGet.get().getEmail().equals(userDTO.getEmail())) {
                                         Optional<User> checkEmail = userRepository.findByEmail(userDTO.getEmail());
                                         if (checkEmail.isPresent()) {
                                                 return GlobalResponse
                                                                 .builder()
-                                                                .message("Email already exist")
+                                                                .message("Email sudah ada")
+                                                                .errorMessage("Email sudah ada")
                                                                 .status(HttpStatus.BAD_REQUEST)
                                                                 .build();
                                         }
                                 }
-                                if (!user.getNip().equals(userDTO.getNip())) {
+                                if (!userGet.get().getNip().equals(userDTO.getNip())) {
                                         List<User> checkNip = userRepository.findByNIP(userDTO.getNip());
                                         if (!checkNip.isEmpty()) {
                                                 return GlobalResponse
                                                                 .builder()
-                                                                .message("NIP already exist")
+                                                                .message("NIP sudah ada")
+                                                                .errorMessage("NIP sudah ada")
                                                                 .status(HttpStatus.BAD_REQUEST)
                                                                 .build();
                                         }
                                 }
-                                if (!user.getInitial_name().equals(userDTO.getInitial_name())) {
+                                if (!userGet.get().getInitial_name().equals(userDTO.getInitial_name())) {
                                         List<User> checkIN = userRepository
                                                         .findByInitialName(userDTO.getInitial_name());
                                         if (!checkIN.isEmpty()) {
                                                 return GlobalResponse
                                                                 .builder()
-                                                                .message("Initial Name already exist")
+                                                                .message("Initial name sudah ada")
+                                                                .errorMessage("Initial name sudah ada")
                                                                 .status(HttpStatus.BAD_REQUEST)
                                                                 .build();
                                         }
                                 }
-                                if (!user.getUsername().equals(userDTO.getUsername())) {
+                                if (!userGet.get().getUsername().equals(userDTO.getUsername())) {
                                         Optional<User> checkUsername = userRepository
                                                         .findByUsername(userDTO.getUsername());
                                         if (checkUsername.isPresent()) {
                                                 return GlobalResponse
                                                                 .builder()
-                                                                .message("Username already exist")
+                                                                .message("Username sudah ada")
+                                                                .errorMessage("Username sudah ada")
                                                                 .status(HttpStatus.BAD_REQUEST)
                                                                 .build();
                                         }
@@ -1098,7 +1025,7 @@ public class UserService {
                                                         .message("Email sudah tesedia")
                                                         .status(HttpStatus.BAD_REQUEST)
                                                         .build();
-                                                        
+
                                 }
                         }
 

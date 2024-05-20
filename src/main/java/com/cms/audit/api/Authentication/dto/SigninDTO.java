@@ -19,6 +19,6 @@ public class SigninDTO {
     @NotBlank(message = "username tidak boleh kosong")
     private String username;
     @NotBlank(message = "password tidak boleh kosong")
-    @Size(min = 8, message = "Password harus setidaknya 8 character")
+    @Size(min = 4, message = "Password harus setidaknya 8 character")
     private String password;
 }

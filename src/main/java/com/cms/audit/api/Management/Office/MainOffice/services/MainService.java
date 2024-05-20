@@ -8,10 +8,13 @@ import org.hibernate.exception.DataException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import com.cms.audit.api.Common.constant.SpecificationFIlter;
 import com.cms.audit.api.Common.response.GlobalResponse;
+import com.cms.audit.api.Management.Office.BranchOffice.models.Branch;
 import com.cms.audit.api.Management.Office.MainOffice.dto.MainDTO;
 import com.cms.audit.api.Management.Office.MainOffice.dto.response.MainInterface;
 import com.cms.audit.api.Management.Office.MainOffice.models.Main;
@@ -41,12 +44,11 @@ public class MainService {
 
     public GlobalResponse findAll(String name, int page, int size) {
         try {
-            Page<Main> response = null;
-            if(name != null){
-                response = pagMain.findByNameContaining(name, PageRequest.of(page, size));
-            } else {
-                response = pagMain.findAllMain(PageRequest.of(page, size));
-            }
+            Specification<Main> spec = Specification
+                    .where(new SpecificationFIlter<Main>().byNameLike(name))
+                    .and(new SpecificationFIlter<Main>().isNotDeleted())
+                    .and(new SpecificationFIlter<Main>().orderByIdAsc());
+            Page<Main> response = pagMain.findAll(spec, PageRequest.of(page, size));
             if (response.isEmpty()) {
                 return GlobalResponse
                         .builder()
