@@ -47,7 +47,7 @@ public class ExcelUtil {
                 }else{
                     row1.createCell(4).setCellValue(0L);
                 }
-                row1.createCell(5).setCellValue(c.getEvaluation_limitation());
+                row1.createCell(5).setCellValue(convertDateToRoman.convertDateToString(c.getEvaluation_limitation()));
                 row1.createCell(6).setCellValue(c.getLocation());
                 row1.createCell(7).setCellValue(c.getAuditee());
                 row1.createCell(8).setCellValue(c.getAuditee_leader());
