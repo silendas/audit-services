@@ -19,7 +19,7 @@ public class ExcelUtil {
     public static String HEADER[] = { "comment_clarification", "auditor", "kasus", "kategori", "kerugian",
             "batas_evaluasi", "lokasi", "auditee", "atasan auditee", "file", "deskripsi", "prioritas","created_at", "status" };
 
-    public static String SHEET_NAME = "Laporan";
+    public static String SHEET_NAME = "Laporan Klarifikasi";
 
     public static ByteArrayInputStream dataToExcel(List<Clarification> clarificationsList) throws IOException {
 
@@ -58,7 +58,6 @@ public class ExcelUtil {
                 } else {
                     row1.createCell(11).setCellValue("");
                 }
-
                 row1.createCell(12).setCellValue(convertDateToRoman.convertDateToString(c.getCreated_at()));
                 row1.createCell(13).setCellValue(c.getStatus().name());
             }

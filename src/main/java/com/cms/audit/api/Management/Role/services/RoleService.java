@@ -126,8 +126,8 @@ public class RoleService {
             if(roleDTO.getName() == null || roleDTO.getName() == ""){
                 return GlobalResponse
                         .builder()
-                        .message("ROle tidak boleh kosong")
-                        .errorMessage("ROle tidak boleh kosong")
+                        .message("Role tidak boleh kosong")
+                        .errorMessage("Role tidak boleh kosong")
                         .status(HttpStatus.BAD_REQUEST)
                         .build();
             }
