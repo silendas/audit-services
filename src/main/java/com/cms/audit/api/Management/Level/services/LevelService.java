@@ -123,7 +123,7 @@ public class LevelService {
     public GlobalResponse save(LevelDTO dto) {
         try {
 
-            if(dto.getName() == null || dto.getCode() == null){
+            if(dto.getName() == null || dto.getCode() == null || dto.getName() == "" || dto.getCode() == ""){
                 return GlobalResponse
                         .builder()
                         .message("Data tidak boleh kosong")

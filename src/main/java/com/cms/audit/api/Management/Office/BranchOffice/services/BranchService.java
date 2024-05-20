@@ -467,7 +467,7 @@ public class BranchService {
             if(branchDTO.getArea_id() == null){
                 return GlobalResponse.builder().message("Area tidak boleh kosong").errorMessage("Area tidak diisi").status(HttpStatus.BAD_REQUEST).build();
             }
-            if(branchDTO.getName() == null){
+            if(branchDTO.getName() == null || branchDTO.getName() == ""){
                 return GlobalResponse.builder().message("Name tidak boleh kosong").errorMessage("Name tidak diisi").status(HttpStatus.BAD_REQUEST).build();
             }
             Optional<Area> areaId = areaRepository.findById(branchDTO.getArea_id());

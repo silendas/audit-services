@@ -246,7 +246,7 @@ public class AreaService {
     public GlobalResponse save(AreaDTO dto) {
         try {
 
-            if(dto.getName() == null){
+            if(dto.getName() == null || dto.getName() == ""){
                 return GlobalResponse.builder().message("Data tidak boleh kosong").errorMessage("Data tidak boleh kosong").status(HttpStatus.BAD_REQUEST).build();
             } 
 

@@ -123,7 +123,7 @@ public class RoleService {
         try {
 
 
-            if(roleDTO.getName() == null){
+            if(roleDTO.getName() == null || roleDTO.getName() == ""){
                 return GlobalResponse
                         .builder()
                         .message("ROle tidak boleh kosong")
@@ -140,13 +140,7 @@ public class RoleService {
                     new Date());
 
             Role response = roleRepository.save(role);
-            if (response == null) {
-                return GlobalResponse
-                        .builder()
-                        .message("Failed")
-                        .status(HttpStatus.BAD_REQUEST)
-                        .build();
-            }
+
             return GlobalResponse
                     .builder()
                     .message("Berhasil menambahkan data")
@@ -187,13 +181,7 @@ public class RoleService {
                     new Date());
 
             Role response = roleRepository.save(role);
-            if (response == null) {
-                return GlobalResponse
-                        .builder()
-                        .message("Failed")
-                        .status(HttpStatus.BAD_REQUEST)
-                        .build();
-            }
+
             return GlobalResponse
                     .builder()
                     .message("Berhasil mengubah data")
@@ -234,13 +222,7 @@ public class RoleService {
                     new Date());
 
             Role response = roleRepository.save(role);
-            if (response == null) {
-                return GlobalResponse
-                        .builder()
-                        .message("Failed")
-                        .status(HttpStatus.BAD_REQUEST)
-                        .build();
-            }
+
             return GlobalResponse
                     .builder()
                     .message("Berhasil menghapus data")

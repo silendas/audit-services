@@ -216,7 +216,7 @@ public class CaseCategoryService {
         try {
             if(caseCategoryDTO.getCase_id() == null) {
                 return GlobalResponse.builder().errorMessage("Case id tidak boleh kosong").message("Case tidak boleh kosong").status(HttpStatus.BAD_REQUEST).build();
-            } else if(caseCategoryDTO.getName() != null) {
+            } else if(caseCategoryDTO.getName() != null && caseCategoryDTO.getName() == "") {
                 return GlobalResponse.builder().errorMessage("Name tidak boleh kosong").message("Case name tidak boleh kosong").status(HttpStatus.BAD_REQUEST).build();
             }
 

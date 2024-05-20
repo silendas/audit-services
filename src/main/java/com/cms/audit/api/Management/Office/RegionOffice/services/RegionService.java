@@ -232,7 +232,7 @@ public class RegionService {
             if(dto.getMain_id() == null) {
                 return GlobalResponse.builder().message("main tidak boleh kosong").errorMessage("main tidak boleh kosong").status(HttpStatus.BAD_REQUEST).build();
             }
-            if(dto.getName() == null) {
+            if(dto.getName() == null || dto.getName() == "") {
                 return GlobalResponse.builder().message("name tidak boleh kosong").errorMessage("name tidak boleh kosong").status(HttpStatus.BAD_REQUEST).build();
             }
 

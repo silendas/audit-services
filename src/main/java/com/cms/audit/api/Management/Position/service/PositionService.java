@@ -59,7 +59,7 @@ public class PositionService {
 
     public ResponseEntity<Object> create(PositionDTO position) {
         try {
-            if(position.getName() == null) {
+            if(position.getName() == null || position.getName() == "") {
                 return ResponseEntittyHandler.errorResponse("Data name tidak boleh kosong","Data name cannot be empty",HttpStatus.BAD_REQUEST);
             }
             Position position1 = new Position();

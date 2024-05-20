@@ -138,14 +138,14 @@ public class CaseService {
 
     public GlobalResponse save(CaseDTO caseDTO) {
         try {
-            if(caseDTO.getCode() == null){
+            if(caseDTO.getCode() == null || caseDTO.getCode() == ""){
                 return GlobalResponse
                         .builder()
                         .errorMessage("Code harus diisi")
                         .message("Code harus diisi")
                         .status(HttpStatus.BAD_REQUEST)
                         .build();
-            } else if(caseDTO.getName() == null){
+            } else if(caseDTO.getName() == null || caseDTO.getName() == ""){
                 return GlobalResponse
                         .builder()
                         .errorMessage("Name harus diisi")
