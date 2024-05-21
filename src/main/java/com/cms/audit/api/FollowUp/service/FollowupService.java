@@ -64,7 +64,8 @@ public class FollowupService {
             Specification<FollowUp> spec = Specification
                     .where(new SpecificationFIlter<FollowUp>().nameLike(name))
                     .and(new SpecificationFIlter<FollowUp>().branchIdEqual(branch))
-                    .and(new SpecificationFIlter<FollowUp>().dateRange(start_date, end_date));
+                    .and(new SpecificationFIlter<FollowUp>().dateRange(start_date, end_date))
+                    .and(new SpecificationFIlter<FollowUp>().orderByIdDesc());
 
             if (getUser.getLevel().getCode().equals("C")) {
                 spec = spec.and(new SpecificationFIlter<FollowUp>().userId(getUser.getId()));

@@ -55,7 +55,8 @@ public class NewsInspectionService {
             Specification<NewsInspection> spec = Specification
                     .where(new SpecificationFIlter<NewsInspection>().nameLike(name))
                     .and(new SpecificationFIlter<NewsInspection>().branchIdEqual(branch))
-                    .and(new SpecificationFIlter<NewsInspection>().dateRange(start_date, end_date));
+                    .and(new SpecificationFIlter<NewsInspection>().dateRange(start_date, end_date))
+                    .and(new SpecificationFIlter<NewsInspection>().orderByIdDesc());
             if (getUser.getLevel().getCode().equals("C")) {
                 spec = spec.and(new SpecificationFIlter<NewsInspection>().userId(getUser.getId()));
             } else if (getUser.getLevel().getCode().equals("B")) {

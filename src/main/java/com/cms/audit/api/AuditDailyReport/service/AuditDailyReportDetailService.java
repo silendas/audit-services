@@ -87,7 +87,8 @@ public class AuditDailyReportDetailService {
             Specification<AuditDailyReportDetail> spec = Specification
                     .where(new SpecificationFIlter<AuditDailyReportDetail>().dateRange(startDate,
                             endDate))
-                    .and(new SpecificationFIlter<AuditDailyReportDetail>().isNotDeleted());
+                    .and(new SpecificationFIlter<AuditDailyReportDetail>().isNotDeleted())
+                    .and(new SpecificationFIlter<AuditDailyReportDetail>().orderByIdDesc());
             if (lhaId != null) {
                 spec = spec.and(new SpecificationFIlter<AuditDailyReportDetail>()
                         .lhaId(lhaId));

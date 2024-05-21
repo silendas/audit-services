@@ -67,7 +67,8 @@ public class AuditWorkingPaperService {
                     .where(new SpecificationFIlter<AuditWorkingPaper>().nameLike(name))
                     .and(new SpecificationFIlter<AuditWorkingPaper>().branchIdEqual(branchId))
                     .and(new SpecificationFIlter<AuditWorkingPaper>().dateRange(start_date, end_date))
-                    .and(new SpecificationFIlter<AuditWorkingPaper>().isNotDeleted());
+                    .and(new SpecificationFIlter<AuditWorkingPaper>().isNotDeleted())
+                    .and(new SpecificationFIlter<AuditWorkingPaper>().orderByIdDesc());
             if (schedule_id != null) {
                 spec = spec.and(new SpecificationFIlter<AuditWorkingPaper>().scheduleIdEqual(schedule_id));
             }

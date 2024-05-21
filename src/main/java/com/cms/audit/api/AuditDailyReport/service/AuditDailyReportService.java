@@ -102,7 +102,8 @@ public class AuditDailyReportService {
                                         .and(new SpecificationFIlter<AuditDailyReport>().branchIdEqual(branch_id))
                                         .and(new SpecificationFIlter<AuditDailyReport>().dateRange(startDate,
                                                         endDate))
-                                        .and(new SpecificationFIlter<AuditDailyReport>().isNotDeleted());
+                                        .and(new SpecificationFIlter<AuditDailyReport>().isNotDeleted())
+                                        .and(new SpecificationFIlter<AuditDailyReport>().orderByIdDesc());
                         if (shcedule_id != null) {
                                 spec = spec.and(new SpecificationFIlter<AuditDailyReport>()
                                                 .scheduleIdEqual(shcedule_id));

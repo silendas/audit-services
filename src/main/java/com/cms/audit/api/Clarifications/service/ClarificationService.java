@@ -91,7 +91,8 @@ public class ClarificationService {
                         Specification<Clarification> spec = Specification
                                         .where(new SpecificationFIlter<Clarification>().nameLike(name))
                                         .and(new SpecificationFIlter<Clarification>().branchIdEqual(branchId))
-                                        .and(new SpecificationFIlter<Clarification>().dateRange(start_date, end_date));
+                                        .and(new SpecificationFIlter<Clarification>().dateRange(start_date, end_date))
+                                        .and(new SpecificationFIlter<Clarification>().orderByIdDesc());          
 
                         if (getUser.getLevel().getCode().equals("C")) {
                                 spec = spec.and(new SpecificationFIlter<Clarification>().userId(getUser.getId()));
