@@ -168,6 +168,7 @@ public class ReportService {
                 }
             }
         }
+        
         if (response.isEmpty()) {
             ByteArrayInputStream pdf = LHAReport.generateIfNoData();
             InputStreamResource isr = new InputStreamResource(pdf);
