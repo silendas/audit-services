@@ -456,20 +456,15 @@ public class ReportService {
         // String path = pdf.getFilePath();
         // File file = new File(path);
         // InputStream inputStream = new FileInputStream(file);
+        InputStreamResource isr;
         if(pdf == null){
             if (response.isEmpty()) {
                 ByteArrayInputStream file = LHAReport.generateIfNoData();
-                InputStreamResource isr = new InputStreamResource(file);
-    
-                String filename = "No-Data-Report.pdf";
-    
-                ResponseEntity<InputStreamResource> responses = ResponseEntity.ok()
-                        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=" + filename)
-                        .contentType(MediaType.parseMediaType("application/pdf")).body(isr);
-                return responses;
+                isr = new InputStreamResource(file);    
             }
+        }else{
+            isr = new InputStreamResource(pdf);
         }
-        InputStreamResource isr = new InputStreamResource(pdf);
 
         // HttpHeaders httpHeaders = new HttpHeaders();
 
