@@ -47,12 +47,13 @@ public class BranchService {
     @Autowired
     private PagBranch pagBranch;
 
-    public GlobalResponse findAll(String name, int page, int size, Long areaId, String areaName) {
+    public GlobalResponse findAll(String name, int page, int size, Long areaId, String areaName, String regionName) {
         try {
             Specification<Branch> spec = Specification
                     .where(new SpecificationFIlter<Branch>().byNameLike(name))
                     .and(new SpecificationFIlter<Branch>().areaIdEqual(areaId))
                     .and(new SpecificationFIlter<Branch>().areaNameLike(areaName))
+                    .and(new SpecificationFIlter<Branch>().branchToRegionNameLike(regionName))
                     .and(new SpecificationFIlter<Branch>().isNotDeleted())
                     .and(new SpecificationFIlter<Branch>().orderByIdAsc());
 

@@ -8,9 +8,11 @@ import org.hibernate.exception.DataException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import com.cms.audit.api.Common.constant.SpecificationFIlter;
 import com.cms.audit.api.Common.response.GlobalResponse;
 import com.cms.audit.api.Management.Case.dto.CaseDTO;
 import com.cms.audit.api.Management.Case.dto.response.CaseInterface;
@@ -19,6 +21,7 @@ import com.cms.audit.api.Management.Case.repository.CaseRepository;
 import com.cms.audit.api.Management.Case.repository.PagCase;
 import com.cms.audit.api.Management.CaseCategory.models.CaseCategory;
 import com.cms.audit.api.Management.CaseCategory.repository.CaseCategoryRepository;
+import com.cms.audit.api.Management.Office.AreaOffice.models.Area;
 
 import jakarta.transaction.Transactional;
 
@@ -35,14 +38,14 @@ public class CaseService {
     @Autowired
     private PagCase pagCase;
 
-    public GlobalResponse findAll(String name, int page, int size) {
+    public GlobalResponse findAll(String name, int page, int size, String code) {
         try {
-            Page<Case> response = null;
-            if (name != null) {
-                response = pagCase.findAllCasesByName(name, PageRequest.of(page, size));
-            } else {
-                response = pagCase.findAllCases(PageRequest.of(page, size));
-            }
+            Specification<Case> spec = Specification
+                    .where(new SpecificationFIlter<Case>().byNameLike(name))
+                    .and(new SpecificationFIlter<Case>().codeLike(code))
+                    .and(new SpecificationFIlter<Case>().isNotDeleted())
+                    .and(new SpecificationFIlter<Case>().orderByIdDesc());
+            Page<Case> response = pagCase.findAll(spec, PageRequest.of(page, size));
             if (response.isEmpty()) {
                 return GlobalResponse
                         .builder()
@@ -205,8 +208,8 @@ public class CaseService {
                         .status(HttpStatus.BAD_REQUEST)
                         .build();
             }
-            if(caseDTO.getCode() != null && caseDTO.getCode() != "") {
-                if(!caseGet.getCode().equals(caseDTO.getCode())) {
+            if (caseDTO.getCode() != null && caseDTO.getCode() != "") {
+                if (!caseGet.getCode().equals(caseDTO.getCode())) {
                     List<Case> caseGet2 = caseRepository.findAllCase();
                     for (Case c : caseGet2) {
                         if (c.getCode().equals(caseDTO.getCode())) {

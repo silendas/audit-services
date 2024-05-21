@@ -1,5 +1,7 @@
 package com.cms.audit.api.Management.Level.controller;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,6 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cms.audit.api.Common.constant.BasePath;
@@ -26,8 +29,13 @@ public class LevelController {
     private LevelService levelService;
 
     @GetMapping
-    public ResponseEntity<Object> findAll() {
-        GlobalResponse response = levelService.findAll();
+    public ResponseEntity<Object> findAll(
+            @RequestParam("name") Optional<String> name,
+            @RequestParam("code") Optional<String> code,
+            @RequestParam("page") Optional<Integer> page,
+            @RequestParam("size") Optional<Integer> size) {
+        GlobalResponse response = levelService.findAll(name.orElse(null), page.orElse(0), size.orElse(10),
+                code.orElse(null));
         if (response.getError() != null) {
             return ResponseEntittyHandler.allHandler(null, null, response.getStatus(), response.getError());
         }

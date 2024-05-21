@@ -43,7 +43,7 @@ public class CaseCategoryService {
              Specification<CaseCategory> spec = Specification
                     .where(new SpecificationFIlter<CaseCategory>().byNameLike(name))
                     .and(new SpecificationFIlter<CaseCategory>().getByCasesId(caseId))
-                    .and(new SpecificationFIlter<CaseCategory>().codeLike(code))
+                    .and(new SpecificationFIlter<CaseCategory>().caseCodeLike(code))
                     .and(new SpecificationFIlter<CaseCategory>().isNotDeleted())
                     .and(new SpecificationFIlter<CaseCategory>().orderByIdAsc());
             Page<CaseCategory> response = pagCaseCategory.findAll(spec, PageRequest.of(page, size));

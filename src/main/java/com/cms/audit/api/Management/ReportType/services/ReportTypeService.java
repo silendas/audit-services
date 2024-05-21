@@ -6,14 +6,19 @@ import java.util.Optional;
 
 import org.hibernate.exception.DataException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import com.cms.audit.api.Common.constant.SpecificationFIlter;
 import com.cms.audit.api.Common.response.GlobalResponse;
 import com.cms.audit.api.Management.ReportType.dto.ReportTypeDTO;
 import com.cms.audit.api.Management.ReportType.dto.response.ReportTypeInterface;
 import com.cms.audit.api.Management.ReportType.models.ReportType;
 import com.cms.audit.api.Management.ReportType.repository.ReportTypeRepository;
+import com.cms.audit.api.Management.ReportType.repository.pagReportType;
 
 import jakarta.transaction.Transactional;
 
@@ -24,9 +29,17 @@ public class ReportTypeService {
     @Autowired
     private ReportTypeRepository reportTypeRepository;
 
-    public GlobalResponse findAll() {
+    @Autowired
+    private pagReportType pag;
+
+    public GlobalResponse findAll(String name, int page, int size, String code) {
         try {
-            List<ReportType> response = reportTypeRepository.findAllReportType();
+           Specification<ReportType> spec = Specification
+                    .where(new SpecificationFIlter<ReportType>().byNameLike(name))
+                    .and( new SpecificationFIlter<ReportType>().codeLike(code))
+                    .and(new SpecificationFIlter<ReportType>().isNotDeleted())
+                    .and(new SpecificationFIlter<ReportType>().orderByIdAsc());
+            Page<ReportType> response = pag.findAll(spec, PageRequest.of(page, size));
             if (response.isEmpty()) {
                 return GlobalResponse
                         .builder()

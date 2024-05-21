@@ -42,11 +42,12 @@ public class UserController {
     public ResponseEntity<Object> findAll(
             @NonNull HttpServletRequest request,
             @RequestParam("page") Optional<Integer> page,
+            @RequestParam("fullname") Optional<String> fullname,
             @RequestParam("size") Optional<Integer> size) {
         final String tokenHeader = request.getHeader("Authorization");
         String jwtToken = tokenHeader.substring(7);
         String username = jwtService.extractUsername(jwtToken);
-        GlobalResponse response = userService.findAll(page.orElse(0), size.orElse(10), username);
+        GlobalResponse response = userService.findAll(page.orElse(0), size.orElse(10), username, fullname.orElse(null));
         return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(),
                 response.getError());
     }

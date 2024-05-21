@@ -1,6 +1,8 @@
 package com.cms.audit.api.Management.Penalty.controller;
 
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cms.audit.api.Common.constant.BasePath;
@@ -27,8 +30,12 @@ public class PenaltyController {
     private PenaltyService PenaltyService;
 
     @GetMapping
-    public ResponseEntity<Object> findAll(){
-        GlobalResponse response = PenaltyService.findAll(); 
+    public ResponseEntity<Object> findAll(
+            @RequestParam("name") Optional<String> name,
+            @RequestParam("page") Optional<Integer> page,
+            @RequestParam("size") Optional<Integer> size
+    ){
+        GlobalResponse response = PenaltyService.findAll(name.orElse(null), page.orElse(0), size.orElse(10)); 
         if(response.getError() != null){
             return ResponseEntittyHandler.allHandler(null, null, response.getStatus(), response.getError());
         }

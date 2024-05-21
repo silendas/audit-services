@@ -27,7 +27,16 @@ public class SpecificationFIlter<T> {
             }
             return null;
         };
+    }    public Specification<T> fullnameLike(String name) {
+        return (root, query, criteriaBuilder) -> {
+            if (name != null) {
+                return criteriaBuilder.like(root.get("fullname"), "%" + name + "%");
+            }
+            return null;
+        };
     }
+
+
 
     public Specification<T> byNameLike(String name) {
         return (root, query, criteriaBuilder) -> {
@@ -84,6 +93,12 @@ public class SpecificationFIlter<T> {
                 : criteriaBuilder.like(root.get("branch").get("name"), "%" + branchName + "%");
     }
 
+    
+    public Specification<T> branchToRegionNameLike(String regionName) {
+        return (root, query, criteriaBuilder) -> regionName == null ? null
+                : criteriaBuilder.like(root.get("area").get("region").get("name"), "%" + regionName + "%");
+    }
+
     public Specification<T> regionIdEqual(Long branchId) {
         return (root, query, criteriaBuilder) -> branchId == null ? null
                 : criteriaBuilder.equal(root.get("region").get("id"), branchId);
@@ -117,6 +132,11 @@ public class SpecificationFIlter<T> {
     public Specification<T> codeLike(String code) {
         return (root, query, criteriaBuilder) -> code == null ? null
                 : criteriaBuilder.like(root.get("code"), "%" + code + "%");
+    }
+
+    public Specification<T> caseCodeLike(String code) {
+        return (root, query, criteriaBuilder) -> code == null ? null
+                : criteriaBuilder.like(root.get("cases").get("code"), "%" + code + "%");
     }
 
     public Specification<T> scheduleIdEqual(Long shceduleId) {

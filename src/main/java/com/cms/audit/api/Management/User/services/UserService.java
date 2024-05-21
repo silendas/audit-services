@@ -80,13 +80,14 @@ public class UserService {
         @Autowired
         private PasswordEncoder passwordEncoder;
 
-        public GlobalResponse findAll(int page, int size, String username) {
+        public GlobalResponse findAll(int page, int size, String username, String fullname) {
                 User getUser = userRepository.findByUsername(username)
                                 .orElseThrow(() -> new ResourceNotFoundException(
                                                 "user with username " + username + " is not found"));
 
                 Pageable pageable = PageRequest.of(page, size);
                 Specification<User> spec = Specification.where(new SpecificationFIlter<User>().isNotDeleted())
+                                .and(new SpecificationFIlter<User>().fullnameLike(fullname))
                                 .and(new SpecificationFIlter<User>().orderByIdAsc())
                                 .and(new SpecificationFIlter<User>().idNotShow(1L));
 
@@ -94,8 +95,10 @@ public class UserService {
                         // No additional filter for level A, retrieves all users
                 } else if (getUser.getLevel().getCode().equals("B")) {
                         if (getUser.getRegionId() != null && !getUser.getRegionId().isEmpty()) {
-                                Specification<Branch> specBranch = Specification.where(new SpecificationFIlter<Branch>().isNotDeleted())
-                                .and(new SpecificationFIlter<Branch>().getByRegionIdsUser(getUser.getRegionId()));
+                                Specification<Branch> specBranch = Specification
+                                                .where(new SpecificationFIlter<Branch>().isNotDeleted())
+                                                .and(new SpecificationFIlter<Branch>()
+                                                                .getByRegionIdsUser(getUser.getRegionId()));
                                 List<Branch> getBranch = branchRepository.findAll(specBranch);
                                 List<Long> branchIds = new ArrayList<>();
                                 for (int i = 0; i < getBranch.size(); i++) {

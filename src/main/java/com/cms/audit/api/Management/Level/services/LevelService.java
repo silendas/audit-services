@@ -6,14 +6,20 @@ import java.util.Optional;
 
 import org.hibernate.exception.DataException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import com.cms.audit.api.Common.constant.SpecificationFIlter;
 import com.cms.audit.api.Common.response.GlobalResponse;
 import com.cms.audit.api.Management.Level.dto.LevelDTO;
 import com.cms.audit.api.Management.Level.dto.response.LevelInterface;
 import com.cms.audit.api.Management.Level.models.Level;
 import com.cms.audit.api.Management.Level.repository.LevelRepository;
+import com.cms.audit.api.Management.Level.repository.PagLevel;
+import com.cms.audit.api.Management.ReportType.models.ReportType;
 
 import jakarta.transaction.Transactional;
 
@@ -24,9 +30,17 @@ public class LevelService {
     @Autowired
     private LevelRepository levelRepository;
 
-    public GlobalResponse findAll() {
+    @Autowired
+    private PagLevel pag;
+
+    public GlobalResponse findAll(String name, int page, int size, String code) {
         try {
-            List<Level> response = levelRepository.findAllLevel();
+            Specification<Level> spec = Specification
+                    .where(new SpecificationFIlter<Level>().byNameLike(name))
+                    .and( new SpecificationFIlter<Level>().codeLike(code))
+                    .and(new SpecificationFIlter<Level>().isNotDeleted())
+                    .and(new SpecificationFIlter<Level>().orderByIdAsc());
+            Page<Level> response = pag.findAll(spec, PageRequest.of(page, size));
             if (response.isEmpty()) {
                 return GlobalResponse
                         .builder()

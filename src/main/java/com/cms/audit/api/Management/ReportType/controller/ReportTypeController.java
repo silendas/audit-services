@@ -1,5 +1,7 @@
 package com.cms.audit.api.Management.ReportType.controller;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,6 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cms.audit.api.Common.constant.BasePath;
@@ -26,8 +29,12 @@ public class ReportTypeController {
     private ReportTypeService service;
 
     @GetMapping
-    public ResponseEntity<Object> findAll() {
-        GlobalResponse response = service.findAll();
+    public ResponseEntity<Object> findAll(
+            @RequestParam("name") Optional<String> name,
+            @RequestParam("code") Optional<String> code,
+            @RequestParam("page") Optional<Integer> page,
+            @RequestParam("size") Optional<Integer> size) {
+        GlobalResponse response = service.findAll(name.orElse(null), page.orElse(0), size.orElse(10), code.orElse(null));
         if (response.getError() != null) {
             return ResponseEntittyHandler.allHandler(null, null, response.getStatus(), response.getError());
         }
@@ -46,16 +53,16 @@ public class ReportTypeController {
     @PostMapping
     public ResponseEntity<Object> save(@RequestBody ReportTypeDTO dto) {
         GlobalResponse response = service.save(dto);
-       if (response.getStatus() == HttpStatus.BAD_REQUEST) {
+        if (response.getStatus() == HttpStatus.BAD_REQUEST) {
             return ResponseEntittyHandler.errorResponse(response.getErrorMessage(), response.getMessage(),
                     response.getStatus());
         }
-        return ResponseEntittyHandler.allHandler(response.getData(),response.getMessage(), response.getStatus(), null);
+        return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(), null);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Object> edit(@RequestBody ReportTypeDTO dto, @PathVariable("id") Long id) {
-        GlobalResponse response = service.edit(dto,id);
+        GlobalResponse response = service.edit(dto, id);
         if (response.getError() != null) {
             return ResponseEntittyHandler.allHandler(null, null, response.getStatus(), response.getError());
         }

@@ -6,13 +6,19 @@ import java.util.Optional;
 
 import org.hibernate.exception.DataException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import com.cms.audit.api.Common.constant.SpecificationFIlter;
 import com.cms.audit.api.Common.response.GlobalResponse;
+import com.cms.audit.api.Management.Level.models.Level;
 import com.cms.audit.api.Management.Penalty.dto.PenaltyDTO;
 import com.cms.audit.api.Management.Penalty.dto.response.PenaltyInterface;
 import com.cms.audit.api.Management.Penalty.models.Penalty;
+import com.cms.audit.api.Management.Penalty.repository.PagPenalty;
 import com.cms.audit.api.Management.Penalty.repository.PenaltyRepository;
 
 import jakarta.transaction.Transactional;
@@ -24,9 +30,16 @@ public class PenaltyService {
     @Autowired
     private PenaltyRepository PenaltyRepository;
 
-    public GlobalResponse findAll() {
+    @Autowired
+    private PagPenalty pag;
+
+    public GlobalResponse findAll(String name, int page, int size) {
         try {
-            List<Penalty> response = PenaltyRepository.findAllPenalty();
+            Specification<Penalty> spec = Specification
+                    .where(new SpecificationFIlter<Penalty>().byNameLike(name))
+                    .and(new SpecificationFIlter<Penalty>().isNotDeleted())
+                    .and(new SpecificationFIlter<Penalty>().orderByIdAsc());
+            Page<Penalty> response = pag.findAll(spec, PageRequest.of(page, size));
             if (response.isEmpty()) {
                 return GlobalResponse
                         .builder()

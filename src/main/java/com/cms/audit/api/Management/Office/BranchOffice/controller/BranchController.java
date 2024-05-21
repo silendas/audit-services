@@ -32,10 +32,11 @@ public class BranchController {
     public ResponseEntity<Object> findAll(
             @RequestParam("area_id") Optional<Long> areaId,
             @RequestParam("area_name") Optional<String> areaName,
+            @RequestParam("region_name") Optional<String> regionName,
             @RequestParam("name") Optional<String> name,
             @RequestParam("page") Optional<Integer> page,
             @RequestParam("size") Optional<Integer> size) {
-        GlobalResponse response = branchService.findAll(name.orElse(null), page.orElse(0), size.orElse(10), areaId.orElse(null), areaName.orElse(null));
+        GlobalResponse response = branchService.findAll(name.orElse(null), page.orElse(0), size.orElse(10), areaId.orElse(null), areaName.orElse(null), regionName.orElse(null));
         return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(), response.getError());
     }
 

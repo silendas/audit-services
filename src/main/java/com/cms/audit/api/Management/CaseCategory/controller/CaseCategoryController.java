@@ -31,12 +31,12 @@ public class CaseCategoryController {
     @GetMapping
     public ResponseEntity<Object> findAll(
         @RequestParam("case_id") Optional<Long> caseId,
-        @RequestParam("case_code") Optional<String> caseName,
+        @RequestParam("case_code") Optional<String> caseCode,
         @RequestParam("name") Optional<String> name,
         @RequestParam("page") Optional<Integer> page,
         @RequestParam("size") Optional<Integer> size
     ){
-        GlobalResponse response = caseCategoryService.findAll(caseId.orElse(null),name.orElse(null), page.orElse(0), size.orElse(10), caseName.orElse(null)); 
+        GlobalResponse response = caseCategoryService.findAll(caseId.orElse(null),name.orElse(null), page.orElse(0), size.orElse(10), caseCode.orElse(null)); 
         if(response.getError() != null){
             return ResponseEntittyHandler.allHandler(null, null, response.getStatus(), response.getError());
         }
