@@ -900,7 +900,7 @@ public class ScheduleService {
                                                 new Date());
 
                                 // change all todo or progress status to pending status
-                                repository.editStatusPendingScheduleByDate(
+                                repository.editStatusPendingScheduleByDateAdd(
                                                 scheduleDTO.getSchedules().get(i).getUser_id(),
                                                 getUser.getId(), scheduleDTO.getSchedules().get(i).getStart_date(),
                                                 scheduleDTO.getSchedules().get(i).getEnd_date());
