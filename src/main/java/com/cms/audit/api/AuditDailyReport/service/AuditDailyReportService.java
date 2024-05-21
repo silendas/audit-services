@@ -682,7 +682,7 @@ public class AuditDailyReportService {
                                         new Date(),
                                         new Date());
 
-                        if (getschedule.get().getStart_date_realization() == null && getschedule.get().getStatus().equals(EStatus.DONE)) {
+                        if (getschedule.get().getStart_date_realization() == null && !getschedule.get().getStatus().equals(EStatus.DONE)) {
                                         Schedule schedule = getschedule
                                                         .orElseThrow(() -> new ResourceNotFoundException(
                                                                         "Schedule not found"));
