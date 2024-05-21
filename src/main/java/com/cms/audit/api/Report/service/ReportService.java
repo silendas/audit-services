@@ -456,7 +456,7 @@ public class ReportService {
         // String path = pdf.getFilePath();
         // File file = new File(path);
         // InputStream inputStream = new FileInputStream(file);
-        InputStreamResource isr;
+        InputStreamResource isr = null;
         if(pdf == null){
             if (response.isEmpty()) {
                 ByteArrayInputStream file = LHAReport.generateIfNoData();
