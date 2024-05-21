@@ -149,16 +149,14 @@ public class ReportService {
                     }
                 }
             } else if (getUser.getLevel().getCode().equals("C")) {
-                for (int i = 0; i < getUser.getBranchId().size(); i++) {
-                    List<AuditDailyReport> listLHA;
-                    if (start_date != null && end_date != null) {
-                        listLHA = lhaRepository.findAllLHAByUserIdInDateRange(getUser.getId(), start_date, end_date);
-                    } else {
-                        listLHA = lhaRepository.findAllLHAByUserId(getUser.getId());
-                    }
-                    for (int u = 0; u < listLHA.size(); u++) {
-                        response.add(listLHA.get(u));
-                    }
+                List<AuditDailyReport> listLHA;
+                if (start_date != null && end_date != null) {
+                    listLHA = lhaRepository.findAllLHAByUserIdInDateRange(getUser.getId(), start_date, end_date);
+                } else {
+                    listLHA = lhaRepository.findAllLHAByUserId(getUser.getId());
+                }
+                for (int u = 0; u < listLHA.size(); u++) {
+                    response.add(listLHA.get(u));
                 }
             } else if (getUser.getLevel().getCode().equals("A")) {
                 if (start_date != null && end_date != null) {
@@ -168,7 +166,7 @@ public class ReportService {
                 }
             }
         }
-        
+
         if (response.isEmpty()) {
             ByteArrayInputStream pdf = LHAReport.generateIfNoData();
             InputStreamResource isr = new InputStreamResource(pdf);
@@ -457,12 +455,12 @@ public class ReportService {
         // File file = new File(path);
         // InputStream inputStream = new FileInputStream(file);
         InputStreamResource isr = null;
-        if(pdf == null){
+        if (pdf == null) {
             if (response.isEmpty()) {
                 ByteArrayInputStream file = LHAReport.generateIfNoData();
-                isr = new InputStreamResource(file);    
+                isr = new InputStreamResource(file);
             }
-        }else{
+        } else {
             isr = new InputStreamResource(pdf);
         }
 
