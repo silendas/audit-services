@@ -127,7 +127,7 @@ public class SpecificationFIlter<T> {
 
     public Specification<T> idNotShow(Long id) {
         return (root, query, criteriaBuilder) -> id == null ? null
-                : criteriaBuilder.notEqual(root.get("id").get("id"), id);
+                : criteriaBuilder.notEqual(root.get("id"), id);
     }
 
     public Specification<T> dateRange(Date start_date, Date end_date) {
