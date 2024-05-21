@@ -200,7 +200,6 @@ public class ReportService {
                 } else {
                     fulluser_id = "-";
                 }
-
                 boolean foundRegion = false;
                 for (int x = 0; x < listAllReport.size(); x++) {
                     if (regionuser_id.equals(listAllReport.get(x).getArea_name())

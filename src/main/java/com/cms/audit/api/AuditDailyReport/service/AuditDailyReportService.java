@@ -565,48 +565,56 @@ public class AuditDailyReportService {
                 try {
                         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-                        if(dto.getSchedule_id() == null) {
-                                return GlobalResponse.builder().message("Id Jadwal kosong").errorMessage("Id Jadwal harus diisi").status(HttpStatus.BAD_REQUEST).build();
-                        } else if(dto.getLha_detail() == null) {
-                                return GlobalResponse.builder().message("Data LHA kosong").errorMessage("Data LHA harus diisi").status(HttpStatus.BAD_REQUEST).build();
+                        if (dto.getSchedule_id() == null) {
+                                return GlobalResponse.builder().message("Id Jadwal kosong")
+                                                .errorMessage("Id Jadwal harus diisi").status(HttpStatus.BAD_REQUEST)
+                                                .build();
+                        } else if (dto.getLha_detail() == null) {
+                                return GlobalResponse.builder().message("Data LHA kosong")
+                                                .errorMessage("Data LHA harus diisi").status(HttpStatus.BAD_REQUEST)
+                                                .build();
                         } else {
                                 for (int i = 0; i < dto.getLha_detail().size(); i++) {
-                                        if(dto.getLha_detail().get(i).getCase_category_id() == null) {
+                                        if (dto.getLha_detail().get(i).getCase_category_id() == null) {
                                                 return GlobalResponse
                                                                 .builder()
                                                                 .message("Kategori kasus harus diisi")
                                                                 .errorMessage("Kategori kasus harus diisi")
                                                                 .status(HttpStatus.BAD_REQUEST)
                                                                 .build();
-                                        } else if(dto.getLha_detail().get(i).getCase_category_id() == null) {
+                                        } else if (dto.getLha_detail().get(i).getCase_category_id() == null) {
                                                 return GlobalResponse
                                                                 .builder()
                                                                 .message("Sub kategori kasus harus diisi")
                                                                 .errorMessage("Sub kategori kasus harus diisi")
                                                                 .status(HttpStatus.BAD_REQUEST)
                                                                 .build();
-                                        } else if(dto.getLha_detail().get(i).getDescription() == null) {
+                                        } else if (dto.getLha_detail().get(i).getDescription() == null) {
                                                 return GlobalResponse
                                                                 .builder()
                                                                 .message("Deskripsi harus diisi")
                                                                 .errorMessage("Deskripsi harus diisi")
                                                                 .status(HttpStatus.BAD_REQUEST)
                                                                 .build();
-                                        } else if(dto.getLha_detail().get(i).getIs_research() == null) {
+                                        } else if (dto.getLha_detail().get(i).getIs_research() == null) {
                                                 return GlobalResponse
                                                                 .builder()
                                                                 .message("Is Research harus diisi")
                                                                 .errorMessage("Is Research harus diisi")
                                                                 .status(HttpStatus.BAD_REQUEST)
                                                                 .build();
-                                        } else if(dto.getLha_detail().get(i).getPermanent_recommendations() == null || dto.getLha_detail().get(i).getPermanent_recommendations() == "") {
+                                        } else if (dto.getLha_detail().get(i).getPermanent_recommendations() == null
+                                                        || dto.getLha_detail().get(i)
+                                                                        .getPermanent_recommendations() == "") {
                                                 return GlobalResponse
                                                                 .builder()
                                                                 .message("Rekomendasi permanen harus diisi")
                                                                 .errorMessage("Rekomendasi permanen harus diisi")
                                                                 .status(HttpStatus.BAD_REQUEST)
                                                                 .build();
-                                        } else if(dto.getLha_detail().get(i).getTemporary_recommendations() == null || dto.getLha_detail().get(i).getTemporary_recommendations() == "") {
+                                        } else if (dto.getLha_detail().get(i).getTemporary_recommendations() == null
+                                                        || dto.getLha_detail().get(i)
+                                                                        .getTemporary_recommendations() == "") {
                                                 return GlobalResponse
                                                                 .builder()
                                                                 .message("Rekomendasi temporary harus diisi")
@@ -642,7 +650,10 @@ public class AuditDailyReportService {
                                                                 + " tidak ditemukan")
                                                 .status(HttpStatus.BAD_REQUEST).build();
                         }
-                        if( getschedule.get().getStatus().equals(EStatus.PENDING) || getschedule.get().getStatus().equals(EStatus.REQUEST) || getschedule.get().getStatus().equals(EStatus.REJECTED) || getschedule.get().getStatus().equals(EStatus.APPROVE)) {
+                        if (getschedule.get().getStatus().equals(EStatus.PENDING)
+                                        || getschedule.get().getStatus().equals(EStatus.REQUEST)
+                                        || getschedule.get().getStatus().equals(EStatus.REJECTED)
+                                        || getschedule.get().getStatus().equals(EStatus.APPROVE)) {
                                 return GlobalResponse.builder().message("Tidak bisa memperoses jadwal")
                                                 .errorMessage("Tidak bisa memproses jadwal")
                                                 .status(HttpStatus.BAD_REQUEST).build();
@@ -670,12 +681,13 @@ public class AuditDailyReportService {
                                         new Date(),
                                         new Date());
 
-                        if (getschedule.get().getStart_date_realization() == null) {
-                                Schedule schedule = getschedule
-                                                .orElseThrow(() -> new ResourceNotFoundException("Schedule not found"));
-                                schedule.setStart_date_realization(new Date());
-                                schedule.setStatus(EStatus.PROGRESS);
-                                scheduleRepository.save(schedule);
+                        if (getschedule.get().getStart_date_realization() == null && getschedule.get().getStatus().equals(EStatus.DONE)) {
+                                        Schedule schedule = getschedule
+                                                        .orElseThrow(() -> new ResourceNotFoundException(
+                                                                        "Schedule not found"));
+                                        schedule.setStart_date_realization(new Date());
+                                        schedule.setStatus(EStatus.PROGRESS);
+                                        scheduleRepository.save(schedule);
                         }
 
                         AuditDailyReport response1 = auditDailyReportRepository.save(auditDailyReport);
@@ -840,25 +852,25 @@ public class AuditDailyReportService {
                 try {
                         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-                        if(dto.getSchedule_id() == null) {
+                        if (dto.getSchedule_id() == null) {
                                 return GlobalResponse
                                                 .builder()
                                                 .message("tidak ditemukan").errorMessage("Schedule tidak boleh kosong")
                                                 .status(HttpStatus.BAD_REQUEST)
                                                 .build();
-                        } else if(dto.getBranch_id() == null) {
+                        } else if (dto.getBranch_id() == null) {
                                 return GlobalResponse
                                                 .builder()
                                                 .message("tidak ditemukan").errorMessage("Branch tidak boleh kosong")
                                                 .status(HttpStatus.BAD_REQUEST)
                                                 .build();
-                        } else if(dto.getUser_id() == null) {
+                        } else if (dto.getUser_id() == null) {
                                 return GlobalResponse
                                                 .builder()
                                                 .message("tidak ditemukan").errorMessage("User tidak boleh kosong")
                                                 .status(HttpStatus.BAD_REQUEST)
                                                 .build();
-                        } 
+                        }
 
                         Optional<AuditDailyReport> getBefore = auditDailyReportRepository.findById(id);
                         if (!getBefore.isPresent()) {
