@@ -830,7 +830,7 @@ public class ScheduleService {
                                 }
 
                                 List<Schedule> checkDatefExist = repository
-                                                .findScheduleInDateRangeByUserIdNoCategoryForSpecial(
+                                                .findScheduleInDateRangeByUserIdNoCategoryForSpecialAdd(
                                                                 scheduleDTO.getSchedules().get(i).getUser_id(),
                                                                 scheduleDTO.getSchedules().get(i).getStart_date(),
                                                                 scheduleDTO.getSchedules().get(i).getEnd_date());
@@ -1132,6 +1132,7 @@ public class ScheduleService {
                                         List<Schedule> checkDatefExist = repository
                                                         .findScheduleInDateRangeByUserIdNoCategoryForSpecial(
                                                                         dto.getUser_id(),
+                                                                        id,
                                                                         dto.getStart_date(),
                                                                         dto.getEnd_date());
                                         if (!checkDatefExist.isEmpty()) {

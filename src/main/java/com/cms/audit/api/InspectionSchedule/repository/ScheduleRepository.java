@@ -47,8 +47,14 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
                         @Param("start_date") Date start_date,
                         @Param("end_date") Date end_date);
 
-        @Query(value = "SELECT * FROM inspection_schedule u WHERE u.user_id = :userId AND (u.start_date BETWEEN :start_date AND :end_date OR u.end_date BETWEEN :start_date AND :end_date) AND u.status <> 'DONE' AND u.category = 'SPECIAL' AND u.is_delete = 0 ;", nativeQuery = true)
+        @Query(value = "SELECT * FROM inspection_schedule u WHERE u.user_id = :userId AND (u.start_date BETWEEN :start_date AND :end_date OR u.end_date BETWEEN :start_date AND :end_date) AND u.status <> 'DONE' AND u.category = 'SPECIAL' AND u.id <> :schedule_id AND u.is_delete = 0 ;", nativeQuery = true)
         public List<Schedule> findScheduleInDateRangeByUserIdNoCategoryForSpecial(@Param("userId") Long userId,
+                        @Param("schedule_id") Long schdule_id,
+                        @Param("start_date") Date start_date,
+                        @Param("end_date") Date end_date);
+
+        @Query(value = "SELECT * FROM inspection_schedule u WHERE u.user_id = :userId AND (u.start_date BETWEEN :start_date AND :end_date OR u.end_date BETWEEN :start_date AND :end_date) AND u.status <> 'DONE' AND u.category = 'SPECIAL' AND u.is_delete = 0 ;", nativeQuery = true)
+        public List<Schedule> findScheduleInDateRangeByUserIdNoCategoryForSpecialAdd(@Param("userId") Long userId,
                         @Param("start_date") Date start_date,
                         @Param("end_date") Date end_date);
 
