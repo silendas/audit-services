@@ -87,7 +87,8 @@ public class UserService {
 
                 Pageable pageable = PageRequest.of(page, size);
                 Specification<User> spec = Specification.where(new SpecificationFIlter<User>().isNotDeleted())
-                                .and(new SpecificationFIlter<User>().orderByIdAsc());
+                                .and(new SpecificationFIlter<User>().orderByIdAsc())
+                                .and(new SpecificationFIlter<User>().idNotShow(1L));
 
                 if (getUser.getLevel().getCode().equals("A")) {
                         // No additional filter for level A, retrieves all users
