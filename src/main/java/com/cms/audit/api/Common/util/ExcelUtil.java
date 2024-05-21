@@ -17,7 +17,8 @@ import java.io.IOException;
 
 public class ExcelUtil {
     public static String HEADER[] = { "comment_clarification", "auditor", "kasus", "kategori", "kerugian",
-            "batas_evaluasi", "lokasi", "auditee", "atasan auditee", "file", "deskripsi", "prioritas","created_at", "status" };
+            "batas_evaluasi", "lokasi", "auditee", "atasan auditee", "file", "deskripsi", "prioritas", "created_at",
+            "status" };
 
     public static String SHEET_NAME = "Laporan Klarifikasi";
 
@@ -42,18 +43,23 @@ public class ExcelUtil {
                 row1.createCell(1).setCellValue(c.getUser().getFullname());
                 row1.createCell(2).setCellValue(c.getCases().getName());
                 row1.createCell(3).setCellValue(c.getCaseCategory().getName());
-                if(c.getNominal_loss() != null && c.getNominal_loss() != 0){
+                if (c.getNominal_loss() != null && c.getNominal_loss() != 0) {
                     row1.createCell(4).setCellValue(c.getNominal_loss());
-                }else{
+                } else {
                     row1.createCell(4).setCellValue(0L);
                 }
-                row1.createCell(5).setCellValue(convertDateToRoman.convertDateToString(c.getEvaluation_limitation()));
+                if (c.getEvaluation() != null) {
+                    row1.createCell(5)
+                            .setCellValue(convertDateToRoman.convertDateToString(c.getEvaluation_limitation()));
+                } else {
+                    row1.createCell(5).setCellValue("");
+                }
                 row1.createCell(6).setCellValue(c.getLocation());
                 row1.createCell(7).setCellValue(c.getAuditee());
                 row1.createCell(8).setCellValue(c.getAuditee_leader());
                 row1.createCell(9).setCellValue(c.getFilename());
                 row1.createCell(10).setCellValue(c.getDescription());
-                if(c.getPriority() != null){
+                if (c.getPriority() != null) {
                     row1.createCell(11).setCellValue(c.getPriority().name());
                 } else {
                     row1.createCell(11).setCellValue("");
