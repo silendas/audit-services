@@ -1050,6 +1050,7 @@ public class ScheduleService {
                 }
         }
 
+        @Transactional(value = TxType.REQUIRES_NEW)
         public GlobalResponse editSchedule(EditScheduleDTO dto, Long id, ECategory category, String username) {
                 try {
                         Schedule getSchedule = repository.findById(id)
@@ -1089,8 +1090,11 @@ public class ScheduleService {
                                                 .build();
                         }
 
-                        if (convertDateToRoman.convertDateToString(getSchedule.getStart_date()) != convertDateToRoman.convertDateToString(dto.getStart_date())
-                                        || convertDateToRoman.convertDateToString(getSchedule.getEnd_date()) != convertDateToRoman.convertDateToString(dto.getEnd_date())) {
+                        if (convertDateToRoman.convertDateToString(getSchedule.getStart_date()) != convertDateToRoman
+                                        .convertDateToString(dto.getStart_date())
+                                        || convertDateToRoman.convertDateToString(
+                                                        getSchedule.getEnd_date()) != convertDateToRoman
+                                                                        .convertDateToString(dto.getEnd_date())) {
                                 if (getSchedule.getCategory() == ECategory.REGULAR) {
                                         List<Schedule> checkDatefExist = repository
                                                         .findScheduleInDateRangeByUserIdNoCategoryEdit(
@@ -1144,11 +1148,11 @@ public class ScheduleService {
                                                                 .status(HttpStatus.BAD_REQUEST)
                                                                 .build();
                                         }
-                                        repository.editStatusPendingScheduleByDate(
-                                                        dto.getUser_id(),
-                                                        dto.getUser_id(),
-                                                        dto.getStart_date(),
-                                                        dto.getEnd_date());
+                                        // repository.editStatusPendingScheduleByDate(
+                                        //                 dto.getUser_id(),
+                                        //                 dto.getUser_id(),
+                                        //                 dto.getStart_date(),
+                                        //                 dto.getEnd_date());
                                 }
                         }
 
