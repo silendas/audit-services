@@ -137,6 +137,7 @@ public class ScheduleService {
                                         .where(new SpecificationFIlter<Schedule>().nameLike(name))
                                         .and(new SpecificationFIlter<Schedule>().branchIdEqual(branch_id))
                                         .and(new SpecificationFIlter<Schedule>().getByCategory(category))
+                                        .and(new SpecificationFIlter<Schedule>().idNotShow(1L))
                                         .and(new SpecificationFIlter<Schedule>().isNotDeleted());
                         if (start_date != null && end_date != null) {
                                 spec = spec.and(new SpecificationFIlter<Schedule>().dateBetween(start_date, end_date));

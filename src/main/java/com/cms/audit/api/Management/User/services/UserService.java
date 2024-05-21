@@ -512,8 +512,8 @@ public class UserService {
                                         .build();
 
                         if (userDTO.getLevel_id() == 1 || userDTO.getLevel_id() == 4) {
-                                if (userDTO.getMain_id() == null) {
-                                        return GlobalResponse.builder().message("Main office harus diis")
+                                if (userDTO.getMain_id() == null && userDTO.getMain_id() == 0) {
+                                        return GlobalResponse.builder().message("Main office harus diisi")
                                                         .errorMessage("Main id tidak boleh kosong")
                                                         .status(HttpStatus.BAD_REQUEST).build();
                                 } else if (userDTO.getBranch_id() != null || userDTO.getRegion_id() != null
@@ -732,8 +732,8 @@ public class UserService {
                                         .build();
 
                         if (userDTO.getLevel_id() == 1 || userDTO.getLevel_id() == 4) {
-                                if (userDTO.getMain_id() == null) {
-                                        return GlobalResponse.builder().message("Main office harus diis")
+                                if (userDTO.getMain_id() == null && userDTO.getMain_id() == 0) {
+                                        return GlobalResponse.builder().message("Main office harus diisi")
                                                         .errorMessage("Main id tidak boleh kosong")
                                                         .status(HttpStatus.BAD_REQUEST).build();
                                 } else if (userDTO.getBranch_id() != null || userDTO.getRegion_id() != null

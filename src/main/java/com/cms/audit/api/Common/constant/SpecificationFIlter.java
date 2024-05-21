@@ -124,6 +124,12 @@ public class SpecificationFIlter<T> {
                 : criteriaBuilder.equal(root.get("schedule").get("id"), shceduleId);
     }
 
+
+    public Specification<T> idNotShow(Long id) {
+        return (root, query, criteriaBuilder) -> id == null ? null
+                : criteriaBuilder.notEqual(root.get("id").get("id"), id);
+    }
+
     public Specification<T> dateRange(Date start_date, Date end_date) {
         return (root, query, criteriaBuilder) -> {
             return start_date == null && end_date == null ? null
