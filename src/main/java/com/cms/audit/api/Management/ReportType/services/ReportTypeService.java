@@ -135,11 +135,19 @@ public class ReportTypeService {
             List<ReportType> check = reportTypeRepository.findAllReportType();
 
             for (ReportType reportType : check) {
-                if (reportType.getName().equals(dto.getName()) || reportType.getCode().equals(dto.getCode())) {
+                if (reportType.getName().equals(dto.getName())) {
                     return GlobalResponse
                             .builder()
-                            .message("Data sudah ada")
-                            .errorMessage("Data sudah ada")
+                            .errorMessage("Nama harus unik")
+                            .message("Nama harus unik")
+                            .status(HttpStatus.BAD_REQUEST)
+                            .build();
+                }
+                if(reportType.getCode().equals(dto.getCode())) {
+                    return GlobalResponse
+                            .builder()
+                            .errorMessage("Code harus unik")
+                            .message("Code harus unik")
                             .status(HttpStatus.BAD_REQUEST)
                             .build();
                 }
@@ -193,11 +201,19 @@ public class ReportTypeService {
                 List<ReportType> check = reportTypeRepository.findAllReportType();
 
                 for (ReportType reportType : check) {
-                    if (reportType.getName().equals(dto.getName()) || reportType.getCode().equals(dto.getCode())) {
+                    if (reportType.getName().equals(dto.getName())) {
                         return GlobalResponse
                                 .builder()
-                                .errorMessage("Data sudah ada")
-                                .message("Data sudah ada")
+                                .errorMessage("Nama harus unik")
+                                .message("Nama harus unik")
+                                .status(HttpStatus.BAD_REQUEST)
+                                .build();
+                    }
+                    if(reportType.getCode().equals(dto.getCode())) {
+                        return GlobalResponse
+                                .builder()
+                                .errorMessage("Code harus unik")
+                                .message("Code harus unik")
                                 .status(HttpStatus.BAD_REQUEST)
                                 .build();
                     }

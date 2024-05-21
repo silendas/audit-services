@@ -837,15 +837,19 @@ public class ScheduleService {
                                 if (!checkDatefExist.isEmpty()) {
                                         return GlobalResponse
                                                         .builder()
-                                                        .message("Tanggal sudah tersedia")
-                                                        .errorMessage("Jadwal dengan tanggal mulai :"
-                                                                        + convertDateToRoman.convertDateHehe(scheduleDTO
-                                                                                        .getSchedules().get(i)
-                                                                                        .getStart_date())
+                                                        .message("Jadwal dengan tanggal mulai :"
+                                                                        + convertDateToRoman.convertDateHehe(
+                                                                                        scheduleDTO.getSchedules().get(i).getStart_date())
                                                                         + " and tanggal berakhir :"
-                                                                        + convertDateToRoman.convertDateHehe(scheduleDTO
-                                                                                        .getSchedules().get(i)
-                                                                                        .getEnd_date())
+                                                                        + convertDateToRoman.convertDateHehe(
+                                                                                        scheduleDTO.getSchedules().get(i).getEnd_date())
+                                                                        + ", sudah terbuat atau bersilangan dengan jadwal sebelumnya")
+                                                        .errorMessage("Jadwal dengan tanggal mulai :"
+                                                                        + convertDateToRoman.convertDateHehe(
+                                                                                        scheduleDTO.getSchedules().get(i).getStart_date())
+                                                                        + " and tanggal berakhir :"
+                                                                        + convertDateToRoman.convertDateHehe(
+                                                                                        scheduleDTO.getSchedules().get(i).getEnd_date())
                                                                         + ", sudah terbuat atau bersilangan dengan jadwal sebelumnya")
                                                         .status(HttpStatus.BAD_REQUEST)
                                                         .build();
@@ -1095,7 +1099,7 @@ public class ScheduleService {
                                         || convertDateToRoman.convertDateToString(
                                                         getSchedule.getEnd_date()) != convertDateToRoman
                                                                         .convertDateToString(dto.getEnd_date())) {
-                                if (getSchedule.getCategory() == ECategory.REGULAR) {
+                                if (category.equals(ECategory.REGULAR)) {
                                         List<Schedule> checkDatefExist = repository
                                                         .findScheduleInDateRangeByUserIdNoCategoryEdit(
                                                                         dto.getUser_id(),
@@ -1133,26 +1137,28 @@ public class ScheduleService {
                                         if (!checkDatefExist.isEmpty()) {
                                                 return GlobalResponse
                                                                 .builder()
-                                                                .message("Tanggal sudah tersedia")
-                                                                .errorMessage("Jadwal dengan tanggal mulai :"
+                                                                .message("Jadwal dengan tanggal mulai :"
                                                                                 + convertDateToRoman.convertDateHehe(
-                                                                                                dto
-
-                                                                                                                .getStart_date())
+                                                                                                dto.getStart_date())
                                                                                 + " and tanggal berakhir :"
                                                                                 + convertDateToRoman.convertDateHehe(
-                                                                                                dto
-
-                                                                                                                .getEnd_date())
+                                                                                                dto.getEnd_date())
+                                                                                + ", sudah terbuat atau bersilangan dengan jadwal sebelumnya")
+                                                                .errorMessage("Jadwal dengan tanggal mulai :"
+                                                                                + convertDateToRoman.convertDateHehe(
+                                                                                                dto.getStart_date())
+                                                                                + " and tanggal berakhir :"
+                                                                                + convertDateToRoman.convertDateHehe(
+                                                                                                dto.getEnd_date())
                                                                                 + ", sudah terbuat atau bersilangan dengan jadwal sebelumnya")
                                                                 .status(HttpStatus.BAD_REQUEST)
                                                                 .build();
                                         }
-                                        // repository.editStatusPendingScheduleByDate(
-                                        //                 dto.getUser_id(),
-                                        //                 dto.getUser_id(),
-                                        //                 dto.getStart_date(),
-                                        //                 dto.getEnd_date());
+                                        repository.editStatusPendingScheduleByDate(
+                                                        dto.getUser_id(),
+                                                        dto.getUser_id(),
+                                                        dto.getStart_date(),
+                                                        dto.getEnd_date());
                                 }
                         }
 

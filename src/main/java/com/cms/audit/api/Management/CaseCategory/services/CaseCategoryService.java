@@ -230,8 +230,8 @@ public class CaseCategoryService {
                 if (caseCategory.getName().equals(caseCategoryDTO.getName())) {
                     return GlobalResponse
                             .builder()
-                            .errorMessage("Data sudah ada")
-                            .message("Data sudah ada")
+                            .errorMessage("Name harus unik")
+                            .message("Name harus unik")
                             .status(HttpStatus.BAD_REQUEST)
                             .build();
                 }
@@ -273,6 +273,18 @@ public class CaseCategoryService {
             Optional<Case> caseId = caseRepository.findById(caseCategoryDTO.getCase_id());
             if (!caseId.isPresent()) {
                 return GlobalResponse.builder().message("Data case not found").status(HttpStatus.BAD_REQUEST).build();
+            }
+
+            List<CaseCategory> check = caseCategoryRepository.findAll();
+            for (CaseCategory caseCategory : check) {
+                if (caseCategory.getName().equals(caseCategoryDTO.getName())) {
+                    return GlobalResponse
+                            .builder()
+                            .errorMessage("Name harus unik")
+                            .message("Name harus unik")
+                            .status(HttpStatus.BAD_REQUEST)
+                            .build();
+                }
             }
 
             CaseCategory caseCategoryEntity = new CaseCategory(
