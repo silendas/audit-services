@@ -1089,8 +1089,8 @@ public class ScheduleService {
                                                 .build();
                         }
 
-                        if (getSchedule.getStart_date() != dto.getStart_date()
-                                        || getSchedule.getEnd_date() != dto.getEnd_date()) {
+                        if (convertDateToRoman.convertDateToString(getSchedule.getStart_date()) != convertDateToRoman.convertDateToString(dto.getStart_date())
+                                        || convertDateToRoman.convertDateToString(getSchedule.getEnd_date()) != convertDateToRoman.convertDateToString(dto.getEnd_date())) {
                                 if (getSchedule.getCategory() == ECategory.REGULAR) {
                                         List<Schedule> checkDatefExist = repository
                                                         .findScheduleInDateRangeByUserIdNoCategoryEdit(
@@ -1144,6 +1144,11 @@ public class ScheduleService {
                                                                 .status(HttpStatus.BAD_REQUEST)
                                                                 .build();
                                         }
+                                        repository.editStatusPendingScheduleByDate(
+                                                        dto.getUser_id(),
+                                                        dto.getUser_id(),
+                                                        dto.getStart_date(),
+                                                        dto.getEnd_date());
                                 }
                         }
 
@@ -1167,12 +1172,11 @@ public class ScheduleService {
                         schedule.setUpdatedBy(getUser.getId());
                         schedule.setUpdated_at(new Date());
 
-
                         repository.editStatusPendingScheduleByDate(
-                                                dto.getUser_id(),
-                                                getUser.getId(), dto.getStart_date(),
-                                                dto.getEnd_date());
-                                                
+                                        dto.getUser_id(),
+                                        getUser.getId(), dto.getStart_date(),
+                                        dto.getEnd_date());
+
                         Schedule response = repository.save(schedule);
 
                         logService.edit(response.getCreatedBy(), response.getDescription(), response.getId(),
