@@ -94,7 +94,7 @@ public class UserService {
                 } else if (getUser.getLevel().getCode().equals("B")) {
                         if (getUser.getRegionId() != null && !getUser.getRegionId().isEmpty()) {
                                 Specification<Branch> specBranch = Specification.where(new SpecificationFIlter<Branch>().isNotDeleted())
-                                .and(new SpecificationFIlter<Branch>().getByRegionIds(getUser.getRegionId()));
+                                .and(new SpecificationFIlter<Branch>().getByRegionIdsUser(getUser.getRegionId()));
                                 List<Branch> getBranch = branchRepository.findAll(specBranch);
                                 List<Long> branchIds = new ArrayList<>();
                                 for (int i = 0; i < getBranch.size(); i++) {

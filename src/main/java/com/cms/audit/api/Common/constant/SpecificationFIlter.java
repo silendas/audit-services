@@ -167,6 +167,19 @@ public class SpecificationFIlter<T> {
         };
     }
 
+    public Specification<T> getByRegionIdsUser(List<Long> regionIds) {
+        return (Root<T> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) -> {
+            Join<T, Area> areaJoin = root.join("area");
+            Join<Area, Region> regionJoin = areaJoin.join("region");
+
+            // Creating predicate for region IDs
+            Predicate predicate = regionJoin.get("id").in(regionIds);
+
+            // Returning the predicate
+            return predicate;
+        };
+    }
+
     public Specification<T> getByStatus(List<EStatus> statuses) {
         return (Root<T> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) -> {
             if (statuses != null && !statuses.isEmpty()) {
