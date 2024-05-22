@@ -397,6 +397,8 @@ public class ClarificationService {
 
         public GlobalResponse inputClarification(InputClarificationDTO dto) {
                 try {
+                        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
                         if(dto.getAuditee() == null) {
                                 return GlobalResponse
                                                 .builder()
@@ -461,6 +463,15 @@ public class ClarificationService {
                                                 .message("Clarificaiton tidak ditemukan")
                                                 .errorMessage("Clarification dengan id : " + dto.getClarification_id()
                                                                 + " tidak ditemukan")
+                                                .status(HttpStatus.BAD_REQUEST)
+                                                .build();
+                        }
+
+                        if(getClarification.get().getUser().getId() != user.getId()) {
+                                return GlobalResponse
+                                                .builder()
+                                                .message("Tidak bisa melakukan klarifikasi milik orang lain")
+                                                .errorMessage("Tidak bisa melakukan klarifikasi milik orang lain")
                                                 .status(HttpStatus.BAD_REQUEST)
                                                 .build();
                         }
@@ -548,7 +559,9 @@ public class ClarificationService {
         }
 
         public GlobalResponse identificationClarification(IdentificationDTO dto) {
-                try {
+                try {                        
+                        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
                         if(dto.getClarification_id() == null) {
                                 return GlobalResponse
                                                 .builder()
@@ -592,6 +605,15 @@ public class ClarificationService {
                                                 .message("Clarification tidak dapat ditemukan")
                                                 .errorMessage("Clarificaion with id :" + dto.getClarification_id()
                                                                 + " Not found")
+                                                .status(HttpStatus.BAD_REQUEST)
+                                                .build();
+                        }
+
+                        if(getBefore.get().getUser().getId() != user.getId()) {
+                                return GlobalResponse
+                                                .builder()
+                                                .message("Tidak bisa melakukan klarifikasi milik orang lain")
+                                                .errorMessage("Tidak bisa melakukan klarifikasi milik orang lain")
                                                 .status(HttpStatus.BAD_REQUEST)
                                                 .build();
                         }

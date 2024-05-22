@@ -9,7 +9,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -46,8 +45,8 @@ public class AuditDailyReportController {
                 Long branchId = branch_id.orElse(null);
                 Long scheduleId = schedule_id.orElse(null);
                 String fullname = name.orElse(null);
-                Date startDate = start_date.orElse(null);
-                Date endDate = end_date.orElse(null);
+                Date startDate = start_date.orElse(new Date());
+                Date endDate = end_date.orElse(new Date());
                 if (startDate != null) {
                         startDate = convertDateToRoman.setTimeToZero(startDate);
                 }
