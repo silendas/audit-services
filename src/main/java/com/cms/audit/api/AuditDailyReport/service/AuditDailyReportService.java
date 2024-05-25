@@ -281,11 +281,6 @@ public class AuditDailyReportService {
                                 } else {
                                         builder.setStatus_parsing(0);
                                 }
-                                if (getDetail.get(i).getIs_revision() != null) {
-                                        builder.setIs_revision(getDetail.get(i).getIs_revision());
-                                } else {
-                                        builder.setIs_revision(0);
-                                }
                                 details.add(builder);
                         }
 
@@ -712,7 +707,6 @@ public class AuditDailyReportService {
                                                 dto.getLha_detail().get(i).getTemporary_recommendations(),
                                                 dto.getLha_detail().get(i).getPermanent_recommendations(),
                                                 dto.getLha_detail().get(i).getIs_research(),
-                                                0,
                                                 0,
                                                 0,
                                                 0,

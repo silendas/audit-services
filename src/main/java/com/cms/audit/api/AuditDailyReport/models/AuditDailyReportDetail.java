@@ -67,9 +67,6 @@ public class AuditDailyReportDetail {
     @Column(name = "status_parsing")
     private Integer status_parsing;
 
-    @Column(name = "is_revision")
-    private Integer is_revision;
-
     @JsonIgnore
     @Column(name = "is_delete", length = 2, nullable = true)
     private Integer is_delete;

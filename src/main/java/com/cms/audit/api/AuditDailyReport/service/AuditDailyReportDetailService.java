@@ -139,11 +139,6 @@ public class AuditDailyReportDetailService {
                 } else {
                     builder.setStatus_parsing(0);
                 }
-                if (response.getContent().get(i).getIs_revision() != null) {
-                    builder.setIs_revision(response.getContent().get(i).getIs_revision());
-                } else {
-                    builder.setIs_revision(0);
-                }
                 details.add(builder);
             }
             if (response.isEmpty()) {
@@ -242,11 +237,6 @@ public class AuditDailyReportDetailService {
                 builder.put("status_parsing", response.get().getStatus_parsing());
             } else {
                 builder.put("status_parsing", 0);
-            }
-            if (response.get().getIs_revision() != null) {
-                builder.put("is_revision", response.get().getIs_revision());
-            } else {
-                builder.put("is_revision", 0);
             }
             return GlobalResponse
                     .builder()
@@ -431,7 +421,6 @@ public class AuditDailyReportDetailService {
                     0,
                     0,
                     0,
-                    0,
                     user.getId(),
                     user.getId(),
                     new Date(),
@@ -584,7 +573,6 @@ public class AuditDailyReportDetailService {
 
         AuditDailyReportDetail dto = response.get();
         dto.setStatus_flow(1);
-        dto.setIs_revision(1);
         dto.setUpdated_by(user.getId());
         dto.setUpdate_at(new Date());
         repository.save(dto);
@@ -639,9 +627,9 @@ public class AuditDailyReportDetailService {
             }
 
             if (user.getLevel().getCode().equals("C")) {
-                if (getBefore.get().getIs_revision() == 1) {
-                    return GlobalResponse.builder().message("Karena sudah direvisi oleh area maka tidak dapat diedit")
-                            .errorMessage("Tidak bisa mengedit karena sudah direvisi").status(HttpStatus.BAD_REQUEST)
+                if (getBefore.get().getStatus_flow() == 1) {
+                    return GlobalResponse.builder().message("Karena sudah dikirim oleh area maka tidak dapat diedit")
+                            .errorMessage("Tidak bisa mengedit karena sudah dikirim ke pusat").status(HttpStatus.BAD_REQUEST)
                             .build();
                 }
             }
@@ -671,7 +659,6 @@ public class AuditDailyReportDetailService {
                     dto.getIs_research(),
                     dto.getStatus_flow(),
                     dto.getStatus_parsing(),
-                    dto.getIs_revision(),
                     0,
                     getBefore.get().getCreated_by(),
                     user.getId(),

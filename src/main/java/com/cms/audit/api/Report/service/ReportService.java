@@ -178,6 +178,7 @@ public class ReportService {
                     .contentType(MediaType.parseMediaType("application/pdf")).body(isr);
             return responses;
         }
+        
         ByteArrayInputStream pdf = null;
         if (regionId != null) {
             for (int i = 0; i < response.size(); i++) {

@@ -167,7 +167,7 @@ public class RevisionService {
     public GlobalResponse insertNewRevision(RevisionDTO dto) {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        if(dto.getAudit_daily_report_detail_id() == null){
+        if (dto.getAudit_daily_report_detail_id() == null) {
             return GlobalResponse.builder().errorMessage("LHA detail id tidak ditemukan")
                     .message("LHA detail id not found")
                     .status(HttpStatus.BAD_REQUEST).build();
@@ -181,10 +181,9 @@ public class RevisionService {
                     .status(HttpStatus.BAD_REQUEST).build();
         } else if (dto.getTemporary_recommendations() == null) {
             return GlobalResponse.builder().errorMessage("Temporary Recommendations tidak ditemukan")
-                    .message("Temporary Recommendations not found") 
+                    .message("Temporary Recommendations not found")
                     .status(HttpStatus.BAD_REQUEST).build();
         }
-            
 
         Optional<AuditDailyReportDetail> detail = auditDailyReportDetailRepository
                 .findById(dto.getAudit_daily_report_detail_id());
@@ -194,19 +193,19 @@ public class RevisionService {
                     .status(HttpStatus.BAD_REQUEST).build();
         }
 
-        if (user.getLevel().getCode().equals("C") && detail.get().getIs_revision() == 1) {
+        if (user.getLevel().getCode().equals("C") && detail.get().getStatus_flow() == 1) {
             return GlobalResponse.builder()
                     .message(
-                            "Karena sudah direvisi oleh audit area maka tidak dapat direvisi lagi oleh area")
-                    .errorMessage("Tidak bisa merevisi karena sudah direvisi area")
+                            "Karena sudah dikirim oleh pusat atau leader maka tidak dapat direvisi lagi oleh wilayah")
+                    .errorMessage("Tidak bisa merevisi karena sudah dikirim ke leader atau pusat")
                     .status(HttpStatus.BAD_REQUEST).build();
         }
 
-        if (user.getLevel().getCode().equals("B") && detail.get().getIs_revision() == 2) {
+        if (user.getLevel().getCode().equals("B") && detail.get().getStatus_flow() == 1) {
             return GlobalResponse.builder()
                     .message(
-                            "Karena sudah direvisi oleh pusat atau leader maka tidak dapat direvisi lagi oleh area")
-                    .errorMessage("Tidak bisa merevisi karena sudah direvisi leader atau pusat")
+                            "Karena sudah dikirim oleh pusat atau leader maka tidak dapat direvisi lagi oleh area")
+                    .errorMessage("Tidak bisa merevisi karena sudah dikirim ke leader atau pusat")
                     .status(HttpStatus.BAD_REQUEST).build();
 
         }
@@ -225,17 +224,6 @@ public class RevisionService {
         } else {
             if (user.getLevel().getCode().equals("B") || user.getLevel().getCode().equals("A")) {
                 auditDailyReportDetail.setStatus_flow(1);
-            }
-        }
-
-        if (user.getLevel().getCode().equals("A")) {
-            if (detail.get().getIs_revision() == null || detail.get().getIs_revision() == 0
-                    || detail.get().getIs_revision() == 1) {
-                auditDailyReportDetail.setIs_revision(2);
-            }
-        } else if (user.getLevel().getCode().equals("B")) {
-            if (detail.get().getIs_revision() == null || detail.get().getIs_revision() == 0) {
-                auditDailyReportDetail.setIs_revision(1);
             }
         }
 
