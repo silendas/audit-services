@@ -448,22 +448,12 @@ public class ReportService {
                     listAllReport.add(reportDto);
                 }
             }
-            if (listAllReport.size() > 0) {
                 pdf = LHAReport.generateAllLHAPDF(listAllReport);
-            }
         }
         // String path = pdf.getFilePath();
         // File file = new File(path);
         // InputStream inputStream = new FileInputStream(file);
-        InputStreamResource isr = null;
-        if (pdf == null) {
-            if (response.isEmpty()) {
-                ByteArrayInputStream file = LHAReport.generateIfNoData();
-                isr = new InputStreamResource(file);
-            }
-        } else {
-            isr = new InputStreamResource(pdf);
-        }
+        InputStreamResource isr = new InputStreamResource(pdf);
 
         // HttpHeaders httpHeaders = new HttpHeaders();
 
