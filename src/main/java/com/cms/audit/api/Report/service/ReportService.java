@@ -132,7 +132,7 @@ public class ReportService {
             List<Long> regionList = new ArrayList<>();
             regionList.add(regionId);
             spec = spec.and(new SpecificationFIlter<AuditDailyReport>().getByRegionIds(regionList));
-        }else if (getUser.getLevel().getCode().equals("C")) {
+        } else if (getUser.getLevel().getCode().equals("C")) {
             spec = spec.and(new SpecificationFIlter<AuditDailyReport>().userId(getUser.getId()));
         } else if (getUser.getLevel().getCode().equals("B")) {
             spec = spec.and(new SpecificationFIlter<AuditDailyReport>()
@@ -154,7 +154,12 @@ public class ReportService {
         ByteArrayInputStream pdf = null;
         if (regionId != null) {
             for (int i = 0; i < response.size(); i++) {
-                List<AuditDailyReportDetail> detail = lhaDetailRepository.findByLHAIdForLeader(response.get(i).getId());
+                List<AuditDailyReportDetail> detail = new ArrayList<>();
+                if (getUser.getLevel().getCode().equals("A")) {
+                    detail = lhaDetailRepository.findByLHAIdForLeader(response.get(i).getId());
+                } else {
+                    detail = lhaDetailRepository.findByLHAId(response.get(i).getId());
+                }
                 if (detail.isEmpty()) {
                     continue;
                 }
@@ -288,7 +293,12 @@ public class ReportService {
             pdf = LHAReport.generateAllLHAPDF(listAllReport);
         } else {
             for (int i = 0; i < response.size(); i++) {
-                List<AuditDailyReportDetail> detail = lhaDetailRepository.findByLHAIdForLeader(response.get(i).getId());
+                List<AuditDailyReportDetail> detail = new ArrayList<>();
+                if (getUser.getLevel().getCode().equals("A")) {
+                    detail = lhaDetailRepository.findByLHAIdForLeader(response.get(i).getId());
+                } else {
+                    detail = lhaDetailRepository.findByLHAId(response.get(i).getId());
+                }
                 if (detail.isEmpty()) {
                     continue;
                 }
