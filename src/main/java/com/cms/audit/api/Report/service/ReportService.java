@@ -3,6 +3,7 @@ package com.cms.audit.api.Report.service;
 import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -120,53 +121,24 @@ public class ReportService {
             Date end_date) throws FileNotFoundException, MalformedURLException {
         User getUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        List<AuditDailyReport> response = new ArrayList<>();
         List<LhaReportDTO> listAllReport = new ArrayList<>();
-
-        if (user_id != null && regionId != null && start_date != null && end_date != null) {
-            response = lhaRepository.findLHAByAll(regionId, user_id, start_date, end_date);
-        } else if (regionId != null && start_date != null && end_date != null) {
-            response = lhaRepository.findLHAByRegionInDateRange(regionId, start_date, end_date);
-        } else if (user_id != null && start_date != null && end_date != null) {
-            response = lhaRepository.findAllLHAByUserIdInDateRange(user_id, start_date, end_date);
-        } else if (user_id != null) {
-            response = lhaRepository.findAllLHAByUserId(user_id);
-        } else if (regionId != null) {
-            response = lhaRepository.findLHAByRegion(regionId);
-        } else {
-            if (getUser.getLevel().getCode().equals("B")) {
-                for (int i = 0; i < getUser.getRegionId().size(); i++) {
-                    List<AuditDailyReport> listLHA;
-                    if (start_date != null && end_date != null) {
-                        listLHA = lhaRepository.findLHAInDateRangeAndRegion(getUser.getRegionId().get(i), start_date,
-                                end_date);
-                    } else {
-                        listLHA = lhaRepository
-                                .findLHAByRegion(getUser.getRegionId().get(i));
-                    }
-                    for (int u = 0; u < listLHA.size(); u++) {
-                        response.add(listLHA.get(u));
-                    }
-                }
-            } else if (getUser.getLevel().getCode().equals("C")) {
-                List<AuditDailyReport> listLHA;
-                if (start_date != null && end_date != null) {
-                    listLHA = lhaRepository.findAllLHAByUserIdInDateRange(getUser.getId(), start_date, end_date);
-                } else {
-                    listLHA = lhaRepository.findAllLHAByUserId(getUser.getId());
-                }
-                for (int u = 0; u < listLHA.size(); u++) {
-                    response.add(listLHA.get(u));
-                }
-            } else if (getUser.getLevel().getCode().equals("A")) {
-                if (start_date != null && end_date != null) {
-                    response = lhaRepository.findLHAInDateRange(start_date, end_date);
-                } else {
-                    response = lhaRepository.findAll();
-                }
-            }
+        Specification<AuditDailyReport> spec = Specification
+                .where(new SpecificationFIlter<AuditDailyReport>().userId(user_id))
+                .and(new SpecificationFIlter<AuditDailyReport>().dateRange(start_date,
+                        end_date))
+                .and(new SpecificationFIlter<AuditDailyReport>().isNotDeleted())
+                .and(new SpecificationFIlter<AuditDailyReport>().orderByIdAsc());
+        if (regionId != null) {
+            List<Long> regionList = new ArrayList<>();
+            regionList.add(regionId);
+            spec = spec.and(new SpecificationFIlter<AuditDailyReport>().getByRegionIds(regionList));
+        }else if (getUser.getLevel().getCode().equals("C")) {
+            spec = spec.and(new SpecificationFIlter<AuditDailyReport>().userId(getUser.getId()));
+        } else if (getUser.getLevel().getCode().equals("B")) {
+            spec = spec.and(new SpecificationFIlter<AuditDailyReport>()
+                    .getByRegionIds(getUser.getRegionId()));
         }
-
+        List<AuditDailyReport> response = lhaRepository.findAll(spec);
         if (response.isEmpty()) {
             ByteArrayInputStream pdf = LHAReport.generateIfNoData();
             InputStreamResource isr = new InputStreamResource(pdf);
@@ -178,7 +150,7 @@ public class ReportService {
                     .contentType(MediaType.parseMediaType("application/pdf")).body(isr);
             return responses;
         }
-        
+
         ByteArrayInputStream pdf = null;
         if (regionId != null) {
             for (int i = 0; i < response.size(); i++) {
@@ -322,13 +294,13 @@ public class ReportService {
                 }
                 String regionuser_id = response.get(i).getBranch().getArea().getRegion().getName();
                 String datereport;
-                if (response.get(i) != null) {
+                if (response.get(i).getCreated_at() != null) {
                     datereport = convertDateToRoman.convertDateHehe(response.get(i).getCreated_at());
                 } else {
                     datereport = "-";
                 }
                 String fulluser_id;
-                if (getUser.getFullname() != null) {
+                if (response.get(i).getUser().getFullname() != null) {
                     fulluser_id = response.get(i).getUser().getFullname();
                 } else {
                     fulluser_id = "-";
@@ -448,14 +420,10 @@ public class ReportService {
                     listAllReport.add(reportDto);
                 }
             }
-                pdf = LHAReport.generateAllLHAPDF(listAllReport);
+            pdf = LHAReport.generateAllLHAPDF(listAllReport);
         }
-        // String path = pdf.getFilePath();
-        // File file = new File(path);
-        // InputStream inputStream = new FileInputStream(file);
-        InputStreamResource isr = new InputStreamResource(pdf);
 
-        // HttpHeaders httpHeaders = new HttpHeaders();
+        InputStreamResource isr = new InputStreamResource(pdf);
 
         String filename;
         if (start_date != null && end_date != null) {

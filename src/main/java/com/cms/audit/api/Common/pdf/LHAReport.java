@@ -225,7 +225,7 @@ public class LHAReport {
 
         public static ByteArrayInputStream generateAllLHAPDF(List<LhaReportDTO> dto)
                         throws FileNotFoundException, MalformedURLException {
-                if (dto.size() > 0) {
+                if (!dto.isEmpty()) {
                         ByteArrayOutputStream baos = new ByteArrayOutputStream();
                         PdfWriter pdfWriter = new PdfWriter(baos);
                         PdfDocument pdfDocument = new PdfDocument(pdfWriter);

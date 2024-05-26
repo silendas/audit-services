@@ -19,7 +19,6 @@ public interface AuditDailyReportDetailRepository extends JpaRepository<AuditDai
 
     @Query(value = "SELECT * FROM audit_daily_report_detail u WHERE u.audit_daily_report_id = :id AND u.status_parsing <> 1 AND (u.status_flow = 1 OR u.status_flow = 2) AND u.is_delete <> 1  ORDER BY u.id ASC", nativeQuery = true)
     List<AuditDailyReportDetail> findByLHAIdForLeader(@Param("id") Long id);
-
     
     @Query(value = "SELECT * FROM audit_daily_report_detail u WHERE u.audit_daily_report_id = :id AND (u.status_flow = 1 OR u.status_flow = 2) AND u.is_delete <> 1 ORDER BY u.id DESC", nativeQuery = true)
     List<AuditDailyReportDetail> findByLHAIdLeader(@Param("id") Long id);

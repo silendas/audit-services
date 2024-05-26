@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -12,7 +13,7 @@ import org.springframework.stereotype.Repository;
 import com.cms.audit.api.AuditDailyReport.models.AuditDailyReport;
 
 @Repository
-public interface LhaReportRepository extends JpaRepository<AuditDailyReport, Long>{
+public interface LhaReportRepository extends JpaRepository<AuditDailyReport, Long>, JpaSpecificationExecutor<AuditDailyReport>{
     @Query(value = "SELECT u.* FROM audit_daily_report u INNER JOIN branch_office bo ON u.branch_id=bo.id INNER JOIN area_office ao ON bo.area_id=ao.id INNER JOIN region_office ro ON ao.region_id=ro.id WHERE ro.id = :regionId AND u.is_delete <> 1  ORDER BY u.id DESC", nativeQuery = true)
     List<AuditDailyReport> findByRegionId(@Param("regionId") Long id);
 
