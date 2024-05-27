@@ -909,6 +909,14 @@ public class UserService {
                                                                 .build();
                                         }
                                 }
+                                if (userGet.get().equals(user)) {
+                                        return GlobalResponse
+                                                        .builder()
+                                                        .message("Tidak ada perubahan")
+                                                        .errorMessage("Tidak ada perubahan")
+                                                        .status(HttpStatus.OK)
+                                                        .build();
+                                }
                                 User response = userRepository.save(user);
                                 logService.insertAuto(response);
                         } catch (DataIntegrityViolationException e) {
