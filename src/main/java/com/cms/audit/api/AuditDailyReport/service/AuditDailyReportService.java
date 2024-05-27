@@ -621,8 +621,8 @@ public class AuditDailyReportService {
                         List<Schedule> checkShcedule = scheduleRepository.CheckIfScheduleisNow(dto.getSchedule_id());
                         if (checkShcedule.isEmpty()) {
                                 return GlobalResponse.builder()
-                                                .message("Tidak bisa memproses jadwal karena jadwal belum dimulai")
-                                                .errorMessage("Jadwal belum dimulai, tidak dapat diproses")
+                                                .message("Tidak dapat memproses jadwal")
+                                                .errorMessage("Tidak dapat memproses jadwal")
                                                 .status(HttpStatus.BAD_REQUEST).build();
                         }
 
@@ -652,7 +652,7 @@ public class AuditDailyReportService {
                                                 .errorMessage("Tidak bisa memproses jadwal")
                                                 .status(HttpStatus.BAD_REQUEST).build();
                         }
-
+ 
                         List<Schedule> scheduleList = scheduleRepository.findForScheduleList(
                                         getschedule.get().getUser().getId(),
                                         getschedule.get().getStart_date());
