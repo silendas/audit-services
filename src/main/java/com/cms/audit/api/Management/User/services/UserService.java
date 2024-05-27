@@ -922,13 +922,15 @@ public class UserService {
                         } catch (DataIntegrityViolationException e) {
                                 return GlobalResponse
                                                 .builder()
-                                                .error(e)
+                                                .message("Gagal melakukan edit")
+                                                .errorMessage("Gagal melakukan edit")
                                                 .status(HttpStatus.BAD_REQUEST)
                                                 .build();
                         } catch (Exception e) {
                                 return GlobalResponse
                                                 .builder()
-                                                .error(e)
+                                                .message("Gagal melakukan edit")
+                                                .errorMessage("Gagal melakukan edit")
                                                 .status(HttpStatus.BAD_REQUEST)
                                                 .build();
                         }
