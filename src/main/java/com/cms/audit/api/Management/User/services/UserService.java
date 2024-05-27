@@ -721,7 +721,7 @@ public class UserService {
                         }
 
                         String password = null;
-                        if (!userDTO.getPassword().equals("") && userDTO.getPassword() != null) {
+                        if (userDTO.getPassword() != null && !userDTO.getPassword().equals("")) {
                                 password = passwordEncoder.encode(userDTO.getPassword());
                         } else {
                                 password = userGet.get().getPassword();
@@ -955,7 +955,8 @@ public class UserService {
                 } catch (Exception e) {
                         return GlobalResponse
                                         .builder()
-                                        .error(e)
+                                        .message("Gagal melakukan edit")
+                                        .errorMessage("Gagal melakukan edit")
                                         .status(HttpStatus.BAD_REQUEST)
                                         .build();
                 }
