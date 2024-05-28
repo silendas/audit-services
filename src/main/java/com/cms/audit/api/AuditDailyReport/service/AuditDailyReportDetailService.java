@@ -393,11 +393,11 @@ public class AuditDailyReportDetailService {
                         .errorMessage("LHA dengan id :" + dto.getAudit_daily_report_id() + " tidak ditemukan")
                         .status(HttpStatus.BAD_REQUEST).build();
             }
-            if (setId.get().getSchedule().getEnd_date().before(new Date())) {
-                return GlobalResponse.builder().message("Lha sudah selesai")
-                        .errorMessage("LHA dengan id :" + dto.getAudit_daily_report_id() + " sudah selesai")
-                        .status(HttpStatus.BAD_REQUEST).build();
-            }
+            // if (setId.get().getSchedule().getEnd_date().before(new Date())) {
+            //     return GlobalResponse.builder().message("Lha sudah selesai")
+            //             .errorMessage("LHA dengan id :" + dto.getAudit_daily_report_id() + " sudah selesai")
+            //             .status(HttpStatus.BAD_REQUEST).build();
+            // }
             Optional<Case> setCaseId = caseRepository.findById(dto.getCase_id());
             if (!setCaseId.isPresent()) {
                 return GlobalResponse.builder().errorMessage("DIvisi tidak ditemukan")
