@@ -298,14 +298,12 @@ public class AuditDailyReportService {
                         Map<String, Object> schedule = new LinkedHashMap<>();
                         schedule.put("id", getLha.get().getSchedule().getId());
                         if (getLha.get().getSchedule().getStart_date() != null) {
-                                schedule.put("start_date", convertDateToRoman
-                                                .convertDateHehe(getLha.get().getSchedule().getStart_date()));
+                                schedule.put("start_date", getLha.get().getSchedule().getStart_date());
                         } else {
                                 schedule.put("start_date", null);
                         }
                         if (getLha.get().getSchedule().getEnd_date() != null) {
-                                schedule.put("end_date", convertDateToRoman
-                                                .convertDateHehe(getLha.get().getSchedule().getEnd_date()));
+                                schedule.put("end_date", getLha.get().getSchedule().getEnd_date());
                         } else {
                                 schedule.put("end_date", null);
                         }
