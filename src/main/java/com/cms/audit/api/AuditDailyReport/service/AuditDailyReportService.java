@@ -127,19 +127,14 @@ public class AuditDailyReportService {
                         for (int i = 0; i < response.getContent().size(); i++) {
                                 List<AuditDailyReportDetail> getDetail = auditDailyReportDetailRepository
                                                 .findByLHAId(response.getContent().get(i).getId());
-                                Integer ifFlow = 0;
+                                boolean hasValidFlow = false;
                                 Integer flag = 0;
                                 for (int u = 0; u < getDetail.size(); u++) {
                                         if (getUser.getLevel().getCode().equals("A")) {
-                                                if (getDetail.get(u).getStatus_flow() == 1) {
-                                                        if (getDetail.isEmpty()) {
-                                                                ifFlow = 1;
-                                                                continue;
-                                                        }
-                                                        ifFlow = 0;
-                                                } else {
-                                                        ifFlow = 1;
+                                                if (getDetail.get(u).getStatus_flow() != 1) {
                                                         continue;
+                                                } else {
+                                                        hasValidFlow = true;
                                                 }
                                         }
                                         if (response.getContent().get(i).getIs_research() != 1) {
@@ -158,7 +153,7 @@ public class AuditDailyReportService {
                                                 }
                                         }
                                 }
-                                if (ifFlow == 1) {
+                                if (!hasValidFlow) {
                                         continue;
                                 }
                                 Map<String, Object> responseS = new LinkedHashMap<>();
@@ -581,7 +576,8 @@ public class AuditDailyReportService {
                                                                 .errorMessage("Sub kategori kasus harus diisi")
                                                                 .status(HttpStatus.BAD_REQUEST)
                                                                 .build();
-                                        } else if (dto.getLha_detail().get(i).getDescription() == null && dto.getLha_detail().get(i).getDescription().equals("")) {
+                                        } else if (dto.getLha_detail().get(i).getDescription() == null
+                                                        && dto.getLha_detail().get(i).getDescription().equals("")) {
                                                 return GlobalResponse
                                                                 .builder()
                                                                 .message("Deskripsi harus diisi")
@@ -650,7 +646,7 @@ public class AuditDailyReportService {
                                                 .errorMessage("Tidak bisa memproses jadwal")
                                                 .status(HttpStatus.BAD_REQUEST).build();
                         }
- 
+
                         List<Schedule> scheduleList = scheduleRepository.findForScheduleList(
                                         getschedule.get().getUser().getId(),
                                         getschedule.get().getStart_date());
@@ -673,13 +669,14 @@ public class AuditDailyReportService {
                                         new Date(),
                                         new Date());
 
-                        if (getschedule.get().getStart_date_realization() == null && !getschedule.get().getStatus().equals(EStatus.DONE)) {
-                                        Schedule schedule = getschedule
-                                                        .orElseThrow(() -> new ResourceNotFoundException(
-                                                                        "Schedule not found"));
-                                        schedule.setStart_date_realization(new Date());
-                                        schedule.setStatus(EStatus.PROGRESS);
-                                        scheduleRepository.save(schedule);
+                        if (getschedule.get().getStart_date_realization() == null
+                                        && !getschedule.get().getStatus().equals(EStatus.DONE)) {
+                                Schedule schedule = getschedule
+                                                .orElseThrow(() -> new ResourceNotFoundException(
+                                                                "Schedule not found"));
+                                schedule.setStart_date_realization(new Date());
+                                schedule.setStatus(EStatus.PROGRESS);
+                                scheduleRepository.save(schedule);
                         }
 
                         AuditDailyReport response1 = auditDailyReportRepository.save(auditDailyReport);
