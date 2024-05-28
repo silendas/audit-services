@@ -712,6 +712,13 @@ public class AuditDailyReportDetailService {
                         .build();
             }
 
+            if(getBefore.get().getStatus_flow() == 1){
+                return GlobalResponse.builder().message("Karena sudah dikirim oleh area maka tidak dapat dihapus")
+                        .errorMessage("Tidak bisa menghapus karena sudah dikirim ke pusat")
+                        .status(HttpStatus.BAD_REQUEST)
+                        .build();
+            }
+
             AuditDailyReportDetail auditDailyReport = getBefore.orElse(null);
             auditDailyReport.setIs_delete(1);
             auditDailyReport.setUpdated_by(user.getId());
