@@ -581,7 +581,7 @@ public class AuditDailyReportService {
                                                                 .errorMessage("Sub kategori kasus harus diisi")
                                                                 .status(HttpStatus.BAD_REQUEST)
                                                                 .build();
-                                        } else if (dto.getLha_detail().get(i).getDescription() == null) {
+                                        } else if (dto.getLha_detail().get(i).getDescription() == null && dto.getLha_detail().get(i).getDescription().equals("")) {
                                                 return GlobalResponse
                                                                 .builder()
                                                                 .message("Deskripsi harus diisi")
@@ -596,8 +596,8 @@ public class AuditDailyReportService {
                                                                 .status(HttpStatus.BAD_REQUEST)
                                                                 .build();
                                         } else if (dto.getLha_detail().get(i).getPermanent_recommendations() == null
-                                                        || dto.getLha_detail().get(i)
-                                                                        .getPermanent_recommendations() == "") {
+                                                        && dto.getLha_detail().get(i)
+                                                                        .getPermanent_recommendations().equals("")) {
                                                 return GlobalResponse
                                                                 .builder()
                                                                 .message("Rekomendasi permanen harus diisi")
@@ -605,8 +605,8 @@ public class AuditDailyReportService {
                                                                 .status(HttpStatus.BAD_REQUEST)
                                                                 .build();
                                         } else if (dto.getLha_detail().get(i).getTemporary_recommendations() == null
-                                                        || dto.getLha_detail().get(i)
-                                                                        .getTemporary_recommendations() == "") {
+                                                        && dto.getLha_detail().get(i)
+                                                                        .getTemporary_recommendations().equals("")) {
                                                 return GlobalResponse
                                                                 .builder()
                                                                 .message("Rekomendasi temporary harus diisi")

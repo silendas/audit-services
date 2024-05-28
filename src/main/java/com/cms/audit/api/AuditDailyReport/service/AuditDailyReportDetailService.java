@@ -361,7 +361,7 @@ public class AuditDailyReportDetailService {
                         .message("tidak ditemukan").errorMessage("LHA tidak boleh kosong")
                         .status(HttpStatus.BAD_REQUEST)
                         .build();
-            } else if (dto.getDescription() == null) {
+            } else if (dto.getDescription() == null && dto.getDescription().equals("")) {
                 return GlobalResponse
                         .builder()
                         .message("tidak ditemukan").errorMessage("Deskripsi tidak boleh kosong")
@@ -373,19 +373,19 @@ public class AuditDailyReportDetailService {
                         .message("tidak ditemukan").errorMessage("Is research tidak boleh kosong")
                         .status(HttpStatus.BAD_REQUEST)
                         .build();
-            } else if (dto.getPermanent_recommendations() == null) {
+            } else if (dto.getPermanent_recommendations() == null && dto.getPermanent_recommendations().equals("")) {
                 return GlobalResponse
                         .builder()
                         .message("tidak ditemukan").errorMessage("Rekomendasi permanen tidak boleh kosong")
                         .status(HttpStatus.BAD_REQUEST)
                         .build();
-            } else if (dto.getTemporary_recommendations() == null) {
+            } else if (dto.getTemporary_recommendations() == null && dto.getTemporary_recommendations().equals("")) {
                 return GlobalResponse
                         .builder()
                         .message("tidak ditemukan").errorMessage("Rekomendasi temporary tidak boleh kosong")
                         .status(HttpStatus.BAD_REQUEST)
                         .build();
-            } 
+            }
 
             Optional<AuditDailyReport> setId = lhaReportsitory.findById(dto.getAudit_daily_report_id());
             if (!setId.isPresent()) {
@@ -602,25 +602,25 @@ public class AuditDailyReportDetailService {
                         .message("tidak ditemukan").errorMessage("Case Category tidak boleh kosong")
                         .status(HttpStatus.BAD_REQUEST)
                         .build();
-            } else if (dto.getDescription() == null) {
+            } else if (dto.getDescription() == null && dto.getDescription().equals("")) {
                 return GlobalResponse
                         .builder()
                         .message("tidak ditemukan").errorMessage("Description tidak boleh kosong")
                         .status(HttpStatus.BAD_REQUEST)
                         .build();
-            } else if(dto.getPermanent_recommendations() == null) {
+            } else if (dto.getPermanent_recommendations() == null && dto.getPermanent_recommendations().equals("")) {
                 return GlobalResponse
                         .builder()
                         .message("tidak ditemukan").errorMessage("Permanent Recommendations tidak boleh kosong")
                         .status(HttpStatus.BAD_REQUEST)
                         .build();
-            } else if(dto.getTemporary_recommendations() == null) {
+            } else if (dto.getTemporary_recommendations() == null && dto.getTemporary_recommendations().equals("")) {
                 return GlobalResponse
                         .builder()
                         .message("tidak ditemukan").errorMessage("Temporary Recommendations tidak boleh kosong")
                         .status(HttpStatus.BAD_REQUEST)
                         .build();
-            } 
+            }
 
             Optional<AuditDailyReportDetail> getBefore = repository.findById(id);
             if (!getBefore.isPresent()) {
@@ -634,7 +634,8 @@ public class AuditDailyReportDetailService {
             if (user.getLevel().getCode().equals("C")) {
                 if (getBefore.get().getStatus_flow() == 1) {
                     return GlobalResponse.builder().message("Karena sudah dikirim oleh area maka tidak dapat diedit")
-                            .errorMessage("Tidak bisa mengedit karena sudah dikirim ke pusat").status(HttpStatus.BAD_REQUEST)
+                            .errorMessage("Tidak bisa mengedit karena sudah dikirim ke pusat")
+                            .status(HttpStatus.BAD_REQUEST)
                             .build();
                 }
             }
