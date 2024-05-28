@@ -136,6 +136,8 @@ public class AuditDailyReportService {
                                                 } else {
                                                         hasValidFlow = true;
                                                 }
+                                        } else {
+                                                hasValidFlow = true;
                                         }
                                         if (response.getContent().get(i).getIs_research() != 1) {
                                                 if (getDetail.get(u).getIs_research() == 1) {
