@@ -3,6 +3,7 @@ package com.cms.audit.api.Common.pdf;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.net.MalformedURLException;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -488,10 +489,11 @@ public class GeneratePdf {
                 body6.addCell(new Cell().add("Photo Copy sangsi administrasi berupa :").setBold().setFontSize(7)
                                 .setBorder(Border.NO_BORDER));
 
-                float bodyPenaltyLenght[] = { 540f };
-                Table bodyPenalty = new Table(bodyPenaltyLenght).setHorizontalAlignment(HorizontalAlignment.LEFT);
+                float[] bodyPenaltyLength = new float[penalty.size()]; // Menentukan panjangnya berdasarkan jumlah
+                Arrays.fill(bodyPenaltyLength, 540f); // Mengisi array dengan nilai 540f
 
-                // Iterate over the penalties and add cells to the table
+                Table bodyPenalty = new Table(bodyPenaltyLength).setHorizontalAlignment(HorizontalAlignment.LEFT);
+
                 for (Penalty penalties : penalty) {
                         float[] columnWidths = { 18f, 82f }; // 18f untuk kolom pertama, sisanya untuk kolom kedua
                         Table nested6 = new Table(UnitValue.createPercentArray(columnWidths)).useAllAvailableWidth();
@@ -503,12 +505,12 @@ public class GeneratePdf {
                         }
                         nested6.addCell(new Cell().add(penalties.getName()).setBorder(Border.NO_BORDER).setFontSize(7)
                                         .setBold());
-                        bodyPenalty.addCell(new Cell().add(nested6)
-                                        .setBorder(Border.NO_BORDER));
 
+                        bodyPenalty.addCell(new Cell().add(nested6).setBorder(Border.NO_BORDER));
                 }
 
                 body6.addCell(new Cell().add(bodyPenalty).setBorder(Border.NO_BORDER));
+
                 body6.addCell(new Cell()
                                 .add("Biaya pembebanan : Rp." + FormatNumber.formatString(response.getCharging_costs()))
                                 .setBold().setFontSize(7).setBorder(Border.NO_BORDER));
