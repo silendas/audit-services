@@ -6,8 +6,6 @@ import java.net.MalformedURLException;
 import java.util.Date;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.cms.audit.api.Clarifications.models.Clarification;
 import com.cms.audit.api.Clarifications.models.EPriority;
 import com.cms.audit.api.Common.constant.FolderPath;
@@ -17,7 +15,6 @@ import com.cms.audit.api.Common.constant.randomValueNumber;
 import com.cms.audit.api.Common.response.PDFResponse;
 import com.cms.audit.api.FollowUp.models.FollowUp;
 import com.cms.audit.api.Management.Penalty.models.Penalty;
-import com.cms.audit.api.Management.Penalty.repository.PenaltyRepository;
 import com.itextpdf.io.image.ImageData;
 import com.itextpdf.io.image.ImageDataFactory;
 import com.itextpdf.kernel.color.Color;
@@ -491,8 +488,14 @@ public class GeneratePdf {
                 body6.addCell(new Cell().add("Photo Copy sangsi administrasi berupa :").setBold().setFontSize(7)
                                 .setBorder(Border.NO_BORDER));
 
-                Table nested6 = new Table(UnitValue.createPercentArray(new float[] { 1, 1 })); // Set 2 columns with
-                                                                                               // equal width
+                int numColumns = 2;
+                float[] columnWidths = { 18f, 82f }; // 18f untuk kolom pertama, sisanya untuk kolom kedua
+
+                Table nested6 = new Table(UnitValue.createPercentArray(columnWidths)).useAllAvailableWidth();
+
+                // Tambahkan cell kosong untuk memulai
+                nested6.addCell(new Cell().add(""));
+
                 // Iterate over the penalties and add cells to the table
                 for (Penalty penalties : penalty) {
                         if (response.getPenalty().contains(penalties.getId())) {
