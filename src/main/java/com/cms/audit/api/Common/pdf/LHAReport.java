@@ -196,7 +196,7 @@ public class LHAReport {
                 // Membuat ImageData dari path gambar absolut
                 ImageData imageData = ImageDataFactory.create(absoluteImagePath);
                 Image image = new Image(imageData);
-                image.scaleAbsolute(70, 40);
+                image.scaleAbsolute(50, 25);
 
                 return image;
         }
@@ -313,7 +313,7 @@ public class LHAReport {
                         // Membuat ImageData dari path gambar absolut
                         ImageData imageData = ImageDataFactory.create(absoluteImagePath);
                         Image image = new Image(imageData);
-                        image.scaleAbsolute(30, 15);
+                        image.scaleAbsolute(50, 25);
                         for (int o = 0; o < dto.size(); o++) {
 
                                 float headerLenght[] = { 80f, 520f };
