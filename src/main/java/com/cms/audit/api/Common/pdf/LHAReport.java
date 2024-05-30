@@ -223,13 +223,14 @@ public class LHAReport {
                 // Membuat ImageData dari path gambar absolut
                 ImageData imageData = ImageDataFactory.create(absoluteImagePath);
                 Image image = new Image(imageData);
-                image.scaleAbsolute(70, 40);
+                image.scaleAbsolute(30, 15);
 
                 float headerLenght[] = { 80f, 520f };
                 Table header = new Table(headerLenght).setHorizontalAlignment(HorizontalAlignment.CENTER)
                                 .setBorder(Border.NO_BORDER).setPadding(0);
                 header.addCell(new Cell().add(image).setFontSize(7).setBorderRight(Border.NO_BORDER));
-                Table nestedheader = new Table(new float[] { 520f }).setVerticalAlignment(VerticalAlignment.MIDDLE).setMargin(0).setBorder(Border.NO_BORDER);
+                Table nestedheader = new Table(new float[] { 520f }).setVerticalAlignment(VerticalAlignment.MIDDLE)
+                                .setMargin(0).setBorder(Border.NO_BORDER);
                 nestedheader.addCell(new Cell().add("LAPORAN HARIAN AUDIT").setBackgroundColor(Color.ORANGE)
                                 .setFontSize(5)
                                 .setTextAlignment(TextAlignment.CENTER).setBorderBottom(Border.NO_BORDER)
@@ -312,23 +313,29 @@ public class LHAReport {
                         // Membuat ImageData dari path gambar absolut
                         ImageData imageData = ImageDataFactory.create(absoluteImagePath);
                         Image image = new Image(imageData);
-                        image.scaleAbsolute(70, 40);
+                        image.scaleAbsolute(30, 15);
                         for (int o = 0; o < dto.size(); o++) {
 
                                 float headerLenght[] = { 80f, 520f };
                                 Table header = new Table(headerLenght)
-                                                .setHorizontalAlignment(HorizontalAlignment.CENTER);
+                                                .setHorizontalAlignment(HorizontalAlignment.CENTER)
+                                                .setBorder(Border.NO_BORDER).setPadding(0);
                                 header.addCell(new Cell().add(image).setFontSize(7).setBorderRight(Border.NO_BORDER));
-                                Table nestedheader = new Table(new float[] { 520f });
-                                nestedheader.addCell(new Cell().add("LAPORAN HARIAN AUDIT")
-                                                .setBackgroundColor(Color.ORANGE).setFontSize(5)
-                                                .setTextAlignment(TextAlignment.CENTER)
-                                                .setBorderBottom(Border.NO_BORDER)
-                                                .setPaddingBottom(1));
-                                nestedheader.addCell(new Cell().add("PT. CMS MAJU SEJAHTRA")
-                                                .setBackgroundColor(Color.ORANGE).setFontSize(5)
-                                                .setTextAlignment(TextAlignment.CENTER).setBorderTop(Border.NO_BORDER)
-                                                .setPaddingTop(1));
+                                Table nestedheader = new Table(new float[] { 520f })
+                                                .setVerticalAlignment(VerticalAlignment.MIDDLE).setMargin(0)
+                                                .setBorder(Border.NO_BORDER);
+                                nestedheader.addCell(
+                                                new Cell().add("LAPORAN HARIAN AUDIT").setBackgroundColor(Color.ORANGE)
+                                                                .setFontSize(5)
+                                                                .setTextAlignment(TextAlignment.CENTER)
+                                                                .setBorderBottom(Border.NO_BORDER)
+                                                                .setPaddingBottom(1));
+                                nestedheader.addCell(
+                                                new Cell().add("PT. CMS MAJU SEJAHTRA").setBackgroundColor(Color.ORANGE)
+                                                                .setFontSize(5)
+                                                                .setTextAlignment(TextAlignment.CENTER)
+                                                                .setBorderTop(Border.NO_BORDER)
+                                                                .setPaddingTop(1));
                                 header.addCell(nestedheader).setBorder(Border.NO_BORDER).setPadding(0);
                                 document.add(header);
 
