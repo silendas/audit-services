@@ -7,7 +7,7 @@ import lombok.Data;
 @Builder
 public class GapDTO {
     private Long day;
-    private Long time;
-    public class builder {
-    }
+    private Long hour;
+    private Long minute;
+    private Long second;
 }

@@ -41,12 +41,19 @@ public class convertDateToRoman {
         // Hitung selisih antara dua LocalDateTime
         Duration duration = Duration.between(localDateTime1, localDateTime2);
 
-        // Mendapatkan jumlah hari dan jam dari selisih
+        // Mendapatkan jumlah hari, jam, menit, dan detik dari selisih
         long days = duration.toDays();
         long hours = duration.toHours() % 24;
+        long minutes = duration.toMinutes() % 60;
+        long seconds = duration.getSeconds() % 60;
 
-        // Kembalikan string dengan format yang diinginkan
-        return GapDTO.builder().day(days).time(hours).build();
+        // Kembalikan GapDTO dengan format yang diinginkan
+        return GapDTO.builder()
+                .day(days)
+                .hour(hours)
+                .minute(minutes)
+                .second(seconds)
+                .build();
     }
 
     public static Date setTimeToLastSecond(Date date) {
