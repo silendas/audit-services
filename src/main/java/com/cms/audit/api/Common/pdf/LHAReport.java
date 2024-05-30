@@ -196,7 +196,7 @@ public class LHAReport {
                 // Membuat ImageData dari path gambar absolut
                 ImageData imageData = ImageDataFactory.create(absoluteImagePath);
                 Image image = new Image(imageData);
-                image.scaleAbsolute(50, 25);
+                image.scaleAbsolute(50, 22);
 
                 return image;
         }
@@ -223,9 +223,9 @@ public class LHAReport {
                 // Membuat ImageData dari path gambar absolut
                 ImageData imageData = ImageDataFactory.create(absoluteImagePath);
                 Image image = new Image(imageData);
-                image.scaleAbsolute(30, 15);
+                image.scaleAbsolute(50, 22);
 
-                float headerLenght[] = { 80f, 520f };
+                float headerLenght[] = { 51f, 520f };
                 Table header = new Table(headerLenght).setHorizontalAlignment(HorizontalAlignment.CENTER)
                                 .setBorder(Border.NO_BORDER).setPadding(0);
                 header.addCell(new Cell().add(image).setFontSize(7).setBorderRight(Border.NO_BORDER));
@@ -313,10 +313,10 @@ public class LHAReport {
                         // Membuat ImageData dari path gambar absolut
                         ImageData imageData = ImageDataFactory.create(absoluteImagePath);
                         Image image = new Image(imageData);
-                        image.scaleAbsolute(50, 25);
+                        image.scaleAbsolute(50, 22);
                         for (int o = 0; o < dto.size(); o++) {
 
-                                float headerLenght[] = { 80f, 520f };
+                                float headerLenght[] = { 51f, 520f };
                                 Table header = new Table(headerLenght)
                                                 .setHorizontalAlignment(HorizontalAlignment.CENTER)
                                                 .setBorder(Border.NO_BORDER).setPadding(0);
