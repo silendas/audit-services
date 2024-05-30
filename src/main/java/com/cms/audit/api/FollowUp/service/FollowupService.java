@@ -35,6 +35,7 @@ import com.cms.audit.api.FollowUp.models.EStatusFollowup;
 import com.cms.audit.api.FollowUp.models.FollowUp;
 import com.cms.audit.api.FollowUp.repository.FollowUpRepository;
 import com.cms.audit.api.FollowUp.repository.PagFollowup;
+import com.cms.audit.api.Management.Penalty.dto.response.PenaltyInterface;
 import com.cms.audit.api.Management.Penalty.models.Penalty;
 import com.cms.audit.api.Management.Penalty.repository.PenaltyRepository;
 import com.cms.audit.api.Management.User.models.User;
@@ -303,7 +304,8 @@ public class FollowupService {
             followUp.setStatus(EStatusFollowup.PROGRESS);
             FollowUp response1 = repository.save(followUp);
 
-            PDFResponse generate = GeneratePdf.generateFollowUpPDF(response1);
+            List<Penalty> penalties = penaltyRepository.findAllPenalty();
+            PDFResponse generate = GeneratePdf.generateFollowUpPDF(response1, penalties);
 
             FollowUp edit = response1;
             edit.setFilename(generate.getFileName());

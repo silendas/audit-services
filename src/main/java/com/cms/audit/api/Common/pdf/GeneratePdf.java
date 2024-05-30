@@ -36,9 +36,6 @@ import com.itextpdf.layout.property.VerticalAlignment;
 
 public class GeneratePdf {
 
-        @Autowired
-        private static PenaltyRepository penaltyRepository;
-
         @SuppressWarnings("resource")
         public static PDFResponse generateClarificationPDF(Clarification response, String formulir)
                         throws FileNotFoundException, MalformedURLException {
@@ -372,7 +369,7 @@ public class GeneratePdf {
                                 .build();
         }
 
-        public static PDFResponse generateFollowUpPDF(FollowUp response)
+        public static PDFResponse generateFollowUpPDF(FollowUp response, List<Penalty> penalty)
                         throws FileNotFoundException, MalformedURLException {
                 String fileName = randomValueNumber.randomNumberGenerator() + "-"
                                 + response.getClarification().getUser().getInitial_name()
@@ -494,17 +491,16 @@ public class GeneratePdf {
                 body6.addCell(new Cell().add("Photo Copy sangsi administrasi berupa :").setBold().setFontSize(7)
                                 .setBorder(Border.NO_BORDER));
 
-                List<Penalty> penalties = penaltyRepository.findAllPenalty();
                 Table nested6 = new Table(UnitValue.createPercentArray(new float[] { 1, 1 })); // Set 2 columns with
                                                                                                // equal width
                 // Iterate over the penalties and add cells to the table
-                for (Penalty penalty : penalties) {
-                        if (response.getPenalty().contains(penalty.getId())) {
+                for (Penalty penalties : penalty) {
+                        if (response.getPenalty().contains(penalties.getId())) {
                                 nested6.addCell(new Cell().add("").setBackgroundColor(Color.RED));
                         } else {
                                 nested6.addCell(new Cell().add(""));
                         }
-                        nested6.addCell(new Cell().add(penalty.getName()).setBorder(Border.NO_BORDER).setFontSize(7)
+                        nested6.addCell(new Cell().add(penalties.getName()).setBorder(Border.NO_BORDER).setFontSize(7)
                                         .setBold());
                 }
 
