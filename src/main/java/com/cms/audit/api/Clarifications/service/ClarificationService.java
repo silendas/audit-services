@@ -32,6 +32,7 @@ import com.cms.audit.api.Common.constant.FileStorageService;
 import com.cms.audit.api.Common.constant.FolderPath;
 import com.cms.audit.api.Common.constant.SpecificationFIlter;
 import com.cms.audit.api.Common.constant.convertDateToRoman;
+import com.cms.audit.api.Common.dto.GapDTO;
 import com.cms.audit.api.Common.exception.ResourceNotFoundException;
 import com.cms.audit.api.Common.pdf.GeneratePdf;
 import com.cms.audit.api.Common.response.GlobalResponse;
@@ -232,7 +233,8 @@ public class ClarificationService {
                         clarification.put("start_date_realization", response.getStart_date_realization());
                         clarification.put("end_date_realization", response.getEnd_date_realization());
                         if( response.getEnd_date_realization() != null && response.getEvaluation_limitation() != null){
-                                clarification.put("gap", convertDateToRoman.calculateDateDifference(response.getEnd_date_realization(), response.getEvaluation_limitation()));
+                                GapDTO gap = convertDateToRoman.calculateDateDifference(response.getEnd_date_realization(), response.getEvaluation_limitation());
+                                clarification.put("gap", gap.getDay());
                         }else{
                                 clarification.put("gap",null);
                         }

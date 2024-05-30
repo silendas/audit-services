@@ -4,10 +4,13 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
+
+import com.cms.audit.api.Common.dto.GapDTO;
 
 public class convertDateToRoman {
 
@@ -30,19 +33,20 @@ public class convertDateToRoman {
         return dateToConvert;
     }
 
-    public static Date calculateDateDifference(Date date1, Date date2) {
-        // Konversi Date ke LocalDate
-        LocalDate localDate1 = date1.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-        LocalDate localDate2 = date2.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+    public static GapDTO calculateDateDifference(Date date1, Date date2) {
+        // Konversi Date ke LocalDateTime
+        LocalDateTime localDateTime1 = date1.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+        LocalDateTime localDateTime2 = date2.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
 
-        // Hitung selisih antara dua tanggal
-        Duration duration = Duration.between(localDate1.atStartOfDay(), localDate2.atStartOfDay());
+        // Hitung selisih antara dua LocalDateTime
+        Duration duration = Duration.between(localDateTime1, localDateTime2);
 
-        // Konversi Duration ke LocalDate untuk menghasilkan objek Date baru
-        LocalDate resultDate = LocalDate.ofEpochDay(duration.toDays());
+        // Mendapatkan jumlah hari dan jam dari selisih
+        long days = duration.toDays();
+        long hours = duration.toHours() % 24;
 
-        // Konversi LocalDate ke Date
-        return java.sql.Date.valueOf(resultDate);
+        // Kembalikan string dengan format yang diinginkan
+        return GapDTO.builder().day(days).time(hours).build();
     }
 
     public static Date setTimeToLastSecond(Date date) {

@@ -10,6 +10,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import com.cms.audit.api.Clarifications.models.Clarification;
 import com.cms.audit.api.Common.constant.convertDateToRoman;
+import com.cms.audit.api.Common.dto.GapDTO;
 import com.itextpdf.io.source.ByteArrayOutputStream;
 
 import java.io.ByteArrayInputStream;
@@ -65,7 +66,10 @@ public class ExcelUtil {
                     row1.createCell(7).setCellValue("");
                 }
                 if(c.getEvaluation_limitation() != null && c.getEnd_date_realization() != null){
-                    row1.createCell(8).setCellValue(convertDateToRoman.convertDateToString(convertDateToRoman.calculateDateDifference(c.getEvaluation_limitation(), c.getEnd_date_realization())));
+                    GapDTO gap = convertDateToRoman.calculateDateDifference(c.getEvaluation_limitation(), c.getEnd_date_realization());
+                    row1.createCell(8).setCellValue(gap.getDay() + " hari " + gap.getTime() + " jam ");
+                }else {
+                    row1.createCell(8).setCellValue("");
                 }
                 row1.createCell(9).setCellValue(c.getLocation());
                 row1.createCell(10).setCellValue(c.getAuditee());
