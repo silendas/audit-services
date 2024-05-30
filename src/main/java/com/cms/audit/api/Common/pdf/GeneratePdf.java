@@ -493,11 +493,10 @@ public class GeneratePdf {
                 body6.addCell(new Cell().add("Lampiran :").setBold().setFontSize(7).setBorder(Border.NO_BORDER));
                 body6.addCell(new Cell().add("Photo Copy sangsi administrasi berupa :").setBold().setFontSize(7)
                                 .setBorder(Border.NO_BORDER));
-                List<Penalty> penalties = penaltyRepository.findAll();
 
+                List<Penalty> penalties = penaltyRepository.findAllPenalty();
                 Table nested6 = new Table(UnitValue.createPercentArray(new float[] { 1, 1 })); // Set 2 columns with
                                                                                                // equal width
-
                 // Iterate over the penalties and add cells to the table
                 for (Penalty penalty : penalties) {
                         if (response.getPenalty().contains(penalty.getId())) {
