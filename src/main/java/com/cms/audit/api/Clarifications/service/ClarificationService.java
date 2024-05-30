@@ -238,14 +238,18 @@ public class ClarificationService {
                         }
 
                         List<Object> recomendation = new ArrayList<>();
-                        for (Long penalty : response.getRecomendation()) {
-                                Optional<Penalty> penaltyGet = penaltyRepository.findById(penalty);
-                                Map<String, Object> recomendationSet = new LinkedHashMap<>();
-                                recomendationSet.put("id", penaltyGet.get().getId());
-                                recomendationSet.put("name", penaltyGet.get().getName());
-                                recomendation.add(recomendationSet);
+                        if(response.getRecomendation() != null){
+                                for (Long penalty : response.getRecomendation()) {
+                                        Optional<Penalty> penaltyGet = penaltyRepository.findById(penalty);
+                                        Map<String, Object> recomendationSet = new LinkedHashMap<>();
+                                        recomendationSet.put("id", penaltyGet.get().getId());
+                                        recomendationSet.put("name", penaltyGet.get().getName());
+                                        recomendation.add(recomendationSet);
+                                }
+                                clarification.put("recomendation", recomendation);
+                        } else {
+                                clarification.put("recomendation", recomendation);
                         }
-                        clarification.put("recomendation", recomendation);
 
                         clarification.put("case_category", cc);
                         clarification.put("evaluation", response.getEvaluation());

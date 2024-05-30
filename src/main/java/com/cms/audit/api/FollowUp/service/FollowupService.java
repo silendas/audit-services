@@ -76,6 +76,7 @@ public class FollowupService {
                 spec = spec.and(new SpecificationFIlter<FollowUp>().getByRegionIds(getUser.getRegionId()));
             }
             response = pag.findAll(spec, PageRequest.of(page, size));
+            
             List<Object> listFU = new ArrayList<>();
             for (int i = 0; i < response.getContent().size(); i++) {
                 FollowUp fu = response.getContent().get(i);
