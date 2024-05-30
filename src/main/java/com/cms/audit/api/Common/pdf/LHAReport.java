@@ -226,9 +226,10 @@ public class LHAReport {
                 image.scaleAbsolute(70, 40);
 
                 float headerLenght[] = { 80f, 520f };
-                Table header = new Table(headerLenght).setHorizontalAlignment(HorizontalAlignment.CENTER);
+                Table header = new Table(headerLenght).setHorizontalAlignment(HorizontalAlignment.CENTER)
+                                .setBorder(Border.NO_BORDER).setPadding(0);
                 header.addCell(new Cell().add(image).setFontSize(7).setBorderRight(Border.NO_BORDER));
-                Table nestedheader = new Table(new float[] { 520f });
+                Table nestedheader = new Table(new float[] { 520f }).setVerticalAlignment(VerticalAlignment.MIDDLE).setMargin(0).setBorder(Border.NO_BORDER);
                 nestedheader.addCell(new Cell().add("LAPORAN HARIAN AUDIT").setBackgroundColor(Color.ORANGE)
                                 .setFontSize(5)
                                 .setTextAlignment(TextAlignment.CENTER).setBorderBottom(Border.NO_BORDER)
