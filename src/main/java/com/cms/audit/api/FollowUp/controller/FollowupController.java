@@ -32,6 +32,7 @@ import com.cms.audit.api.Common.constant.convertDateToRoman;
 import com.cms.audit.api.Common.response.GlobalResponse;
 import com.cms.audit.api.Common.response.ResponseEntittyHandler;
 import com.cms.audit.api.FollowUp.dto.FollowUpDTO;
+import com.cms.audit.api.FollowUp.dto.PatchFollowUpDTO;
 import com.cms.audit.api.FollowUp.models.FollowUp;
 import com.cms.audit.api.FollowUp.service.FollowupService;
 
@@ -138,8 +139,8 @@ public class FollowupController {
         }
         
         @PatchMapping( value = "/{id}")
-        public ResponseEntity<Object> patch(@RequestBody FollowUpDTO dto, @PathVariable("id") Long id) {
-                return service.edit(id, dto);
+        public ResponseEntity<Object> patch(@RequestBody PatchFollowUpDTO dto, @PathVariable("id") Long id) {
+                return service.patch(id, dto);
         }
 
         @PostMapping(value = "/file")

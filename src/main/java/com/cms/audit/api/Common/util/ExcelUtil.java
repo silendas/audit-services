@@ -65,20 +65,20 @@ public class ExcelUtil {
                     row1.createCell(7).setCellValue("");
                 }
                 if(c.getEvaluation_limitation() != null && c.getEnd_date_realization() != null){
-                    row1.createCell(8).setCellValue(convertDateToRoman.calculateDateDifference(c.getEvaluation_limitation(), c.getEnd_date_realization()));
+                    row1.createCell(8).setCellValue(convertDateToRoman.convertDateToString(convertDateToRoman.calculateDateDifference(c.getEvaluation_limitation(), c.getEnd_date_realization())));
                 }
-                row1.createCell(6).setCellValue(c.getLocation());
-                row1.createCell(7).setCellValue(c.getAuditee());
-                row1.createCell(8).setCellValue(c.getAuditee_leader());
-                row1.createCell(9).setCellValue(c.getFilename());
-                row1.createCell(10).setCellValue(c.getDescription());
+                row1.createCell(9).setCellValue(c.getLocation());
+                row1.createCell(10).setCellValue(c.getAuditee());
+                row1.createCell(11).setCellValue(c.getAuditee_leader());
+                row1.createCell(12).setCellValue(c.getFilename());
+                row1.createCell(13).setCellValue(c.getDescription());
                 if (c.getPriority() != null) {
-                    row1.createCell(11).setCellValue(c.getPriority().name());
+                    row1.createCell(14).setCellValue(c.getPriority().name());
                 } else {
-                    row1.createCell(11).setCellValue("");
+                    row1.createCell(14).setCellValue("");
                 }
-                row1.createCell(12).setCellValue(convertDateToRoman.convertDateToString(c.getCreated_at()));
-                row1.createCell(13).setCellValue(c.getStatus().name());
+                row1.createCell(15).setCellValue(convertDateToRoman.convertDateToString(c.getCreated_at()));
+                row1.createCell(16).setCellValue(c.getStatus().name());
             }
 
             workbook.write(byteArrayOutputStream);

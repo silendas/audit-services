@@ -31,6 +31,7 @@ import com.cms.audit.api.Common.response.GlobalResponse;
 import com.cms.audit.api.Common.response.PDFResponse;
 import com.cms.audit.api.Common.response.ResponseEntittyHandler;
 import com.cms.audit.api.FollowUp.dto.FollowUpDTO;
+import com.cms.audit.api.FollowUp.dto.PatchFollowUpDTO;
 import com.cms.audit.api.FollowUp.models.EStatusFollowup;
 import com.cms.audit.api.FollowUp.models.FollowUp;
 import com.cms.audit.api.FollowUp.repository.FollowUpRepository;
@@ -76,7 +77,7 @@ public class FollowupService {
                 spec = spec.and(new SpecificationFIlter<FollowUp>().getByRegionIds(getUser.getRegionId()));
             }
             response = pag.findAll(spec, PageRequest.of(page, size));
-            
+
             List<Object> listFU = new ArrayList<>();
             for (int i = 0; i < response.getContent().size(); i++) {
                 FollowUp fu = response.getContent().get(i);
@@ -380,7 +381,7 @@ public class FollowupService {
     }
 
     
-    public ResponseEntity<Object> patch(Long id, FollowUpDTO dto) {
+    public ResponseEntity<Object> patch(Long id, PatchFollowUpDTO dto) {
 
         Optional<FollowUp> getFollowUp = repository.findById(id);
         if (!getFollowUp.isPresent()) {
@@ -388,31 +389,19 @@ public class FollowupService {
                     "Follow up with id:" + id + " is not found", HttpStatus.BAD_REQUEST);
         }
 
-        if (dto.getPenalty_id() == null && dto.getPenalty_id().isEmpty()) {
-            dto.setPenalty_id(getFollowUp.get().getPenalty());
+        if ( dto.getNote() == null && dto.getNote().equals("")) {
+            dto.setNote(getFollowUp.get().getNote());
         }
-        if (dto.getDescription() == null && dto.getDescription().equals("")) {
-            dto.setDescription(getFollowUp.get().getDescription());
-        }
-        if (dto.getCharging_costs() == null) {
-            dto.setCharging_costs(getFollowUp.get().getCharging_costs());
+        if(dto.getPenalty_realization() == null && dto.getPenalty_realization().isEmpty()) {
+            dto.setPenalty_realization(getFollowUp.get().getPenaltyRealization());
         }
 
         FollowUp followUp = getFollowUp.get();
-        followUp.setPenalty(dto.getPenalty_id());
-        followUp.setDescription(dto.getDescription());
-        if (dto.getCharging_costs() != null) {
-            followUp.setCharging_costs(dto.getCharging_costs());
-        } else {
-            followUp.setCharging_costs(getFollowUp.get().getCharging_costs());
-        }
-        if (dto.getPenalty_id() != null) {
-            followUp.setIsPenalty(1L);
-        } else {
-            followUp.setIsPenalty(0L);
-        }
-
+        followUp.setPenaltyRealization(dto.getPenalty_realization());
+        followUp.setNote(dto.getNote());
+        followUp.setStatus(EStatusFollowup.CLOSE);
         FollowUp response = repository.save(followUp);
+
         return ResponseEntittyHandler.allHandler(response, "Berhasil", HttpStatus.OK, null);
     }
 

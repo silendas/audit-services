@@ -654,6 +654,10 @@ public class ClarificationService {
                         if (dto.getNominal_loss() == null) {
                                 dto.setNominal_loss(0L);
                         }
+                        List<Long> recommendation = new ArrayList<>();
+                        if(dto.getRecommendation().isEmpty()) {
+                                dto.setRecommendation(recommendation);
+                        }
                         Clarification clarification = new Clarification(
                                         dto.getClarification_id(),
                                         getBefore.get().getUser(),
