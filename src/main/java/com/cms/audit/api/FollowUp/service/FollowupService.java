@@ -16,6 +16,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -28,6 +29,7 @@ import com.cms.audit.api.Common.constant.convertDateToRoman;
 import com.cms.audit.api.Common.pdf.GeneratePdf;
 import com.cms.audit.api.Common.response.GlobalResponse;
 import com.cms.audit.api.Common.response.PDFResponse;
+import com.cms.audit.api.Common.response.ResponseEntittyHandler;
 import com.cms.audit.api.FollowUp.dto.FollowUpDTO;
 import com.cms.audit.api.FollowUp.models.EStatusFollowup;
 import com.cms.audit.api.FollowUp.models.FollowUp;
@@ -336,6 +338,42 @@ public class FollowupService {
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .build();
         }
+    }
+
+    public ResponseEntity<Object> edit(Long id, FollowUpDTO dto) {
+
+        Optional<FollowUp> getFollowUp = repository.findById(id);
+        if (!getFollowUp.isPresent()) {
+            return ResponseEntittyHandler.errorResponse("Tindak lanjut tidak ditemukan",
+                    "Follow up with id:" + id + " is not found", HttpStatus.BAD_REQUEST);
+        }
+
+        if (dto.getPenalty_id() == null && dto.getPenalty_id().isEmpty()) {
+            dto.setPenalty_id(getFollowUp.get().getPenalty());
+        }
+        if (dto.getDescription() == null && dto.getDescription().equals("")) {
+            dto.setDescription(getFollowUp.get().getDescription());
+        }
+        if (dto.getCharging_costs() == null) {
+            dto.setCharging_costs(getFollowUp.get().getCharging_costs());
+        }
+
+        FollowUp followUp = getFollowUp.get();
+        followUp.setPenalty(dto.getPenalty_id());
+        followUp.setDescription(dto.getDescription());
+        if (dto.getCharging_costs() != null) {
+            followUp.setCharging_costs(dto.getCharging_costs());
+        } else {
+            followUp.setCharging_costs(getFollowUp.get().getCharging_costs());
+        }
+        if (dto.getPenalty_id() != null) {
+            followUp.setIsPenalty(1L);
+        } else {
+            followUp.setIsPenalty(0L);
+        }
+
+        FollowUp response = repository.save(followUp);
+        return ResponseEntittyHandler.allHandler(response, "Berhasil", HttpStatus.OK, null);
     }
 
     public GlobalResponse uploadFile(MultipartFile file, Long id) {

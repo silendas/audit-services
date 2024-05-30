@@ -1,6 +1,7 @@
 package com.cms.audit.api.Clarifications.models;
 
 import java.util.Date;
+import java.util.List;
 
 import com.cms.audit.api.Management.Case.models.Case;
 import com.cms.audit.api.Management.CaseCategory.models.CaseCategory;
@@ -86,8 +87,8 @@ public class Clarification {
     @Column(name = "description",columnDefinition = "TEXT")
     private String description;
 
-    @Column(name = "recomendation",columnDefinition = "TEXT")
-    private String recomendation;
+    @Column(name = "recomendation")
+    private List<Long> recomendation;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "priority")

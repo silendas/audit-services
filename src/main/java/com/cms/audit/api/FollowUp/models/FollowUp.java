@@ -5,10 +5,8 @@ import java.util.List;
 
 import com.cms.audit.api.Clarifications.models.Clarification;
 import com.cms.audit.api.Management.Office.BranchOffice.models.Branch;
-import com.cms.audit.api.Management.Penalty.models.Penalty;
 import com.cms.audit.api.Management.ReportType.models.ReportType;
 import com.cms.audit.api.Management.User.models.User;
-import com.fasterxml.jackson.annotation.JsonFormat;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

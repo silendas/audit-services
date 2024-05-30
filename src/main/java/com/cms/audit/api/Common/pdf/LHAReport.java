@@ -35,7 +35,7 @@ public class LHAReport {
                 header.addCell(new Cell().add("LAPORAN HARIAN AUDIT").setBackgroundColor(Color.ORANGE).setFontSize(5)
                                 .setTextAlignment(TextAlignment.CENTER).setBorderBottom(Border.NO_BORDER)
                                 .setPaddingBottom(1));
-                header.addCell(new Cell().add("PT. CMS MAJU SEJAHTERA").setBackgroundColor(Color.ORANGE).setFontSize(5)
+                header.addCell(new Cell().add("PT. CMS MAJU SEJAHTRA").setBackgroundColor(Color.ORANGE).setFontSize(5)
                                 .setTextAlignment(TextAlignment.CENTER).setBorderTop(Border.NO_BORDER)
                                 .setPaddingTop(1));
                 document.add(header);
@@ -169,7 +169,7 @@ public class LHAReport {
                 header.addCell(new Cell().add("LAPORAN HARIAN AUDIT").setBackgroundColor(Color.ORANGE).setFontSize(5)
                                 .setTextAlignment(TextAlignment.CENTER).setBorderBottom(Border.NO_BORDER)
                                 .setPaddingBottom(1));
-                header.addCell(new Cell().add("PT. CMS MAJU SEJAHTERA").setBackgroundColor(Color.ORANGE).setFontSize(5)
+                header.addCell(new Cell().add("PT. CMS MAJU SEJAHTRA").setBackgroundColor(Color.ORANGE).setFontSize(5)
                                 .setTextAlignment(TextAlignment.CENTER).setBorderTop(Border.NO_BORDER)
                                 .setPaddingTop(1));
                 document.add(header);
@@ -240,7 +240,7 @@ public class LHAReport {
                                                 .setTextAlignment(TextAlignment.CENTER)
                                                 .setBorderBottom(Border.NO_BORDER)
                                                 .setPaddingBottom(1));
-                                header.addCell(new Cell().add("PT. CMS MAJU SEJAHTERA").setBackgroundColor(Color.ORANGE)
+                                header.addCell(new Cell().add("PT. CMS MAJU SEJAHTRA").setBackgroundColor(Color.ORANGE)
                                                 .setFontSize(5)
                                                 .setTextAlignment(TextAlignment.CENTER).setBorderTop(Border.NO_BORDER)
                                                 .setPaddingTop(1));

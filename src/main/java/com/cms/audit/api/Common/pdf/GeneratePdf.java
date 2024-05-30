@@ -4,6 +4,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.net.MalformedURLException;
 import java.util.Date;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cms.audit.api.Clarifications.models.Clarification;
 import com.cms.audit.api.Clarifications.models.EPriority;
@@ -13,6 +16,8 @@ import com.cms.audit.api.Common.constant.convertDateToRoman;
 import com.cms.audit.api.Common.constant.randomValueNumber;
 import com.cms.audit.api.Common.response.PDFResponse;
 import com.cms.audit.api.FollowUp.models.FollowUp;
+import com.cms.audit.api.Management.Penalty.models.Penalty;
+import com.cms.audit.api.Management.Penalty.repository.PenaltyRepository;
 import com.itextpdf.io.image.ImageData;
 import com.itextpdf.io.image.ImageDataFactory;
 import com.itextpdf.kernel.color.Color;
@@ -26,9 +31,14 @@ import com.itextpdf.layout.element.Image;
 import com.itextpdf.layout.element.Table;
 import com.itextpdf.layout.property.HorizontalAlignment;
 import com.itextpdf.layout.property.TextAlignment;
+import com.itextpdf.layout.property.UnitValue;
 import com.itextpdf.layout.property.VerticalAlignment;
 
 public class GeneratePdf {
+
+        @Autowired
+        private static PenaltyRepository penaltyRepository;
+
         @SuppressWarnings("resource")
         public static PDFResponse generateClarificationPDF(Clarification response, String formulir)
                         throws FileNotFoundException, MalformedURLException {
@@ -483,47 +493,22 @@ public class GeneratePdf {
                 body6.addCell(new Cell().add("Lampiran :").setBold().setFontSize(7).setBorder(Border.NO_BORDER));
                 body6.addCell(new Cell().add("Photo Copy sangsi administrasi berupa :").setBold().setFontSize(7)
                                 .setBorder(Border.NO_BORDER));
-                float nestedbody6llenght[] = { 18f, 25f, 18f, 25f, 18f, 25f, 18f, 25f, 18f, 350f };
-                Table nested6 = new Table(nestedbody6llenght);
-                if (response.getPenalty().contains(1L)) {
-                        nested6.addCell(new Cell().add("").setBackgroundColor(Color.RED));
-                        nested6.addCell(new Cell().add("ST").setBorder(Border.NO_BORDER).setFontSize(7)
-                                        .setBold());
-                } else {
-                        nested6.addCell(new Cell().add(""));
-                        nested6.addCell(new Cell().add("ST").setBorder(Border.NO_BORDER).setFontSize(7)
-                                        .setBold());
-                }
-                if (response.getPenalty().contains(Long.valueOf(2))) {
-                        nested6.addCell(new Cell().add("").setBackgroundColor(Color.RED));
-                        nested6.addCell(new Cell().add("SP 1").setBorder(Border.NO_BORDER).setFontSize(7).setBold());
-                } else {
-                        nested6.addCell(new Cell().add(""));
-                        nested6.addCell(new Cell().add("SP 1").setBorder(Border.NO_BORDER).setFontSize(7).setBold());
-                }
-                if (response.getPenalty().contains(Long.valueOf(3))) {
-                        nested6.addCell(new Cell().add("").setBackgroundColor(Color.RED));
-                        nested6.addCell(new Cell().add("SP 2").setBorder(Border.NO_BORDER).setFontSize(7).setBold());
-                } else {
-                        nested6.addCell(new Cell().add(""));
-                        nested6.addCell(new Cell().add("SP 2").setBorder(Border.NO_BORDER).setFontSize(7).setBold());
-                }
-                if (response.getPenalty().contains(Long.valueOf(4))) {
-                        nested6.addCell(new Cell().add("").setBackgroundColor(Color.RED));
-                        nested6.addCell(new Cell().add("SP 3").setBorder(Border.NO_BORDER).setFontSize(7).setBold());
-                } else {
-                        nested6.addCell(new Cell().add(""));
-                        nested6.addCell(new Cell().add("SP 3").setBorder(Border.NO_BORDER).setFontSize(7).setBold());
-                }
-                if (response.getPenalty().contains(Long.valueOf(5))) {
-                        nested6.addCell(new Cell().add("").setBackgroundColor(Color.RED));
-                        nested6.addCell(new Cell().add("Surat Pembebanan/PG").setBorder(Border.NO_BORDER).setFontSize(7)
-                                        .setBold());
-                } else {
-                        nested6.addCell(new Cell().add(""));
-                        nested6.addCell(new Cell().add("Surat Pembebanan/PG").setBorder(Border.NO_BORDER).setFontSize(7)
+                List<Penalty> penalties = penaltyRepository.findAll();
+
+                Table nested6 = new Table(UnitValue.createPercentArray(new float[] { 1, 1 })); // Set 2 columns with
+                                                                                               // equal width
+
+                // Iterate over the penalties and add cells to the table
+                for (Penalty penalty : penalties) {
+                        if (response.getPenalty().contains(penalty.getId())) {
+                                nested6.addCell(new Cell().add("").setBackgroundColor(Color.RED));
+                        } else {
+                                nested6.addCell(new Cell().add(""));
+                        }
+                        nested6.addCell(new Cell().add(penalty.getName()).setBorder(Border.NO_BORDER).setFontSize(7)
                                         .setBold());
                 }
+
                 body6.addCell(new Cell().add(nested6).setBorder(Border.NO_BORDER));
                 body6.addCell(new Cell()
                                 .add("Biaya pembebanan : Rp." + FormatNumber.formatString(response.getCharging_costs()))
