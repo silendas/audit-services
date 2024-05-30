@@ -844,6 +844,14 @@ public class UserService {
                                         }
                                 }
                         }
+
+                        Integer isActive = 1;
+                        Integer isDelete = 0;
+                        if(userDTO.getIs_active() != null && userDTO.getIs_active() == 0){
+                         isActive = 0;
+                         isDelete = 1;       
+                        }
+
                         User user = new User(
                                         id,
                                         roleId,
@@ -858,8 +866,8 @@ public class UserService {
                                         password,
                                         userDTO.getFullname(),
                                         userDTO.getInitial_name(),
-                                        1,
-                                        0,
+                                        isActive,
+                                        isDelete,
                                         userGet.get().getCreated_at(),
                                         new Date());
                         try {
