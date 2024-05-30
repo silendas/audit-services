@@ -66,7 +66,7 @@ public class ExcelUtil {
                     row1.createCell(7).setCellValue("");
                 }
                 if(c.getEvaluation_limitation() != null && c.getEnd_date_realization() != null){
-                    GapDTO gap = convertDateToRoman.calculateDateDifference(c.getEvaluation_limitation(), c.getEnd_date_realization());
+                    GapDTO gap = convertDateToRoman.calculateDateDifference(c.getEnd_date_realization(), c.getEvaluation_limitation());
                     row1.createCell(8).setCellValue(gap.getDay() + " hari " + gap.getHour() + "." + gap.getMinute() + "." + gap.getSecond() + " jam ");
                 }else {
                     row1.createCell(8).setCellValue("");
