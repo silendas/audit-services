@@ -799,6 +799,8 @@ public class AuditDailyReportService {
                                                         null,
                                                         EStatusClarification.INPUT,
                                                         user.getId(),
+                                                        null,
+                                                        null,
                                                         new Date(),
                                                         new Date());
 

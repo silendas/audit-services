@@ -17,7 +17,7 @@ import java.io.IOException;
 
 public class ExcelUtil {
     public static String HEADER[] = { "comment_clarification", "auditor", "kasus", "kategori", "kerugian",
-            "batas_evaluasi", "lokasi", "auditee", "atasan auditee", "file", "deskripsi", "prioritas", "created_at",
+            "batas_evaluasi", "tanggal_mulai_realisasi", "tanggal_selesai_realisasi", "gap_tanggal", "lokasi", "auditee", "atasan_auditee", "file", "deskripsi", "prioritas", "tanggal_terbuat",
             "status" };
 
     public static String SHEET_NAME = "Laporan Klarifikasi";
@@ -48,11 +48,24 @@ public class ExcelUtil {
                 } else {
                     row1.createCell(4).setCellValue(0L);
                 }
-                if (c.getEvaluation() != null) {
+                if (c.getEvaluation_limitation() != null) {
                     row1.createCell(5)
                             .setCellValue(convertDateToRoman.convertDateToString(c.getEvaluation_limitation()));
                 } else {
                     row1.createCell(5).setCellValue("");
+                }
+                if(c.getStart_date_realization() != null){
+                    row1.createCell(6).setCellValue(convertDateToRoman.convertDateToString(c.getStart_date_realization()));
+                }else{
+                    row1.createCell(6).setCellValue("");
+                }
+                if(c.getEnd_date_realization() != null){
+                    row1.createCell(7).setCellValue(convertDateToRoman.convertDateToString(c.getEnd_date_realization()));
+                }else{
+                    row1.createCell(7).setCellValue("");
+                }
+                if(c.getEvaluation_limitation() != null && c.getEnd_date_realization() != null){
+                    row1.createCell(8).setCellValue(convertDateToRoman.calculateDateDifference(c.getEvaluation_limitation(), c.getEnd_date_realization()));
                 }
                 row1.createCell(6).setCellValue(c.getLocation());
                 row1.createCell(7).setCellValue(c.getAuditee());

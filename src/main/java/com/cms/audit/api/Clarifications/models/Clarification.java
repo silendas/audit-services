@@ -106,6 +106,12 @@ public class Clarification {
     
     @Column(name = "created_by")
     private Long created_by;
+    
+    @Column(name = "start_date_realization", columnDefinition = "DATE")
+    private Date start_date_realization;
+
+    @Column(name = "end_date_realization", columnDefinition = "DATE")
+    private Date end_date_realization;
 
     @Column(name = "created_at", columnDefinition = "DATE")
     private Date created_at;

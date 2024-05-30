@@ -229,6 +229,13 @@ public class ClarificationService {
                         clarification.put("location", response.getLocation());
                         clarification.put("auditee", response.getAuditee());
                         clarification.put("auditee_leader", response.getAuditee_leader());
+                        clarification.put("start_date_realization", response.getStart_date_realization());
+                        clarification.put("end_date_realization", response.getEnd_date_realization());
+                        if( response.getEnd_date_realization() != null && response.getEvaluation_limitation() != null){
+                                clarification.put("gap", convertDateToRoman.calculateDateDifference(response.getEnd_date_realization(), response.getEvaluation_limitation()));
+                        }else{
+                                clarification.put("gap",null);
+                        }
 
                         List<Object> recomendation = new ArrayList<>();
                         for (Long penalty : response.getRecomendation()) {
@@ -380,6 +387,8 @@ public class ClarificationService {
                                         null,
                                         EStatusClarification.INPUT,
                                         user.getId(),
+                                        null,
+                                        null,
                                         new Date(),
                                         new Date());
 
@@ -523,6 +532,8 @@ public class ClarificationService {
                                         null,
                                         EStatusClarification.DOWNLOAD,
                                         getClarification.get().getUser().getId(),
+                                        new Date(),
+                                        null,
                                         getClarification.get().getCreated_at(),
                                         new Date());
 
@@ -662,6 +673,8 @@ public class ClarificationService {
                                         dto.getIs_followup(),
                                         EStatusClarification.DONE,
                                         getBefore.get().getUser().getId(),
+                                        getBefore.get().getStart_date_realization(),
+                                        new Date(),
                                         getBefore.get().getCreated_at(),
                                         new Date());
 
