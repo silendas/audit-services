@@ -128,6 +128,8 @@ public class FollowupService {
                 fuMap.put("code", fu.getCode());
                 fuMap.put("charging_costs", fu.getCharging_costs());
                 fuMap.put("description", fu.getDescription());
+                fuMap.put("note", fu.getNote());
+                fuMap.put("penalty_relization", fu.getPenaltyRealization());
                 fuMap.put("status", fu.getStatus());
                 fuMap.put("filename", fu.getFilename());
                 fuMap.put("file_path", fu.getFilePath());
@@ -225,6 +227,8 @@ public class FollowupService {
             fuMap.put("code", fu.getCode());
             fuMap.put("charging_costs", fu.getCharging_costs());
             fuMap.put("description", fu.getDescription());
+            fuMap.put("note", fu.getNote());
+            fuMap.put("penalty_relization", fu.getPenaltyRealization());
             fuMap.put("status", fu.getStatus());
             fuMap.put("filename", fu.getFilename());
             fuMap.put("file_path", fu.getFilePath());
@@ -370,7 +374,7 @@ public class FollowupService {
         } else {
             followUp.setCharging_costs(getFollowUp.get().getCharging_costs());
         }
-        if (dto.getPenalty_id() != null) {
+        if ( dto.getPenalty_id() != null && !dto.getPenalty_id().isEmpty()) {
             followUp.setIsPenalty(1L);
         } else {
             followUp.setIsPenalty(0L);
