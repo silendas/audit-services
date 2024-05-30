@@ -495,7 +495,7 @@ public class GeneratePdf {
                 Table bodyPenalty = new Table(bodyPenaltyLength).setHorizontalAlignment(HorizontalAlignment.LEFT);
 
                 for (Penalty penalties : penalty) {
-                        float[] columnWidths = { 18f, 82f }; // 18f untuk kolom pertama, sisanya untuk kolom kedua
+                        float[] columnWidths = { 18f, 150f }; // 18f untuk kolom pertama, sisanya untuk kolom kedua
                         Table nested6 = new Table(UnitValue.createPercentArray(columnWidths)).useAllAvailableWidth();
 
                         if (response.getPenalty().contains(penalties.getId())) {
