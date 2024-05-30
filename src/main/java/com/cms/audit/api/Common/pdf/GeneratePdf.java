@@ -495,8 +495,8 @@ public class GeneratePdf {
                 Table bodyPenalty = new Table(bodyPenaltyLength).setHorizontalAlignment(HorizontalAlignment.LEFT);
 
                 for (Penalty penalties : penalty) {
-                        if (penalties.getId() < 4) {
-                                float[] columnWidths = { 18f, 180 }; // 18f untuk kolom pertama, sisanya untuk kolom
+                        if (penalties.getId() < 5) {
+                                float[] columnWidths = { 18f, 50 }; // 18f untuk kolom pertama, sisanya untuk kolom
                                                                      // kedua
                                 // Table nested6 = new
                                 // Table(UnitValue.createPercentArray(columnWidths)).useAllAvailableWidth();
@@ -513,7 +513,7 @@ public class GeneratePdf {
                                                 .setBold());
                                 bodyPenalty.addCell(new Cell().add(nested6).setBorder(Border.NO_BORDER));
                         } else {
-                                float[] columnWidths = { 18f, UnitValue.PERCENT }; // 18f untuk kolom pertama, sisanya untuk kolom
+                                float[] columnWidths = { 18f,50f}; // 18f untuk kolom pertama, sisanya untuk kolom
                                                                      // kedua
                                 // Table nested6 = new
                                 Table nested6 = new Table(UnitValue.createPercentArray(columnWidths)).useAllAvailableWidth();
