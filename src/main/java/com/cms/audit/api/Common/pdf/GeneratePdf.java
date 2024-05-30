@@ -488,16 +488,14 @@ public class GeneratePdf {
                 body6.addCell(new Cell().add("Photo Copy sangsi administrasi berupa :").setBold().setFontSize(7)
                                 .setBorder(Border.NO_BORDER));
 
-                int numColumns = 2;
-                float[] columnWidths = { 18f, 82f }; // 18f untuk kolom pertama, sisanya untuk kolom kedua
-
-                Table nested6 = new Table(UnitValue.createPercentArray(columnWidths)).useAllAvailableWidth();
-
-                // Tambahkan cell kosong untuk memulai
-                nested6.addCell(new Cell().add(""));
+                float bodyPenaltyLenght[] = { 540f };
+                Table bodyPenalty = new Table(bodyPenaltyLenght).setHorizontalAlignment(HorizontalAlignment.LEFT);
 
                 // Iterate over the penalties and add cells to the table
                 for (Penalty penalties : penalty) {
+                        float[] columnWidths = { 18f, 82f }; // 18f untuk kolom pertama, sisanya untuk kolom kedua
+                        Table nested6 = new Table(UnitValue.createPercentArray(columnWidths)).useAllAvailableWidth();
+
                         if (response.getPenalty().contains(penalties.getId())) {
                                 nested6.addCell(new Cell().add("").setBackgroundColor(Color.RED));
                         } else {
@@ -505,9 +503,12 @@ public class GeneratePdf {
                         }
                         nested6.addCell(new Cell().add(penalties.getName()).setBorder(Border.NO_BORDER).setFontSize(7)
                                         .setBold());
+                        bodyPenalty.addCell(new Cell().add(nested6)
+                                        .setBorder(Border.NO_BORDER));
+
                 }
 
-                body6.addCell(new Cell().add(nested6).setBorder(Border.NO_BORDER));
+                body6.addCell(new Cell().add(bodyPenalty).setBorder(Border.NO_BORDER));
                 body6.addCell(new Cell()
                                 .add("Biaya pembebanan : Rp." + FormatNumber.formatString(response.getCharging_costs()))
                                 .setBold().setFontSize(7).setBorder(Border.NO_BORDER));
