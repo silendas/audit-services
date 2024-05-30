@@ -70,6 +70,12 @@ public class FollowUp {
     @Column(name = "file_path")
     private String filePath;
 
+    @Column(name = "penalty_realization")
+    private List<Long> penaltyRealization;
+
+    @Column(name = "note", columnDefinition = "TEXT")
+    private String note;
+
     @Column(name = "status")
     private EStatusFollowup status;
 

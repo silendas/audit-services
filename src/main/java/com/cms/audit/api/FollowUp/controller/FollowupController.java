@@ -136,7 +136,6 @@ public class FollowupController {
         public ResponseEntity<Object> edit(@RequestBody FollowUpDTO dto, @PathVariable("id") Long id) {
                 return service.edit(id, dto);
         }
-
         
         @PatchMapping( value = "/{id}")
         public ResponseEntity<Object> patch(@RequestBody FollowUpDTO dto, @PathVariable("id") Long id) {

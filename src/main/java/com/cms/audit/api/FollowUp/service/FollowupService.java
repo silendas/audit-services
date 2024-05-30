@@ -378,6 +378,43 @@ public class FollowupService {
         return ResponseEntittyHandler.allHandler(response, "Berhasil", HttpStatus.OK, null);
     }
 
+    
+    public ResponseEntity<Object> patch(Long id, FollowUpDTO dto) {
+
+        Optional<FollowUp> getFollowUp = repository.findById(id);
+        if (!getFollowUp.isPresent()) {
+            return ResponseEntittyHandler.errorResponse("Tindak lanjut tidak ditemukan",
+                    "Follow up with id:" + id + " is not found", HttpStatus.BAD_REQUEST);
+        }
+
+        if (dto.getPenalty_id() == null && dto.getPenalty_id().isEmpty()) {
+            dto.setPenalty_id(getFollowUp.get().getPenalty());
+        }
+        if (dto.getDescription() == null && dto.getDescription().equals("")) {
+            dto.setDescription(getFollowUp.get().getDescription());
+        }
+        if (dto.getCharging_costs() == null) {
+            dto.setCharging_costs(getFollowUp.get().getCharging_costs());
+        }
+
+        FollowUp followUp = getFollowUp.get();
+        followUp.setPenalty(dto.getPenalty_id());
+        followUp.setDescription(dto.getDescription());
+        if (dto.getCharging_costs() != null) {
+            followUp.setCharging_costs(dto.getCharging_costs());
+        } else {
+            followUp.setCharging_costs(getFollowUp.get().getCharging_costs());
+        }
+        if (dto.getPenalty_id() != null) {
+            followUp.setIsPenalty(1L);
+        } else {
+            followUp.setIsPenalty(0L);
+        }
+
+        FollowUp response = repository.save(followUp);
+        return ResponseEntittyHandler.allHandler(response, "Berhasil", HttpStatus.OK, null);
+    }
+
     public GlobalResponse uploadFile(MultipartFile file, Long id) {
         try {
 
@@ -407,7 +444,6 @@ public class FollowupService {
             }
 
             FollowUp followUp = getFollowUp.get();
-            followUp.setStatus(EStatusFollowup.CLOSE);
 
             if (file != null) {
                 String fileName = fileStorageService.storeFile(file);

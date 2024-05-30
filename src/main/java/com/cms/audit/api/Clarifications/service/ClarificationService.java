@@ -782,6 +782,8 @@ public class ClarificationService {
                                 followUp.setReport_number(reportNumber);
                                 followUp.setPenalty(new ArrayList<>());
                                 followUp.setCode(reportCode2);
+                                followUp.setPenaltyRealization(null);
+                                followUp.setNote(null);
                                 followUp.setStatus(EStatusFollowup.CREATE);
                                 followUp.setCreated_by(response.getUser().getId());
                                 followUp.setCreated_at(new Date());
