@@ -3,11 +3,14 @@ package com.cms.audit.api.Common.pdf;
 import java.util.*;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.net.MalformedURLException;
 
 import com.cms.audit.api.Common.constant.convertDateToRoman;
 import com.cms.audit.api.Report.dto.LhaReportDTO;
+import com.itextpdf.io.image.ImageData;
+import com.itextpdf.io.image.ImageDataFactory;
 import com.itextpdf.kernel.color.Color;
 import com.itextpdf.kernel.geom.PageSize;
 import com.itextpdf.kernel.pdf.PdfDocument;
@@ -16,6 +19,7 @@ import com.itextpdf.layout.Document;
 import com.itextpdf.layout.border.Border;
 import com.itextpdf.layout.element.AreaBreak;
 import com.itextpdf.layout.element.Cell;
+import com.itextpdf.layout.element.Image;
 import com.itextpdf.layout.element.Table;
 import com.itextpdf.layout.property.HorizontalAlignment;
 import com.itextpdf.layout.property.TextAlignment;
@@ -30,14 +34,35 @@ public class LHAReport {
                 pdfDocument.setDefaultPageSize(PageSize.A4);
                 Document document = new Document(pdfDocument);
 
-                float headerLenght[] = { 600f };
+                String imagePath = "image/logo.png";
+                File imageFile = new File(imagePath);
+
+                // Mengecek apakah file gambar ada
+                if (!imageFile.exists()) {
+                        throw new FileNotFoundException("File gambar tidak ditemukan: " + imagePath);
+                }
+
+                // Menggunakan Path dari File untuk mendapatkan path absolut
+                String absoluteImagePath = imageFile.getAbsolutePath();
+
+                // Membuat ImageData dari path gambar absolut
+                ImageData imageData = ImageDataFactory.create(absoluteImagePath);
+                Image image = new Image(imageData);
+                image.scaleAbsolute(70, 40);
+
+                float headerLenght[] = { 80f, 520f };
                 Table header = new Table(headerLenght).setHorizontalAlignment(HorizontalAlignment.CENTER);
-                header.addCell(new Cell().add("LAPORAN HARIAN AUDIT").setBackgroundColor(Color.ORANGE).setFontSize(5)
+                header.addCell(new Cell().add(image).setFontSize(7).setBorderRight(Border.NO_BORDER));
+                Table nestedheader = new Table(new float[] { 520f });
+                nestedheader.addCell(new Cell().add("LAPORAN HARIAN AUDIT").setBackgroundColor(Color.ORANGE)
+                                .setFontSize(5)
                                 .setTextAlignment(TextAlignment.CENTER).setBorderBottom(Border.NO_BORDER)
                                 .setPaddingBottom(1));
-                header.addCell(new Cell().add("PT. CMS MAJU SEJAHTRA").setBackgroundColor(Color.ORANGE).setFontSize(5)
-                                .setTextAlignment(TextAlignment.CENTER).setBorderTop(Border.NO_BORDER)
-                                .setPaddingTop(1));
+                nestedheader.addCell(
+                                new Cell().add("PT. CMS MAJU SEJAHTRA").setBackgroundColor(Color.ORANGE).setFontSize(5)
+                                                .setTextAlignment(TextAlignment.CENTER).setBorderTop(Border.NO_BORDER)
+                                                .setPaddingTop(1));
+                header.addCell(nestedheader).setBorder(Border.NO_BORDER).setPadding(0);
                 document.add(header);
 
                 float header2Lenght[] = { 107f, 80f, 400f };
@@ -156,6 +181,26 @@ public class LHAReport {
                 return new ByteArrayInputStream(baos.toByteArray());
         }
 
+        public Image generateImage() throws MalformedURLException, FileNotFoundException {
+                String imagePath = "image/logo.png";
+                File imageFile = new File(imagePath);
+
+                // Mengecek apakah file gambar ada
+                if (!imageFile.exists()) {
+                        throw new FileNotFoundException("File gambar tidak ditemukan: " + imagePath);
+                }
+
+                // Menggunakan Path dari File untuk mendapatkan path absolut
+                String absoluteImagePath = imageFile.getAbsolutePath();
+
+                // Membuat ImageData dari path gambar absolut
+                ImageData imageData = ImageDataFactory.create(absoluteImagePath);
+                Image image = new Image(imageData);
+                image.scaleAbsolute(70, 40);
+
+                return image;
+        }
+
         public static ByteArrayInputStream generateIfNoData()
                         throws FileNotFoundException, MalformedURLException {
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -164,14 +209,35 @@ public class LHAReport {
                 pdfDocument.setDefaultPageSize(PageSize.A4);
                 Document document = new Document(pdfDocument);
 
-                float headerLenght[] = { 600f };
+                String imagePath = "image/logo.png";
+                File imageFile = new File(imagePath);
+
+                // Mengecek apakah file gambar ada
+                if (!imageFile.exists()) {
+                        throw new FileNotFoundException("File gambar tidak ditemukan: " + imagePath);
+                }
+
+                // Menggunakan Path dari File untuk mendapatkan path absolut
+                String absoluteImagePath = imageFile.getAbsolutePath();
+
+                // Membuat ImageData dari path gambar absolut
+                ImageData imageData = ImageDataFactory.create(absoluteImagePath);
+                Image image = new Image(imageData);
+                image.scaleAbsolute(70, 40);
+
+                float headerLenght[] = { 80f, 520f };
                 Table header = new Table(headerLenght).setHorizontalAlignment(HorizontalAlignment.CENTER);
-                header.addCell(new Cell().add("LAPORAN HARIAN AUDIT").setBackgroundColor(Color.ORANGE).setFontSize(5)
+                header.addCell(new Cell().add(image).setFontSize(7).setBorderRight(Border.NO_BORDER));
+                Table nestedheader = new Table(new float[] { 520f });
+                nestedheader.addCell(new Cell().add("LAPORAN HARIAN AUDIT").setBackgroundColor(Color.ORANGE)
+                                .setFontSize(5)
                                 .setTextAlignment(TextAlignment.CENTER).setBorderBottom(Border.NO_BORDER)
                                 .setPaddingBottom(1));
-                header.addCell(new Cell().add("PT. CMS MAJU SEJAHTRA").setBackgroundColor(Color.ORANGE).setFontSize(5)
-                                .setTextAlignment(TextAlignment.CENTER).setBorderTop(Border.NO_BORDER)
-                                .setPaddingTop(1));
+                nestedheader.addCell(
+                                new Cell().add("PT. CMS MAJU SEJAHTRA").setBackgroundColor(Color.ORANGE).setFontSize(5)
+                                                .setTextAlignment(TextAlignment.CENTER).setBorderTop(Border.NO_BORDER)
+                                                .setPaddingTop(1));
+                header.addCell(nestedheader).setBorder(Border.NO_BORDER).setPadding(0);
                 document.add(header);
 
                 float header2Lenght[] = { 107f, 80f, 400f };
@@ -231,19 +297,38 @@ public class LHAReport {
                         PdfDocument pdfDocument = new PdfDocument(pdfWriter);
                         pdfDocument.setDefaultPageSize(PageSize.A4);
                         Document document = new Document(pdfDocument);
+                        String imagePath = "image/logo.png";
+                        File imageFile = new File(imagePath);
+
+                        // Mengecek apakah file gambar ada
+                        if (!imageFile.exists()) {
+                                throw new FileNotFoundException("File gambar tidak ditemukan: " + imagePath);
+                        }
+
+                        // Menggunakan Path dari File untuk mendapatkan path absolut
+                        String absoluteImagePath = imageFile.getAbsolutePath();
+
+                        // Membuat ImageData dari path gambar absolut
+                        ImageData imageData = ImageDataFactory.create(absoluteImagePath);
+                        Image image = new Image(imageData);
+                        image.scaleAbsolute(70, 40);
                         for (int o = 0; o < dto.size(); o++) {
-                                float headerLenght[] = { 600f };
+
+                                float headerLenght[] = { 80f, 520f };
                                 Table header = new Table(headerLenght)
                                                 .setHorizontalAlignment(HorizontalAlignment.CENTER);
-                                header.addCell(new Cell().add("LAPORAN HARIAN AUDIT").setBackgroundColor(Color.ORANGE)
-                                                .setFontSize(5)
+                                header.addCell(new Cell().add(image).setFontSize(7).setBorderRight(Border.NO_BORDER));
+                                Table nestedheader = new Table(new float[] { 520f });
+                                nestedheader.addCell(new Cell().add("LAPORAN HARIAN AUDIT")
+                                                .setBackgroundColor(Color.ORANGE).setFontSize(5)
                                                 .setTextAlignment(TextAlignment.CENTER)
                                                 .setBorderBottom(Border.NO_BORDER)
                                                 .setPaddingBottom(1));
-                                header.addCell(new Cell().add("PT. CMS MAJU SEJAHTRA").setBackgroundColor(Color.ORANGE)
-                                                .setFontSize(5)
+                                nestedheader.addCell(new Cell().add("PT. CMS MAJU SEJAHTRA")
+                                                .setBackgroundColor(Color.ORANGE).setFontSize(5)
                                                 .setTextAlignment(TextAlignment.CENTER).setBorderTop(Border.NO_BORDER)
                                                 .setPaddingTop(1));
+                                header.addCell(nestedheader).setBorder(Border.NO_BORDER).setPadding(0);
                                 document.add(header);
 
                                 float header2Lenght[] = { 107f, 80f, 400f };
@@ -307,8 +392,8 @@ public class LHAReport {
                                                 .setTextAlignment(TextAlignment.CENTER)
                                                 .setVerticalAlignment(VerticalAlignment.MIDDLE));
                                 // float bodyNestedLenght[] = { 65f, 50f, 440f };
-                                Table bodyNested = new Table(new float[] { 70f, 54f, 440f });
-                                float bodyNested2Lenght[] = { 33f, 97f, 96f, 99f, 100f };
+                                Table bodyNested = new Table(new float[] { 65f, 50f, 430f });
+                                float bodyNested2Lenght[] = { 30f, 100f, 100f, 100f, 100f };
                                 for (int i = 0; i < dto.get(o).getLha_detail().size(); i++) {
                                         bodyNested.addCell(new Cell()
                                                         .add(dto.get(o).getLha_detail().get(i).getFullname())
