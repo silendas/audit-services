@@ -489,7 +489,7 @@ public class FollowupService {
         FollowUp response = repository.findByFilename(fileName)
                 .orElseThrow(() -> new BadRequestException("File not found with name: " + fileName));
 
-        if (!response.getStatus().equals(EStatusFollowup.CLOSE)) {
+        if (!response.getStatus().equals(EStatusFollowup.CLOSE) && !response.getStatus().equals(EStatusFollowup.REALIZE)) {
             FollowUp followUp = response;
             followUp.setStatus(EStatusFollowup.PROGRESS);
             repository.save(followUp);
