@@ -504,7 +504,7 @@ public class LHAReport {
 
                                 document.add(body);
 
-                                if (o < dto.size() && o != dto.size()) {
+                                if (o < dto.size() - 1) {
                                         document.add(new AreaBreak());
                                 }
                         }
