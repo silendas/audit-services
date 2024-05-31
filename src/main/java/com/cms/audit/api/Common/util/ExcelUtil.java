@@ -93,17 +93,18 @@ public class ExcelUtil {
                     GapDTO gap = convertDateToRoman.calculateDateDifference(c.getEnd_date_realization(),
                             c.getEvaluation_limitation());
                     String gapDay = "";
-                    if (gap.getDay() > 0) {
+                    if (gap.getDay() != 0) {
                         gapDay = gap.getDay() + " days ";
-                    }
-                    if (gap.getHour() > 0) {
-                        gapDay = gapDay + gap.getHour() + " hours ";
-                    }
-                    if (gap.getMinute() > 0) {
-                        gapDay = gapDay + gap.getMinute() + " minutes ";
-                    }
-                    if (gap.getSecond() > 0) {
-                        gapDay = gapDay + gap.getSecond() + " seconds";
+                    } else {
+                        if (gap.getHour() != 0) {
+                            gapDay = gapDay + gap.getHour() + " hours ";
+                        }
+                        if (gap.getMinute() != 0) {
+                            gapDay = gapDay + gap.getMinute() + " minutes ";
+                        }
+                        if (gap.getSecond() != 0) {
+                            gapDay = gapDay + gap.getSecond() + " seconds";
+                        }
                     }
                     row1.createCell(9).setCellValue(gapDay);
                 } else {
