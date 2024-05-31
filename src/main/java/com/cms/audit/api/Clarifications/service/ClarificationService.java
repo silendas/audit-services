@@ -104,7 +104,7 @@ public class ClarificationService {
                                 spec = spec.and(new SpecificationFIlter<Clarification>().userId(getUser.getId()));
                         } else if (getUser.getLevel().getCode().equals("B")) {
                                 spec = spec.and(new SpecificationFIlter<Clarification>()
-                                                .getByRegionIds(getUser.getRegionId()));
+                                                .getByRegionIds(getUser.getRegionId())).or(new SpecificationFIlter<Clarification>().userId(getUser.getId()));
                         }
                         response = pag.findAll(spec, PageRequest.of(page, size));
                         List<Object> listCl = new ArrayList<>();

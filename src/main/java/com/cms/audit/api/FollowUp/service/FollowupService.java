@@ -424,7 +424,7 @@ public class FollowupService {
                         .message("Follow up with id:" + id + " is not found").build();
             }
 
-            if(getFollowUp.get().getFilename() != null) {
+            if(getFollowUp.get().getFilename() != null && getFollowUp.get().getStatus() == EStatusFollowup.CLOSE) {
                 return GlobalResponse.builder().errorMessage("File sudah di upload")
                         .status(HttpStatus.BAD_REQUEST)
                         .message("File sudah di upload").build();
@@ -444,6 +444,7 @@ public class FollowupService {
                 String path = FOLDER_PATH + fileName;
                 String filePath = path;
                 followUp.setFilename(fileName);
+                followUp.setStatus(EStatusFollowup.REALIZE);
                 followUp.setFilePath(filePath);
             }
 
