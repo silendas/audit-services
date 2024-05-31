@@ -104,7 +104,8 @@ public class ClarificationService {
                                 spec = spec.and(new SpecificationFIlter<Clarification>().userId(getUser.getId()));
                         } else if (getUser.getLevel().getCode().equals("B")) {
                                 spec = spec.and(new SpecificationFIlter<Clarification>()
-                                                .getByRegionIds(getUser.getRegionId())).or(new SpecificationFIlter<Clarification>().userId(getUser.getId()));
+                                                .getByRegionIds(getUser.getRegionId()))
+                                                .or(new SpecificationFIlter<Clarification>().userId(getUser.getId()));
                         }
                         response = pag.findAll(spec, PageRequest.of(page, size));
                         List<Object> listCl = new ArrayList<>();
@@ -232,15 +233,51 @@ public class ClarificationService {
                         clarification.put("auditee_leader", response.getAuditee_leader());
                         clarification.put("start_date_realization", response.getStart_date_realization());
                         clarification.put("end_date_realization", response.getEnd_date_realization());
-                        if( response.getEnd_date_realization() != null && response.getEvaluation_limitation() != null){
-                                GapDTO gap = convertDateToRoman.calculateDateDifference(response.getEnd_date_realization(), response.getEvaluation_limitation());
-                                clarification.put("gap", gap.getDay());
-                        }else{
-                                clarification.put("gap",null);
+                        if (response.getEnd_date_realization() != null && response.getStart_date_realization() != null) {
+                                GapDTO gap = convertDateToRoman.calculateDateDifference(
+                                                response.getEnd_date_realization(),
+                                                response.getStart_date_realization());
+                                String gapDay = "";
+                                if (gap.getDay() > 0) {
+                                        gapDay = gap.getDay() + " days ";
+                                }
+                                if (gap.getHour() > 0) {
+                                        gapDay = gapDay + gap.getHour() + " hours ";
+                                }
+                                if (gap.getMinute() > 0) {
+                                        gapDay = gapDay + gap.getMinute() + " minutes ";
+                                }
+                                if (gap.getSecond() > 0) {
+                                        gapDay = gapDay + gap.getSecond() + " seconds";
+                                }
+                                clarification.put("finish", gapDay);
+                        } else {
+                                clarification.put("finish", null);
+                        }
+                        if (response.getEnd_date_realization() != null && response.getEvaluation_limitation() != null) {
+                                GapDTO gap = convertDateToRoman.calculateDateDifference(
+                                                response.getEnd_date_realization(),
+                                                response.getEvaluation_limitation());
+                                String gapDay = "";
+                                if (gap.getDay() > 0) {
+                                        gapDay = gap.getDay() + " days ";
+                                }
+                                if (gap.getHour() > 0) {
+                                        gapDay = gapDay + gap.getHour() + " hours ";
+                                }
+                                if (gap.getMinute() > 0) {
+                                        gapDay = gapDay + gap.getMinute() + " minutes ";
+                                }
+                                if (gap.getSecond() > 0) {
+                                        gapDay = gapDay + gap.getSecond() + " seconds";
+                                }
+                                clarification.put("gap", gapDay);
+                        } else {
+                                clarification.put("gap", null);
                         }
 
                         List<Object> recomendation = new ArrayList<>();
-                        if(response.getRecomendation() != null){
+                        if (response.getRecomendation() != null) {
                                 for (Long penalty : response.getRecomendation()) {
                                         Optional<Penalty> penaltyGet = penaltyRepository.findById(penalty);
                                         Map<String, Object> recomendationSet = new LinkedHashMap<>();
@@ -656,7 +693,7 @@ public class ClarificationService {
                                 dto.setNominal_loss(0L);
                         }
                         List<Long> recommendation = new ArrayList<>();
-                        if(dto.getRecommendation().isEmpty()) {
+                        if (dto.getRecommendation().isEmpty()) {
                                 dto.setRecommendation(recommendation);
                         }
                         Clarification clarification = new Clarification(
@@ -755,7 +792,7 @@ public class ClarificationService {
                                 returnResponse.put("bap", mappingFU);
                         }
 
-                        if (dto.getIs_followup() != null && dto.getIs_followup() != 0 ) {
+                        if (dto.getIs_followup() != null && dto.getIs_followup() != 0) {
                                 Optional<NumberClarificationInterface> checkTLBefore = followUpRepository
                                                 .checkNumberFollowUp(response.getUser().getId());
                                 if (checkTLBefore.isPresent()) {

@@ -124,7 +124,22 @@ public class FollowupService {
                 fuMap.put("charging_costs", fu.getCharging_costs());
                 fuMap.put("description", fu.getDescription());
                 fuMap.put("note", fu.getNote());
-                fuMap.put("penalty_relization", fu.getPenaltyRealization());
+                List<Object> listPenalty2 = new ArrayList<>();
+                if (!fu.getPenaltyRealization().isEmpty()) {
+                    for (int y = 0; y < fu.getPenaltyRealization().size(); y++) {
+                        Optional<Penalty> getPenalty = penaltyRepository.findById(fu.getPenaltyRealization().get(y));
+                        if (!getPenalty.isPresent()) {
+                            return GlobalResponse.builder()
+                                    .message("Penalty dengan id : " + fu.getPenaltyRealization().get(y) + " tidak ditemukan")
+                                    .errorMessage("Tidak dapat menemukan penalty").status(HttpStatus.BAD_REQUEST).build();
+                        }
+                        Map<String, Object> objPenalty = new LinkedHashMap<>();
+                        objPenalty.put("id", getPenalty.get().getId());
+                        objPenalty.put("name", getPenalty.get().getName());
+                        listPenalty2.add(objPenalty);
+                    }
+                }
+                fuMap.put("penalty_relization", listPenalty2);
                 fuMap.put("status", fu.getStatus());
                 fuMap.put("filename", fu.getFilename());
                 fuMap.put("file_path", fu.getFilePath());
@@ -200,7 +215,7 @@ public class FollowupService {
                     }
                     Map<String, Object> objPenalty = new LinkedHashMap<>();
                     objPenalty.put("id", getPenalty.get().getId());
-                    objPenalty.put("code", getPenalty.get().getName());
+                    objPenalty.put("name", getPenalty.get().getName());
                     listPenalty.add(objPenalty);
                 }
             }
@@ -221,7 +236,22 @@ public class FollowupService {
             fuMap.put("charging_costs", fu.getCharging_costs());
             fuMap.put("description", fu.getDescription());
             fuMap.put("note", fu.getNote());
-            fuMap.put("penalty_relization", fu.getPenaltyRealization());
+            List<Object> listPenalty2 = new ArrayList<>();
+            if (!fu.getPenaltyRealization().isEmpty()) {
+                for (int i = 0; i < fu.getPenaltyRealization().size(); i++) {
+                    Optional<Penalty> getPenalty = penaltyRepository.findById(fu.getPenaltyRealization().get(i));
+                    if (!getPenalty.isPresent()) {
+                        return GlobalResponse.builder()
+                                .message("Penalty dengan id : " + fu.getPenaltyRealization().get(i) + " tidak ditemukan")
+                                .errorMessage("Tidak dapat menemukan penalty").status(HttpStatus.BAD_REQUEST).build();
+                    }
+                    Map<String, Object> objPenalty = new LinkedHashMap<>();
+                    objPenalty.put("id", getPenalty.get().getId());
+                    objPenalty.put("name", getPenalty.get().getName());
+                    listPenalty2.add(objPenalty);
+                }
+            }
+            fuMap.put("penalty_relization", listPenalty2);
             fuMap.put("status", fu.getStatus());
             fuMap.put("filename", fu.getFilename());
             fuMap.put("file_path", fu.getFilePath());
@@ -249,19 +279,19 @@ public class FollowupService {
                         .message("Follow Up with id:" + dto.getFollowup_id() + " is not found")
                         .status(HttpStatus.BAD_REQUEST)
                         .build();
-            } else if (dto.getPenalty_id() == null) {
+            } else if (dto.getPenalty_id().isEmpty()) {
                 return GlobalResponse.builder().errorMessage("Penalty harus diisi")
-                        .message("Follow Up with id:" + dto.getFollowup_id() + " is not found")
+                        .message("harus diisi")
                         .status(HttpStatus.BAD_REQUEST)
                         .build();
             } else if (dto.getDescription() == null) {
                 return GlobalResponse.builder().errorMessage("Deskripsi harus diisi")
-                        .message("Follow Up with id:" + dto.getFollowup_id() + " is not found")
+                        .message("harus diisi")
                         .status(HttpStatus.BAD_REQUEST)
                         .build();
             } else if (dto.getCharging_costs() == null) {
                 return GlobalResponse.builder().errorMessage("Biaya harus diisi")
-                        .message("Follow Up with id:" + dto.getFollowup_id() + " is not found")
+                        .message("harus diisi")
                         .status(HttpStatus.BAD_REQUEST)
                         .build();
             }

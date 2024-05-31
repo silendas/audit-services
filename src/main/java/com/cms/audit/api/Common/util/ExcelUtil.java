@@ -18,7 +18,7 @@ import java.io.IOException;
 
 public class ExcelUtil {
     public static String HEADER[] = { "comment_clarification", "auditor", "kasus", "kategori", "kerugian",
-            "batas_evaluasi", "tanggal_mulai_realisasi", "tanggal_selesai_realisasi", "gap_tanggal", "lokasi", "auditee", "atasan_auditee", "file", "deskripsi", "prioritas", "tanggal_terbuat",
+            "batas_evaluasi", "tanggal_mulai_realisasi", "tanggal_selesai_realisasi", "waktu_penyelesaian", "gap_tanggal", "lokasi", "auditee", "atasan_auditee", "file", "deskripsi", "prioritas", "tanggal_terbuat",
             "status" };
 
     public static String SHEET_NAME = "Laporan Klarifikasi";
@@ -65,24 +65,56 @@ public class ExcelUtil {
                 }else{
                     row1.createCell(7).setCellValue("");
                 }
+                if(c.getEnd_date_realization() != null && c.getStart_date_realization() != null){
+                    GapDTO gap = convertDateToRoman.calculateDateDifference(c.getEnd_date_realization(), c.getStart_date_realization());
+                    String gapDay = "";
+                    if(gap.getDay()>0){
+                        gapDay = gap.getDay() + " days ";
+                    }
+                    if(gap.getHour()>0){
+                        gapDay = gapDay + gap.getHour() + " hours ";
+                    }
+                    if(gap.getMinute()>0){
+                        gapDay = gapDay + gap.getMinute() + " minutes ";
+                    }
+                    if(gap.getSecond()>0){
+                        gapDay = gapDay + gap.getSecond() + " seconds";
+                    }
+                    row1.createCell(8).setCellValue(gapDay);
+                }else {
+                    row1.createCell(8).setCellValue("-");
+                }
                 if(c.getEvaluation_limitation() != null && c.getEnd_date_realization() != null){
                     GapDTO gap = convertDateToRoman.calculateDateDifference(c.getEnd_date_realization(), c.getEvaluation_limitation());
-                    row1.createCell(8).setCellValue(gap.getDay() + " hari " + gap.getHour() + "." + gap.getMinute() + "." + gap.getSecond() + " jam ");
+                    String gapDay = "";
+                    if(gap.getDay()>0){
+                        gapDay = gap.getDay() + " days ";
+                    }
+                    if(gap.getHour()>0){
+                        gapDay = gapDay + gap.getHour() + " hours ";
+                    }
+                    if(gap.getMinute()>0){
+                        gapDay = gapDay + gap.getMinute() + " minutes ";
+                    }
+                    if(gap.getSecond()>0){
+                        gapDay = gapDay + gap.getSecond() + " seconds";
+                    }
+                    row1.createCell(9).setCellValue(gapDay);
                 }else {
-                    row1.createCell(8).setCellValue("");
+                    row1.createCell(9).setCellValue("-");
                 }
-                row1.createCell(9).setCellValue(c.getLocation());
-                row1.createCell(10).setCellValue(c.getAuditee());
-                row1.createCell(11).setCellValue(c.getAuditee_leader());
-                row1.createCell(12).setCellValue(c.getFilename());
-                row1.createCell(13).setCellValue(c.getDescription());
+                row1.createCell(10).setCellValue(c.getLocation());
+                row1.createCell(11).setCellValue(c.getAuditee());
+                row1.createCell(12).setCellValue(c.getAuditee_leader());
+                row1.createCell(13).setCellValue(c.getFilename());
+                row1.createCell(14).setCellValue(c.getDescription());
                 if (c.getPriority() != null) {
-                    row1.createCell(14).setCellValue(c.getPriority().name());
+                    row1.createCell(15).setCellValue(c.getPriority().name());
                 } else {
-                    row1.createCell(14).setCellValue("");
+                    row1.createCell(15).setCellValue("");
                 }
-                row1.createCell(15).setCellValue(convertDateToRoman.convertDateToString(c.getCreated_at()));
-                row1.createCell(16).setCellValue(c.getStatus().name());
+                row1.createCell(16).setCellValue(convertDateToRoman.convertDateToString(c.getCreated_at()));
+                row1.createCell(17).setCellValue(c.getStatus().name());
             }
 
             workbook.write(byteArrayOutputStream);
