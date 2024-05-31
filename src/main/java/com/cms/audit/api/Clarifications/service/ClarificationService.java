@@ -238,16 +238,16 @@ public class ClarificationService {
                                                 response.getEnd_date_realization(),
                                                 response.getStart_date_realization());
                                 String gapDay = "";
-                                if (gap.getDay() > 0) {
+                                if (gap.getDay() != 0) {
                                         gapDay = gap.getDay() + " days ";
                                 }
-                                if (gap.getHour() > 0) {
+                                if (gap.getHour() != 0) {
                                         gapDay = gapDay + gap.getHour() + " hours ";
                                 }
-                                if (gap.getMinute() > 0) {
+                                if (gap.getMinute() != 0) {
                                         gapDay = gapDay + gap.getMinute() + " minutes ";
                                 }
-                                if (gap.getSecond() > 0) {
+                                if (gap.getSecond() != 0) {
                                         gapDay = gapDay + gap.getSecond() + " seconds";
                                 }
                                 clarification.put("finish", gapDay);
@@ -259,16 +259,16 @@ public class ClarificationService {
                                                 response.getEnd_date_realization(),
                                                 response.getEvaluation_limitation());
                                 String gapDay = "";
-                                if (gap.getDay() > 0) {
+                                if (gap.getDay() != 0) {
                                         gapDay = gap.getDay() + " days ";
                                 }
-                                if (gap.getHour() > 0) {
+                                if (gap.getHour() != 0) {
                                         gapDay = gapDay + gap.getHour() + " hours ";
                                 }
-                                if (gap.getMinute() > 0) {
+                                if (gap.getMinute() != 0) {
                                         gapDay = gapDay + gap.getMinute() + " minutes ";
                                 }
-                                if (gap.getSecond() > 0) {
+                                if (gap.getSecond() != 0) {
                                         gapDay = gapDay + gap.getSecond() + " seconds";
                                 }
                                 clarification.put("gap", gapDay);

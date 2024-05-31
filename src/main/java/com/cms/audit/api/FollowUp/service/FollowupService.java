@@ -95,24 +95,21 @@ public class FollowupService {
                 fuMap.put("branch", fu.getBranch());
 
                 List<Object> listPenalty = new ArrayList<>();
-                if (fu.getPenalty().isEmpty()) {
+                if (!fu.getPenalty().isEmpty()) {
                     for (int u = 0; u < fu.getPenalty().size(); u++) {
                         Optional<Penalty> getPenalty = penaltyRepository.findById(fu.getPenalty().get(u));
                         if (!getPenalty.isPresent()) {
                             return GlobalResponse.builder()
                                     .message("Penalty dengan id : " + fu.getPenalty().get(u) + " tidak ditemukan")
-                                    .errorMessage("Tidak dapat menemukan penalty").status(HttpStatus.BAD_REQUEST)
-                                    .build();
+                                    .errorMessage("Tidak dapat menemukan penalty").status(HttpStatus.BAD_REQUEST).build();
                         }
                         Map<String, Object> objPenalty = new LinkedHashMap<>();
                         objPenalty.put("id", getPenalty.get().getId());
                         objPenalty.put("name", getPenalty.get().getName());
                         listPenalty.add(objPenalty);
                     }
-                    fuMap.put("penalty", listPenalty);
-                } else {
-                    fuMap.put("penalty", listPenalty);
                 }
+                fuMap.put("penalty", listPenalty);
 
                 Map<String, Object> clarification = new LinkedHashMap<>();
                 clarification.put("id", fu.getClarification().getId());
