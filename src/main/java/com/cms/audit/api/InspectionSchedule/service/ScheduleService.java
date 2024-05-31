@@ -25,6 +25,7 @@ import com.cms.audit.api.AuditDailyReport.repository.AuditDailyReportDetailRepos
 import com.cms.audit.api.AuditDailyReport.repository.AuditDailyReportRepository;
 import com.cms.audit.api.AuditWorkingPaper.models.AuditWorkingPaper;
 import com.cms.audit.api.AuditWorkingPaper.repository.AuditWorkingPaperRepository;
+import com.cms.audit.api.Clarifications.models.Clarification;
 import com.cms.audit.api.Common.constant.SpecificationFIlter;
 import com.cms.audit.api.Common.constant.convertDateToRoman;
 import com.cms.audit.api.Common.exception.ResourceNotFoundException;
@@ -154,7 +155,7 @@ public class ScheduleService {
                         }
                         if (getUser.getLevel().getCode().equals("B")) {
                                 spec = spec.and(new SpecificationFIlter<Schedule>()
-                                                .getByRegionIds(getUser.getRegionId()));
+                                                .getByRegionIds(getUser.getRegionId())).or(new SpecificationFIlter<Schedule>().userId(getUser.getId()));
                         }
                         spec = spec.and(new SpecificationFIlter<Schedule>().orderByIdDesc());
                         Page<Schedule> response = pag.findAll(spec, PageRequest.of(page, size));

@@ -36,7 +36,6 @@ import com.cms.audit.api.FollowUp.models.EStatusFollowup;
 import com.cms.audit.api.FollowUp.models.FollowUp;
 import com.cms.audit.api.FollowUp.repository.FollowUpRepository;
 import com.cms.audit.api.FollowUp.repository.PagFollowup;
-import com.cms.audit.api.Management.Penalty.dto.response.PenaltyInterface;
 import com.cms.audit.api.Management.Penalty.models.Penalty;
 import com.cms.audit.api.Management.Penalty.repository.PenaltyRepository;
 import com.cms.audit.api.Management.User.models.User;
@@ -129,7 +128,25 @@ public class FollowupService {
                 fuMap.put("charging_costs", fu.getCharging_costs());
                 fuMap.put("description", fu.getDescription());
                 fuMap.put("note", fu.getNote());
-                fuMap.put("penalty_relization", fu.getPenaltyRealization());
+                List<Object> listPenaltyReal = new ArrayList<>();
+                if (fu.getPenaltyRealization().isEmpty()) {
+                    for (int u = 0; u < fu.getPenalty().size(); u++) {
+                        Optional<Penalty> getPenalty = penaltyRepository.findById(fu.getPenalty().get(u));
+                        if (!getPenalty.isPresent()) {
+                            return GlobalResponse.builder()
+                                    .message("Penalty dengan id : " + fu.getPenalty().get(u) + " tidak ditemukan")
+                                    .errorMessage("Tidak dapat menemukan penalty").status(HttpStatus.BAD_REQUEST)
+                                    .build();
+                        }
+                        Map<String, Object> objPenalty = new LinkedHashMap<>();
+                        objPenalty.put("id", getPenalty.get().getId());
+                        objPenalty.put("code", getPenalty.get().getName());
+                        listPenaltyReal.add(objPenalty);
+                    }
+                    fuMap.put("penalty_relization", listPenaltyReal);
+                } else {
+                    fuMap.put("penalty_relization", listPenaltyReal);
+                }
                 fuMap.put("status", fu.getStatus());
                 fuMap.put("filename", fu.getFilename());
                 fuMap.put("file_path", fu.getFilePath());
@@ -228,7 +245,25 @@ public class FollowupService {
             fuMap.put("charging_costs", fu.getCharging_costs());
             fuMap.put("description", fu.getDescription());
             fuMap.put("note", fu.getNote());
-            fuMap.put("penalty_relization", fu.getPenaltyRealization());
+            List<Object> listPenaltyReal = new ArrayList<>();
+                if (fu.getPenaltyRealization().isEmpty()) {
+                    for (int u = 0; u < fu.getPenalty().size(); u++) {
+                        Optional<Penalty> getPenalty = penaltyRepository.findById(fu.getPenalty().get(u));
+                        if (!getPenalty.isPresent()) {
+                            return GlobalResponse.builder()
+                                    .message("Penalty dengan id : " + fu.getPenalty().get(u) + " tidak ditemukan")
+                                    .errorMessage("Tidak dapat menemukan penalty").status(HttpStatus.BAD_REQUEST)
+                                    .build();
+                        }
+                        Map<String, Object> objPenalty = new LinkedHashMap<>();
+                        objPenalty.put("id", getPenalty.get().getId());
+                        objPenalty.put("code", getPenalty.get().getName());
+                        listPenaltyReal.add(objPenalty);
+                    }
+                    fuMap.put("penalty_relization", listPenaltyReal);
+                } else {
+                    fuMap.put("penalty_relization", listPenaltyReal);
+                }
             fuMap.put("status", fu.getStatus());
             fuMap.put("filename", fu.getFilename());
             fuMap.put("file_path", fu.getFilePath());

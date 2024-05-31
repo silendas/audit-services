@@ -649,7 +649,6 @@ public class ClarificationService {
                                                 .status(HttpStatus.BAD_REQUEST)
                                                 .build();
                         }
-
                         if (dto.getIs_followup() == null) {
                                 dto.setIs_followup(0L);
                         }
@@ -756,8 +755,7 @@ public class ClarificationService {
                                 returnResponse.put("bap", mappingFU);
                         }
 
-                        if (dto.getIs_followup() != 0 && dto.getIs_followup() != null
-                                        || dto.getIs_followup().toString() != "") {
+                        if (dto.getIs_followup() != 0 && dto.getIs_followup() != null) {
                                 Optional<NumberClarificationInterface> checkTLBefore = followUpRepository
                                                 .checkNumberFollowUp(response.getUser().getId());
                                 if (checkTLBefore.isPresent()) {
