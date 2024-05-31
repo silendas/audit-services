@@ -47,6 +47,18 @@ public class convertDateToRoman {
         long minutes = duration.toMinutes() % 60;
         long seconds = duration.getSeconds() % 60;
 
+        if(days < 0 && hours < 0 && minutes < 0 && seconds < 0) {
+            Duration duration2 = Duration.between(localDateTime2, localDateTime1);
+            long days2 = duration2.toDays();
+            long hours2 = duration2.toHours() % 24;
+            long minutes2 = duration2.toMinutes() % 60;
+            long seconds2 = duration2.getSeconds() % 60;
+            days = days2;
+            hours = hours2;
+            minutes = minutes2;
+            seconds = seconds2;
+        }
+
         // Kembalikan GapDTO dengan format yang diinginkan
         return GapDTO.builder()
                 .day(days)

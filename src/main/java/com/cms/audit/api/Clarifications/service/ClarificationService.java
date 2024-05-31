@@ -233,10 +233,11 @@ public class ClarificationService {
                         clarification.put("auditee_leader", response.getAuditee_leader());
                         clarification.put("start_date_realization", response.getStart_date_realization());
                         clarification.put("end_date_realization", response.getEnd_date_realization());
-                        if (response.getEnd_date_realization() != null && response.getStart_date_realization() != null) {
+                        if (response.getEnd_date_realization() != null
+                                        && response.getStart_date_realization() != null) {
                                 GapDTO gap = convertDateToRoman.calculateDateDifference(
-                                                response.getEnd_date_realization(),
-                                                response.getStart_date_realization());
+                                                response.getStart_date_realization(),
+                                                response.getEnd_date_realization());
                                 String gapDay = "";
                                 if (gap.getDay() != 0) {
                                         gapDay = gap.getDay() + " days ";
@@ -294,14 +295,7 @@ public class ClarificationService {
                         clarification.put("evaluation", response.getEvaluation());
                         clarification.put("status", response.getStatus());
                         clarification.put("nominal_loss", response.getNominal_loss());
-                        if (response.getEvaluation_limitation() == null) {
-                                clarification.put("evaluation_limitation", null);
-                        } else {
-                                clarification.put("evaluation_limitation",
-                                                convertDateToRoman.convertDateToString(
-                                                                response.getEvaluation_limitation()));
-                        }
-                        clarification.put("is_follow_up", response.getIs_follow_up());
+                        clarification.put("evaluation_limitation", response.getEvaluation_limitation());
                         if (response.getFilename() == null) {
                                 clarification.put("is_flag", 1);
                         } else {
