@@ -755,7 +755,7 @@ public class ClarificationService {
                                 returnResponse.put("bap", mappingFU);
                         }
 
-                        if (dto.getIs_followup() != 0 && dto.getIs_followup() != null) {
+                        if (dto.getIs_followup() != null && dto.getIs_followup() != 0 ) {
                                 Optional<NumberClarificationInterface> checkTLBefore = followUpRepository
                                                 .checkNumberFollowUp(response.getUser().getId());
                                 if (checkTLBefore.isPresent()) {
