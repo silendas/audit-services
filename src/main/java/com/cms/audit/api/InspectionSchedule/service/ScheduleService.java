@@ -153,9 +153,12 @@ public class ScheduleService {
                         if (getUser.getLevel().getCode().equals("C")) {
                                 spec = spec.and(new SpecificationFIlter<Schedule>().userId(getUser.getId()));
                         }
-                        if (getUser.getLevel().getCode().equals("B")) {
+                        if (getUser.getLevel().getCode().equals("B") && category == ECategory.SPECIAL) {
                                 spec = spec.and(new SpecificationFIlter<Schedule>()
                                                 .getByRegionIds(getUser.getRegionId())).or(new SpecificationFIlter<Schedule>().userId(getUser.getId()));
+                        } else if(getUser.getLevel().getCode().equals("B")){
+                                spec = spec.and(new SpecificationFIlter<Schedule>()
+                                                .getByRegionIds(getUser.getRegionId()));
                         }
                         spec = spec.and(new SpecificationFIlter<Schedule>().orderByIdDesc());
                         Page<Schedule> response = pag.findAll(spec, PageRequest.of(page, size));
