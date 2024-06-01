@@ -577,14 +577,14 @@ public class ScheduleService {
                                 // .build();
                                 // }
 
-                                if (scheduleDTO.getSchedules().get(i).getStart_date().before(getDateNow())) {
-                                        return GlobalResponse
-                                                        .builder()
-                                                        .message("Tidak boleh input jadwal dengan tanggal sebelumnya")
-                                                        .errorMessage("Tidak bisa menambahkan jadwal dengan tanggal sebelumnya")
-                                                        .status(HttpStatus.BAD_REQUEST)
-                                                        .build();
-                                }
+                                // if (scheduleDTO.getSchedules().get(i).getStart_date().before(getDateNow())) {
+                                //         return GlobalResponse
+                                //                         .builder()
+                                //                         .message("Tidak boleh input jadwal dengan tanggal sebelumnya")
+                                //                         .errorMessage("Tidak bisa menambahkan jadwal dengan tanggal sebelumnya")
+                                //                         .status(HttpStatus.BAD_REQUEST)
+                                //                         .build();
+                                // }
 
                                 List<Schedule> checkIfExist = repository.findScheduleInAllCheckNoCheck(
                                                 scheduleDTO.getSchedules().get(i).getUser_id(),
@@ -796,14 +796,14 @@ public class ScheduleService {
                                 // .build();
                                 // }
 
-                                if (scheduleDTO.getSchedules().get(i).getStart_date().before(getDateNow())) {
-                                        return GlobalResponse
-                                                        .builder()
-                                                        .message("Tidak boleh input jadwal dengan tanggal sebelumnya")
-                                                        .errorMessage("Tidak bisa menambahkan jadwal dengan tanggal sebelumnya")
-                                                        .status(HttpStatus.BAD_REQUEST)
-                                                        .build();
-                                }
+                                // if (scheduleDTO.getSchedules().get(i).getStart_date().before(getDateNow())) {
+                                //         return GlobalResponse
+                                //                         .builder()
+                                //                         .message("Tidak boleh input jadwal dengan tanggal sebelumnya")
+                                //                         .errorMessage("Tidak bisa menambahkan jadwal dengan tanggal sebelumnya")
+                                //                         .status(HttpStatus.BAD_REQUEST)
+                                //                         .build();
+                                // }
 
                                 List<Schedule> checkIfExist = repository.findScheduleInAllCheckNoCheck(
                                                 scheduleDTO.getSchedules().get(i).getUser_id(),
