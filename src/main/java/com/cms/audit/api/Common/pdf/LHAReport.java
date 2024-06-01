@@ -411,7 +411,7 @@ public class LHAReport {
                                                         .setBackgroundColor(Color.YELLOW)
                                                         .setFontSize(5).setTextAlignment(TextAlignment.CENTER)
                                                         .setVerticalAlignment(VerticalAlignment.MIDDLE));
-                                        float bodyNested2Lenght[] = { 32f, 100f, 100f, 100f, 100f };
+                                        float bodyNested2Lenght[] = { 31f, 98f, 100f, 100f, 103f };
                                         Table bodyNested2 = new Table(bodyNested2Lenght)
                                                         .setHorizontalAlignment(HorizontalAlignment.CENTER);
                                         for (int u = 0; u < dto.get(o).getLha_detail().get(i).getDetails()
