@@ -86,13 +86,12 @@ public class UserService {
                                                 "user with username " + username + " is not found"));
 
                 Pageable pageable = PageRequest.of(page, size);
-                Specification<User> spec = Specification.where(new SpecificationFIlter<User>().isNotDeleted())
-                                .and(new SpecificationFIlter<User>().fullnameLike(fullname))
+                Specification<User> spec = Specification.where(new SpecificationFIlter<User>().fullnameLike(fullname))
                                 .and(new SpecificationFIlter<User>().orderByIdAsc())
                                 .and(new SpecificationFIlter<User>().idNotShow(1L));
 
-                if (getUser.getLevel().getCode().equals("A")) {
-                        // No additional filter for level A, retrieves all users
+                if (getUser.getLevel().getCode().equals("A") && !getUser.getRole().getName().equals("ADMINISTRATOR")) {
+                        spec = spec.and(new SpecificationFIlter<User>().isNotDeleted());
                 } else if (getUser.getLevel().getCode().equals("B")) {
                         if (getUser.getRegionId() != null && !getUser.getRegionId().isEmpty()) {
                                 Specification<Branch> specBranch = Specification
@@ -104,11 +103,11 @@ public class UserService {
                                 for (int i = 0; i < getBranch.size(); i++) {
                                         branchIds.add(getBranch.get(i).getId());
                                 }
-                                spec = spec.and(new SpecificationFIlter<User>().getByBranchIds(branchIds));
+                                spec = spec.and(new SpecificationFIlter<User>().getByBranchIds(branchIds)).and(new SpecificationFIlter<User>().isNotDeleted());
                         }
                 } else if (getUser.getLevel().getCode().equals("C")) {
                         return GlobalResponse.builder().message("Audit wilayah tidak dapat akses")
-                                        .status(HttpStatus.BAD_REQUEST).build();
+                                        .status(HttpStatus.UNAUTHORIZED).build();
                 }
 
                 Page<User> usersPage = pagUser.findAll(spec, pageable);

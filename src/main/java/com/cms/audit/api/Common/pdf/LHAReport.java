@@ -281,7 +281,7 @@ public class LHAReport {
 
                 float bodyLenght[] = { 600f };
                 Table body = new Table(bodyLenght).setHorizontalAlignment(HorizontalAlignment.CENTER);
-                body.addCell(new Cell().add("No Data Found").setBackgroundColor(Color.YELLOW).setFontSize(5)
+                body.addCell(new Cell().add("Tidak ada data").setBackgroundColor(Color.YELLOW).setFontSize(5)
                                 .setTextAlignment(TextAlignment.CENTER).setVerticalAlignment(VerticalAlignment.MIDDLE));
 
                 document.add(body);
