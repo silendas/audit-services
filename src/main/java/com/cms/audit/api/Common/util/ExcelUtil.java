@@ -74,16 +74,15 @@ public class ExcelUtil {
                     String gapDay = "";
                     if (gap.getDay() > 0) {
                         gapDay = gap.getDay() + " hari ";
-                    } else {
-                        if (gap.getHour() != 0) {
-                            gapDay = gapDay + gap.getHour() + " jam ";
-                        }
-                        if (gap.getMinute() != 0) {
-                            gapDay = gapDay + gap.getMinute() + " menit ";
-                        }
-                        if (gap.getSecond() != 0) {
-                            gapDay = gapDay + gap.getSecond() + " detik";
-                        }
+                    }
+                    if (gap.getHour() != 0) {
+                        gapDay = gapDay + gap.getHour() + " jam ";
+                    }
+                    if (gap.getMinute() != 0) {
+                        gapDay = gapDay + gap.getMinute() + " menit ";
+                    }
+                    if (gap.getSecond() != 0) {
+                        gapDay = gapDay + gap.getSecond() + " detik";
                     }
                     row1.createCell(8).setCellValue(gapDay);
                 } else {
@@ -95,16 +94,15 @@ public class ExcelUtil {
                     String gapDay = "";
                     if (gap.getDay() > 0) {
                         gapDay = gap.getDay() + " hari ";
-                    } else {
-                        if (gap.getHour() != 0) {
-                            gapDay = gapDay + gap.getHour() + " jam ";
-                        }
-                        if (gap.getMinute() != 0) {
-                            gapDay = gapDay + gap.getMinute() + " menit ";
-                        }
-                        if (gap.getSecond() != 0) {
-                            gapDay = gapDay + gap.getSecond() + " detik";
-                        }
+                    }
+                    if (gap.getHour() != 0) {
+                        gapDay = gapDay + gap.getHour() + " jam ";
+                    }
+                    if (gap.getMinute() != 0) {
+                        gapDay = gapDay + gap.getMinute() + " menit ";
+                    }
+                    if (gap.getSecond() != 0) {
+                        gapDay = gapDay + gap.getSecond() + " detik";
                     }
                     row1.createCell(9).setCellValue(gapDay);
                 } else {

@@ -241,16 +241,15 @@ public class ClarificationService {
                                 String gapDay = "";
                                 if (gap.getDay() > 0) {
                                         gapDay = gap.getDay() + " hari ";
-                                } else {
-                                        if (gap.getHour() != 0) {
-                                                gapDay = gapDay + gap.getHour() + " jam ";
-                                        }
-                                        if (gap.getMinute() != 0) {
-                                                gapDay = gapDay + gap.getMinute() + " menit ";
-                                        }
-                                        if (gap.getSecond() != 0) {
-                                                gapDay = gapDay + gap.getSecond() + " detik";
-                                        }
+                                }
+                                if (gap.getHour() != 0) {
+                                        gapDay = gapDay + gap.getHour() + " jam ";
+                                }
+                                if (gap.getMinute() != 0) {
+                                        gapDay = gapDay + gap.getMinute() + " menit ";
+                                }
+                                if (gap.getSecond() != 0) {
+                                        gapDay = gapDay + gap.getSecond() + " detik";
                                 }
                                 clarification.put("finish", gapDay);
                         } else {
@@ -263,16 +262,15 @@ public class ClarificationService {
                                 String gapDay = "";
                                 if (gap.getDay() > 0) {
                                         gapDay = gap.getDay() + " hari ";
-                                } else {
-                                        if (gap.getHour() != 0) {
-                                                gapDay = gapDay + gap.getHour() + " jam ";
-                                        }
-                                        if (gap.getMinute() != 0) {
-                                                gapDay = gapDay + gap.getMinute() + " menit ";
-                                        }
-                                        if (gap.getSecond() != 0) {
-                                                gapDay = gapDay + gap.getSecond() + " detik";
-                                        }
+                                }
+                                if (gap.getHour() != 0) {
+                                        gapDay = gapDay + gap.getHour() + " jam ";
+                                }
+                                if (gap.getMinute() != 0) {
+                                        gapDay = gapDay + gap.getMinute() + " menit ";
+                                }
+                                if (gap.getSecond() != 0) {
+                                        gapDay = gapDay + gap.getSecond() + " detik";
                                 }
                                 clarification.put("gap", gapDay);
                         } else {
