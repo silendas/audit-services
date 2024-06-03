@@ -616,7 +616,7 @@ public class AuditDailyReportService {
                         }
                         Optional<Schedule> checkShcedule = scheduleRepository.CheckIfScheduleisNow(dto.getSchedule_id());
                         if (checkShcedule.isPresent()) {
-                                if(checkShcedule.get().getStart_date().after(new Date())){
+                                if(convertDateToRoman.setTimeToZero(checkShcedule.get().getStart_date()).after(new Date())){
                                         return GlobalResponse
                                                         .builder()
                                                         .message("Jadwal ini belum aktif")
