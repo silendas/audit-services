@@ -26,11 +26,14 @@ import com.cms.audit.api.Management.User.dto.UserDTO;
 import com.cms.audit.api.Management.User.services.UserService;
 
 import io.micrometer.common.lang.NonNull;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
 @Validated
 @RequestMapping(value = BasePath.BASE_PATH_USER)
+@Tag(name = "Users", description = "Users Endpoints")
 public class UserController {
     @Autowired
     private UserService userService;

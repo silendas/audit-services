@@ -19,12 +19,14 @@ import com.cms.audit.api.Management.User.models.User;
 import com.cms.audit.api.Management.User.services.UserService;
 
 import io.micrometer.common.lang.NonNull;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
 import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping(value = BasePath.BASE_PATH_PROFILE)
+@Tag(name = "Profile User", description = "Profile Endpoints")
 public class ProfileController {
 
     @Autowired
