@@ -19,7 +19,7 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
         @Query(value = "SELECT * FROM inspection_schedule u WHERE u.user_id = :userId AND u.category = :category AND u.is_delete = 0 ORDER BY u.id DESC ", nativeQuery = true)
         public List<Schedule> findAllScheduleByUserId(@Param("userId") Long id, @Param("category") String ucategory);
 
-        @Query(value = "SELECT * FROM inspection_schedule u WHERE u.user_id = :userId AND u.category = :category AND (u.start_date BETWEEN :start_date AND :end_date OR u.end_date BETWEEN :start_date AND :end_date) AND u.is_delete = 0 ORDER BY u.id DESC ", nativeQuery = true)
+        @Query(value = "SELECT * FROM inspection_schedule u WHERE u.user_id = :userId AND u.category = :category AND (:start_date BETWEEN u.start_date AND u.end_date OR :end_date BETWEEN u.start_date AND u.end_date) AND u.is_delete = 0 ORDER BY u.id DESC ", nativeQuery = true)
         public List<Schedule> findAllScheduleByDateRange(@Param("category") String ucategory,
                         @Param("start_date") Date start_date,
                         @Param("end_date") Date end_date);
@@ -32,7 +32,7 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
         public List<Schedule> findAllScheduleByBranchId(@Param("branchId") Long id,
                         @Param("category") String ucategory);
 
-        @Query(value = "SELECT * FROM inspection_schedule u WHERE u.user_id = :userId AND u.category = :category AND (u.start_date BETWEEN :start_date AND :end_date OR u.end_date BETWEEN :start_date AND :end_date) AND u.is_delete = 0 ;", nativeQuery = true)
+        @Query(value = "SELECT * FROM inspection_schedule u WHERE u.user_id = :userId AND u.category = :category AND (:start_date BETWEEN u.start_date AND u.end_date OR :end_date BETWEEN u.start_date AND u.end_date) AND u.is_delete = 0 ;", nativeQuery = true)
         public List<Schedule> findScheduleInDateRangeByUserId(@Param("userId") Long userId,
                         @Param("category") String ucategory, @Param("start_date") Date start_date,
                         @Param("end_date") Date end_date);
@@ -42,12 +42,12 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
                         @Param("start_date") Date start_date,
                         @Param("end_date") Date end_date);
 
-        @Query(value = "SELECT * FROM inspection_schedule u WHERE u.branch_id = :branchId AND (u.start_date BETWEEN :start_date AND :end_date OR u.end_date BETWEEN :start_date AND :end_date) AND u.is_delete = 0 ;", nativeQuery = true)
+        @Query(value = "SELECT * FROM inspection_schedule u WHERE u.branch_id = :branchId AND (:start_date BETWEEN u.start_date AND u.end_date OR :end_date BETWEEN u.start_date AND u.end_date) AND u.is_delete = 0 ;", nativeQuery = true)
         public List<Schedule> findScheduleInDateRangeByBranchIdNoCategory(@Param("branchId") Long branchId,
                         @Param("start_date") Date start_date,
                         @Param("end_date") Date end_date);
 
-        @Query(value = "SELECT * FROM inspection_schedule u WHERE u.user_id = :userId AND (u.start_date BETWEEN :start_date AND :end_date OR u.end_date BETWEEN :start_date AND :end_date) AND u.status <> 'DONE' AND u.category = 'SPECIAL' AND u.id <> :schedule_id AND u.is_delete = 0 ;", nativeQuery = true)
+        @Query(value = "SELECT * FROM inspection_schedule u WHERE u.user_id = :userId AND (:start_date BETWEEN u.start_date AND u.end_date OR :end_date BETWEEN u.start_date AND u.end_date) AND u.status <> 'DONE' AND u.category = 'SPECIAL' AND u.id <> :schedule_id AND u.is_delete = 0 ;", nativeQuery = true)
         public List<Schedule> findScheduleInDateRangeByUserIdNoCategoryForSpecial(@Param("userId") Long userId,
                         @Param("schedule_id") Long schdule_id,
                         @Param("start_date") Date start_date,
@@ -58,13 +58,13 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
                         @Param("start_date") Date start_date,
                         @Param("end_date") Date end_date);
 
-        @Query(value = "SELECT * FROM inspection_schedule u WHERE u.user_id = :userId AND (u.start_date BETWEEN :start_date AND :end_date OR u.end_date BETWEEN :start_date AND :end_date) AND u.id <> :schedule_id AND u.is_delete = 0 ;", nativeQuery = true)
+        @Query(value = "SELECT * FROM inspection_schedule u WHERE u.user_id = :userId AND (:start_date BETWEEN u.start_date AND u.end_date OR :end_date BETWEEN u.start_date AND u.end_date) AND u.id <> :schedule_id AND u.is_delete = 0 ;", nativeQuery = true)
         public List<Schedule> findScheduleInDateRangeByUserIdNoCategoryEdit(@Param("userId") Long userId,
                         @Param("schedule_id") Long schdule_id,
                         @Param("start_date") Date start_date,
                         @Param("end_date") Date end_date);
 
-        @Query(value = "SELECT * FROM inspection_schedule u WHERE u.user_id = :userId AND u.description = :description AND (u.start_date BETWEEN :start_date AND :end_date OR u.end_date BETWEEN :start_date AND :end_date) AND u.is_delete = 0 ;", nativeQuery = true)
+        @Query(value = "SELECT * FROM inspection_schedule u WHERE u.user_id = :userId AND u.description = :description AND (:start_date BETWEEN u.start_date AND u.end_date OR :end_date BETWEEN u.start_date AND u.end_date) AND u.is_delete = 0 ;", nativeQuery = true)
         public List<Schedule> findScheduleInDateRangeByUserIdNoCategoryForEdit(@Param("userId") Long userId,
                         @Param("description") String description,
                         @Param("start_date") Date start_date,
@@ -86,8 +86,8 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
                         @Param("branchId") Long branchId, @Param("start_date") Date start_date,
                         @Param("end_date") Date end_date);
 
-        @Query(value = "SELECT * FROM inspection_schedule u WHERE u.id = :id AND DATE(CURRENT_TIMESTAMP) BETWEEN DATE(u.start_date) AND DATE(u.end_date);", nativeQuery = true)
-        public List<Schedule> CheckIfScheduleisNow(@Param("id") Long id);
+        @Query(value = "SELECT * FROM inspection_schedule u WHERE u.id = :id", nativeQuery = true)
+        public Optional<Schedule> CheckIfScheduleisNow(@Param("id") Long id);
 
         @Query(value = "SELECT u.* FROM inspection_schedule u INNER JOIN branch_office bo ON u.branch_id = bo.id INNER JOIN area_office ao ON bo.area_id = ao.id INNER JOIN region_office ro ON ao.region_id = ro.id WHERE ro.id = :regionId AND u.category = :category AND u.is_delete <> 1 ORDER BY u.id DESC ;", nativeQuery = true)
         public List<Schedule> findByRegionId(@Param("regionId") Long regionId, @Param("category") String category);
