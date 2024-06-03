@@ -37,7 +37,7 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
                         @Param("category") String ucategory, @Param("start_date") Date start_date,
                         @Param("end_date") Date end_date);
 
-        @Query(value = "SELECT * FROM inspection_schedule u WHERE u.user_id = :userId AND (u.start_date BETWEEN :start_date AND :end_date OR u.end_date BETWEEN :start_date AND :end_date) AND u.is_delete = 0 AND u.status <> 'APPROVE' AND u.status <> 'REJECTED';", nativeQuery = true)
+        @Query(value = "SELECT * FROM inspection_schedule u WHERE u.user_id = :userId AND (:start_date BETWEEN u.start_date AND u.end_date OR :end_date BETWEEN u.start_date AND u.end_date) AND u.is_delete = 0 AND u.status <> 'APPROVE' AND u.status <> 'REJECTED';", nativeQuery = true)
         public List<Schedule> findScheduleInDateRangeByUserIdNoCategory(@Param("userId") Long userId,
                         @Param("start_date") Date start_date,
                         @Param("end_date") Date end_date);
@@ -53,7 +53,7 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
                         @Param("start_date") Date start_date,
                         @Param("end_date") Date end_date);
 
-        @Query(value = "SELECT * FROM inspection_schedule u WHERE u.user_id = :userId AND (u.start_date BETWEEN :start_date AND :end_date OR u.end_date BETWEEN :start_date AND :end_date) AND u.status <> 'DONE' AND u.category = 'SPECIAL' AND u.is_delete = 0 ;", nativeQuery = true)
+        @Query(value = "SELECT * FROM inspection_schedule u WHERE u.user_id = :userId AND (:start_date BETWEEN u.start_date AND u.end_date OR :end_date BETWEEN u.start_date AND u.end_date) AND u.status <> 'DONE' AND u.category = 'SPECIAL' AND u.is_delete = 0 ;", nativeQuery = true)
         public List<Schedule> findScheduleInDateRangeByUserIdNoCategoryForSpecialAdd(@Param("userId") Long userId,
                         @Param("start_date") Date start_date,
                         @Param("end_date") Date end_date);
