@@ -616,11 +616,11 @@ public class AuditDailyReportService {
                         }
                         Optional<Schedule> checkShcedule = scheduleRepository.CheckIfScheduleisNow(dto.getSchedule_id());
                         if (checkShcedule.isPresent()) {
-                                if(convertDateToRoman.setTimeToZero(checkShcedule.get().getStart_date()).after(new Date())){
+                                if(checkShcedule.get().getStart_date().after(convertDateToRoman.setTimeToLastSecond(new Date())) || checkShcedule.get().getEnd_date().before(convertDateToRoman.setTimeToZero(new Date()))){
                                         return GlobalResponse
                                                         .builder()
                                                         .message("Jadwal ini belum aktif")
-                                                        .errorMessage("Jadwal ini belum bisa dikerjakan")
+                                                        .errorMessage("Jadwal ini tidak bisa dikerjakan")
                                                         .status(HttpStatus.BAD_REQUEST)
                                                         .build();
                                 }
