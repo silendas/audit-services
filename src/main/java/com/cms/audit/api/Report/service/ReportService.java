@@ -122,7 +122,7 @@ public class ReportService {
             spec = spec.and(new SpecificationFIlter<Clarification>()
                     .getByRegionIds(getUser.getRegionId()));
         }
-
+        System.out.println(response);
          String realizePenalty = "";
         // for (Clarification clarification : response) {
         //     Optional<FollowUp> getFU = fUpRepository.findByClId(clarification.getId());
