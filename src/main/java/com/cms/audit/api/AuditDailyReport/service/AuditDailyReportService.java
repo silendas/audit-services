@@ -614,16 +614,12 @@ public class AuditDailyReportService {
                                         }
                                 }
                         }
-                        Optional<Schedule> checkShcedule = scheduleRepository.CheckIfScheduleisNow(dto.getSchedule_id());
-                        if (checkShcedule.isPresent()) {
-                                if(checkShcedule.get().getStart_date().after(convertDateToRoman.setTimeToLastSecond(new Date())) || checkShcedule.get().getEnd_date().before(convertDateToRoman.setTimeToZero(new Date()))){
-                                        return GlobalResponse
-                                                        .builder()
-                                                        .message("Jadwal ini belum aktif")
-                                                        .errorMessage("Jadwal ini tidak bisa dikerjakan")
-                                                        .status(HttpStatus.BAD_REQUEST)
-                                                        .build();
-                                }
+                        List<Schedule> checkShcedule = scheduleRepository.CheckIfScheduleisNow(dto.getSchedule_id());
+                        if (checkShcedule.isEmpty()) {
+                                return GlobalResponse.builder()
+                                                .message("Tidak dapat memproses jadwal")
+                                                .errorMessage("Tidak dapat memproses jadwal")
+                                                .status(HttpStatus.BAD_REQUEST).build();
                         }
 
                         List<AuditDailyReport> checkLHA = auditDailyReportRepository
