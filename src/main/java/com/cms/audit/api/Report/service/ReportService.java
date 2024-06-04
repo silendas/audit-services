@@ -142,7 +142,7 @@ public class ReportService {
         //         }
         //     }
         // }
-        ByteArrayInputStream data = ExcelUtil.dataToExcel(response, realizePenalty);
+        ByteArrayInputStream data = ExcelUtil.dataToExcel(response);
         return data;
     }
 

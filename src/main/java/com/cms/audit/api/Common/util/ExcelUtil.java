@@ -19,12 +19,11 @@ import java.io.IOException;
 public class ExcelUtil {
     public static String HEADER[] = { "comment_clarification", "auditor", "kasus", "kategori", "kerugian",
             "batas_evaluasi", "tanggal_mulai_realisasi", "tanggal_selesai_realisasi", "waktu_penyelesaian",
-            "tanggal_estimasi", "realisasi_sanksi", "lokasi", "auditee", "atasan_auditee", "file", "deskripsi", "prioritas", "tanggal_terbuat",
-            "status" };
+            "tanggal_estimasi", "lokasi", "auditee", "atasan_auditee", "file", "deskripsi", "prioritas", "tanggal_terbuat","status" };
 
     public static String SHEET_NAME = "Laporan Klarifikasi";
 
-    public static ByteArrayInputStream dataToExcel(List<Clarification> clarificationsList, String realizePenalty) throws IOException {
+    public static ByteArrayInputStream dataToExcel(List<Clarification> clarificationsList) throws IOException {
 
         Workbook workbook = new XSSFWorkbook();
 
@@ -108,19 +107,19 @@ public class ExcelUtil {
                 } else {
                     row1.createCell(9).setCellValue("-");
                 }
-                row1.createCell(10).setCellValue(realizePenalty);
-                row1.createCell(11).setCellValue(c.getLocation());
-                row1.createCell(12).setCellValue(c.getAuditee());
-                row1.createCell(13).setCellValue(c.getAuditee_leader());
-                row1.createCell(14).setCellValue(c.getFilename());
-                row1.createCell(15).setCellValue(c.getDescription());
+//row1.createCell(10).setCellValue(realizePenalty);
+                row1.createCell(10).setCellValue(c.getLocation());
+                row1.createCell(11).setCellValue(c.getAuditee());
+                row1.createCell(12).setCellValue(c.getAuditee_leader());
+                row1.createCell(13).setCellValue(c.getFilename());
+                row1.createCell(14).setCellValue(c.getDescription());
                 if (c.getPriority() != null) {
-                    row1.createCell(16).setCellValue(c.getPriority().name());
+                    row1.createCell(15).setCellValue(c.getPriority().name());
                 } else {
-                    row1.createCell(16).setCellValue("-");
+                    row1.createCell(15).setCellValue("-");
                 }
-                row1.createCell(17).setCellValue(convertDateToRoman.convertDateToString(c.getCreated_at()));
-                row1.createCell(18).setCellValue(c.getStatus().name());
+                row1.createCell(16).setCellValue(convertDateToRoman.convertDateToString(c.getCreated_at()));
+                row1.createCell(17).setCellValue(c.getStatus().name());
             }
 
             workbook.write(byteArrayOutputStream);

@@ -238,7 +238,7 @@ public class GeneratePdf {
                 mark1Table.addCell(new Cell().add("Auditor").setTextAlignment(TextAlignment.CENTER).setFontSize(5)
                                 .setBorder(Border.NO_BORDER));
                 mark1Table.addCell(new Cell()
-                                .add("("+ response.getUser().getFullname() +")")
+                                .add("( "+ response.getUser().getFullname() +" )")
                                 .setTextAlignment(TextAlignment.CENTER).setVerticalAlignment(VerticalAlignment.BOTTOM)
                                 .setHeight(60)
                                 .setFontSize(5).setBorder(Border.NO_BORDER));
@@ -280,7 +280,7 @@ public class GeneratePdf {
                 mark2Table.addCell(new Cell().add("Auditee").setTextAlignment(TextAlignment.CENTER).setFontSize(5)
                                 .setBorder(Border.NO_BORDER));
                 mark2Table.addCell(new Cell()
-                                .add("("+ response.getAuditee() +")")
+                                .add("( "+ response.getAuditee() +" )")
                                 .setTextAlignment(TextAlignment.CENTER).setVerticalAlignment(VerticalAlignment.BOTTOM)
                                 .setHeight(65)
                                 .setFontSize(5).setBorder(Border.NO_BORDER));
