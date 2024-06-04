@@ -73,7 +73,7 @@ public class FollowupService {
                     .and(new SpecificationFIlter<FollowUp>().orderByIdDesc());
 
             if (getUser.getLevel().getCode().equals("C")) {
-                spec = spec.and(new SpecificationFIlter<FollowUp>().userId(getUser.getId())).and(new SpecificationFIlter<FollowUp>().getByStatusAll(EStatusFollowup.CLOSE.toString()));
+                spec = spec.and(new SpecificationFIlter<FollowUp>().userId(getUser.getId())).and(new SpecificationFIlter<FollowUp>().getByStatusFU(EStatusFollowup.CLOSE));
             } else if (getUser.getLevel().getCode().equals("B")) {
                 spec = spec.and(new SpecificationFIlter<FollowUp>().getByRegionIds(getUser.getRegionId())).or(new SpecificationFIlter<FollowUp>().userId(getUser.getId()));
             }

@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.poi.ss.formula.functions.T;
 import org.springframework.data.jpa.domain.Specification;
 
+import com.cms.audit.api.FollowUp.models.EStatusFollowup;
 import com.cms.audit.api.InspectionSchedule.models.ECategory;
 import com.cms.audit.api.InspectionSchedule.models.EStatus;
 import com.cms.audit.api.Management.Office.AreaOffice.models.Area;
@@ -215,12 +216,9 @@ public class SpecificationFIlter<T> {
         };
     }
 
-    public Specification<T> getByStatusAll(String statuses) {
+    public Specification<T> getByStatusFU(EStatusFollowup statuses) {
         return (Root<T> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) -> {
-            if (statuses != null && !statuses.isEmpty()) {
-                return root.get("status").in(statuses);
-            }
-            return null;
+            return criteriaBuilder.equal(root.get("status"), statuses);
         };
     }
 
