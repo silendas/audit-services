@@ -63,7 +63,7 @@ public class ReportService {
     @Autowired
     private FollowUpRepository fUpRepository;
 
-    @Autowired 
+    @Autowired
     private PenaltyRepository penaltyRepository;
 
     @Autowired
@@ -122,20 +122,22 @@ public class ReportService {
             spec = spec.and(new SpecificationFIlter<Clarification>()
                     .getByRegionIds(getUser.getRegionId()));
         }
+
         String realizePenalty = "";
-        
         for (Clarification clarification : response) {
             Optional<FollowUp> getFU = fUpRepository.findByClId(clarification.getId());
             if (getFU.isPresent()) {
                 FollowUp followUp = getFU.get();
-                for (Long penaltyId : followUp.getPenaltyRealization()) {
-                    Optional<Penalty> penaltyOpt = penaltyRepository.findById(penaltyId);
-                    if (penaltyOpt.isPresent()) {
-                        Penalty penalty = penaltyOpt.get();
-                        if (!realizePenalty.isEmpty()) {
-                            realizePenalty += ", ";
+                if (followUp.getPenaltyRealization() != null) {
+                    for (Long penaltyId : followUp.getPenaltyRealization()) {
+                        Optional<Penalty> penaltyOpt = penaltyRepository.findById(penaltyId);
+                        if (penaltyOpt.isPresent()) {
+                            Penalty penalty = penaltyOpt.get();
+                            if (!realizePenalty.isEmpty()) {
+                                realizePenalty += ", ";
+                            }
+                            realizePenalty += penalty.getName();
                         }
-                        realizePenalty += penalty.getName();
                     }
                 }
             }
