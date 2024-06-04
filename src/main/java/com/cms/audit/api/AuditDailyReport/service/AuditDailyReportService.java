@@ -1,6 +1,7 @@
 package com.cms.audit.api.AuditDailyReport.service;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -614,13 +615,14 @@ public class AuditDailyReportService {
                                         }
                                 }
                         }
-                        List<Schedule> checkShcedule = scheduleRepository.CheckIfScheduleisNow(dto.getSchedule_id());
-                        if (checkShcedule.isEmpty()) {
-                                return GlobalResponse.builder()
-                                                .message("Tidak dapat memproses jadwal")
-                                                .errorMessage("Tidak dapat memproses jadwal")
-                                                .status(HttpStatus.BAD_REQUEST).build();
-                        }
+                        // List<Schedule> checkShcedule =
+                        // scheduleRepository.CheckIfScheduleisNow(dto.getSchedule_id());
+                        // if (checkShcedule.isEmpty()) {
+                        // return GlobalResponse.builder()
+                        // .message("Tidak dapat memproses jadwal")
+                        // .errorMessage("Tidak dapat memproses jadwal")
+                        // .status(HttpStatus.BAD_REQUEST).build();
+                        // }
 
                         List<AuditDailyReport> checkLHA = auditDailyReportRepository
                                         .findByCurrentDay(dto.getSchedule_id());
@@ -640,6 +642,41 @@ public class AuditDailyReportService {
                                                                 + " tidak ditemukan")
                                                 .status(HttpStatus.BAD_REQUEST).build();
                         }
+                        Schedule scheduleGet = getschedule.get();
+                        Date today = new Date();
+
+                        // Mengatur waktu pada tanggal hari ini menjadi 12:00:00 siang
+                        Calendar cal = Calendar.getInstance();
+                        cal.setTime(today);
+                        cal.set(Calendar.HOUR_OF_DAY, 12);
+                        cal.set(Calendar.MINUTE, 0);
+                        cal.set(Calendar.SECOND, 0);
+                        cal.set(Calendar.MILLISECOND, 0);
+                        Date todayMidday = cal.getTime();
+
+                        // Mengatur waktu pada start_date dan end_date menjadi 00:00:00
+                        cal.setTime(scheduleGet.getStart_date());
+                        cal.set(Calendar.HOUR_OF_DAY, 0);
+                        cal.set(Calendar.MINUTE, 0);
+                        cal.set(Calendar.SECOND, 0);
+                        cal.set(Calendar.MILLISECOND, 0);
+                        Date startDateWithoutTime = cal.getTime();
+
+                        cal.setTime(scheduleGet.getEnd_date());
+                        cal.set(Calendar.HOUR_OF_DAY, 0);
+                        cal.set(Calendar.MINUTE, 0);
+                        cal.set(Calendar.SECOND, 0);
+                        cal.set(Calendar.MILLISECOND, 0);
+                        Date endDateWithoutTime = cal.getTime();
+
+                        // Validasi apakah start_date belum melewati hari ini dan apakah end_date sudah
+                        // lewat hari ini
+                        if (startDateWithoutTime.after(todayMidday) && endDateWithoutTime.before(todayMidday)) {
+                                return GlobalResponse.builder().message("Tidak bisa memproses jadwal")
+                                                .errorMessage("Tidak bisa memproses jadwal karena tanggal tidak valid")
+                                                .status(HttpStatus.BAD_REQUEST).build();
+                        }
+
                         if (getschedule.get().getStatus().equals(EStatus.PENDING)
                                         || getschedule.get().getStatus().equals(EStatus.REQUEST)
                                         || getschedule.get().getStatus().equals(EStatus.REJECTED)
