@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.cms.audit.api.Clarifications.models.Clarification;
 import com.cms.audit.api.Common.constant.FileStorageFU;
 import com.cms.audit.api.Common.constant.FolderPath;
 import com.cms.audit.api.Common.constant.SpecificationFIlter;
@@ -72,9 +73,9 @@ public class FollowupService {
                     .and(new SpecificationFIlter<FollowUp>().orderByIdDesc());
 
             if (getUser.getLevel().getCode().equals("C")) {
-                spec = spec.and(new SpecificationFIlter<FollowUp>().userId(getUser.getId()));
+                spec = spec.and(new SpecificationFIlter<FollowUp>().userId(getUser.getId())).and(new SpecificationFIlter<FollowUp>().getByStatusAll(EStatusFollowup.CLOSE.toString()));
             } else if (getUser.getLevel().getCode().equals("B")) {
-                spec = spec.and(new SpecificationFIlter<FollowUp>().getByRegionIds(getUser.getRegionId()));
+                spec = spec.and(new SpecificationFIlter<FollowUp>().getByRegionIds(getUser.getRegionId())).or(new SpecificationFIlter<FollowUp>().userId(getUser.getId()));
             }
             response = pag.findAll(spec, PageRequest.of(page, size));
 

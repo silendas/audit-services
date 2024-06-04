@@ -33,7 +33,11 @@ import com.cms.audit.api.Common.constant.convertDateToRoman;
 import com.cms.audit.api.Common.pdf.LHAReport;
 import com.cms.audit.api.Common.response.GlobalResponse;
 import com.cms.audit.api.Common.util.ExcelUtil;
+import com.cms.audit.api.FollowUp.models.FollowUp;
+import com.cms.audit.api.FollowUp.repository.FollowUpRepository;
 import com.cms.audit.api.Management.Office.RegionOffice.repository.RegionRepository;
+import com.cms.audit.api.Management.Penalty.models.Penalty;
+import com.cms.audit.api.Management.Penalty.repository.PenaltyRepository;
 import com.cms.audit.api.Management.User.models.User;
 import com.cms.audit.api.Report.dto.LhaReportDTO;
 import com.cms.audit.api.Report.dto.ListLhaDTO;
@@ -55,6 +59,12 @@ public class ReportService {
 
     @Autowired
     private RegionRepository regionRepository;
+
+    @Autowired
+    private FollowUpRepository fUpRepository;
+
+    @Autowired 
+    private PenaltyRepository penaltyRepository;
 
     @Autowired
     private AuditDailyReportDetailRepository lhaDetailRepository;
@@ -98,7 +108,7 @@ public class ReportService {
             Date start_date,
             Date end_date)
             throws IOException {
-        List<Clarification> response;
+        List<Clarification> response = new ArrayList<>();
         User getUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         Specification<Clarification> spec = Specification
@@ -112,8 +122,25 @@ public class ReportService {
             spec = spec.and(new SpecificationFIlter<Clarification>()
                     .getByRegionIds(getUser.getRegionId()));
         }
-        response = repository.findAll(spec);
-        ByteArrayInputStream data = ExcelUtil.dataToExcel(response);
+        String realizePenalty = "";
+        
+        for (Clarification clarification : response) {
+            Optional<FollowUp> getFU = fUpRepository.findByClId(clarification.getId());
+            if (getFU.isPresent()) {
+                FollowUp followUp = getFU.get();
+                for (Long penaltyId : followUp.getPenaltyRealization()) {
+                    Optional<Penalty> penaltyOpt = penaltyRepository.findById(penaltyId);
+                    if (penaltyOpt.isPresent()) {
+                        Penalty penalty = penaltyOpt.get();
+                        if (!realizePenalty.isEmpty()) {
+                            realizePenalty += ", ";
+                        }
+                        realizePenalty += penalty.getName();
+                    }
+                }
+            }
+        }
+        ByteArrayInputStream data = ExcelUtil.dataToExcel(response, realizePenalty);
         return data;
     }
 

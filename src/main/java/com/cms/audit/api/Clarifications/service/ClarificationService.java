@@ -577,8 +577,9 @@ public class ClarificationService {
                         Clarification response = repository.save(clarification);
 
                         String formulir = "FM/SPI-05/00";
+                        String tanggalFormulir = "11 April 2022X";
 
-                        PDFResponse generatePDF = GeneratePdf.generateClarificationPDF(response, formulir);
+                        PDFResponse generatePDF = GeneratePdf.generateClarificationPDF(response, formulir, tanggalFormulir);
 
                         Clarification clarification2 = response;
                         clarification2.setFilename(generatePDF.fileName);

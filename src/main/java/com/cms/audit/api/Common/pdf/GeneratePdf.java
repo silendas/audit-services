@@ -35,7 +35,7 @@ import com.itextpdf.layout.property.VerticalAlignment;
 public class GeneratePdf {
 
         @SuppressWarnings("resource")
-        public static PDFResponse generateClarificationPDF(Clarification response, String formulir)
+        public static PDFResponse generateClarificationPDF(Clarification response, String formulir, String tanggal)
                         throws FileNotFoundException, MalformedURLException {
                 String fileName = randomValueNumber.randomNumberGenerator() + "-" + response.getUser().getInitial_name()
                                 + "-"
@@ -83,7 +83,7 @@ public class GeneratePdf {
                 nestedheader.addCell(
                                 new Cell().add("Mulai berlaku").setFontSize(5).setBackgroundColor(Color.LIGHT_GRAY));
                 nestedheader.addCell(
-                                new Cell().add(dateNow).setFontSize(5)
+                                new Cell().add(tanggal).setFontSize(5)
                                                 .setHorizontalAlignment(HorizontalAlignment.CENTER));
                 nestedheader.addCell(new Cell().add("No Revisi").setFontSize(5).setBackgroundColor(Color.LIGHT_GRAY));
                 nestedheader.addCell(
@@ -238,7 +238,7 @@ public class GeneratePdf {
                 mark1Table.addCell(new Cell().add("Auditor").setTextAlignment(TextAlignment.CENTER).setFontSize(5)
                                 .setBorder(Border.NO_BORDER));
                 mark1Table.addCell(new Cell()
-                                .add("(.........................................................................................)")
+                                .add("("+ response.getUser().getFullname() +")")
                                 .setTextAlignment(TextAlignment.CENTER).setVerticalAlignment(VerticalAlignment.BOTTOM)
                                 .setHeight(60)
                                 .setFontSize(5).setBorder(Border.NO_BORDER));
@@ -280,7 +280,7 @@ public class GeneratePdf {
                 mark2Table.addCell(new Cell().add("Auditee").setTextAlignment(TextAlignment.CENTER).setFontSize(5)
                                 .setBorder(Border.NO_BORDER));
                 mark2Table.addCell(new Cell()
-                                .add("(.........................................................................................)")
+                                .add("("+ response.getAuditee() +")")
                                 .setTextAlignment(TextAlignment.CENTER).setVerticalAlignment(VerticalAlignment.BOTTOM)
                                 .setHeight(65)
                                 .setFontSize(5).setBorder(Border.NO_BORDER));

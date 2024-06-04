@@ -215,6 +215,15 @@ public class SpecificationFIlter<T> {
         };
     }
 
+    public Specification<T> getByStatusAll(String statuses) {
+        return (Root<T> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) -> {
+            if (statuses != null && !statuses.isEmpty()) {
+                return root.get("status").in(statuses);
+            }
+            return null;
+        };
+    }
+
     public Specification<T> getByCategory(ECategory category) {
         return (Root<T> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) -> {
             if (category != null) {
