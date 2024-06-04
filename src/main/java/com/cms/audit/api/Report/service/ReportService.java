@@ -122,27 +122,27 @@ public class ReportService {
             spec = spec.and(new SpecificationFIlter<Clarification>()
                     .getByRegionIds(getUser.getRegionId()));
         }
-        System.out.println(response);
+        response = repository.findAll(spec);
          String realizePenalty = "";
-        // for (Clarification clarification : response) {
-        //     Optional<FollowUp> getFU = fUpRepository.findByClId(clarification.getId());
-        //     if (getFU.isPresent()) {
-        //         FollowUp followUp = getFU.get();
-        //         if (followUp.getPenaltyRealization() != null) {
-        //             for (Long penaltyId : followUp.getPenaltyRealization()) {
-        //                 Optional<Penalty> penaltyOpt = penaltyRepository.findById(penaltyId);
-        //                 if (penaltyOpt.isPresent()) {
-        //                     Penalty penalty = penaltyOpt.get();
-        //                     if (!realizePenalty.isEmpty()) {
-        //                         realizePenalty += ", ";
-        //                     }
-        //                     realizePenalty += penalty.getName();
-        //                 }
-        //             }
-        //         }
-        //     }
-        // }
-        ByteArrayInputStream data = ExcelUtil.dataToExcel(response);
+        for (Clarification clarification : response) {
+            Optional<FollowUp> getFU = fUpRepository.findByClId(clarification.getId());
+            if (getFU.isPresent()) {
+                FollowUp followUp = getFU.get();
+                if (followUp.getPenaltyRealization() != null) {
+                    for (Long penaltyId : followUp.getPenaltyRealization()) {
+                        Optional<Penalty> penaltyOpt = penaltyRepository.findById(penaltyId);
+                        if (penaltyOpt.isPresent()) {
+                            Penalty penalty = penaltyOpt.get();
+                            if (!realizePenalty.isEmpty()) {
+                                realizePenalty += ", ";
+                            }
+                            realizePenalty += penalty.getName();
+                        }
+                    }
+                }
+            }
+        }
+        ByteArrayInputStream data = ExcelUtil.dataToExcel(response, realizePenalty);
         return data;
     }
 
