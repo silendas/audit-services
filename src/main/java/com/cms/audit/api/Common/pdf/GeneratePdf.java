@@ -26,6 +26,7 @@ import com.itextpdf.layout.Document;
 import com.itextpdf.layout.border.Border;
 import com.itextpdf.layout.element.Cell;
 import com.itextpdf.layout.element.Image;
+import com.itextpdf.layout.element.Tab;
 import com.itextpdf.layout.element.Table;
 import com.itextpdf.layout.property.HorizontalAlignment;
 import com.itextpdf.layout.property.TextAlignment;
@@ -238,7 +239,7 @@ public class GeneratePdf {
                 mark1Table.addCell(new Cell().add("Auditor").setTextAlignment(TextAlignment.CENTER).setFontSize(5)
                                 .setBorder(Border.NO_BORDER));
                 mark1Table.addCell(new Cell()
-                                .add("( "+ response.getUser().getFullname() +" )")
+                                .add("( " + response.getUser().getFullname() + " )")
                                 .setTextAlignment(TextAlignment.CENTER).setVerticalAlignment(VerticalAlignment.BOTTOM)
                                 .setHeight(60)
                                 .setFontSize(5).setBorder(Border.NO_BORDER));
@@ -280,7 +281,7 @@ public class GeneratePdf {
                 mark2Table.addCell(new Cell().add("Auditee").setTextAlignment(TextAlignment.CENTER).setFontSize(5)
                                 .setBorder(Border.NO_BORDER));
                 mark2Table.addCell(new Cell()
-                                .add("( "+ response.getAuditee() +" )")
+                                .add("( " + response.getAuditee() + " )")
                                 .setTextAlignment(TextAlignment.CENTER).setVerticalAlignment(VerticalAlignment.BOTTOM)
                                 .setHeight(65)
                                 .setFontSize(5).setBorder(Border.NO_BORDER));
@@ -473,12 +474,18 @@ public class GeneratePdf {
                 body5.addCell(new Cell().add("Dengan penjelasan :").setBold().setBorder(Border.NO_BORDER)
                                 .setFontSize(7));
                 body5.addCell(new Cell().add("").setBorder(Border.NO_BORDER).setHeight(140).setFontSize(7));
-                body5.addCell(new Cell().add(".............. , " + convertDateToRoman.convertDateToIndonesia(new Date())).setBorder(Border.NO_BORDER)
+                body5.addCell(new Cell()
+                                .add(".............. , " + convertDateToRoman.convertDateToIndonesia(new Date()))
+                                .setBorder(Border.NO_BORDER)
                                 .setFontSize(7));
                 body5.addCell(new Cell().add("").setBorder(Border.NO_BORDER).setHeight(40));
-                body5.addCell(new Cell().add("( "+ response.getClarification().getAuditee() +" )")
+                float body5NestedLength[] = { 100f };
+                Table body5Nested = new Table(body5NestedLength).setHorizontalAlignment(HorizontalAlignment.LEFT);
+                body5Nested.addCell(new Cell().add("( " + response.getClarification().getAuditee() + " )")
                                 .setBorderLeft(Border.NO_BORDER).setBorderRight(Border.NO_BORDER)
-                                .setBorderTop(Border.NO_BORDER).setFontSize(7));
+                                .setBorderTop(Border.NO_BORDER).setFontSize(7).setTextAlignment(TextAlignment.CENTER)
+                                .setHorizontalAlignment(HorizontalAlignment.CENTER));
+                body5.addCell(new Cell().add(body5Nested).setBorder(Border.NO_BORDER));
                 body5.addCell(new Cell().add("" + "").setBorder(Border.NO_BORDER).setFontSize(7).setHeight(40));
                 body.addCell(new Cell().add(body5).setBorder(Border.NO_BORDER));
                 // section 7
@@ -504,27 +511,30 @@ public class GeneratePdf {
                                                 .setHorizontalAlignment(HorizontalAlignment.LEFT);
 
                                 // if (response.getPenalty().contains(penalties.getId())) {
-                                //         nested6.addCell(new Cell().add("").setBackgroundColor(Color.RED).setHeight(5f));
+                                // nested6.addCell(new
+                                // Cell().add("").setBackgroundColor(Color.RED).setHeight(5f));
                                 // } else {
-                                        nested6.addCell(new Cell().add("").setHeight(5f));
-                                //}
+                                nested6.addCell(new Cell().add("").setHeight(5f));
+                                // }
                                 nested6.addCell(new Cell().add(penalties.getName()).setBorder(Border.NO_BORDER)
                                                 .setFontSize(5)
                                                 .setBold());
                                 bodyPenalty.addCell(new Cell().add(nested6).setBorder(Border.NO_BORDER));
                         } else {
-                                float[] columnWidths = { 18f,50f}; // 18f untuk kolom pertama, sisanya untuk kolom
+                                float[] columnWidths = { 18f, 50f }; // 18f untuk kolom pertama, sisanya untuk kolom
                                                                      // kedua
                                 // Table nested6 = new
-                                Table nested6 = new Table(UnitValue.createPercentArray(columnWidths)).useAllAvailableWidth();
+                                Table nested6 = new Table(UnitValue.createPercentArray(columnWidths))
+                                                .useAllAvailableWidth();
                                 // Table nested6 = new Table(columnWidths)
-                                //                 .setHorizontalAlignment(HorizontalAlignment.LEFT);
+                                // .setHorizontalAlignment(HorizontalAlignment.LEFT);
 
                                 // if (response.getPenalty().contains(penalties.getId())) {
-                                //         nested6.addCell(new Cell().add("").setBackgroundColor(Color.RED).setHeight(5f));
+                                // nested6.addCell(new
+                                // Cell().add("").setBackgroundColor(Color.RED).setHeight(5f));
                                 // } else {
-                                        nested6.addCell(new Cell().add("").setHeight(5f));
-                                //}
+                                nested6.addCell(new Cell().add("").setHeight(5f));
+                                // }
                                 nested6.addCell(new Cell().add(penalties.getName()).setBorder(Border.NO_BORDER)
                                                 .setFontSize(5)
                                                 .setBold());
