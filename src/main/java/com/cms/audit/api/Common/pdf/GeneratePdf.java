@@ -496,18 +496,18 @@ public class GeneratePdf {
 
                 for (Penalty penalties : penalty) {
                         if (penalties.getId() < 5) {
-                                float[] columnWidths = { 18f, 50 }; // 18f untuk kolom pertama, sisanya untuk kolom
+                                float[] columnWidths = { 18f, 50f }; // 18f untuk kolom pertama, sisanya untuk kolom
                                                                      // kedua
                                 // Table nested6 = new
                                 // Table(UnitValue.createPercentArray(columnWidths)).useAllAvailableWidth();
                                 Table nested6 = new Table(columnWidths)
                                                 .setHorizontalAlignment(HorizontalAlignment.LEFT);
 
-                                if (response.getPenalty().contains(penalties.getId())) {
-                                        nested6.addCell(new Cell().add("").setBackgroundColor(Color.RED).setHeight(5f));
-                                } else {
+                                // if (response.getPenalty().contains(penalties.getId())) {
+                                //         nested6.addCell(new Cell().add("").setBackgroundColor(Color.RED).setHeight(5f));
+                                // } else {
                                         nested6.addCell(new Cell().add("").setHeight(5f));
-                                }
+                                //}
                                 nested6.addCell(new Cell().add(penalties.getName()).setBorder(Border.NO_BORDER)
                                                 .setFontSize(5)
                                                 .setBold());
@@ -520,11 +520,11 @@ public class GeneratePdf {
                                 // Table nested6 = new Table(columnWidths)
                                 //                 .setHorizontalAlignment(HorizontalAlignment.LEFT);
 
-                                if (response.getPenalty().contains(penalties.getId())) {
-                                        nested6.addCell(new Cell().add("").setBackgroundColor(Color.RED).setHeight(5f));
-                                } else {
+                                // if (response.getPenalty().contains(penalties.getId())) {
+                                //         nested6.addCell(new Cell().add("").setBackgroundColor(Color.RED).setHeight(5f));
+                                // } else {
                                         nested6.addCell(new Cell().add("").setHeight(5f));
-                                }
+                                //}
                                 nested6.addCell(new Cell().add(penalties.getName()).setBorder(Border.NO_BORDER)
                                                 .setFontSize(5)
                                                 .setBold());
