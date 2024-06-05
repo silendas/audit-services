@@ -56,10 +56,10 @@ public class Revision {
     @Column(name = "suggestion", columnDefinition = "TEXT")
     private String suggestion;
     
-    @Column(name = "temporary_recommendations")
+    @Column(name = "temporary_recommendations", columnDefinition = "TEXT")
     private String temporary_recommendations;
 
-    @Column(name = "permanent_recommendations")
+    @Column(name = "permanent_recommendations", columnDefinition = "TEXT")
     private String permanent_recommendations;
 
     @Column(name = "is_research")
