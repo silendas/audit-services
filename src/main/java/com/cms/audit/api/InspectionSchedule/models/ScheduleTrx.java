@@ -50,12 +50,6 @@ public class ScheduleTrx {
     @Column(name = "end_date",columnDefinition = "DATE")
     private Date end_date;
 
-    @Column(name = "start_date_realization", columnDefinition = "DATE")
-    private Date start_date_realization;
-
-    @Column(name = "end_date_realization", columnDefinition = "DATE")
-    private Date end_date_realization;
-
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
     private EStatus status;

@@ -473,10 +473,10 @@ public class GeneratePdf {
                 body5.addCell(new Cell().add("Dengan penjelasan :").setBold().setBorder(Border.NO_BORDER)
                                 .setFontSize(7));
                 body5.addCell(new Cell().add("").setBorder(Border.NO_BORDER).setHeight(140).setFontSize(7));
-                body5.addCell(new Cell().add(".............. , ...... ........... 2024").setBorder(Border.NO_BORDER)
+                body5.addCell(new Cell().add(".............. , " + convertDateToRoman.convertDateToIndonesia(new Date())).setBorder(Border.NO_BORDER)
                                 .setFontSize(7));
                 body5.addCell(new Cell().add("").setBorder(Border.NO_BORDER).setHeight(40));
-                body5.addCell(new Cell().add("(............................................)")
+                body5.addCell(new Cell().add("( "+ response.getClarification().getAuditee() +" )")
                                 .setBorderLeft(Border.NO_BORDER).setBorderRight(Border.NO_BORDER)
                                 .setBorderTop(Border.NO_BORDER).setFontSize(7));
                 body5.addCell(new Cell().add("" + "").setBorder(Border.NO_BORDER).setFontSize(7).setHeight(40));

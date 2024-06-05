@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 import java.util.TimeZone;
 
 import com.cms.audit.api.Common.dto.GapDTO;
@@ -127,6 +128,12 @@ public class convertDateToRoman {
 
     public static String convertDateToString(Date dt) {
         DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
+        String dateToString = df.format(dt);
+        return dateToString;
+    }
+
+    public static String convertDateToIndonesia(Date dt) {
+        DateFormat df = new SimpleDateFormat("dd MMMM yyyy", Locale.forLanguageTag("id-ID"));
         String dateToString = df.format(dt);
         return dateToString;
     }
