@@ -12,6 +12,7 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 import com.cms.audit.api.Common.dto.GapDTO;
+import com.cms.audit.api.Dashboard.dto.DateCompareDTO;
 
 public class convertDateToRoman {
 
@@ -119,6 +120,13 @@ public class convertDateToRoman {
         return roman;
     }
 
+
+    public static Integer convertIntYear(Date date) {
+        LocalDate localdate = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        int year = localdate.getYear();
+        return year;
+    }
+
     public static Integer getIntYear() {
         Date date = new Date();
         LocalDate localdate = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
@@ -130,6 +138,40 @@ public class convertDateToRoman {
         DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
         String dateToString = df.format(dt);
         return dateToString;
+    }
+
+    public static DateCompareDTO getDateRange(Long month) {
+        // Pastikan parameter month valid
+        if (month < 1 || month > 12) {
+            throw new IllegalArgumentException("Month must be between 1 and 12");
+        }
+
+        // Dapatkan tahun saat ini
+        Calendar calendar = Calendar.getInstance();
+        int year = calendar.get(Calendar.YEAR);
+
+        // Set tanggal mulai bulan
+        calendar.set(year, month.intValue() - 1, 1);
+        Date startDate = calendar.getTime();
+
+        // Set tanggal akhir bulan
+        calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMaximum(Calendar.DAY_OF_MONTH));
+        Date endDate = calendar.getTime();
+
+        // Kembalikan DateRangeDTO dengan startDate dan endDate
+        return new DateCompareDTO(startDate, endDate);
+    }
+
+    public static Long getLongMonthNumber(Date date) {
+        // Buat instance Calendar dan atur waktunya dengan objek Date
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+
+        // Dapatkan bulan dari Calendar dan tambahkan 1 karena bulan dalam Java dimulai dari 0
+        int month = calendar.get(Calendar.MONTH) + 1;
+
+        // Kembalikan nomor bulan sebagai Long
+        return Long.valueOf(month);
     }
 
     public static String convertDateToIndonesia(Date dt) {

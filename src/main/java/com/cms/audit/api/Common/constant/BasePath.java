@@ -4,6 +4,8 @@ public interface BasePath {
 
     String BASE_API ="/api";
 
+    String BASE_PATH_DASHBOARD = BASE_API+"/dashboard";
+
     String BASE_PATH_AUTH = BASE_API+"/auth";
     String BASE_PATH_USER = BASE_API+"/users";
     String BASE_PATH_USER_LOG = BASE_API+"/log-users";
