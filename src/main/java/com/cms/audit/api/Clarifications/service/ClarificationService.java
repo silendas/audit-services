@@ -1000,9 +1000,13 @@ public class ClarificationService {
                                 }
                         }
 
-                        FollowUp fuGet = followUpRepository.findByClId(id).orElse(null);
-                        fuGet.setIs_delete(1);
-                        followUpRepository.save(fuGet);
+                        if (clarification.getIs_follow_up() == 1) {
+                                FollowUp fuGet = followUpRepository.findByClId(id).orElse(null);
+                                fuGet.setIs_delete(1);
+                                if (fuGet != null) {
+                                        followUpRepository.save(fuGet);
+                                }
+                        }
 
                         return GlobalResponse
                                         .builder()
