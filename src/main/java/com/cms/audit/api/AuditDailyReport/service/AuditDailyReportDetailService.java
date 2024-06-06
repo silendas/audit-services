@@ -726,6 +726,14 @@ public class AuditDailyReportDetailService {
 
             repository.save(auditDailyReport);
 
+            Flag flagGet = flagRepo.findOneByAuditDailyReportDetailId(id).orElse(null);
+            if(flagGet != null){
+                Clarification clarification = flagGet.getClarification();
+                clarification.setIs_delete(1);
+                clarification.setUpdated_at(new Date());
+                clarificationRepository.save(clarification);
+            }
+
             return GlobalResponse
                     .builder()
                     .message("Berhasil menghapus data")

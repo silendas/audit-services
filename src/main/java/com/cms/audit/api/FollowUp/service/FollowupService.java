@@ -70,12 +70,15 @@ public class FollowupService {
                     .where(new SpecificationFIlter<FollowUp>().nameLike(name))
                     .and(new SpecificationFIlter<FollowUp>().branchIdEqual(branch))
                     .and(new SpecificationFIlter<FollowUp>().dateRange(start_date, end_date))
+                    .and(new SpecificationFIlter<FollowUp>().isNotDeleted())
                     .and(new SpecificationFIlter<FollowUp>().orderByIdDesc());
 
             if (getUser.getLevel().getCode().equals("C")) {
-                spec = spec.and(new SpecificationFIlter<FollowUp>().userId(getUser.getId())).and(new SpecificationFIlter<FollowUp>().getByStatusFU(EStatusFollowup.CLOSE));
+                spec = spec.and(new SpecificationFIlter<FollowUp>().userId(getUser.getId()))
+                        .and(new SpecificationFIlter<FollowUp>().getByStatusFU(EStatusFollowup.CLOSE));
             } else if (getUser.getLevel().getCode().equals("B")) {
-                spec = spec.and(new SpecificationFIlter<FollowUp>().getByRegionIds(getUser.getRegionId())).or(new SpecificationFIlter<FollowUp>().userId(getUser.getId()));
+                spec = spec.and(new SpecificationFIlter<FollowUp>().getByRegionIds(getUser.getRegionId()))
+                        .or(new SpecificationFIlter<FollowUp>().userId(getUser.getId()));
             }
             response = pag.findAll(spec, PageRequest.of(page, size));
 
@@ -102,7 +105,8 @@ public class FollowupService {
                         if (!getPenalty.isPresent()) {
                             return GlobalResponse.builder()
                                     .message("Penalty dengan id : " + fu.getPenalty().get(u) + " tidak ditemukan")
-                                    .errorMessage("Tidak dapat menemukan penalty").status(HttpStatus.BAD_REQUEST).build();
+                                    .errorMessage("Tidak dapat menemukan penalty").status(HttpStatus.BAD_REQUEST)
+                                    .build();
                         }
                         Map<String, Object> objPenalty = new LinkedHashMap<>();
                         objPenalty.put("id", getPenalty.get().getId());
@@ -128,8 +132,10 @@ public class FollowupService {
                         Optional<Penalty> getPenalty = penaltyRepository.findById(fu.getPenaltyRealization().get(y));
                         if (!getPenalty.isPresent()) {
                             return GlobalResponse.builder()
-                                    .message("Penalty dengan id : " + fu.getPenaltyRealization().get(y) + " tidak ditemukan")
-                                    .errorMessage("Tidak dapat menemukan penalty").status(HttpStatus.BAD_REQUEST).build();
+                                    .message("Penalty dengan id : " + fu.getPenaltyRealization().get(y)
+                                            + " tidak ditemukan")
+                                    .errorMessage("Tidak dapat menemukan penalty").status(HttpStatus.BAD_REQUEST)
+                                    .build();
                         }
                         Map<String, Object> objPenalty = new LinkedHashMap<>();
                         objPenalty.put("id", getPenalty.get().getId());
@@ -240,7 +246,8 @@ public class FollowupService {
                     Optional<Penalty> getPenalty = penaltyRepository.findById(fu.getPenaltyRealization().get(i));
                     if (!getPenalty.isPresent()) {
                         return GlobalResponse.builder()
-                                .message("Penalty dengan id : " + fu.getPenaltyRealization().get(i) + " tidak ditemukan")
+                                .message(
+                                        "Penalty dengan id : " + fu.getPenaltyRealization().get(i) + " tidak ditemukan")
                                 .errorMessage("Tidak dapat menemukan penalty").status(HttpStatus.BAD_REQUEST).build();
                     }
                     Map<String, Object> objPenalty = new LinkedHashMap<>();
@@ -518,5 +525,28 @@ public class FollowupService {
         }
 
         return response;
+    }
+
+    public GlobalResponse delete(Long id) {
+        Optional<FollowUp> getFollowUp = repository.findById(id);
+        if (!getFollowUp.isPresent()) {
+            return GlobalResponse.builder().errorMessage("Tindak lanjut tidak ditemukan")
+                    .status(HttpStatus.BAD_REQUEST)
+                    .message("Follow up with id:" + id + " is not found").build();
+        }
+        FollowUp followUp = getFollowUp.get();
+        if (followUp.getFilePath() != null) {
+            File oldFile = new File(followUp.getFilePath());
+            if (oldFile.exists()) {
+                oldFile.delete();
+            }
+        }
+        followUp.setIs_delete(1);
+        repository.save(followUp);
+
+        return GlobalResponse
+                .builder()
+                .message("Berhasil menghapus data")
+                .status(HttpStatus.OK).build();
     }
 }

@@ -22,6 +22,40 @@ public class DashboardServices {
     @Autowired
     private FollowUpDashboardRepo fuRepo;
 
+    public Map<String, Object> dasboardStatus(List<FollowUp> listFu1, List<FollowUp> listFu2) {
+        Map<String, Object> mapping = new LinkedHashMap<>();
+        Map<String, Object> fuMap = new LinkedHashMap<>();
+        if (listFu1.isEmpty()) {
+            List<Object> Fu1 = new ArrayList<>();
+            for (FollowUp fu : listFu1) {
+                fuMap.put("id", fu.getId());
+                fuMap.put("created_at", fu.getCreated_at());
+                fuMap.put("year", convertDateToRoman.convertIntYear(fu.getCreated_at()));
+                if (!fu.getStatus().equals(EStatusFollowup.CLOSE)) {
+                    fuMap.put("status", "OPEN");
+                } else {
+                    fuMap.put("status", "CLOSE");
+                }
+                Fu1.add(fuMap);
+            }
+            mapping.put("follow_up1", Fu1);
+        }
+        if (listFu2.isEmpty()) {
+            for (FollowUp fu : listFu2) {
+                fuMap.put("id", fu.getId());
+                fuMap.put("created_at", fu.getCreated_at());
+                fuMap.put("year", convertDateToRoman.convertIntYear(fu.getCreated_at()));
+                if (!fu.getStatus().equals(EStatusFollowup.CLOSE)) {
+                    fuMap.put("status", "OPEN");
+                } else {
+                    fuMap.put("status", "CLOSE");
+                }
+            }
+            mapping.put("follow_up2", listFu2);
+        }
+        return mapping;
+    }
+
     public ResponseEntity<Object> getDashboard(Long date1, Long date2) {
         List<FollowUp> fu1 = new ArrayList<>();
         List<FollowUp> fu2 = new ArrayList<>();
@@ -44,38 +78,11 @@ public class DashboardServices {
 
     public ResponseEntity<Object> returnResponse(List<FollowUp> listFu1, List<FollowUp> listFu2) {
         Map<String, Object> mapping = new LinkedHashMap<>();
-        Map<String, Object> fuMap = new LinkedHashMap<>();
-        String message;
-        if (listFu1 != null) {
-            for (FollowUp fu : listFu1) {
-                fuMap.put("id", fu.getId());
-                fuMap.put("created_at", fu.getCreated_at());
-                fuMap.put("year", convertDateToRoman.convertIntYear(fu.getCreated_at()));
-                if (!fu.getStatus().equals(EStatusFollowup.CLOSE)) {
-                    fuMap.put("status", "OPEN");
-                } else {
-                    fuMap.put("status", "CLOSE");
-                }
-            }
-            mapping.put("follow_up1", fuMap);
-            message = "Data berhasil ditampilkan";
-        } else {
-            message = "Data tidak ditemukan";
+        if(listFu1 == null) {
+            return ResponseEntittyHandler.allHandler(mapping, "Data tidak ditemukan", HttpStatus.OK, null);
         }
-        if (listFu2 != null) {
-            for (FollowUp fu : listFu2) {
-                fuMap.put("id", fu.getId());
-                fuMap.put("created_at", fu.getCreated_at());
-                fuMap.put("year", convertDateToRoman.convertIntYear(fu.getCreated_at()));
-                if (!fu.getStatus().equals(EStatusFollowup.CLOSE)) {
-                    fuMap.put("status", "OPEN");
-                } else {
-                    fuMap.put("status", "CLOSE");
-                }
-            }
-            mapping.put("follow_up2", listFu2);
-        }
-        return ResponseEntittyHandler.allHandler(mapping, message, HttpStatus.OK, null);
+        mapping.put("dashboard_status", dasboardStatus(listFu1, listFu2));
+        return ResponseEntittyHandler.allHandler(mapping, "Data berhasil ditampilkan", HttpStatus.OK, null);
     }
 
 }

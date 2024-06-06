@@ -75,35 +75,6 @@ public class ReportService {
     @Autowired
     private LhaReportRepository lhaRepository;
 
-    public GlobalResponse getAll(Long region_id, Long branchId, Long user_id, int page, int size, Date start_date,
-            Date end_date) {
-        try {
-            Page<Clarification> response;
-            User getUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-            Specification<Clarification> spec = Specification
-                    .where(new SpecificationFIlter<Clarification>().userId(user_id))
-                    .and(new SpecificationFIlter<Clarification>().branchIdEqual(branchId))
-                    .and(new SpecificationFIlter<Clarification>().dateRange(start_date, end_date));
-
-            if (getUser.getLevel().getCode().equals("C")) {
-                spec = spec.and(new SpecificationFIlter<Clarification>().userId(getUser.getId()));
-            } else if (getUser.getLevel().getCode().equals("B")) {
-                spec = spec.and(new SpecificationFIlter<Clarification>()
-                        .getByRegionIds(getUser.getRegionId()));
-            }
-            response = pagRepository.findAll(spec, PageRequest.of(page, size));
-
-            if (response.isEmpty()) {
-                return GlobalResponse.builder().message("Data Empty").status(HttpStatus.OK).build();
-            }
-            return GlobalResponse.builder().data(response).message("Berhasil menampilkan data").status(HttpStatus.OK)
-                    .build();
-        } catch (Exception e) {
-            return GlobalResponse.builder().error(e).status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
-    }
-
     public ByteArrayInputStream getDataDownloadClarification(Long region_id, Long user_id, Long branchId,
             Date start_date,
             Date end_date)
@@ -114,7 +85,8 @@ public class ReportService {
         Specification<Clarification> spec = Specification
                 .where(new SpecificationFIlter<Clarification>().userId(user_id))
                 .and(new SpecificationFIlter<Clarification>().branchIdEqual(branchId))
-                .and(new SpecificationFIlter<Clarification>().dateRange(start_date, end_date));
+                .and(new SpecificationFIlter<Clarification>().dateRange(start_date, end_date))
+                .and(new SpecificationFIlter<Clarification>().isNotDeleted());
 
         if (getUser.getLevel().getCode().equals("C")) {
             spec = spec.and(new SpecificationFIlter<Clarification>().userId(getUser.getId()));

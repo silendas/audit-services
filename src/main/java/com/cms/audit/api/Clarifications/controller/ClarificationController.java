@@ -33,6 +33,7 @@ import com.cms.audit.api.Common.constant.convertDateToRoman;
 import com.cms.audit.api.Common.response.GlobalResponse;
 import com.cms.audit.api.Common.response.ResponseEntittyHandler;
 
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
@@ -151,6 +152,18 @@ public class ClarificationController {
     public ResponseEntity<Object> upload(@RequestParam(value = "file", required = false) MultipartFile file,
             @ModelAttribute("clarification_id") Long id) {
         GlobalResponse response = service.uploadFile(file, id);
+        if (response.getStatus().value() == 400) {
+            return ResponseEntittyHandler.errorResponse(response.getErrorMessage(), response.getMessage(),
+                    response.getStatus());
+        } else {
+            return ResponseEntittyHandler.allHandler(null, response.getMessage(), response.getStatus(),
+                    response.getError());
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Object> delete(@PathVariable("id") Long id) {
+        GlobalResponse response = service.delete(id);
         if (response.getStatus().value() == 400) {
             return ResponseEntittyHandler.errorResponse(response.getErrorMessage(), response.getMessage(),
                     response.getStatus());

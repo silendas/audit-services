@@ -98,6 +98,7 @@ public class ClarificationService {
                                         .where(new SpecificationFIlter<Clarification>().nameLike(name))
                                         .and(new SpecificationFIlter<Clarification>().branchIdEqual(branchId))
                                         .and(new SpecificationFIlter<Clarification>().dateRange(start_date, end_date))
+                                        .and(new SpecificationFIlter<Clarification>().isNotDeleted())
                                         .and(new SpecificationFIlter<Clarification>().orderByIdDesc());
 
                         if (getUser.getLevel().getCode().equals("C")) {
@@ -426,6 +427,7 @@ public class ClarificationService {
                                         user.getId(),
                                         null,
                                         null,
+                                        0,
                                         new Date(),
                                         new Date());
 
@@ -571,6 +573,7 @@ public class ClarificationService {
                                         getClarification.get().getUser().getId(),
                                         new Date(),
                                         null,
+                                        0,
                                         getClarification.get().getCreated_at(),
                                         new Date());
 
@@ -579,7 +582,8 @@ public class ClarificationService {
                         String formulir = "FM/SPI-05/00";
                         String tanggalFormulir = "11 April 2022";
 
-                        PDFResponse generatePDF = GeneratePdf.generateClarificationPDF(response, formulir, tanggalFormulir);
+                        PDFResponse generatePDF = GeneratePdf.generateClarificationPDF(response, formulir,
+                                        tanggalFormulir);
 
                         Clarification clarification2 = response;
                         clarification2.setFilename(generatePDF.fileName);
@@ -716,6 +720,7 @@ public class ClarificationService {
                                         getBefore.get().getUser().getId(),
                                         getBefore.get().getStart_date_realization(),
                                         new Date(),
+                                        0,
                                         getBefore.get().getCreated_at(),
                                         new Date());
 
@@ -838,6 +843,7 @@ public class ClarificationService {
                                 followUp.setPenaltyRealization(new ArrayList<>());
                                 followUp.setNote(null);
                                 followUp.setStatus(EStatusFollowup.CREATE);
+                                followUp.setIs_delete(0);
                                 followUp.setCreated_by(response.getUser().getId());
                                 followUp.setCreated_at(new Date());
 
@@ -968,6 +974,54 @@ public class ClarificationService {
                                                 "File not found with name: " + fileName));
 
                 return response;
+        }
+
+        public GlobalResponse delete(Long id) {
+                try {
+                        Optional<Clarification> getClarification = repository.findById(id);
+                        if (!getClarification.isPresent()) {
+                                return GlobalResponse
+                                                .builder()
+                                                .message("Clarification tidak bisa ditemukan")
+                                                .errorMessage("Clarifcation with id: " + id + " not found")
+                                                .status(HttpStatus.BAD_REQUEST)
+                                                .build();
+                        }
+                        Clarification clarification = getClarification.get();
+                        clarification.setIs_delete(1);
+                        clarification.setUpdated_at(new Date());
+                        repository.save(clarification);
+
+                        // hapus file
+                        if (clarification.getFile_path() != null) {
+                                File oldFile = new File(clarification.getFile_path());
+                                if (oldFile.exists()) {
+                                        oldFile.delete();
+                                }
+                        }
+
+                        FollowUp fuGet = followUpRepository.findByClId(id).orElse(null);
+                        fuGet.setIs_delete(1);
+                        followUpRepository.save(fuGet);
+
+                        return GlobalResponse
+                                        .builder()
+                                        .message("Berhasil menghapus data")
+                                        .status(HttpStatus.OK)
+                                        .build();
+                } catch (ResponseStatusException e) {
+                        return GlobalResponse
+                                        .builder()
+                                        .error(e)
+                                        .status(HttpStatus.BAD_REQUEST)
+                                        .build();
+                } catch (Exception e) {
+                        return GlobalResponse
+                                        .builder()
+                                        .error(e)
+                                        .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                                        .build();
+                }
         }
 
 }
