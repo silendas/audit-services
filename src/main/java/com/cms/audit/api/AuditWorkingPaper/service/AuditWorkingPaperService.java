@@ -26,6 +26,7 @@ import org.springframework.web.server.ResponseStatusException;
 import com.cms.audit.api.AuditWorkingPaper.models.AuditWorkingPaper;
 import com.cms.audit.api.AuditWorkingPaper.repository.AuditWorkingPaperRepository;
 import com.cms.audit.api.AuditWorkingPaper.repository.PagAuditWorkingPaper;
+import com.cms.audit.api.Clarifications.models.Clarification;
 import com.cms.audit.api.Common.constant.FileStorageKKA;
 import com.cms.audit.api.Common.constant.FolderPath;
 import com.cms.audit.api.Common.constant.SpecificationFIlter;
@@ -75,7 +76,10 @@ public class AuditWorkingPaperService {
             if (getUser.getLevel().getCode().equals("C")) {
                 spec = spec.and(new SpecificationFIlter<AuditWorkingPaper>().userId(getUser.getId()));
             } else if (getUser.getLevel().getCode().equals("B")) {
-                spec = spec.and(new SpecificationFIlter<AuditWorkingPaper>().getByRegionIds(getUser.getRegionId()));
+                Specification<AuditWorkingPaper> regionOrUserSpec = Specification
+                        .where(new SpecificationFIlter<AuditWorkingPaper>().getByRegionIds(getUser.getRegionId()))
+                        .or(new SpecificationFIlter<AuditWorkingPaper>().userId(getUser.getId()));
+                spec = spec.and(regionOrUserSpec);
             }
             response = pag.findAll(spec, PageRequest.of(page, size));
             List<Object> listKka = new ArrayList<>();
@@ -232,13 +236,13 @@ public class AuditWorkingPaperService {
                 }
             }
 
-            for(int i = 0; i < checkKKA.size(); i++) {
+            for (int i = 0; i < checkKKA.size(); i++) {
                 if (checkKKA.get(i).getFile_path() != null) {
                     File oldFile = new File(checkKKA.get(i).getFile_path());
                     if (oldFile.exists()) {
-                            oldFile.delete();
+                        oldFile.delete();
                     }
-            }
+                }
             }
 
             String fileName = fileStorageService.storeFile(file);

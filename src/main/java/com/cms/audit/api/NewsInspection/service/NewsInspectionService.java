@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.cms.audit.api.Clarifications.models.Clarification;
 import com.cms.audit.api.Common.constant.FileStorageBAP;
 import com.cms.audit.api.Common.constant.FolderPath;
 import com.cms.audit.api.Common.constant.SpecificationFIlter;
@@ -60,7 +61,10 @@ public class NewsInspectionService {
             if (getUser.getLevel().getCode().equals("C")) {
                 spec = spec.and(new SpecificationFIlter<NewsInspection>().userId(getUser.getId()));
             } else if (getUser.getLevel().getCode().equals("B")) {
-                spec = spec.and(new SpecificationFIlter<NewsInspection>().getByRegionIds(getUser.getRegionId()));
+                Specification<NewsInspection> regionOrUserSpec = Specification
+                        .where(new SpecificationFIlter<NewsInspection>().getByRegionIds(getUser.getRegionId()))
+                        .or(new SpecificationFIlter<NewsInspection>().userId(getUser.getId()));
+                spec = spec.and(regionOrUserSpec);
             }
             response = pag.findAll(spec, PageRequest.of(page, size));
             List<Object> listBAP = new ArrayList<>();
@@ -221,9 +225,10 @@ public class NewsInspectionService {
                         .errorMessage("BAP dengna id : " + id + " tidak ditemukan").status(HttpStatus.BAD_REQUEST)
                         .build();
             }
-            if(getBAP.get().getFileName() != null ) {
-            return GlobalResponse.builder().errorMessage("BAP sudah ada file, tidak dapat upload file").message("BAP sudah dibuat, tidak dapat upload file")
-            .status(HttpStatus.BAD_REQUEST).build();
+            if (getBAP.get().getFileName() != null) {
+                return GlobalResponse.builder().errorMessage("BAP sudah ada file, tidak dapat upload file")
+                        .message("BAP sudah dibuat, tidak dapat upload file")
+                        .status(HttpStatus.BAD_REQUEST).build();
             }
 
             if (getBAP.get().getFile_path() != null) {

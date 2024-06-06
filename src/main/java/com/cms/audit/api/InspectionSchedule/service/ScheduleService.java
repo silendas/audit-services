@@ -154,9 +154,12 @@ public class ScheduleService {
                                 spec = spec.and(new SpecificationFIlter<Schedule>().userId(getUser.getId()));
                         }
                         if (getUser.getLevel().getCode().equals("B") && category == ECategory.SPECIAL) {
-                                spec = spec.and(new SpecificationFIlter<Schedule>()
-                                                .getByRegionIds(getUser.getRegionId())).or(new SpecificationFIlter<Schedule>().userId(getUser.getId()));
-                        } else if(getUser.getLevel().getCode().equals("B")){
+                                Specification<Schedule> regionOrUserSpec = Specification
+                                                .where(new SpecificationFIlter<Schedule>()
+                                                                .getByRegionIds(getUser.getRegionId()))
+                                                .or(new SpecificationFIlter<Schedule>().userId(getUser.getId()));
+                                spec = spec.and(regionOrUserSpec);
+                        } else if (getUser.getLevel().getCode().equals("B")) {
                                 spec = spec.and(new SpecificationFIlter<Schedule>()
                                                 .getByRegionIds(getUser.getRegionId()));
                         }
@@ -839,17 +842,25 @@ public class ScheduleService {
                                                         .builder()
                                                         .message("Jadwal dengan tanggal mulai :"
                                                                         + convertDateToRoman.convertDateHehe(
-                                                                                        scheduleDTO.getSchedules().get(i).getStart_date())
+                                                                                        scheduleDTO.getSchedules()
+                                                                                                        .get(i)
+                                                                                                        .getStart_date())
                                                                         + " and tanggal berakhir :"
                                                                         + convertDateToRoman.convertDateHehe(
-                                                                                        scheduleDTO.getSchedules().get(i).getEnd_date())
+                                                                                        scheduleDTO.getSchedules()
+                                                                                                        .get(i)
+                                                                                                        .getEnd_date())
                                                                         + ", sudah terbuat atau bersilangan dengan jadwal sebelumnya")
                                                         .errorMessage("Jadwal dengan tanggal mulai :"
                                                                         + convertDateToRoman.convertDateHehe(
-                                                                                        scheduleDTO.getSchedules().get(i).getStart_date())
+                                                                                        scheduleDTO.getSchedules()
+                                                                                                        .get(i)
+                                                                                                        .getStart_date())
                                                                         + " and tanggal berakhir :"
                                                                         + convertDateToRoman.convertDateHehe(
-                                                                                        scheduleDTO.getSchedules().get(i).getEnd_date())
+                                                                                        scheduleDTO.getSchedules()
+                                                                                                        .get(i)
+                                                                                                        .getEnd_date())
                                                                         + ", sudah terbuat atau bersilangan dengan jadwal sebelumnya")
                                                         .status(HttpStatus.BAD_REQUEST)
                                                         .build();

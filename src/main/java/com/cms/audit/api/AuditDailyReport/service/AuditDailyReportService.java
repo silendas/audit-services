@@ -112,8 +112,12 @@ public class AuditDailyReportService {
                         if (getUser.getLevel().getCode().equals("C")) {
                                 spec = spec.and(new SpecificationFIlter<AuditDailyReport>().userId(getUser.getId()));
                         } else if (getUser.getLevel().getCode().equals("B")) {
-                                spec = spec.and(new SpecificationFIlter<AuditDailyReport>()
-                                                .getByRegionIds(getUser.getRegionId()));
+                                Specification<AuditDailyReport> regionOrUserSpec = Specification
+                                                .where(new SpecificationFIlter<AuditDailyReport>()
+                                                                .getByRegionIds(getUser.getRegionId()))
+                                                .or(new SpecificationFIlter<AuditDailyReport>()
+                                                                .userId(getUser.getId()));
+                                spec = spec.and(regionOrUserSpec);
                         }
                         response = pag.findAll(spec, PageRequest.of(page, size));
                         if (response.isEmpty()) {

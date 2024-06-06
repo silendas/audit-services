@@ -104,9 +104,11 @@ public class ClarificationService {
                         if (getUser.getLevel().getCode().equals("C")) {
                                 spec = spec.and(new SpecificationFIlter<Clarification>().userId(getUser.getId()));
                         } else if (getUser.getLevel().getCode().equals("B")) {
-                                spec = spec.and(new SpecificationFIlter<Clarification>()
-                                                .getByRegionIds(getUser.getRegionId()))
+                                Specification<Clarification> regionOrUserSpec = Specification
+                                                .where(new SpecificationFIlter<Clarification>()
+                                                                .getByRegionIds(getUser.getRegionId()))
                                                 .or(new SpecificationFIlter<Clarification>().userId(getUser.getId()));
+                                spec = spec.and(regionOrUserSpec);
                         }
                         response = pag.findAll(spec, PageRequest.of(page, size));
                         List<Object> listCl = new ArrayList<>();
@@ -1000,11 +1002,18 @@ public class ClarificationService {
                                 }
                         }
 
-                        if (getClarification.get().getIs_follow_up() != null && getClarification.get().getIs_follow_up() == 1) {
+                        if (getClarification.get().getIs_follow_up() != null
+                                        && getClarification.get().getIs_follow_up() == 1) {
                                 FollowUp fuGet = followUpRepository.findByClId(id).orElse(null);
                                 fuGet.setIs_delete(1);
                                 if (fuGet != null) {
                                         followUpRepository.save(fuGet);
+                                }
+                                if (fuGet.getFilePath() != null) {
+                                        File oldFile = new File(fuGet.getFilePath());
+                                        if (oldFile.exists()) {
+                                                oldFile.delete();
+                                        }
                                 }
                         }
 

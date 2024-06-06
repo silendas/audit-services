@@ -77,8 +77,10 @@ public class FollowupService {
                 spec = spec.and(new SpecificationFIlter<FollowUp>().userId(getUser.getId()))
                         .and(new SpecificationFIlter<FollowUp>().getByStatusFU(EStatusFollowup.CLOSE));
             } else if (getUser.getLevel().getCode().equals("B")) {
-                spec = spec.and(new SpecificationFIlter<FollowUp>().getByRegionIds(getUser.getRegionId()))
+                Specification<FollowUp> regionOrUserSpec = Specification
+                        .where(new SpecificationFIlter<FollowUp>().getByRegionIds(getUser.getRegionId()))
                         .or(new SpecificationFIlter<FollowUp>().userId(getUser.getId()));
+                spec = spec.and(regionOrUserSpec);
             }
             response = pag.findAll(spec, PageRequest.of(page, size));
 

@@ -22,36 +22,30 @@ public class DashboardServices {
     @Autowired
     private FollowUpDashboardRepo fuRepo;
 
+    public List<Object> listYearStatus(List<FollowUp> listFU){
+        Map<String, Object> fuMap = new LinkedHashMap<>();
+        List<Object> Fu = new ArrayList<>();
+            for (FollowUp fu : listFU) {
+                fuMap.put("id", fu.getId());
+                fuMap.put("created_at", fu.getCreated_at());
+                fuMap.put("year", convertDateToRoman.convertIntYear(fu.getCreated_at()));
+                if (!fu.getStatus().equals(EStatusFollowup.CLOSE)) {
+                    fuMap.put("status", "OPEN");
+                } else {
+                    fuMap.put("status", "CLOSE");
+                }
+                Fu.add(fuMap);
+            }
+        return Fu;
+    }
+
     public Map<String, Object> dasboardStatus(List<FollowUp> listFu1, List<FollowUp> listFu2) {
         Map<String, Object> mapping = new LinkedHashMap<>();
-        Map<String, Object> fuMap = new LinkedHashMap<>();
         if (listFu1.isEmpty()) {
-            List<Object> Fu1 = new ArrayList<>();
-            for (FollowUp fu : listFu1) {
-                fuMap.put("id", fu.getId());
-                fuMap.put("created_at", fu.getCreated_at());
-                fuMap.put("year", convertDateToRoman.convertIntYear(fu.getCreated_at()));
-                if (!fu.getStatus().equals(EStatusFollowup.CLOSE)) {
-                    fuMap.put("status", "OPEN");
-                } else {
-                    fuMap.put("status", "CLOSE");
-                }
-                Fu1.add(fuMap);
-            }
-            mapping.put("follow_up1", Fu1);
+            mapping.put("follow_up1", listYearStatus(listFu1));
         }
         if (listFu2.isEmpty()) {
-            for (FollowUp fu : listFu2) {
-                fuMap.put("id", fu.getId());
-                fuMap.put("created_at", fu.getCreated_at());
-                fuMap.put("year", convertDateToRoman.convertIntYear(fu.getCreated_at()));
-                if (!fu.getStatus().equals(EStatusFollowup.CLOSE)) {
-                    fuMap.put("status", "OPEN");
-                } else {
-                    fuMap.put("status", "CLOSE");
-                }
-            }
-            mapping.put("follow_up2", listFu2);
+            mapping.put("follow_up2", listYearStatus(listFu2));
         }
         return mapping;
     }
