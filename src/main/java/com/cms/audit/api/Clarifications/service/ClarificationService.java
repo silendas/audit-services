@@ -1000,7 +1000,7 @@ public class ClarificationService {
                                 }
                         }
 
-                        if (clarification.getIs_follow_up() == 1) {
+                        if (getClarification.get().getIs_follow_up() != null && getClarification.get().getIs_follow_up() == 1) {
                                 FollowUp fuGet = followUpRepository.findByClId(id).orElse(null);
                                 fuGet.setIs_delete(1);
                                 if (fuGet != null) {
