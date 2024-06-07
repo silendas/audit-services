@@ -6,6 +6,7 @@ import com.cms.audit.api.Clarifications.models.Clarification;
 import com.cms.audit.api.Management.Office.BranchOffice.models.Branch;
 import com.cms.audit.api.Management.ReportType.models.ReportType;
 import com.cms.audit.api.Management.User.models.User;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -68,10 +69,14 @@ public class NewsInspection {
 
     @Column(name = "nominal_loss")
     private Long nominal_loss;
-    
+
+    @JsonIgnore
+    @Column(name = "is_delete", length = 2, nullable = true)
+    private Integer is_delete;
+
     @Column(name = "created_by")
     private Long created_by;
-    
+
     @Column(name = "created_at", columnDefinition = "DATE")
     private Date created_at;
 

@@ -781,6 +781,7 @@ public class ClarificationService {
                                                 reportNumber,
                                                 reportCode,
                                                 response.getNominal_loss(),
+                                                0,
                                                 response.getCreated_by(),
                                                 new Date(),
                                                 new Date());

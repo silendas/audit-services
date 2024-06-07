@@ -57,6 +57,7 @@ public class NewsInspectionService {
                     .where(new SpecificationFIlter<NewsInspection>().nameLike(name))
                     .and(new SpecificationFIlter<NewsInspection>().branchIdEqual(branch))
                     .and(new SpecificationFIlter<NewsInspection>().dateRange(start_date, end_date))
+                    .and(new SpecificationFIlter<NewsInspection>().isNotDeleted())
                     .and(new SpecificationFIlter<NewsInspection>().orderByIdDesc());
             if (getUser.getLevel().getCode().equals("C")) {
                 spec = spec.and(new SpecificationFIlter<NewsInspection>().userId(getUser.getId()));
@@ -280,6 +281,52 @@ public class NewsInspectionService {
         NewsInspection response = repository.findByFileName(fileName)
                 .orElseThrow(() -> new BadRequestException("File not found with name: " + fileName));
         return response;
+    }
+
+    public GlobalResponse deleteFile(Long id) {
+        try {
+            Optional<NewsInspection> getBAP = repository.findById(id);
+            if (!getBAP.isPresent()) {
+                return GlobalResponse.builder().message("BAP tidak ditemukan")
+                        .errorMessage("BAP dengna id : " + id + " tidak ditemukan").status(HttpStatus.BAD_REQUEST)
+                        .build();
+            }
+            if (getBAP.get().getFile_path() != null) {
+                File oldFile = new File(getBAP.get().getFile_path());
+                if (oldFile.exists()) {
+                    oldFile.delete();
+                }
+            }
+
+            NewsInspection bap = getBAP.get();
+            bap.setIs_delete(1);
+            bap.setUpdated_at(new Date());
+            repository.save(bap);
+            
+            return GlobalResponse
+                    .builder()
+                    .message("Berhasil menghapus data")
+                    .status(HttpStatus.OK)
+                    .build();
+        } catch (DataException e) {
+            return GlobalResponse
+                    .builder()
+                    .error(e)
+                    .status(HttpStatus.UNPROCESSABLE_ENTITY)
+                    .build();
+        } catch (ResponseStatusException e) {
+            return GlobalResponse
+                    .builder()
+                    .error(e)
+                    .status(HttpStatus.BAD_REQUEST)
+                    .build();
+        } catch (Exception e) {
+            return GlobalResponse
+                    .builder()
+                    .error(e)
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .build();
+        }
     }
 
 }

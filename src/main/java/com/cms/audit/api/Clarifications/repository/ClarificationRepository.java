@@ -16,7 +16,7 @@ import java.util.List;
 @Repository
 public interface ClarificationRepository extends JpaRepository<Clarification, Long> {
 
-    @Query(value = "SELECT c.report_number, c.code, EXTRACT(YEAR FROM c.created_at) as created_year FROM clarification c WHERE c.user_id = :userId ORDER BY c.id DESC LIMIT 1;", nativeQuery = true)
+    @Query(value = "SELECT c.report_number, c.code, EXTRACT(YEAR FROM c.created_at) as created_year FROM clarification c WHERE c.user_id = :userId AND c.is_delete = 0 ORDER BY c.id DESC LIMIT 1;", nativeQuery = true)
     Optional<NumberClarificationInterface> checkNumberClarification(@Param("userId") Long id);
 
     @Query(value = "SELECT u.* FROM clarification u INNER JOIN branch_office bo ON u.branch_id=bo.id INNER JOIN area_office ao ON bo.area_id=ao.id INNER JOIN region_office ro ON ao.region_id=ro.id WHERE ro.id = :regionId ",nativeQuery=true)

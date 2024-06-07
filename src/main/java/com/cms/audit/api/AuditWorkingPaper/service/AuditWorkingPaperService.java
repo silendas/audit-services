@@ -302,4 +302,50 @@ public class AuditWorkingPaperService {
         return response;
     }
 
+    public GlobalResponse delete(Long id) {
+        try {
+            Optional<AuditWorkingPaper> getBefore = repository.findById(id);
+            if (!getBefore.isPresent()) {
+                return GlobalResponse
+                                .builder()
+                                .message("tidak ditemukan").errorMessage("KKA tidak ditemukan")
+                                .status(HttpStatus.BAD_REQUEST)
+                                .build();
+            }
+            if (getBefore.get().getFile_path() != null) {
+                File oldFile = new File(getBefore.get().getFile_path());
+                if (oldFile.exists()) {
+                    oldFile.delete();
+                }
+            }
+            AuditWorkingPaper kka = getBefore.get();
+            kka.setIs_delete(1);
+            repository.save(kka);
+
+            return GlobalResponse
+                    .builder()
+                    .message("Berhasil menghapus data")
+                    .status(HttpStatus.OK)
+                    .build();
+        } catch (DataException e) {
+            return GlobalResponse
+                    .builder()
+                    .error(e)
+                    .status(HttpStatus.UNPROCESSABLE_ENTITY)
+                    .build();
+        } catch (ResponseStatusException e) {
+            return GlobalResponse
+                    .builder()
+                    .error(e)
+                    .status(HttpStatus.BAD_REQUEST)
+                    .build();
+        } catch (Exception e) {
+            return GlobalResponse
+                    .builder()
+                    .error(e)
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .build();
+        }
+    }
+
 }
