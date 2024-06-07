@@ -15,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -113,6 +114,18 @@ public class NewsInspecionController {
         public ResponseEntity<Object> upload(@RequestParam(value = "file", required = false) MultipartFile file,
                         @ModelAttribute("bap_id") Long id) {
                 GlobalResponse response = service.uploadFile(file, id);
+                if (response.getStatus().value() == 400) {
+                        return ResponseEntittyHandler.errorResponse(response.getErrorMessage(), response.getMessage(),
+                                        response.getStatus());
+                } else {
+                        return ResponseEntittyHandler.allHandler(null, response.getMessage(), response.getStatus(),
+                                        response.getError());
+                }
+        }
+
+        @DeleteMapping("/{id}")
+        public ResponseEntity<Object> delete(@PathVariable("id") Long id) {
+                GlobalResponse response = service.deleteFile(id);
                 if (response.getStatus().value() == 400) {
                         return ResponseEntittyHandler.errorResponse(response.getErrorMessage(), response.getMessage(),
                                         response.getStatus());
