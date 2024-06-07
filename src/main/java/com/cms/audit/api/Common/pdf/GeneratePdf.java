@@ -481,7 +481,7 @@ public class GeneratePdf {
                 body5.addCell(new Cell().add("").setBorder(Border.NO_BORDER).setHeight(40));
                 float body5NestedLength[] = { 100f };
                 Table body5Nested = new Table(body5NestedLength).setHorizontalAlignment(HorizontalAlignment.LEFT).setBorder(Border.NO_BORDER);
-                body5Nested.addCell(new Cell().add("( " + response.getClarification().getAuditee() + " )")
+                body5Nested.addCell(new Cell().add("( " + response.getClarification().getAuditee_leader() + " )")
                                 .setBorderLeft(Border.NO_BORDER).setBorderRight(Border.NO_BORDER)
                                 .setBorderTop(Border.NO_BORDER).setBorderBottom(Border.NO_BORDER).setFontSize(7).setTextAlignment(TextAlignment.CENTER)
                                 .setHorizontalAlignment(HorizontalAlignment.CENTER));
