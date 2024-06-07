@@ -109,7 +109,7 @@ public class GeneratePdf {
                 // section 2
 
                 // section 3
-                float subHeader1Lenght[] = { 520f, 175 };
+                float subHeader1Lenght[] = { 523f, 175 };
                 Table subheader1 = new Table(subHeader1Lenght).setHorizontalAlignment(HorizontalAlignment.CENTER);
                 subheader1.addCell(new Cell().add("").setBorderRight(Border.NO_BORDER));
 
