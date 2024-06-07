@@ -92,23 +92,24 @@ public class AuditDailyReportService {
         @Autowired
         private pagAuditDailyReport pag;
 
-        public GlobalResponse get(int page, int size, Date startDate, Date endDate, Long shcedule_id,
-                        Long branch_id,
-                        String name) {
+        public GlobalResponse get(int page, int size, Date startDate, Date endDate, Long schedule_id,
+                        Long branch_id, String name) {
                 try {
                         User getUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
                         Page<AuditDailyReport> response = null;
+
                         Specification<AuditDailyReport> spec = Specification
                                         .where(new SpecificationFIlter<AuditDailyReport>().nameLike(name))
                                         .and(new SpecificationFIlter<AuditDailyReport>().branchIdEqual(branch_id))
-                                        .and(new SpecificationFIlter<AuditDailyReport>().dateRange(startDate,
-                                                        endDate))
+                                        .and(new SpecificationFIlter<AuditDailyReport>().dateRange(startDate, endDate))
                                         .and(new SpecificationFIlter<AuditDailyReport>().isNotDeleted())
                                         .and(new SpecificationFIlter<AuditDailyReport>().orderByIdDesc());
-                        if (shcedule_id != null) {
+
+                        if (schedule_id != null) {
                                 spec = spec.and(new SpecificationFIlter<AuditDailyReport>()
-                                                .scheduleIdEqual(shcedule_id));
+                                                .scheduleIdEqual(schedule_id));
                         }
+
                         if (getUser.getLevel().getCode().equals("C")) {
                                 spec = spec.and(new SpecificationFIlter<AuditDailyReport>().userId(getUser.getId()));
                         } else if (getUser.getLevel().getCode().equals("B")) {
@@ -119,6 +120,7 @@ public class AuditDailyReportService {
                                                                 .userId(getUser.getId()));
                                 spec = spec.and(regionOrUserSpec);
                         }
+
                         response = pag.findAll(spec, PageRequest.of(page, size));
                         if (response.isEmpty()) {
                                 return GlobalResponse
@@ -128,65 +130,66 @@ public class AuditDailyReportService {
                                                 .status(HttpStatus.OK)
                                                 .build();
                         }
+
                         List<Object> listLha = new ArrayList<>();
-                        for (int i = 0; i < response.getContent().size(); i++) {
+                        for (AuditDailyReport report : response.getContent()) {
                                 List<AuditDailyReportDetail> getDetail = auditDailyReportDetailRepository
-                                                .findByLHAId(response.getContent().get(i).getId());
+                                                .findByLHAId(report.getId());
                                 boolean hasValidFlow = false;
                                 Integer flag = 0;
-                                for (int u = 0; u < getDetail.size(); u++) {
+
+                                for (AuditDailyReportDetail detail : getDetail) {
                                         if (getUser.getLevel().getCode().equals("A")) {
-                                                if (getDetail.get(u).getStatus_flow() != 1) {
-                                                        continue;
-                                                } else {
+                                                if (detail.getStatus_flow() == 1) {
                                                         hasValidFlow = true;
+                                                        break;
                                                 }
                                         } else {
                                                 hasValidFlow = true;
-                                        }
-                                        if (response.getContent().get(i).getIs_research() != 1) {
-                                                if (getDetail.get(u).getIs_research() == 1) {
-                                                        Flag isFlag = flagRepo.findOneByAuditDailyReportDetailId(
-                                                                        getDetail.get(u).getId()).orElse(null);
-                                                        if (isFlag != null) {
-                                                                if (isFlag.getClarification().getFilename() == null) {
-                                                                        flag = 1;
-                                                                } else {
-                                                                        flag = 0;
-                                                                }
-                                                        } else {
-                                                                flag = 0;
-                                                        }
-                                                }
+                                                break;
                                         }
                                 }
+
                                 if (!hasValidFlow) {
                                         continue;
                                 }
+
+                                for (AuditDailyReportDetail detail : getDetail) {
+                                        if (report.getIs_research() != 1 && detail.getIs_research() == 1) {
+                                                Flag isFlag = flagRepo.findOneByAuditDailyReportDetailId(detail.getId())
+                                                                .orElse(null);
+                                                if (isFlag != null && isFlag.getClarification().getFilename() == null) {
+                                                        flag = 1;
+                                                        break;
+                                                }
+                                        }
+                                }
+
                                 Map<String, Object> responseS = new LinkedHashMap<>();
-                                responseS.put("id", response.getContent().get(i).getId());
+                                responseS.put("id", report.getId());
+
                                 Map<String, Object> user = new LinkedHashMap<>();
-                                user.put("id", response.getContent().get(i).getUser().getId());
-                                user.put("fullname", response.getContent().get(i).getUser().getFullname());
-                                user.put("email", response.getContent().get(i).getUser().getEmail());
-                                user.put("initial_name", response.getContent().get(i).getUser().getInitial_name());
-                                user.put("level", response.getContent().get(i).getUser().getLevel());
+                                user.put("id", report.getUser().getId());
+                                user.put("fullname", report.getUser().getFullname());
+                                user.put("email", report.getUser().getEmail());
+                                user.put("initial_name", report.getUser().getInitial_name());
+                                user.put("level", report.getUser().getLevel());
                                 responseS.put("user", user);
 
-                                Branch branch = response.getContent().get(i).getBranch();
-                                responseS.put("branch", branch);
+                                responseS.put("branch", report.getBranch());
 
                                 Map<String, Object> schedule = new LinkedHashMap<>();
-                                schedule.put("id", response.getContent().get(i).getSchedule().getId());
-                                schedule.put("start_date", response.getContent().get(i).getSchedule().getStart_date());
-                                schedule.put("end_date", response.getContent().get(i).getSchedule().getEnd_date());
+                                schedule.put("id", report.getSchedule().getId());
+                                schedule.put("start_date", report.getSchedule().getStart_date());
+                                schedule.put("end_date", report.getSchedule().getEnd_date());
                                 responseS.put("schedule", schedule);
 
-                                responseS.put("created_at", response.getContent().get(i).getCreated_at());
+                                responseS.put("created_at", report.getCreated_at());
                                 responseS.put("is_research", flag);
                                 responseS.put("is_flag", flag);
                                 listLha.add(responseS);
                         }
+
                         Map<String, Object> parent = new LinkedHashMap<>();
                         parent.put("pageable", response.getPageable());
                         parent.put("totalPage", response.getTotalPages());
@@ -199,6 +202,7 @@ public class AuditDailyReportService {
                         parent.put("empty", response.isEmpty());
                         parent.put("sort", response.getSort());
                         parent.put("content", listLha);
+
                         return GlobalResponse
                                         .builder()
                                         .message("Berhasil menampilkan data")
