@@ -14,7 +14,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -93,22 +92,23 @@ public class AuditDailyReportService {
         @Autowired
         private pagAuditDailyReport pag;
 
-        public GlobalResponse get(int page, int size, Date startDate, Date endDate, Long schedule_id,
-                        Long branch_id, String name) {
+        public GlobalResponse get(int page, int size, Date startDate, Date endDate, Long shcedule_id,
+                        Long branch_id,
+                        String name) {
                 try {
                         User getUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+                        Page<AuditDailyReport> response = null;
                         Specification<AuditDailyReport> spec = Specification
                                         .where(new SpecificationFIlter<AuditDailyReport>().nameLike(name))
                                         .and(new SpecificationFIlter<AuditDailyReport>().branchIdEqual(branch_id))
-                                        .and(new SpecificationFIlter<AuditDailyReport>().dateRange(startDate, endDate))
+                                        .and(new SpecificationFIlter<AuditDailyReport>().dateRange(startDate,
+                                                        endDate))
                                         .and(new SpecificationFIlter<AuditDailyReport>().isNotDeleted())
                                         .and(new SpecificationFIlter<AuditDailyReport>().orderByIdDesc());
-
-                        if (schedule_id != null) {
+                        if (shcedule_id != null) {
                                 spec = spec.and(new SpecificationFIlter<AuditDailyReport>()
-                                                .scheduleIdEqual(schedule_id));
+                                                .scheduleIdEqual(shcedule_id));
                         }
-
                         if (getUser.getLevel().getCode().equals("C")) {
                                 spec = spec.and(new SpecificationFIlter<AuditDailyReport>().userId(getUser.getId()));
                         } else if (getUser.getLevel().getCode().equals("B")) {
@@ -119,101 +119,86 @@ public class AuditDailyReportService {
                                                                 .userId(getUser.getId()));
                                 spec = spec.and(regionOrUserSpec);
                         }
-
-                        List<Object> listLha = new ArrayList<>();
-                        List<AuditDailyReport> allReports = new ArrayList<>();
-                        int attempt = 0;
-                        int fetchSize = size * 2; // Fetch double the size to ensure enough valid data
-                        Page<AuditDailyReport> response;
-
-                        while (listLha.size() < size && attempt < 5) { // Limit to 5 attempts to fetch more data
-                                response = pag.findAll(spec, PageRequest.of(page + attempt, fetchSize));
-                                if (response.isEmpty()) {
-                                        break;
-                                }
-                                allReports.addAll(response.getContent());
-                                attempt++;
+                        response = pag.findAll(spec, PageRequest.of(page, size));
+                        if (response.isEmpty()) {
+                                return GlobalResponse
+                                                .builder()
+                                                .message("Data tidak ditemukan")
+                                                .data(response)
+                                                .status(HttpStatus.OK)
+                                                .build();
                         }
-
-                        for (AuditDailyReport report : allReports) {
-                                if (listLha.size() >= size) {
-                                        break;
-                                }
-
+                        List<Object> listLha = new ArrayList<>();
+                        for (int i = 0; i < response.getContent().size(); i++) {
                                 List<AuditDailyReportDetail> getDetail = auditDailyReportDetailRepository
-                                                .findByLHAId(report.getId());
-                                boolean hasValidFlow = false;
+                                                .findByLHAId(response.getContent().get(i).getId());
+                                //boolean hasValidFlow = false;
                                 Integer flag = 0;
-
-                                for (AuditDailyReportDetail detail : getDetail) {
-                                        if (getUser.getLevel().getCode().equals("A")) {
-                                                if (detail.getStatus_flow() == 1) {
-                                                        hasValidFlow = true;
-                                                        break;
+                                for (int u = 0; u < getDetail.size(); u++) {
+                                        // if (getUser.getLevel().getCode().equals("A")) {
+                                        //         if (getDetail.get(u).getStatus_flow() != 1) {
+                                        //                 continue;
+                                        //         } else {
+                                        //                 hasValidFlow = true;
+                                        //         }
+                                        // } else {
+                                        //         hasValidFlow = true;
+                                        // }
+                                        if (response.getContent().get(i).getIs_research() != 1) {
+                                                if (getDetail.get(u).getIs_research() == 1) {
+                                                        Flag isFlag = flagRepo.findOneByAuditDailyReportDetailId(
+                                                                        getDetail.get(u).getId()).orElse(null);
+                                                        if (isFlag != null) {
+                                                                if (isFlag.getClarification().getFilename() == null) {
+                                                                        flag = 1;
+                                                                } else {
+                                                                        flag = 0;
+                                                                }
+                                                        } else {
+                                                                flag = 0;
+                                                        }
                                                 }
-                                        } else {
-                                                hasValidFlow = true;
-                                                break;
                                         }
                                 }
-
-                                if (!hasValidFlow) {
-                                        continue;
-                                }
-
-                                for (AuditDailyReportDetail detail : getDetail) {
-                                        if (report.getIs_research() != 1 && detail.getIs_research() == 1) {
-                                                Flag isFlag = flagRepo.findOneByAuditDailyReportDetailId(detail.getId())
-                                                                .orElse(null);
-                                                if (isFlag != null && isFlag.getClarification().getFilename() == null) {
-                                                        flag = 1;
-                                                        break;
-                                                }
-                                        }
-                                }
-
+                                // if (!hasValidFlow) {
+                                //         continue;
+                                // }
                                 Map<String, Object> responseS = new LinkedHashMap<>();
-                                responseS.put("id", report.getId());
-
+                                responseS.put("id", response.getContent().get(i).getId());
                                 Map<String, Object> user = new LinkedHashMap<>();
-                                user.put("id", report.getUser().getId());
-                                user.put("fullname", report.getUser().getFullname());
-                                user.put("email", report.getUser().getEmail());
-                                user.put("initial_name", report.getUser().getInitial_name());
-                                user.put("level", report.getUser().getLevel());
+                                user.put("id", response.getContent().get(i).getUser().getId());
+                                user.put("fullname", response.getContent().get(i).getUser().getFullname());
+                                user.put("email", response.getContent().get(i).getUser().getEmail());
+                                user.put("initial_name", response.getContent().get(i).getUser().getInitial_name());
+                                user.put("level", response.getContent().get(i).getUser().getLevel());
                                 responseS.put("user", user);
 
-                                responseS.put("branch", report.getBranch());
+                                Branch branch = response.getContent().get(i).getBranch();
+                                responseS.put("branch", branch);
 
                                 Map<String, Object> schedule = new LinkedHashMap<>();
-                                schedule.put("id", report.getSchedule().getId());
-                                schedule.put("start_date", report.getSchedule().getStart_date());
-                                schedule.put("end_date", report.getSchedule().getEnd_date());
+                                schedule.put("id", response.getContent().get(i).getSchedule().getId());
+                                schedule.put("start_date", response.getContent().get(i).getSchedule().getStart_date());
+                                schedule.put("end_date", response.getContent().get(i).getSchedule().getEnd_date());
                                 responseS.put("schedule", schedule);
 
-                                responseS.put("created_at", report.getCreated_at());
+                                responseS.put("created_at", response.getContent().get(i).getCreated_at());
                                 responseS.put("is_research", flag);
                                 responseS.put("is_flag", flag);
                                 listLha.add(responseS);
                         }
-
-                        // Creating pagination info
-                        long totalElements = pag.count(spec);
-                        int totalPages = (int) Math.ceil((double) totalElements / size);
-
                         Map<String, Object> parent = new LinkedHashMap<>();
-                        parent.put("pageable", PageRequest.of(page, size));
-                        parent.put("totalPage", totalPages);
-                        parent.put("totalElement", totalElements);
-                        parent.put("size", size);
-                        parent.put("number", page);
-                        parent.put("last", page == totalPages - 1);
-                        parent.put("first", page == 0);
-                        parent.put("numberOfElement", listLha.size());
-                        parent.put("empty", listLha.isEmpty());
-                        parent.put("sort", Sort.unsorted());
+                        parent.put("pageable", response.getPageable());
+                        parent.put("totalPage", response.getTotalPages());
+                        parent.put("totalElement", response.getTotalElements());
+                        parent.put("size", response.getSize());
+                        parent.put("number", response.getNumber());
+                        parent.put("last", response.isLast());
+                        parent.put("first", response.isFirst());
+                        parent.put("numberOfElement", response.getNumberOfElements());
+                        parent.put("empty", response.isEmpty());
+                        parent.put("sort", response.getSort());
                         parent.put("content", listLha);
-
                         return GlobalResponse
                                         .builder()
                                         .message("Berhasil menampilkan data")
