@@ -1006,30 +1006,30 @@ public class ClarificationService {
                         if (getClarification.get().getIs_follow_up() != null
                                         && getClarification.get().getIs_follow_up() == 1) {
                                 FollowUp fuGet = followUpRepository.findByClId(id).orElse(null);
-                                fuGet.setIs_delete(1);
                                 if (fuGet != null) {
+                                        fuGet.setIs_delete(1);
                                         followUpRepository.save(fuGet);
                                 }
                                 // if (fuGet.getFilePath() != null) {
-                                //         File oldFile = new File(fuGet.getFilePath());
-                                //         if (oldFile.exists()) {
-                                //                 oldFile.delete();
-                                //         }
+                                // File oldFile = new File(fuGet.getFilePath());
+                                // if (oldFile.exists()) {
+                                // oldFile.delete();
+                                // }
                                 // }
                         }
 
                         if (getClarification.get().getNominal_loss() != null
                                         && getClarification.get().getNominal_loss() > 0) {
                                 NewsInspection bap = newsInspectionRepository.findByClId(id).orElse(null);
-                                bap.setIs_delete(1);
                                 if (bap != null) {
+                                        bap.setIs_delete(1);
                                         newsInspectionRepository.save(bap);
-                                }                                          
+                                }
                                 // if(bap.getFile_path() != null) {
-                                //         File oldFile = new File(bap.getFile_path());
-                                //         if (oldFile.exists()) {
-                                //                 oldFile.delete();
-                                //         }
+                                // File oldFile = new File(bap.getFile_path());
+                                // if (oldFile.exists()) {
+                                // oldFile.delete();
+                                // }
                                 // }
                         }
 
