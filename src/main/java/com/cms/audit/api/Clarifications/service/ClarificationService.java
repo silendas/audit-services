@@ -1010,12 +1010,27 @@ public class ClarificationService {
                                 if (fuGet != null) {
                                         followUpRepository.save(fuGet);
                                 }
-                                if (fuGet.getFilePath() != null) {
-                                        File oldFile = new File(fuGet.getFilePath());
-                                        if (oldFile.exists()) {
-                                                oldFile.delete();
-                                        }
-                                }
+                                // if (fuGet.getFilePath() != null) {
+                                //         File oldFile = new File(fuGet.getFilePath());
+                                //         if (oldFile.exists()) {
+                                //                 oldFile.delete();
+                                //         }
+                                // }
+                        }
+
+                        if (getClarification.get().getNominal_loss() != null
+                                        && getClarification.get().getNominal_loss() > 0) {
+                                NewsInspection bap = newsInspectionRepository.findByClId(id).orElse(null);
+                                bap.setIs_delete(1);
+                                if (bap != null) {
+                                        newsInspectionRepository.save(bap);
+                                }                                          
+                                // if(bap.getFile_path() != null) {
+                                //         File oldFile = new File(bap.getFile_path());
+                                //         if (oldFile.exists()) {
+                                //                 oldFile.delete();
+                                //         }
+                                // }
                         }
 
                         return GlobalResponse

@@ -291,12 +291,12 @@ public class NewsInspectionService {
                         .errorMessage("BAP dengna id : " + id + " tidak ditemukan").status(HttpStatus.BAD_REQUEST)
                         .build();
             }
-            if (getBAP.get().getFile_path() != null) {
-                File oldFile = new File(getBAP.get().getFile_path());
-                if (oldFile.exists()) {
-                    oldFile.delete();
-                }
-            }
+            // if (getBAP.get().getFile_path() != null) {
+            //     File oldFile = new File(getBAP.get().getFile_path());
+            //     if (oldFile.exists()) {
+            //         oldFile.delete();
+            //     }
+            // }
 
             NewsInspection bap = getBAP.get();
             bap.setIs_delete(1);

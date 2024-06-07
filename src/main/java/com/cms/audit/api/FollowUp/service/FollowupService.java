@@ -537,12 +537,12 @@ public class FollowupService {
                     .message("Follow up with id:" + id + " is not found").build();
         }
         FollowUp followUp = getFollowUp.get();
-        if (followUp.getFilePath() != null) {
-            File oldFile = new File(followUp.getFilePath());
-            if (oldFile.exists()) {
-                oldFile.delete();
-            }
-        }
+        // if (followUp.getFilePath() != null) {
+        //     File oldFile = new File(followUp.getFilePath());
+        //     if (oldFile.exists()) {
+        //         oldFile.delete();
+        //     }
+        // }
         followUp.setIs_delete(1);
         repository.save(followUp);
 
