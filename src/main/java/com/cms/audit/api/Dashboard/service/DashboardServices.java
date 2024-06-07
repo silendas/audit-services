@@ -41,10 +41,10 @@ public class DashboardServices {
 
     public Map<String, Object> dasboardStatus(List<FollowUp> listFu1, List<FollowUp> listFu2) {
         Map<String, Object> mapping = new LinkedHashMap<>();
-        if (listFu1.isEmpty()) {
+        if (!listFu1.isEmpty()) {
             mapping.put("follow_up1", listYearStatus(listFu1));
         }
-        if (listFu2.isEmpty()) {
+        if (!listFu2.isEmpty()) {
             mapping.put("follow_up2", listYearStatus(listFu2));
         }
         return mapping;
