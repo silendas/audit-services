@@ -58,12 +58,14 @@ public class DashboardServices {
             Specification<FollowUp> spec = Specification
                     .where(new SpecificationFIlter<FollowUp>().dateRange(dateCompare.getDate1(),
                             dateCompare.getDate2()))
+                    .and(new SpecificationFIlter<FollowUp>().isNotDeleted())
                     .and(new SpecificationFIlter<FollowUp>().orderByIdDesc());
             fu2 = fuRepo.findAll(spec);
         }
         DateCompareDTO dateCompare = convertDateToRoman.getDateRange(date1);
         Specification<FollowUp> spec = Specification
                 .where(new SpecificationFIlter<FollowUp>().dateRange(dateCompare.getDate1(), dateCompare.getDate2()))
+                .and(new SpecificationFIlter<FollowUp>().isNotDeleted())
                 .and(new SpecificationFIlter<FollowUp>().orderByIdDesc());
         fu1 = fuRepo.findAll(spec);
 

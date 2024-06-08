@@ -479,14 +479,17 @@ public class GeneratePdf {
                                 .setBorder(Border.NO_BORDER)
                                 .setFontSize(7));
                 body5.addCell(new Cell().add("").setBorder(Border.NO_BORDER).setHeight(40));
-                float body5NestedLength[] = { 100f };
-                Table body5Nested = new Table(body5NestedLength).setHorizontalAlignment(HorizontalAlignment.LEFT).setBorder(Border.NO_BORDER);
+                float body5NestedLength[] = { 80f };
+                Table body5Nested = new Table(body5NestedLength).setHorizontalAlignment(HorizontalAlignment.LEFT)
+                                .setBorder(Border.NO_BORDER);
                 body5Nested.addCell(new Cell().add("( " + response.getClarification().getAuditee_leader() + " )")
                                 .setBorderLeft(Border.NO_BORDER).setBorderRight(Border.NO_BORDER)
-                                .setBorderTop(Border.NO_BORDER).setBorderBottom(Border.NO_BORDER).setFontSize(7).setTextAlignment(TextAlignment.CENTER)
+                                .setBorderTop(Border.NO_BORDER).setBorderBottom(Border.NO_BORDER).setFontSize(7)
+                                .setTextAlignment(TextAlignment.CENTER)
                                 .setHorizontalAlignment(HorizontalAlignment.CENTER));
-                body5.addCell(new Cell().add("").setBorderLeft(Border.NO_BORDER).setBorderRight(Border.NO_BORDER).setBorderTop(Border.NO_BORDER));
                 body5.addCell(new Cell().add(body5Nested).setBorder(Border.NO_BORDER));
+                body5.addCell(new Cell().add("").setBorderLeft(Border.NO_BORDER).setBorderRight(Border.NO_BORDER)
+                                .setBorderTop(Border.NO_BORDER));
                 body5.addCell(new Cell().add("" + "").setBorder(Border.NO_BORDER).setFontSize(7).setHeight(40));
                 body.addCell(new Cell().add(body5).setBorder(Border.NO_BORDER));
                 // section 7
@@ -515,7 +518,10 @@ public class GeneratePdf {
                                 // nested6.addCell(new
                                 // Cell().add("").setBackgroundColor(Color.RED).setHeight(5f));
                                 // } else {
-                                nested6.addCell(new Cell().add("").setHeight(5f));
+                                float cubeLength[] = { 18f };
+                                Table cube = new Table(cubeLength).setHorizontalAlignment(HorizontalAlignment.LEFT);
+                                cube.addCell(new Cell().add("").setHeight(5f));
+                                nested6.addCell(new Cell().add(cube).setHeight(5f)).setBorder(Border.NO_BORDER);
                                 // }
                                 nested6.addCell(new Cell().add(penalties.getName()).setBorder(Border.NO_BORDER)
                                                 .setFontSize(5)

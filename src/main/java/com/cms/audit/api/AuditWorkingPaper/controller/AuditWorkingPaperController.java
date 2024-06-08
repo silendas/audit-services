@@ -101,15 +101,20 @@ public class AuditWorkingPaperController {
 
         @PostMapping(value = "/upload")
         public ResponseEntity<Object> upload(@RequestParam(value = "file", required = true) MultipartFile file,
-                        @ModelAttribute("schedule_id") Long id) {
-                GlobalResponse response = service.uploadFile(file, id);
-                if (response.getStatus().value() == 400) {
-                        return ResponseEntittyHandler.errorResponse(response.getErrorMessage(), response.getMessage(),
-                                        response.getStatus());
-                } else {
-                        return ResponseEntittyHandler.allHandler(null, response.getMessage(), response.getStatus(),
-                                        response.getError());
-                }
+                                             @ModelAttribute("schedule_id") Long id) {
+            // Check if the file is an xlsx file
+            String filename = file.getOriginalFilename();
+            if (filename == null || !filename.endsWith(".xlsx")) {
+                return ResponseEntittyHandler.errorResponse("Hanya dapat input file dengan tipe .xlsx", "Tidak berhasil upload file karena tipe file tidak sesuai, hanya dapat input dengan tipe .xlsx", HttpStatus.BAD_REQUEST);
+
+            }
+        
+            GlobalResponse response = service.uploadFile(file, id);
+            if (response.getStatus().value() == 400) {
+                return ResponseEntittyHandler.errorResponse(response.getErrorMessage(), response.getMessage(), response.getStatus());
+            } else {
+                return ResponseEntittyHandler.allHandler(null, response.getMessage(), response.getStatus(), response.getError());
+            }
         }
 
         @DeleteMapping("/{id}")

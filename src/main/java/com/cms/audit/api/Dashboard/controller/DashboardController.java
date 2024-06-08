@@ -23,9 +23,9 @@ public class DashboardController {
 
     @GetMapping()
     public ResponseEntity<Object> getDashboard(
-        @RequestParam(required = false) Optional<String> name,
         @RequestParam(required = false) Optional<Long> date1,
-        @RequestParam(required = false) Optional<Long> date2   
+        @RequestParam(required = false) Optional<Long> date2,
+        @RequestParam(required = false) Optional<Long> year   
     ) {
         return dashboardServices.getDashboard(date1.orElse(convertDateToRoman.getLongMonthNumber(new Date())), date2.orElse(null));
     }

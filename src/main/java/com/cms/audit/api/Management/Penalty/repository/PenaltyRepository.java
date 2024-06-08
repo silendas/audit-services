@@ -23,4 +23,7 @@ public interface PenaltyRepository extends JpaRepository<Penalty, Long> {
     @Query(value = "SELECT * FROM penalty u WHERE u.id = :penaltyId AND u.is_delete <> 1", nativeQuery = true)
     public Optional<Penalty> findOnePenaltyById(@Param("penaltyId") Long id);
 
+    @Query(value = "SELECT * FROM penalty u WHERE u.name = :penaltyName AND u.is_delete <> 1", nativeQuery = true)
+    public Optional<Penalty> findOnePenaltyByName(@Param("penaltyName") String name);
+
 }

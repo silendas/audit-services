@@ -187,30 +187,22 @@ public class PenaltyService {
         try {
             Penalty getPenalty = PenaltyRepository.findById(id).get();
 
-            List<Penalty> check = PenaltyRepository.findAllPenalty();
-
             if(!getPenalty.getName().equals(PenaltyDTO.getName())){
-                for (Penalty penalty : check) {
-                    if (penalty.getName().equals(PenaltyDTO.getName())) {
-                        return GlobalResponse
-                                .builder()
-                                .errorMessage("Data sudah ada")
-                                .message("Data sudah ada")
-                                .status(HttpStatus.BAD_REQUEST)
-                                .build();
-                    }
+                Optional<Penalty> checkPenalty = PenaltyRepository.findOnePenaltyByName(PenaltyDTO.getName());
+                if(checkPenalty.isPresent()){
+                    return GlobalResponse
+                            .builder()
+                            .errorMessage("Data sudah ada")
+                            .message("Data sudah ada")
+                            .status(HttpStatus.BAD_REQUEST)
+                            .build();
                 }
             }
 
-            Penalty penalty = new Penalty(
-                id,
-                PenaltyDTO.getName(),
-                0,
-                getPenalty.getCreated_at(),
-                new Date()
-            );
-
-            Penalty response = PenaltyRepository.save(penalty);
+            Penalty penalty = getPenalty;
+            penalty.setName(PenaltyDTO.getName());
+            penalty.setUpdated_at(new Date());
+            PenaltyRepository.save(penalty);
 
             return GlobalResponse
                     .builder()
