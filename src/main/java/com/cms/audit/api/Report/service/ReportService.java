@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.lang.reflect.Array;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -154,285 +155,17 @@ public class ReportService {
 
         ByteArrayInputStream pdf = null;
         if (regionId != null) {
-            for (int i = 0; i < response.size(); i++) {
-                List<AuditDailyReportDetail> detail = new ArrayList<>();
-                if (getUser.getLevel().getCode().equals("A")) {
-                    detail = lhaDetailRepository.findByLHAIdForLeader(response.get(i).getId());
-                } else {
-                    detail = lhaDetailRepository.findByLHAId(response.get(i).getId());
-                }
-                if (detail.isEmpty()) {
-                    continue;
-                }
-                String regionuser_id = response.get(i).getBranch().getArea().getRegion().getName();
-                String datereport;
-                if (response.get(i) != null) {
-                    datereport = convertDateToRoman.convertDateHehe(response.get(i).getCreated_at());
-                } else {
-                    datereport = "-";
-                }
-                String fulluser_id;
-                if (getUser.getFullname() != null) {
-                    fulluser_id = response.get(i).getUser().getFullname();
-                } else {
-                    fulluser_id = "-";
-                }
-                boolean foundRegion = false;
-                for (int x = 0; x < listAllReport.size(); x++) {
-                    if (regionuser_id.equals(listAllReport.get(x).getArea_name())
-                            && datereport.equals(listAllReport.get(x).getDate())) {
-                        foundRegion = true;
-                        List<ListLhaDTO> lhaDetails = listAllReport.get(x).getLha_detail();
-                        boolean foundUser = false;
-                        for (int y = 0; y < lhaDetails.size(); y++) {
-                            if (fulluser_id.equals(lhaDetails.get(y).getFullname())) {
-                                List<AuditDailyReportDetail> listOfDetail = new ArrayList<>();
-                                for (int d = 0; d < detail.size(); d++) {
-                                    Optional<Revision> check = revisionRepository.findByDetailId(detail.get(d).getId());
-                                    if (check.isPresent()) {
-                                        AuditDailyReportDetail makeDto = new AuditDailyReportDetail();
-                                        makeDto.setAuditDailyReport(detail.get(d).getAuditDailyReport());
-                                        makeDto.setCaseCategory(check.get().getCaseCategory());
-                                        makeDto.setCases(check.get().getCases());
-                                        makeDto.setCreated_at(check.get().getCreated_at());
-                                        makeDto.setCreated_by(check.get().getCreated_by());
-                                        makeDto.setDescription(check.get().getDescription());
-                                        makeDto.setId(check.get().getId());
-                                        makeDto.setIs_delete(check.get().getIs_delete());
-                                        makeDto.setIs_research(check.get().getIs_research());
-                                        makeDto.setPermanent_recommendations(
-                                                check.get().getPermanent_recommendations());
-                                        makeDto.setSuggestion(check.get().getSuggestion());
-                                        makeDto.setTemporary_recommendations(
-                                                check.get().getTemporary_recommendations());
-                                        makeDto.setUpdate_at(detail.get(d).getUpdate_at());
-                                        makeDto.setUpdated_by(detail.get(d).getUpdated_by());
-                                        listOfDetail.add(makeDto);
-                                    } else {
-                                        listOfDetail.add(detail.get(d));
-                                    }
-                                }
-                                lhaDetails.get(y).getDetails().addAll(listOfDetail);
-                                foundUser = true;
-                                break;
-                            }
-                        }
-                        if (!foundUser) {
-                            ListLhaDTO lhaDto = new ListLhaDTO();
-                            lhaDto.setFullname(fulluser_id);
-                            lhaDto.setBranch(response.get(i).getBranch().getName());
-                            List<AuditDailyReportDetail> listOfDetail = new ArrayList<>();
-                            for (int d = 0; d < detail.size(); d++) {
-                                Optional<Revision> check = revisionRepository.findByDetailId(detail.get(d).getId());
-                                if (check.isPresent()) {
-                                    AuditDailyReportDetail makeDto = new AuditDailyReportDetail();
-                                    makeDto.setAuditDailyReport(detail.get(d).getAuditDailyReport());
-                                    makeDto.setCaseCategory(check.get().getCaseCategory());
-                                    makeDto.setCases(check.get().getCases());
-                                    makeDto.setCreated_at(check.get().getCreated_at());
-                                    makeDto.setCreated_by(check.get().getCreated_by());
-                                    makeDto.setDescription(check.get().getDescription());
-                                    makeDto.setId(check.get().getId());
-                                    makeDto.setIs_delete(check.get().getIs_delete());
-                                    makeDto.setIs_research(check.get().getIs_research());
-                                    makeDto.setPermanent_recommendations(check.get().getPermanent_recommendations());
-                                    makeDto.setSuggestion(check.get().getSuggestion());
-                                    makeDto.setTemporary_recommendations(check.get().getTemporary_recommendations());
-                                    makeDto.setUpdate_at(detail.get(d).getUpdate_at());
-                                    makeDto.setUpdated_by(detail.get(d).getUpdated_by());
-                                    listOfDetail.add(makeDto);
-                                } else {
-                                    listOfDetail.add(detail.get(d));
-                                }
-                            }
-                            lhaDto.setDetails(listOfDetail);
-                            lhaDetails.add(lhaDto);
-                        }
-                        break;
-                    }
-                }
-
-                if (!foundRegion) {
-                    LhaReportDTO reportDto = new LhaReportDTO();
-                    reportDto.setArea_name(regionuser_id);
-                    reportDto.setDate(datereport);
-                    List<ListLhaDTO> lhaDetailList = new ArrayList<>();
-                    ListLhaDTO lhaDto = new ListLhaDTO();
-                    lhaDto.setFullname(fulluser_id);
-                    lhaDto.setBranch(response.get(i).getBranch().getName());
-
-                    List<AuditDailyReportDetail> listOfDetail = new ArrayList<>();
-                    for (int d = 0; d < detail.size(); d++) {
-                        Optional<Revision> check = revisionRepository.findByDetailId(detail.get(d).getId());
-                        if (check.isPresent()) {
-                            AuditDailyReportDetail makeDto = new AuditDailyReportDetail();
-                            makeDto.setAuditDailyReport(detail.get(d).getAuditDailyReport());
-                            makeDto.setCaseCategory(check.get().getCaseCategory());
-                            makeDto.setCases(check.get().getCases());
-                            makeDto.setCreated_at(check.get().getCreated_at());
-                            makeDto.setCreated_by(check.get().getCreated_by());
-                            makeDto.setDescription(check.get().getDescription());
-                            makeDto.setId(check.get().getId());
-                            makeDto.setIs_delete(check.get().getIs_delete());
-                            makeDto.setIs_research(check.get().getIs_research());
-                            makeDto.setPermanent_recommendations(check.get().getPermanent_recommendations());
-                            makeDto.setSuggestion(check.get().getSuggestion());
-                            makeDto.setTemporary_recommendations(check.get().getTemporary_recommendations());
-                            makeDto.setUpdate_at(detail.get(d).getUpdate_at());
-                            makeDto.setUpdated_by(detail.get(d).getUpdated_by());
-                            listOfDetail.add(makeDto);
-                        } else {
-                            listOfDetail.add(detail.get(d));
-                        }
-                    }
-                    lhaDto.setDetails(listOfDetail);
-                    lhaDetailList.add(lhaDto);
-                    reportDto.setLha_detail(lhaDetailList);
-                    listAllReport.add(reportDto);
-                }
-            }
-            pdf = LHAReport.generateAllLHAPDF(listAllReport);
+            // Proses data jika regionId tidak null
+            processData(response, getUser, listAllReport);
         } else {
-            for (int i = 0; i < response.size(); i++) {
-                List<AuditDailyReportDetail> detail = new ArrayList<>();
-                if (getUser.getLevel().getCode().equals("A")) {
-                    detail = lhaDetailRepository.findByLHAIdForLeader(response.get(i).getId());
-                } else {
-                    detail = lhaDetailRepository.findByLHAId(response.get(i).getId());
-                }
-                if (detail.isEmpty()) {
-                    continue;
-                }
-                String regionuser_id = response.get(i).getBranch().getArea().getRegion().getName();
-                String datereport;
-                if (response.get(i).getCreated_at() != null) {
-                    datereport = convertDateToRoman.convertDateHehe(response.get(i).getCreated_at());
-                } else {
-                    datereport = "-";
-                }
-                String fulluser_id;
-                if (response.get(i).getUser().getFullname() != null) {
-                    fulluser_id = response.get(i).getUser().getFullname();
-                } else {
-                    fulluser_id = "-";
-                }
-
-                boolean foundRegion = false;
-                for (int x = 0; x < listAllReport.size(); x++) {
-                    if (regionuser_id.equals(listAllReport.get(x).getArea_name())
-                            && datereport.equals(listAllReport.get(x).getDate())) {
-                        foundRegion = true;
-                        List<ListLhaDTO> lhaDetails = listAllReport.get(x).getLha_detail();
-                        boolean foundUser = false;
-                        for (int y = 0; y < lhaDetails.size(); y++) {
-                            if (fulluser_id.equals(lhaDetails.get(y).getFullname())) {
-                                List<AuditDailyReportDetail> listOfDetail = new ArrayList<>();
-                                for (int d = 0; d < detail.size(); d++) {
-                                    Optional<Revision> check = revisionRepository.findByDetailId(detail.get(d).getId());
-                                    if (check.isPresent()) {
-                                        AuditDailyReportDetail makeDto = new AuditDailyReportDetail();
-                                        makeDto.setAuditDailyReport(detail.get(d).getAuditDailyReport());
-                                        makeDto.setCaseCategory(check.get().getCaseCategory());
-                                        makeDto.setCases(check.get().getCases());
-                                        makeDto.setCreated_at(check.get().getCreated_at());
-                                        makeDto.setCreated_by(check.get().getCreated_by());
-                                        makeDto.setDescription(check.get().getDescription());
-                                        makeDto.setId(check.get().getId());
-                                        makeDto.setIs_delete(check.get().getIs_delete());
-                                        makeDto.setIs_research(check.get().getIs_research());
-                                        makeDto.setPermanent_recommendations(
-                                                check.get().getPermanent_recommendations());
-                                        makeDto.setSuggestion(check.get().getSuggestion());
-                                        makeDto.setTemporary_recommendations(
-                                                check.get().getTemporary_recommendations());
-                                        makeDto.setUpdate_at(detail.get(d).getUpdate_at());
-                                        makeDto.setUpdated_by(detail.get(d).getUpdated_by());
-                                        listOfDetail.add(makeDto);
-                                    } else {
-                                        listOfDetail.add(detail.get(d));
-                                    }
-                                }
-                                lhaDetails.get(y).getDetails().addAll(listOfDetail);
-                                foundUser = true;
-                                break;
-                            }
-                        }
-                        if (!foundUser) {
-                            ListLhaDTO lhaDto = new ListLhaDTO();
-                            lhaDto.setFullname(fulluser_id);
-                            lhaDto.setBranch(response.get(i).getBranch().getName());
-                            List<AuditDailyReportDetail> listOfDetail = new ArrayList<>();
-                            for (int d = 0; d < detail.size(); d++) {
-                                Optional<Revision> check = revisionRepository.findByDetailId(detail.get(d).getId());
-                                if (check.isPresent()) {
-                                    AuditDailyReportDetail makeDto = new AuditDailyReportDetail();
-                                    makeDto.setAuditDailyReport(detail.get(d).getAuditDailyReport());
-                                    makeDto.setCaseCategory(check.get().getCaseCategory());
-                                    makeDto.setCases(check.get().getCases());
-                                    makeDto.setCreated_at(check.get().getCreated_at());
-                                    makeDto.setCreated_by(check.get().getCreated_by());
-                                    makeDto.setDescription(check.get().getDescription());
-                                    makeDto.setId(check.get().getId());
-                                    makeDto.setIs_delete(check.get().getIs_delete());
-                                    makeDto.setIs_research(check.get().getIs_research());
-                                    makeDto.setPermanent_recommendations(check.get().getPermanent_recommendations());
-                                    makeDto.setSuggestion(check.get().getSuggestion());
-                                    makeDto.setTemporary_recommendations(check.get().getTemporary_recommendations());
-                                    makeDto.setUpdate_at(detail.get(d).getUpdate_at());
-                                    makeDto.setUpdated_by(detail.get(d).getUpdated_by());
-                                    listOfDetail.add(makeDto);
-                                } else {
-                                    listOfDetail.add(detail.get(d));
-                                }
-                            }
-                            lhaDto.setDetails(listOfDetail);
-                            lhaDetails.add(lhaDto);
-                        }
-                        break;
-                    }
-                }
-
-                if (!foundRegion) {
-                    LhaReportDTO reportDto = new LhaReportDTO();
-                    reportDto.setArea_name(regionuser_id);
-                    reportDto.setDate(datereport);
-                    List<ListLhaDTO> lhaDetailList = new ArrayList<>();
-                    ListLhaDTO lhaDto = new ListLhaDTO();
-                    lhaDto.setFullname(fulluser_id);
-                    lhaDto.setBranch(response.get(i).getBranch().getName());
-
-                    List<AuditDailyReportDetail> listOfDetail = new ArrayList<>();
-                    for (int d = 0; d < detail.size(); d++) {
-                        Optional<Revision> check = revisionRepository.findByDetailId(detail.get(d).getId());
-                        if (check.isPresent()) {
-                            AuditDailyReportDetail makeDto = new AuditDailyReportDetail();
-                            makeDto.setAuditDailyReport(detail.get(d).getAuditDailyReport());
-                            makeDto.setCaseCategory(check.get().getCaseCategory());
-                            makeDto.setCases(check.get().getCases());
-                            makeDto.setCreated_at(check.get().getCreated_at());
-                            makeDto.setCreated_by(check.get().getCreated_by());
-                            makeDto.setDescription(check.get().getDescription());
-                            makeDto.setId(check.get().getId());
-                            makeDto.setIs_delete(check.get().getIs_delete());
-                            makeDto.setIs_research(check.get().getIs_research());
-                            makeDto.setPermanent_recommendations(check.get().getPermanent_recommendations());
-                            makeDto.setSuggestion(check.get().getSuggestion());
-                            makeDto.setTemporary_recommendations(check.get().getTemporary_recommendations());
-                            makeDto.setUpdate_at(detail.get(d).getUpdate_at());
-                            makeDto.setUpdated_by(detail.get(d).getUpdated_by());
-                            listOfDetail.add(makeDto);
-                        } else {
-                            listOfDetail.add(detail.get(d));
-                        }
-                    }
-                    lhaDto.setDetails(listOfDetail);
-                    lhaDetailList.add(lhaDto);
-                    reportDto.setLha_detail(lhaDetailList);
-                    listAllReport.add(reportDto);
-                }
-            }
-            pdf = LHAReport.generateAllLHAPDF(listAllReport);
+            // Proses data jika regionId null
+            processData(response, getUser, listAllReport);
         }
+
+        // Urutkan listAllReport berdasarkan area_name
+        listAllReport.sort(Comparator.comparing(LhaReportDTO::getArea_name, new AlphanumericComparator()));
+
+        pdf = LHAReport.generateAllLHAPDF(listAllReport);
 
         InputStreamResource isr = new InputStreamResource(pdf);
 
@@ -449,4 +182,155 @@ public class ReportService {
                 .contentType(MediaType.parseMediaType("application/pdf")).body(isr);
         return responses;
     }
+
+    private void processData(List<AuditDailyReport> response, User getUser, List<LhaReportDTO> listAllReport) {
+        for (int i = 0; i < response.size(); i++) {
+            List<AuditDailyReportDetail> detail = new ArrayList<>();
+            if (getUser.getLevel().getCode().equals("A")) {
+                detail = lhaDetailRepository.findByLHAIdForLeader(response.get(i).getId());
+            } else {
+                detail = lhaDetailRepository.findByLHAId(response.get(i).getId());
+            }
+            if (detail.isEmpty()) {
+                continue;
+            }
+            String regionuser_id = response.get(i).getBranch().getArea().getRegion().getName();
+            String datereport;
+            if (response.get(i).getCreated_at() != null) {
+                datereport = convertDateToRoman.convertDateHehe(response.get(i).getCreated_at());
+            } else {
+                datereport = "-";
+            }
+            String fulluser_id;
+            if (response.get(i).getUser().getFullname() != null) {
+                fulluser_id = response.get(i).getUser().getFullname();
+            } else {
+                fulluser_id = "-";
+            }
+
+            boolean foundRegion = false;
+            for (int x = 0; x < listAllReport.size(); x++) {
+                if (regionuser_id.equals(listAllReport.get(x).getArea_name())
+                        && datereport.equals(listAllReport.get(x).getDate())) {
+                    foundRegion = true;
+                    List<ListLhaDTO> lhaDetails = listAllReport.get(x).getLha_detail();
+                    boolean foundUser = false;
+                    for (int y = 0; y < lhaDetails.size(); y++) {
+                        if (fulluser_id.equals(lhaDetails.get(y).getFullname())) {
+                            List<AuditDailyReportDetail> listOfDetail = new ArrayList<>();
+                            for (int d = 0; d < detail.size(); d++) {
+                                Optional<Revision> check = revisionRepository.findByDetailId(detail.get(d).getId());
+                                if (check.isPresent()) {
+                                    AuditDailyReportDetail makeDto = new AuditDailyReportDetail();
+                                    makeDto.setAuditDailyReport(detail.get(d).getAuditDailyReport());
+                                    makeDto.setCaseCategory(check.get().getCaseCategory());
+                                    makeDto.setCases(check.get().getCases());
+                                    makeDto.setCreated_at(check.get().getCreated_at());
+                                    makeDto.setCreated_by(check.get().getCreated_by());
+                                    makeDto.setDescription(check.get().getDescription());
+                                    makeDto.setId(check.get().getId());
+                                    makeDto.setIs_delete(check.get().getIs_delete());
+                                    makeDto.setIs_research(check.get().getIs_research());
+                                    makeDto.setPermanent_recommendations(check.get().getPermanent_recommendations());
+                                    makeDto.setSuggestion(check.get().getSuggestion());
+                                    makeDto.setTemporary_recommendations(check.get().getTemporary_recommendations());
+                                    makeDto.setUpdate_at(detail.get(d).getUpdate_at());
+                                    makeDto.setUpdated_by(detail.get(d).getUpdated_by());
+                                    listOfDetail.add(makeDto);
+                                } else {
+                                    listOfDetail.add(detail.get(d));
+                                }
+                            }
+                            lhaDetails.get(y).getDetails().addAll(listOfDetail);
+                            foundUser = true;
+                            break;
+                        }
+                    }
+                    if (!foundUser) {
+                        ListLhaDTO lhaDto = new ListLhaDTO();
+                        lhaDto.setFullname(fulluser_id);
+                        lhaDto.setBranch(response.get(i).getBranch().getName());
+                        List<AuditDailyReportDetail> listOfDetail = new ArrayList<>();
+                        for (int d = 0; d < detail.size(); d++) {
+                            Optional<Revision> check = revisionRepository.findByDetailId(detail.get(d).getId());
+                            if (check.isPresent()) {
+                                AuditDailyReportDetail makeDto = new AuditDailyReportDetail();
+                                makeDto.setAuditDailyReport(detail.get(d).getAuditDailyReport());
+                                makeDto.setCaseCategory(check.get().getCaseCategory());
+                                makeDto.setCases(check.get().getCases());
+                                makeDto.setCreated_at(check.get().getCreated_at());
+                                makeDto.setCreated_by(check.get().getCreated_by());
+                                makeDto.setDescription(check.get().getDescription());
+                                makeDto.setId(check.get().getId());
+                                makeDto.setIs_delete(check.get().getIs_delete());
+                                makeDto.setIs_research(check.get().getIs_research());
+                                makeDto.setPermanent_recommendations(check.get().getPermanent_recommendations());
+                                makeDto.setSuggestion(check.get().getSuggestion());
+                                makeDto.setTemporary_recommendations(check.get().getTemporary_recommendations());
+                                makeDto.setUpdate_at(detail.get(d).getUpdate_at());
+                                makeDto.setUpdated_by(detail.get(d).getUpdated_by());
+                                listOfDetail.add(makeDto);
+                            } else {
+                                listOfDetail.add(detail.get(d));
+                            }
+                        }
+                        lhaDto.setDetails(listOfDetail);
+                        lhaDetails.add(lhaDto);
+                    }
+                    break;
+                }
+            }
+
+            if (!foundRegion) {
+                LhaReportDTO reportDto = new LhaReportDTO();
+                reportDto.setArea_name(regionuser_id);
+                reportDto.setDate(datereport);
+                List<ListLhaDTO> lhaDetailList = new ArrayList<>();
+                ListLhaDTO lhaDto = new ListLhaDTO();
+                lhaDto.setFullname(fulluser_id);
+                lhaDto.setBranch(response.get(i).getBranch().getName());
+
+                List<AuditDailyReportDetail> listOfDetail = new ArrayList<>();
+                for (int d = 0; d < detail.size(); d++) {
+                    Optional<Revision> check = revisionRepository.findByDetailId(detail.get(d).getId());
+                    if (check.isPresent()) {
+                        AuditDailyReportDetail makeDto = new AuditDailyReportDetail();
+                        makeDto.setAuditDailyReport(detail.get(d).getAuditDailyReport());
+                        makeDto.setCaseCategory(check.get().getCaseCategory());
+                        makeDto.setCases(check.get().getCases());
+                        makeDto.setCreated_at(check.get().getCreated_at());
+                        makeDto.setCreated_by(check.get().getCreated_by());
+                        makeDto.setDescription(check.get().getDescription());
+                        makeDto.setId(check.get().getId());
+                        makeDto.setIs_delete(check.get().getIs_delete());
+                        makeDto.setIs_research(check.get().getIs_research());
+                        makeDto.setPermanent_recommendations(check.get().getPermanent_recommendations());
+                        makeDto.setSuggestion(check.get().getSuggestion());
+                        makeDto.setTemporary_recommendations(check.get().getTemporary_recommendations());
+                        makeDto.setUpdate_at(detail.get(d).getUpdate_at());
+                        makeDto.setUpdated_by(detail.get(d).getUpdated_by());
+                        listOfDetail.add(makeDto);
+                    } else {
+                        listOfDetail.add(detail.get(d));
+                    }
+                }
+                lhaDto.setDetails(listOfDetail);
+                lhaDetailList.add(lhaDto);
+                reportDto.setLha_detail(lhaDetailList);
+                listAllReport.add(reportDto);
+            }
+        }
+    }
+
+    class AlphanumericComparator implements Comparator<String> {
+        public int compare(String s1, String s2) {
+            return extractInt(s1) - extractInt(s2);
+        }
+
+        int extractInt(String s) {
+            String num = s.replaceAll("\\D", "");
+            return num.isEmpty() ? 0 : Integer.parseInt(num);
+        }
+    }
+
 }
