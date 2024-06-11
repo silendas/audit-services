@@ -95,7 +95,7 @@ public class ReportService {
                     .getByRegionIds(getUser.getRegionId()));
         }
         response = repository.findAll(spec);
-         String realizePenalty = "";
+        String realizePenalty = "";
         for (Clarification clarification : response) {
             Optional<FollowUp> getFU = fUpRepository.findByClId(clarification.getId());
             if (getFU.isPresent()) {

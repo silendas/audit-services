@@ -7,6 +7,8 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import javax.swing.text.StyleConstants.ColorConstants;
+
 import com.cms.audit.api.Clarifications.models.Clarification;
 import com.cms.audit.api.Clarifications.models.EPriority;
 import com.cms.audit.api.Common.constant.FolderPath;
@@ -177,11 +179,11 @@ public class GeneratePdf {
                 // section 7
                 float body1Lenght[] = { 540f };
                 Table body1 = new Table(body1Lenght);
-                body1.addCell(new Cell().add("Penjabaran temuan audit :").setFontSize(8)
+                body1.addCell(new Cell().add("Penjabaran temuan audit :").setFontSize(5)
                                 .setBorderBottom(Border.NO_BORDER)
                                 .setMargin(0).setPadding(2));
-                body1.addCell(new Cell().add(response.getDescription()).setFontSize(8)
-                                .setBorderBottom(Border.NO_BORDER).setBorderTop(Border.NO_BORDER).setHeight(120)
+                body1.addCell(new Cell().add(response.getDescription()).setFontSize(5)
+                                .setBorderBottom(Border.NO_BORDER).setBorderTop(Border.NO_BORDER).setMinHeight(120)
                                 .setMargin(0).setPadding(2));
 
                 document.add(body1);
@@ -340,7 +342,16 @@ public class GeneratePdf {
 
                 body6.addCell(new Cell().add(nestedbody7).setBorderTop(Border.NO_BORDER).setMargin(0).setPadding(0));
 
-                body6.addCell(new Cell().add("Auditor").setTextAlignment(TextAlignment.CENTER).setFontSize(5));
+                float mark3[] = { 150f };
+                Table mark3Table = new Table(mark3);
+                mark3Table.addCell(new Cell().add("Auditor").setTextAlignment(TextAlignment.CENTER).setFontSize(5)
+                                .setBorder(Border.NO_BORDER));
+                mark3Table.addCell(new Cell()
+                                .add("( " + response.getUser().getFullname() + " )")
+                                .setTextAlignment(TextAlignment.CENTER).setVerticalAlignment(VerticalAlignment.BOTTOM)
+                                .setHeight(60)
+                                .setFontSize(5).setBorder(Border.NO_BORDER));
+                body6.addCell(new Cell().add(mark3Table).setTextAlignment(TextAlignment.CENTER).setFontSize(5));
 
                 document.add(body6);
                 // section 14
@@ -507,42 +518,61 @@ public class GeneratePdf {
 
                 for (Penalty penalties : penalty) {
                         if (penalties.getId() < 5) {
-                                float[] columnWidths = { 18f, 50f }; // 18f untuk kolom pertama, sisanya untuk kolom
+                                float[] columnWidths = { 15f, 50f }; // 15f untuk kolom pertama, sisanya untuk kolom
                                                                      // kedua
-                                // Table nested6 = new
-                                // Table(UnitValue.createPercentArray(columnWidths)).useAllAvailableWidth();
                                 Table nested6 = new Table(columnWidths)
-                                                .setHorizontalAlignment(HorizontalAlignment.LEFT);
+                                                .setHorizontalAlignment(HorizontalAlignment.LEFT)
+                                                .setBorder(Border.NO_BORDER)
+                                                .setPadding(0);
 
-                                // if (response.getPenalty().contains(penalties.getId())) {
-                                // nested6.addCell(new
-                                // Cell().add("").setBackgroundColor(Color.RED).setHeight(5f));
-                                // } else {
-                                float cubeLength[] = { 18f };
-                                Table cube = new Table(cubeLength).setHorizontalAlignment(HorizontalAlignment.LEFT);
-                                cube.addCell(new Cell().add("").setHeight(5f));
-                                nested6.addCell(new Cell().add(cube).setHeight(5f)).setBorder(Border.NO_BORDER);
-                                // }
-                                nested6.addCell(new Cell().add(penalties.getName()).setBorder(Border.NO_BORDER)
+                                // Buat satu kotak persegi dengan ukuran 10
+                                float ukuranKotak = 10f;
+                                Table kotak = new Table(new float[] { ukuranKotak })
+                                                .setWidth(ukuranKotak)
+                                                .setHeight(ukuranKotak)
+                                                .setBorder(Border.NO_BORDER);
+                                kotak.addCell(new Cell()
+                                                .setHeight(ukuranKotak)
+                                                .setWidth(ukuranKotak)
+                                                .setBorder(Border.NO_BORDER)
+                                                .setBackgroundColor(Color.GRAY)); // Warna latar belakang
+                                                                                                 // opsional untuk
+                                                                                                 // visibilitas
+
+                                nested6.addCell(new Cell().add(kotak).setBorder(Border.NO_BORDER));
+
+                                nested6.addCell(new Cell().add(penalties.getName())
+                                                .setBorder(Border.NO_BORDER)
+                                                .setVerticalAlignment(VerticalAlignment.MIDDLE)
                                                 .setFontSize(5)
                                                 .setBold());
                                 bodyPenalty.addCell(new Cell().add(nested6).setBorder(Border.NO_BORDER));
                         } else {
-                                float[] columnWidths = { 18f, 50f }; // 18f untuk kolom pertama, sisanya untuk kolom
-                                                                     // kedua
-                                // Table nested6 = new
-                                Table nested6 = new Table(UnitValue.createPercentArray(columnWidths))
-                                                .useAllAvailableWidth();
-                                // Table nested6 = new Table(columnWidths)
-                                // .setHorizontalAlignment(HorizontalAlignment.LEFT);
+                                float[] columnWidths = { 15f, 50f }; // Sesuaikan dengan kondisi lainnya
+                                Table nested6 = new Table(columnWidths)
+                                                .setHorizontalAlignment(HorizontalAlignment.LEFT)
+                                                .setBorder(Border.NO_BORDER)
+                                                .setPadding(0);
 
-                                // if (response.getPenalty().contains(penalties.getId())) {
-                                // nested6.addCell(new
-                                // Cell().add("").setBackgroundColor(Color.RED).setHeight(5f));
-                                // } else {
-                                nested6.addCell(new Cell().add("").setHeight(5f));
-                                // }
-                                nested6.addCell(new Cell().add(penalties.getName()).setBorder(Border.NO_BORDER)
+                                // Buat satu kotak persegi dengan ukuran 10
+                                float ukuranKotak = 10f;
+                                Table kotak = new Table(new float[] { ukuranKotak })
+                                                .setWidth(ukuranKotak)
+                                                .setHeight(ukuranKotak)
+                                                .setBorder(Border.NO_BORDER);
+                                kotak.addCell(new Cell()
+                                                .setHeight(ukuranKotak)
+                                                .setWidth(ukuranKotak)
+                                                .setBorder(Border.NO_BORDER)
+                                                .setBackgroundColor(Color.GRAY)); // Warna latar belakang
+                                                                                                 // opsional untuk
+                                                                                                 // visibilitas
+
+                                nested6.addCell(new Cell().add(kotak).setBorder(Border.NO_BORDER));
+
+                                nested6.addCell(new Cell().add(penalties.getName())
+                                                .setBorder(Border.NO_BORDER)
+                                                .setVerticalAlignment(VerticalAlignment.MIDDLE)
                                                 .setFontSize(5)
                                                 .setBold());
                                 bodyPenalty.addCell(new Cell().add(nested6).setBorder(Border.NO_BORDER));
