@@ -26,6 +26,7 @@ import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.layout.Document;
 import com.itextpdf.layout.border.Border;
+import com.itextpdf.layout.border.SolidBorder;
 import com.itextpdf.layout.element.Cell;
 import com.itextpdf.layout.element.Image;
 import com.itextpdf.layout.element.Tab;
@@ -179,11 +180,11 @@ public class GeneratePdf {
                 // section 7
                 float body1Lenght[] = { 540f };
                 Table body1 = new Table(body1Lenght);
-                body1.addCell(new Cell().add("Penjabaran temuan audit :").setFontSize(5)
+                body1.addCell(new Cell().add("Penjabaran temuan audit :").setFontSize(7)
                                 .setBorderBottom(Border.NO_BORDER)
                                 .setMargin(0).setPadding(2));
-                body1.addCell(new Cell().add(response.getDescription()).setFontSize(5)
-                                .setBorderBottom(Border.NO_BORDER).setBorderTop(Border.NO_BORDER).setMinHeight(120)
+                body1.addCell(new Cell().add(response.getDescription()).setFontSize(7)
+                                .setBorderBottom(Border.NO_BORDER).setBorderTop(Border.NO_BORDER).setMinHeight(100)
                                 .setMargin(0).setPadding(2));
 
                 document.add(body1);
@@ -535,9 +536,7 @@ public class GeneratePdf {
                                                 .setHeight(ukuranKotak)
                                                 .setWidth(ukuranKotak)
                                                 .setBorder(Border.NO_BORDER)
-                                                .setBackgroundColor(Color.GRAY)); // Warna latar belakang
-                                                                                                 // opsional untuk
-                                                                                                 // visibilitas
+                                                .setBorder(new SolidBorder(1))); // Menambahkan border
 
                                 nested6.addCell(new Cell().add(kotak).setBorder(Border.NO_BORDER));
 
@@ -564,9 +563,7 @@ public class GeneratePdf {
                                                 .setHeight(ukuranKotak)
                                                 .setWidth(ukuranKotak)
                                                 .setBorder(Border.NO_BORDER)
-                                                .setBackgroundColor(Color.GRAY)); // Warna latar belakang
-                                                                                                 // opsional untuk
-                                                                                                 // visibilitas
+                                                .setBorder(new SolidBorder(1))); // Menambahkan border
 
                                 nested6.addCell(new Cell().add(kotak).setBorder(Border.NO_BORDER));
 
