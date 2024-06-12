@@ -12,22 +12,43 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.cms.audit.api.Common.constant.BasePath;
 import com.cms.audit.api.Common.constant.convertDateToRoman;
-import com.cms.audit.api.Dashboard.service.DashboardServices;
+import com.cms.audit.api.Dashboard.service.DashboardFollowUpService;
+import com.cms.audit.api.Dashboard.service.DashboardFoundService;
+import com.cms.audit.api.Dashboard.service.DashboardNominalService;
 
 @RestController
-@RequestMapping(value =  BasePath.BASE_PATH_DASHBOARD)
+@RequestMapping(value =  BasePath.BASE_API)
 public class DashboardController {
 
     @Autowired
-    private DashboardServices dashboardServices;
+    private DashboardFollowUpService dashboardServices;
 
-    @GetMapping()
-    public ResponseEntity<Object> getDashboard(
-        @RequestParam(required = false) Optional<Long> date1,
-        @RequestParam(required = false) Optional<Long> date2,
+    @Autowired
+    private DashboardFoundService foundService;
+
+    @Autowired
+    private DashboardNominalService nominalService;
+
+    @GetMapping("/dashboard-followup")
+    public ResponseEntity<Object> getDashboardFollowUp(
+        @RequestParam(required = false) Optional<Long> date,
         @RequestParam(required = false) Optional<Long> year   
     ) {
-        return dashboardServices.getDashboard(date1.orElse(convertDateToRoman.getLongMonthNumber(new Date())), date2.orElse(null));
+        return dashboardServices.dasboardStatus(date.orElse(convertDateToRoman.getLongMonthNumber(new Date())), year.orElse(convertDateToRoman.getLongYearNumber(new Date())));
+    }
+
+    @GetMapping("/dashboard-found")
+    public ResponseEntity<Object> getDashboardFound(
+        @RequestParam(required = false) Optional<Long> year   
+    ) {
+        return foundService.dasboardFound(year.orElse(convertDateToRoman.getLongYearNumber(new Date())));
+    }
+
+    @GetMapping("/dashboard-nominal")
+    public ResponseEntity<Object> getDashboardNominal(
+        @RequestParam(required = false) Optional<Long> year   
+    ) {
+        return nominalService.dasboardNominal(year.orElse(convertDateToRoman.getLongYearNumber(new Date())));
     }
     
 }

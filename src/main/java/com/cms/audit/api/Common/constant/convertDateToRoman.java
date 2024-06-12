@@ -134,6 +134,19 @@ public class convertDateToRoman {
         return year;
     }
 
+    public static Long getLongYearNumber(Date date) {
+        // Buat instance Calendar dan atur waktunya dengan objek Date
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+    
+        // Dapatkan tahun dari Calendar
+        int year = calendar.get(Calendar.YEAR);
+    
+        // Kembalikan tahun sebagai Long
+        return Long.valueOf(year);
+    }
+    
+
     public static String convertDateToString(Date dt) {
         DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
         String dateToString = df.format(dt);
@@ -173,6 +186,22 @@ public class convertDateToRoman {
         // Kembalikan nomor bulan sebagai Long
         return Long.valueOf(month);
     }
+    public static String getMonthName(Long monthNumber) {
+        // Validasi input
+        if (monthNumber < 1 || monthNumber > 12) {
+            throw new IllegalArgumentException("Bulan harus antara 1 dan 12");
+        }
+    
+        // Array nama bulan dalam bahasa Indonesia
+        String[] monthNames = {
+            "Januari", "Februari", "Maret", "April", "Mei", "Juni",
+            "Juli", "Agustus", "September", "Oktober", "November", "Desember"
+        };
+    
+        // Kembalikan nama bulan sebagai String
+        return monthNames[monthNumber.intValue() - 1];
+    }
+
 
     public static String convertDateToIndonesia(Date dt) {
         DateFormat df = new SimpleDateFormat("dd MMMM yyyy", Locale.forLanguageTag("id-ID"));

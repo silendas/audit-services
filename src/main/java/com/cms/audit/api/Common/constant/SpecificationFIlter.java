@@ -1,5 +1,9 @@
 package com.cms.audit.api.Common.constant;
 
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -255,6 +259,24 @@ public class SpecificationFIlter<T> {
                     Boolean.class,
                     root.get("branchId"),
                     criteriaBuilder.literal("{" + branchIdsString + "}")));
+        };
+    }
+
+    public Specification<T> createdAtYear(Long year) {
+        return (Root<T> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) -> {
+            if (year == null) {
+                return criteriaBuilder.conjunction();
+            }
+
+            // Mengubah tahun menjadi rentang waktu di tahun tersebut
+            ZonedDateTime startOfYear = ZonedDateTime.of(LocalDateTime.of(year.intValue(), 1, 1, 0, 0), ZoneId.of("UTC"));
+            ZonedDateTime endOfYear = ZonedDateTime.of(LocalDateTime.of(year.intValue(), 12, 31, 23, 59, 59), ZoneId.of("UTC"));
+
+            // Konversi ke Timestamp
+            Timestamp startTimestamp = Timestamp.from(startOfYear.toInstant());
+            Timestamp endTimestamp = Timestamp.from(endOfYear.toInstant());
+
+            return criteriaBuilder.between(root.get("created_at"), startTimestamp, endTimestamp);
         };
     }
 
