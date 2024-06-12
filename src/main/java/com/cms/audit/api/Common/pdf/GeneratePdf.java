@@ -257,7 +257,7 @@ public class GeneratePdf {
 
                 // section 10
                 Table body3 = new Table(body1Lenght).setHeight(130);
-                body3.addCell(new Cell().add("Penjelasan dari auditor :").setFontSize(8)
+                body3.addCell(new Cell().add("Penjelasan dari auditee :").setFontSize(8)
                                 .setBorderBottom(Border.NO_BORDER)
                                 .setMargin(0).setPadding(2));
 
