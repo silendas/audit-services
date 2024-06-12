@@ -134,12 +134,12 @@ public class FollowupController {
                 }
         }
 
-        @PutMapping( value = "/{id}")
+        @PutMapping(value = "/{id}")
         public ResponseEntity<Object> edit(@RequestBody FollowUpDTO dto, @PathVariable("id") Long id) {
                 return service.edit(id, dto);
         }
-        
-        @PatchMapping( value = "/{id}")
+
+        @PatchMapping(value = "/{id}")
         public ResponseEntity<Object> patch(@RequestBody PatchFollowUpDTO dto, @PathVariable("id") Long id) {
                 return service.patch(id, dto);
         }
@@ -147,6 +147,10 @@ public class FollowupController {
         @PostMapping(value = "/file")
         public ResponseEntity<Object> upload(@RequestParam(value = "file", required = false) MultipartFile file,
                         @ModelAttribute("followup_id") Long id) {
+                if (file == null || !MediaType.APPLICATION_PDF_VALUE.equals(file.getContentType())) {
+                        return ResponseEntittyHandler.errorResponse("Hanya bisa upload file PDF", "File Tidak Valid",
+                                        HttpStatus.BAD_REQUEST);
+                }
                 GlobalResponse response = service.uploadFile(file, id);
                 if (response.getStatus().value() == 400) {
                         return ResponseEntittyHandler.errorResponse(response.getErrorMessage(), response.getMessage(),
