@@ -45,8 +45,10 @@ public class DashboardNominalService {
         }
 
         List<Object> responseData = new ArrayList<>();
+        long yearlyTotalNominal = 0;
         for (int i = 1; i <= 12; i++) {
             long total = calculateMonthlyTotal(spec, year, i);
+            yearlyTotalNominal += total;
             addToResponseData(responseData, i, total);
         }
 
@@ -56,6 +58,7 @@ public class DashboardNominalService {
         } else {
             mapping.put("year", convertDateToRoman.getLongYearNumber(new Date()));
         }
+        mapping.put("total_nominal_loss", yearlyTotalNominal);
         mapping.put("chart", responseData);
 
         return returnResponse(mapping);
@@ -75,7 +78,7 @@ public class DashboardNominalService {
         if (fuList.isEmpty()) {
             return 0;
         }
-        
+
         long totalNominal = fuList.stream()
                 .map(Clarification::getNominal_loss)
                 .filter(Objects::nonNull)
