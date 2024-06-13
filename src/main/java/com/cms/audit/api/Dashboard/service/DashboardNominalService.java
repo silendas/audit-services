@@ -90,7 +90,8 @@ public class DashboardNominalService {
 
     private void addToResponseData(List<Object> responseData, int month, long total) {
         Map<String, Object> monthData = new LinkedHashMap<>();
-        monthData.put("month", convertDateToRoman.getMonthName(Long.valueOf(month)));
+        // monthData.put("month", convertDateToRoman.getMonthName(Long.valueOf(month)));
+        monthData.put("month", month);
         monthData.put("total", total);
         responseData.add(monthData);
     }

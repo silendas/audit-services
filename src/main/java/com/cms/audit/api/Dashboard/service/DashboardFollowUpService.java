@@ -57,7 +57,6 @@ public class DashboardFollowUpService {
             mapping.put("month", convertDateToRoman.getMonthName(month));
         } else {
             mapping.put("month", convertDateToRoman.getMonthName(convertDateToRoman.getLongMonthNumber(new Date())));
-
         }
         addMissingStatus(responseData);
 
