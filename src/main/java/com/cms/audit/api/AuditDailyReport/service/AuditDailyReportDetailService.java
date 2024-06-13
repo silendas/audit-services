@@ -448,7 +448,7 @@ public class AuditDailyReportDetailService {
             revision.setCreated_at(lhaDetail.getCreated_at());
             revisionRepo.save(revision);
 
-            if (dto.getIs_research() == 1) {
+            if (lhaDetail.getIs_research() == 1) {
 
                 Long reportNumber = null;
                 String rptNum = null;
@@ -499,6 +499,7 @@ public class AuditDailyReportDetailService {
                 setCL.setReportType(reportType);
                 setCL.setReport_number(reportNumber);
                 setCL.setCode(reportCode);
+                setCL.setIs_delete(0);
                 setCL.setStatus(EStatusClarification.INPUT);
                 setCL.setCreated_at(new Date());
                 setCL.setUpdated_at(new Date());
