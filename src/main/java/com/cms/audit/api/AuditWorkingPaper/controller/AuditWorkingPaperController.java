@@ -106,7 +106,6 @@ public class AuditWorkingPaperController {
             String filename = file.getOriginalFilename();
             if (filename == null || !filename.endsWith(".xlsx")) {
                 return ResponseEntittyHandler.errorResponse("Hanya dapat input file dengan tipe .xlsx", "Tidak berhasil upload file karena tipe file tidak sesuai, hanya dapat input dengan tipe .xlsx", HttpStatus.BAD_REQUEST);
-
             }
         
             GlobalResponse response = service.uploadFile(file, id);
