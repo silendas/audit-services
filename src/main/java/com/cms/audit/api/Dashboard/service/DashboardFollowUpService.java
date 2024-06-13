@@ -24,16 +24,16 @@ public class DashboardFollowUpService {
     @Autowired
     private FollowUpDashboardRepo dashboardFollowUpRepo;
 
-    public ResponseEntity<Object> dasboardStatus(Long date, Long year) {
+    public ResponseEntity<Object> dasboardStatus(Long month, Long year) {
 
         User getUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         Specification<FollowUp> spec = Specification.where(new SpecificationFIlter<FollowUp>().createdAtYear(year))
                 .and(new SpecificationFIlter<FollowUp>().isNotDeleted());
-        if (date != null && date != 0) {
-            DateCompareDTO dateSeparate = convertDateToRoman.getDateRange(date);
+        if (month != null && month != 0) {
+            DateCompareDTO monthSeparate = convertDateToRoman.getDateRange(month);
             spec = spec.and(
-                    new SpecificationFIlter<FollowUp>().dateRange(dateSeparate.getDate1(), dateSeparate.getDate2()));
+                    new SpecificationFIlter<FollowUp>().dateRange(monthSeparate.getDate1(), monthSeparate.getDate2()));
         }
         if (getUser.getLevel().getCode().equals("C")) {
             spec = spec.and(new SpecificationFIlter<FollowUp>().userId(getUser.getId()));
@@ -53,8 +53,8 @@ public class DashboardFollowUpService {
         } else {
             mapping.put("year", convertDateToRoman.getLongYearNumber(new Date()));
         }
-        if (date != null && date != 0) {
-            mapping.put("month", convertDateToRoman.getMonthName(date));
+        if (month != null && month != 0) {
+            mapping.put("month", convertDateToRoman.getMonthName(month));
         } else {
             mapping.put("month", convertDateToRoman.getMonthName(convertDateToRoman.getLongMonthNumber(new Date())));
 

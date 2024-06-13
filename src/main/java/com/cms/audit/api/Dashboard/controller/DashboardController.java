@@ -31,10 +31,10 @@ public class DashboardController {
 
     @GetMapping("/dashboard-followup")
     public ResponseEntity<Object> getDashboardFollowUp(
-        @RequestParam(required = false) Optional<Long> date,
+        @RequestParam(required = false) Optional<Long> month,
         @RequestParam(required = false) Optional<Long> year   
     ) {
-        return dashboardServices.dasboardStatus(date.orElse(convertDateToRoman.getLongMonthNumber(new Date())), year.orElse(convertDateToRoman.getLongYearNumber(new Date())));
+        return dashboardServices.dasboardStatus(month.orElse(convertDateToRoman.getLongMonthNumber(new Date())), year.orElse(convertDateToRoman.getLongYearNumber(new Date())));
     }
 
     @GetMapping("/dashboard-found")

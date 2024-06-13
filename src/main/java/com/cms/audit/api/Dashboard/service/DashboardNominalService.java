@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
@@ -71,7 +72,15 @@ public class DashboardNominalService {
                         Date.from(endOfMonth.atZone(ZoneId.systemDefault()).toInstant())));
 
         List<Clarification> fuList = repo.findAll(monthlySpec);
-        long totalNominal = fuList.stream().mapToLong(Clarification::getNominal_loss).sum();
+        if (fuList.isEmpty()) {
+            return 0;
+        }
+        
+        long totalNominal = fuList.stream()
+                .map(Clarification::getNominal_loss)
+                .filter(Objects::nonNull)
+                .mapToLong(Long::longValue)
+                .sum();
 
         return totalNominal;
     }
