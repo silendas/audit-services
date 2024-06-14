@@ -184,7 +184,7 @@ public class GeneratePdf {
                                 .setBorderBottom(Border.NO_BORDER)
                                 .setMargin(0).setPadding(2));
                 body1.addCell(new Cell().add(response.getDescription()).setFontSize(7)
-                                .setBorderBottom(Border.NO_BORDER).setBorderTop(Border.NO_BORDER).setHeight(120)
+                                .setBorderBottom(Border.NO_BORDER).setBorderTop(Border.NO_BORDER).setMinHeight(110)
                                 .setMargin(0).setPadding(2));
 
                 document.add(body1);
@@ -256,7 +256,7 @@ public class GeneratePdf {
                 // section 9
 
                 // section 10
-                Table body3 = new Table(body1Lenght).setHeight(110);
+                Table body3 = new Table(body1Lenght).setHeight(100);
                 body3.addCell(new Cell().add("Penjelasan dari auditee :").setFontSize(8)
                                 .setBorderBottom(Border.NO_BORDER)
                                 .setMargin(0).setPadding(2));
