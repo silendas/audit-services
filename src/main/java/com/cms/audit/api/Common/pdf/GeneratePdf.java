@@ -184,7 +184,7 @@ public class GeneratePdf {
                                 .setBorderBottom(Border.NO_BORDER)
                                 .setMargin(0).setPadding(2));
                 body1.addCell(new Cell().add(response.getDescription()).setFontSize(7)
-                                .setBorderBottom(Border.NO_BORDER).setBorderTop(Border.NO_BORDER).setMinHeight(110)
+                                .setBorderBottom(Border.NO_BORDER).setBorderTop(Border.NO_BORDER).setHeight(110)
                                 .setMargin(0).setPadding(2));
 
                 document.add(body1);
