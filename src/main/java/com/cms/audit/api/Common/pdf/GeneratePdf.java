@@ -350,7 +350,7 @@ public class GeneratePdf {
                 mark3Table.addCell(new Cell()
                                 .add("( " + response.getUser().getFullname() + " )")
                                 .setTextAlignment(TextAlignment.CENTER).setVerticalAlignment(VerticalAlignment.BOTTOM)
-                                .setHeight(40)
+                                .setHeight(50)
                                 .setFontSize(5).setBorder(Border.NO_BORDER));
                 body6.addCell(new Cell().add(mark3Table).setTextAlignment(TextAlignment.CENTER).setFontSize(5));
 
