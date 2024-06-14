@@ -184,7 +184,7 @@ public class GeneratePdf {
                                 .setBorderBottom(Border.NO_BORDER)
                                 .setMargin(0).setPadding(2));
                 body1.addCell(new Cell().add(response.getDescription()).setFontSize(7)
-                                .setBorderBottom(Border.NO_BORDER).setBorderTop(Border.NO_BORDER).setMinHeight(110)
+                                .setBorderBottom(Border.NO_BORDER).setBorderTop(Border.NO_BORDER).setMinHeight(90)
                                 .setMargin(0).setPadding(2));
 
                 document.add(body1);
@@ -256,7 +256,7 @@ public class GeneratePdf {
                 // section 9
 
                 // section 10
-                Table body3 = new Table(body1Lenght).setHeight(100);
+                Table body3 = new Table(body1Lenght).setHeight(90);
                 body3.addCell(new Cell().add("Penjelasan dari auditee :").setFontSize(8)
                                 .setBorderBottom(Border.NO_BORDER)
                                 .setMargin(0).setPadding(2));
@@ -270,11 +270,11 @@ public class GeneratePdf {
                 nestedbody4.addCell(new Cell().add("Langkah Perbaikan (Sementara / segera):").setFontSize(8)
                                 .setPaddingLeft(3)
                                 .setBorder(Border.NO_BORDER));
-                nestedbody4.addCell(new Cell().add("").setFontSize(5).setHeight(15)
+                nestedbody4.addCell(new Cell().add("").setFontSize(5).setHeight(10)
                                 .setBorder(Border.NO_BORDER));
                 nestedbody4.addCell(new Cell().add("Langkah Perbaikan (Permanen):").setFontSize(8).setPaddingLeft(3)
                                 .setBorder(Border.NO_BORDER));
-                nestedbody4.addCell(new Cell().add("").setFontSize(5).setHeight(15)
+                nestedbody4.addCell(new Cell().add("").setFontSize(5).setHeight(10)
                                 .setBorder(Border.NO_BORDER));
 
                 body4.addCell(new Cell().add(nestedbody4).setBorderTop(Border.NO_BORDER).setMargin(0).setPadding(0));
@@ -350,7 +350,7 @@ public class GeneratePdf {
                 mark3Table.addCell(new Cell()
                                 .add("( " + response.getUser().getFullname() + " )")
                                 .setTextAlignment(TextAlignment.CENTER).setVerticalAlignment(VerticalAlignment.BOTTOM)
-                                .setHeight(60)
+                                .setHeight(40)
                                 .setFontSize(5).setBorder(Border.NO_BORDER));
                 body6.addCell(new Cell().add(mark3Table).setTextAlignment(TextAlignment.CENTER).setFontSize(5));
 
