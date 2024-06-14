@@ -338,7 +338,7 @@ public class GeneratePdf {
                 Table nestedbody7 = new Table(new float[] { 376 });
                 nestedbody7.addCell(new Cell().add("Alasan penolakan adalah:").setFontSize(8).setPaddingLeft(3)
                                 .setBorder(Border.NO_BORDER));
-                nestedbody7.addCell(new Cell().add("").setFontSize(5).setHeight(40)
+                nestedbody7.addCell(new Cell().add("").setFontSize(5).setHeight(20)
                                 .setBorder(Border.NO_BORDER));
 
                 body6.addCell(new Cell().add(nestedbody7).setBorderTop(Border.NO_BORDER).setMargin(0).setPadding(0));
