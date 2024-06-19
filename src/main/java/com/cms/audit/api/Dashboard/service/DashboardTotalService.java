@@ -22,6 +22,7 @@ import com.cms.audit.api.Dashboard.repository.FollowUpDashboardRepo;
 import com.cms.audit.api.Dashboard.repository.ScheduleDashboardRepo;
 import com.cms.audit.api.FollowUp.models.EStatusFollowup;
 import com.cms.audit.api.FollowUp.models.FollowUp;
+import com.cms.audit.api.InspectionSchedule.models.ECategory;
 import com.cms.audit.api.InspectionSchedule.models.EStatus;
 import com.cms.audit.api.InspectionSchedule.models.Schedule;
 import com.cms.audit.api.Management.User.models.User;
@@ -45,27 +46,21 @@ public class DashboardTotalService {
         Specification<FollowUp> followUpSpec = buildFollowUpSpecification(year, month, getUser);
         Specification<Schedule> scheduleSpec = buildScheduleSpecification(year, month, getUser);
 
-        // Get clarifications and count statuses
         List<Clarification> clarifications = clarificationRepo.findAll(clarificationSpec);
         Map<String, Object> clarificationData = prepareClarificationData(clarifications);
 
-        // Get follow-ups and count statuses
         List<FollowUp> followUps = followUpRepo.findAll(followUpSpec);
         Map<String, Object> followUpData = prepareFollowUpData(followUps);
 
-        // Get schedules and count statuses
         List<Schedule> schedules = scheduleRepository.findAll(scheduleSpec);
         Map<String, Object> scheduleData = prepareScheduleData(schedules);
 
-        // Prepare topbot data (top 5 and bottom 5 users based on clarification count)
         List<Map<String, Object>> top5 = prepareTopBotData(clarifications, true);
         List<Map<String, Object>> bottom5 = prepareTopBotData(clarifications, false);
         Map<String, Object> topBotData = prepareTopBotResponse(top5, bottom5);
 
-        // Prepare rankings data (top users based on follow-up count)
         List<Map<String, Object>> rankings = prepareRankingsData(followUps);
 
-        // Prepare response data
         Map<String, Object> chartData = new HashMap<>();
         chartData.put("clarification", clarificationData);
         chartData.put("follow_up", followUpData);
@@ -164,12 +159,28 @@ public class DashboardTotalService {
     }
 
     private Map<String, Object> prepareScheduleData(List<Schedule> schedules) {
-        Map<String, Object> scheduleData = prepareData(
-            schedules, 
-            s -> EStatus.DONE.equals(s.getStatus())
-        );
+        // Filter schedules based on category REGULAR
+    List<Schedule> regularSchedules = schedules.stream()
+            .filter(s -> ECategory.REGULAR.equals(s.getCategory()))
+            .collect(Collectors.toList());
 
-        return scheduleData;
+    // Filter schedules based on category SPECIAL
+    List<Schedule> specialSchedules = schedules.stream()
+            .filter(s -> ECategory.SPECIAL.equals(s.getCategory()))
+            .collect(Collectors.toList());
+
+    // Prepare data for regular schedules
+    Map<String, Object> regularData = prepareData(regularSchedules, s -> EStatus.DONE.equals(s.getStatus()));
+
+    // Prepare data for special schedules
+    Map<String, Object> specialData = prepareData(specialSchedules, s -> EStatus.DONE.equals(s.getStatus()));
+
+    // Create the final map for schedule data
+    Map<String, Object> scheduleData = new HashMap<>();
+    scheduleData.put("regular", regularData);
+    scheduleData.put("special", specialData);
+
+    return scheduleData;
     }
 
     private <T> Map<String, Object> prepareData(List<T> items, Predicate<T> isDonePredicate) {
@@ -191,36 +202,44 @@ public class DashboardTotalService {
                 userClarificationCount.put(user, userClarificationCount.getOrDefault(user, 0L) + 1);
             }
         }
-
+    
         // Sorting users by clarification count
         List<Map.Entry<User, Long>> sortedEntries = userClarificationCount.entrySet().stream()
                 .sorted((e1, e2) -> isTop ? Long.compare(e2.getValue(), e1.getValue()) : Long.compare(e1.getValue(), e2.getValue()))
                 .collect(Collectors.toList());
-
+    
         // Prepare top or bottom 5 users
         List<Map<String, Object>> result = new ArrayList<>();
         int count = 0;
+        int maxResults = 5; // Adjust the number of users you want to retrieve
         for (Map.Entry<User, Long> entry : sortedEntries) {
             User user = entry.getKey();
             Long totalClarifications = entry.getValue();
             Long doneClarifications = clarifications.stream()
                     .filter(c -> user.equals(c.getUser()) && EStatusClarification.DONE.equals(c.getStatus()))
                     .count();
-
+    
             Map<String, Object> userData = new HashMap<>();
-            // userData.put("number", ++count);
             userData.put("name", user.getFullname());
             userData.put("total", totalClarifications);
             userData.put("done", doneClarifications);
             result.add(userData);
-
-            if (count == 5) {
+    
+            count++;
+            if (isTop && count >= maxResults) {
                 break;
             }
         }
-
+    
+        if (!isTop) {
+            // If fetching bottom users, adjust the list to start from the end
+            Collections.reverse(result);
+            result = result.subList(0, Math.min(maxResults, result.size()));
+        }
+    
         return result;
     }
+    
 
     private Map<String, Object> prepareTopBotResponse(List<Map<String, Object>> top5, List<Map<String, Object>> bottom5) {
         Map<String, Object> topBotData = new HashMap<>();
