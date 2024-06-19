@@ -585,7 +585,7 @@ public class ClarificationService {
                         String tanggalFormulir = "11 April 2022";
 
                         PDFResponse generatePDF = GeneratePdf.generateClarificationPDF(response, formulir,
-                                        tanggalFormulir);
+                                        tanggalFormulir, null);
 
                         Clarification clarification2 = response;
                         clarification2.setFilename(generatePDF.fileName);
@@ -959,11 +959,17 @@ public class ClarificationService {
                                                 "File not found with name: " + fileName));
 
                 if (!response.getStatus().equals(EStatusClarification.IDENTIFICATION)) {
+                        if (response.getFile_path() != null) {
+                                File oldFile = new File(response.getFile_path());
+                                if (oldFile.exists()) {
+                                        oldFile.delete();
+                                }
+                        }
                         // Generate or replace the file
                         String formulir = "FM/SPI-05/00";
                         String tanggalFormulir = "11 April 2022";
                         PDFResponse generatePDF = GeneratePdf.generateClarificationPDF(response, formulir,
-                                        tanggalFormulir);
+                                        tanggalFormulir, fileName);
 
                         response.setFilename(generatePDF.fileName);
                         response.setFile_path(generatePDF.filePath);

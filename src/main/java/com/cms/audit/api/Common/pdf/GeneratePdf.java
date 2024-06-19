@@ -35,11 +35,16 @@ import com.itextpdf.layout.property.VerticalAlignment;
 public class GeneratePdf {
 
         @SuppressWarnings("resource")
-        public static PDFResponse generateClarificationPDF(Clarification response, String formulir, String tanggal)
+        public static PDFResponse generateClarificationPDF(Clarification response, String formulir, String tanggal, String nameFile)
                         throws FileNotFoundException, MalformedURLException {
-                String fileName = randomValueNumber.randomNumberGenerator() + "-" + response.getUser().getInitial_name()
+                String fileName;
+                if(nameFile == null) {
+                        fileName = randomValueNumber.randomNumberGenerator() + "-" + response.getUser().getInitial_name()
                                 + "-"
                                 + response.getReport_number() + "-clarification.pdf";
+                } else {
+                        fileName = nameFile;
+                }
                 String path = FolderPath.FOLDER_PATH_CLARIFICATION + fileName;
                 PdfWriter pdfWriter = new PdfWriter(path);
                 PdfDocument pdfDocument = new PdfDocument(pdfWriter);
