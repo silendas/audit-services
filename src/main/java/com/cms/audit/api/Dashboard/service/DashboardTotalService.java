@@ -1,6 +1,7 @@
 package com.cms.audit.api.Dashboard.service;
 
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -145,44 +146,42 @@ public class DashboardTotalService {
     }
 
     private Map<String, Object> prepareClarificationData(List<Clarification> clarifications) {
-        long totalClarifications = clarifications.size();
-        long doneClarifications = clarifications.stream().filter(c -> EStatusClarification.DONE.equals(c.getStatus())).count();
-        double percentClarifications = calculatePercentage(doneClarifications, totalClarifications);
-
-        Map<String, Object> clarificationData = new HashMap<>();
-        clarificationData.put("total", totalClarifications);
-        clarificationData.put("done", doneClarifications);
-        clarificationData.put("percent", percentClarifications);
+        Map<String, Object> clarificationData = prepareData(
+            clarifications, 
+            c -> EStatusClarification.DONE.equals(c.getStatus())
+        );
 
         return clarificationData;
     }
 
     private Map<String, Object> prepareFollowUpData(List<FollowUp> followUps) {
-        long totalFollowUps = followUps.size();
-        long closedFollowUps = followUps.stream().filter(f -> EStatusFollowup.CLOSE.equals(f.getStatus())).count();
-        double percentFollowUps = calculatePercentage(closedFollowUps, totalFollowUps);
-
-        Map<String, Object> followUpData = new HashMap<>();
-        followUpData.put("total", totalFollowUps);
-        followUpData.put("close", closedFollowUps);
-        followUpData.put("percent", percentFollowUps);
+        Map<String, Object> followUpData = prepareData(
+            followUps, 
+            f -> EStatusFollowup.CLOSE.equals(f.getStatus())
+        );
 
         return followUpData;
     }
 
     private Map<String, Object> prepareScheduleData(List<Schedule> schedules) {
-        long totalSchedules = schedules.size();
-        long doneSchedules = schedules.stream().filter(s -> EStatus.DONE.equals(s.getStatus())).count();
-        double percentSchedules = calculatePercentage(doneSchedules, totalSchedules);
-
-        Map<String, Object> scheduleData = new HashMap<>();
-        scheduleData.put("total", totalSchedules);
-        scheduleData.put("done", doneSchedules);
-        scheduleData.put("percent", percentSchedules);
+        Map<String, Object> scheduleData = prepareData(
+            schedules, 
+            s -> EStatus.DONE.equals(s.getStatus())
+        );
 
         return scheduleData;
     }
 
+    private <T> Map<String, Object> prepareData(List<T> items, Predicate<T> isDonePredicate) {
+        long total = items.size();
+        long done = items.stream().filter(isDonePredicate).count();
+
+        Map<String, Object> data = new HashMap<>();
+        data.put("total", total);
+        data.put("done", done);
+        
+        return data;
+    }
     private List<Map<String, Object>> prepareTopBotData(List<Clarification> clarifications, boolean isTop) {
         // Sorting users based on clarification count
         Map<User, Long> userClarificationCount = new HashMap<>();
@@ -209,9 +208,9 @@ public class DashboardTotalService {
                     .count();
 
             Map<String, Object> userData = new HashMap<>();
-            userData.put("number", ++count);
+            // userData.put("number", ++count);
             userData.put("name", user.getFullname());
-            userData.put("total_clarification", totalClarifications);
+            userData.put("total", totalClarifications);
             userData.put("done", doneClarifications);
             result.add(userData);
 
@@ -225,8 +224,8 @@ public class DashboardTotalService {
 
     private Map<String, Object> prepareTopBotResponse(List<Map<String, Object>> top5, List<Map<String, Object>> bottom5) {
         Map<String, Object> topBotData = new HashMap<>();
-        topBotData.put("top5", top5);
-        topBotData.put("bottom5", bottom5);
+        topBotData.put("top", top5);
+        topBotData.put("bottom", bottom5);
         return topBotData;
     }
 
@@ -247,7 +246,7 @@ public class DashboardTotalService {
 
         // Prepare rankings data
         List<Map<String, Object>> resultList = new ArrayList<>();
-        int count = 0;
+        //int count = 0;
         for (Map.Entry<User, Long> entry : sortedEntries) {
             User user = entry.getKey();
             Long totalFollowUps = entry.getValue();
@@ -256,37 +255,43 @@ public class DashboardTotalService {
                     .count();
 
             Map<String, Object> userData = new HashMap<>();
-            userData.put("number", ++count);
+            //userData.put("number", ++count);
             userData.put("name", user.getFullname());
-            userData.put("total_followup", totalFollowUps);
+            userData.put("total", totalFollowUps);
             userData.put("close", closedFollowUps);
             resultList.add(userData);
 
-            if (count == 5) {
-                break;
-            }
+            // if (count == 5) {
+            //     break;
+            // }
         }
 
         return resultList;
     }
 
     private Map<String, Object> prepareDashboardResponse(Long year, Long month, Map<String, Object> chartData,
-            Map<String, Object> topBotData, List<Map<String, Object>> rankings) {
-        Map<String, Object> response = new HashMap<>();
+            Map<String, Object> topBotData, List<Map<String, Object>> followUp) {
+        Map<String, Object> response = new LinkedHashMap<>();
         response.put("year", year != null ? year : convertDateToRoman.getLongYearNumber(new Date()));
         response.put("month", month != null ? convertDateToRoman.getMonthName(month) : convertDateToRoman.getMonthName(convertDateToRoman.getLongMonthNumber(new Date())));
-        response.put("chart", chartData);
-        response.put("topbot", topBotData);
-        response.put("rankings", rankings);
+        response.put("summary", chartData);
+        // response.put("topbot", topBotData);
+        // response.put("followUp", followUp);
+
+        Map<String, Object> rankingMap = new LinkedHashMap<>();
+        rankingMap.put("clarification", topBotData);
+        rankingMap.put("follow_up", followUp);
+        response.put("rankings", rankingMap);
+
         return response;
     }
 
-    private double calculatePercentage(long part, long total) {
-        if (total == 0) {
-            return 0.0;
-        }
-        return (double) part / total * 100;
-    }
+    // private double calculatePercentage(long part, long total) {
+    //     if (total == 0) {
+    //         return 0.0;
+    //     }
+    //     return (double) part / total * 100;
+    // }
 
     public ResponseEntity<Object> returnResponse(Map<String, Object> obj) {
         if (obj == null || obj.isEmpty()) {
