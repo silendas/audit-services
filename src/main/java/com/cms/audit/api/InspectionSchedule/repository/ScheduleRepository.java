@@ -114,7 +114,7 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
                         @Param("end_date") Date end_date);
 
         @Modifying(flushAutomatically = true, clearAutomatically = true)
-        @Query(value = " UPDATE inspection_schedule SET status = 'PENDING', updated_at = current_timestamp, updated_by = :updatedBy WHERE user_id = :userId AND (start_date BETWEEN :start_date AND :end_date OR end_date BETWEEN :start_date AND :end_date) AND status <> 'DONE' AND status <> 'REQUEST' AND status <> 'REJECTED' AND status <> 'APPROVE' AND status <> 'PENDING' AND is_delete <> 1;", nativeQuery = true)
+        @Query(value = " UPDATE inspection_schedule SET status = 'PENDING', updated_at = current_timestamp, updated_by = :updatedBy WHERE user_id = :userId AND (:start_date BETWEEN u.start_date AND u.end_date OR :end_date BETWEEN u.start_date AND u.end_date) AND status <> 'DONE' AND status <> 'REQUEST' AND status <> 'REJECTED' AND status <> 'APPROVE' AND status <> 'PENDING' AND is_delete <> 1;", nativeQuery = true)
         public void editStatusPendingScheduleByDateAdd(@Param("userId") Long userId, @Param("updatedBy") Long updatedBy,
                         @Param("start_date") Date start_date,
                         @Param("end_date") Date end_date);
