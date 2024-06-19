@@ -43,6 +43,7 @@ import com.cms.audit.api.Common.exception.ResourceNotFoundException;
 import com.cms.audit.api.Common.response.GlobalResponse;
 import com.cms.audit.api.Flag.model.Flag;
 import com.cms.audit.api.Flag.repository.FlagRepo;
+import com.cms.audit.api.InspectionSchedule.models.ECategory;
 import com.cms.audit.api.InspectionSchedule.models.EStatus;
 import com.cms.audit.api.InspectionSchedule.models.Schedule;
 import com.cms.audit.api.InspectionSchedule.repository.ScheduleRepository;
@@ -132,17 +133,17 @@ public class AuditDailyReportService {
                         for (int i = 0; i < response.getContent().size(); i++) {
                                 List<AuditDailyReportDetail> getDetail = auditDailyReportDetailRepository
                                                 .findByLHAId(response.getContent().get(i).getId());
-                                //boolean hasValidFlow = false;
+                                // boolean hasValidFlow = false;
                                 Integer flag = 0;
                                 for (int u = 0; u < getDetail.size(); u++) {
                                         // if (getUser.getLevel().getCode().equals("A")) {
-                                        //         if (getDetail.get(u).getStatus_flow() != 1) {
-                                        //                 continue;
-                                        //         } else {
-                                        //                 hasValidFlow = true;
-                                        //         }
+                                        // if (getDetail.get(u).getStatus_flow() != 1) {
+                                        // continue;
                                         // } else {
-                                        //         hasValidFlow = true;
+                                        // hasValidFlow = true;
+                                        // }
+                                        // } else {
+                                        // hasValidFlow = true;
                                         // }
                                         if (response.getContent().get(i).getIs_research() != 1) {
                                                 if (getDetail.get(u).getIs_research() == 1) {
@@ -161,7 +162,7 @@ public class AuditDailyReportService {
                                         }
                                 }
                                 // if (!hasValidFlow) {
-                                //         continue;
+                                // continue;
                                 // }
                                 Map<String, Object> responseS = new LinkedHashMap<>();
                                 responseS.put("id", response.getContent().get(i).getId());
@@ -690,14 +691,16 @@ public class AuditDailyReportService {
                                                 .status(HttpStatus.BAD_REQUEST).build();
                         }
 
-                        List<Schedule> scheduleList = scheduleRepository.findForScheduleList(
-                                        getschedule.get().getUser().getId(),
-                                        getschedule.get().getStart_date());
-                        if (!scheduleList.isEmpty()) {
-                                return GlobalResponse.builder().message(
-                                                "tidak bisa memperoses jadwal karena jadwal sebelumnya belum selesai")
-                                                .errorMessage("Tidak bisa memproses jadwal karena jadwal sebelumnya belum membuat KKA atau belum selesai")
-                                                .status(HttpStatus.BAD_REQUEST).build();
+                        if (getschedule.get().getCategory().equals(ECategory.REGULAR)) {
+                                List<Schedule> scheduleList = scheduleRepository.findForScheduleList(
+                                                getschedule.get().getUser().getId(),
+                                                getschedule.get().getStart_date());
+                                if (!scheduleList.isEmpty()) {
+                                        return GlobalResponse.builder().message(
+                                                        "tidak bisa memperoses jadwal karena jadwal sebelumnya belum selesai")
+                                                        .errorMessage("Tidak bisa memproses jadwal karena jadwal sebelumnya belum membuat KKA atau belum selesai")
+                                                        .status(HttpStatus.BAD_REQUEST).build();
+                                }
                         }
 
                         AuditDailyReport auditDailyReport = new AuditDailyReport(
