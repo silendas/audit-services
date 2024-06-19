@@ -958,7 +958,7 @@ public class ClarificationService {
                                 .orElseThrow(() -> new ResourceNotFoundException(
                                                 "File not found with name: " + fileName));
 
-                if (!response.getStatus().equals(EStatusClarification.IDENTIFICATION)) {
+                if (!response.getStatus().equals(EStatusClarification.IDENTIFICATION) && !response.getStatus().equals(EStatusClarification.DONE)) {
                         if (response.getFile_path() != null) {
                                 File oldFile = new File(response.getFile_path());
                                 if (oldFile.exists()) {
