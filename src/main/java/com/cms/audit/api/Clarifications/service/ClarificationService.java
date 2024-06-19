@@ -958,15 +958,24 @@ public class ClarificationService {
                                 .orElseThrow(() -> new ResourceNotFoundException(
                                                 "File not found with name: " + fileName));
 
-                Clarification clarification = response;
+                if (!response.getStatus().equals(EStatusClarification.IDENTIFICATION)) {
+                        // Generate or replace the file
+                        String formulir = "FM/SPI-05/00";
+                        String tanggalFormulir = "11 April 2022";
+                        PDFResponse generatePDF = GeneratePdf.generateClarificationPDF(response, formulir,
+                                        tanggalFormulir);
+
+                        response.setFilename(generatePDF.fileName);
+                        response.setFile_path(generatePDF.filePath);
+                }
                 if (!response.getStatus().equals(EStatusClarification.DONE)
                                 && !response.getStatus().equals(EStatusClarification.IDENTIFICATION)
                                 && !response.getStatus().equals(EStatusClarification.UPLOAD)
                                 && !response.getStatus().equals(EStatusClarification.INPUT)) {
-                        clarification.setStatus(EStatusClarification.UPLOAD);
+                        response.setStatus(EStatusClarification.UPLOAD);
                 }
-                clarification.setUpdated_at(new Date());
-                repository.save(clarification);
+                response.setUpdated_at(new Date());
+                repository.save(response);
 
                 return response;
         }

@@ -7,8 +7,6 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import javax.swing.text.StyleConstants.ColorConstants;
-
 import com.cms.audit.api.Clarifications.models.Clarification;
 import com.cms.audit.api.Clarifications.models.EPriority;
 import com.cms.audit.api.Common.constant.FolderPath;
@@ -29,11 +27,9 @@ import com.itextpdf.layout.border.Border;
 import com.itextpdf.layout.border.SolidBorder;
 import com.itextpdf.layout.element.Cell;
 import com.itextpdf.layout.element.Image;
-import com.itextpdf.layout.element.Tab;
 import com.itextpdf.layout.element.Table;
 import com.itextpdf.layout.property.HorizontalAlignment;
 import com.itextpdf.layout.property.TextAlignment;
-import com.itextpdf.layout.property.UnitValue;
 import com.itextpdf.layout.property.VerticalAlignment;
 
 public class GeneratePdf {

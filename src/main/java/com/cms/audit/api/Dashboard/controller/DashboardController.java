@@ -12,9 +12,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.cms.audit.api.Common.constant.BasePath;
 import com.cms.audit.api.Common.constant.convertDateToRoman;
+import com.cms.audit.api.Dashboard.service.DashboardDivisiService;
 import com.cms.audit.api.Dashboard.service.DashboardFollowUpService;
 import com.cms.audit.api.Dashboard.service.DashboardFoundService;
 import com.cms.audit.api.Dashboard.service.DashboardNominalService;
+import com.cms.audit.api.Dashboard.service.DashboardTotalService;
 
 @RestController
 @RequestMapping(value =  BasePath.BASE_API)
@@ -28,6 +30,12 @@ public class DashboardController {
 
     @Autowired
     private DashboardNominalService nominalService;
+
+    @Autowired
+    private DashboardDivisiService divisiService;
+
+    @Autowired
+    private DashboardTotalService totalService;
 
     @GetMapping("/dashboard-followup")
     public ResponseEntity<Object> getDashboardFollowUp(
@@ -49,6 +57,22 @@ public class DashboardController {
         @RequestParam(required = false) Optional<Long> year   
     ) {
         return nominalService.dasboardNominal(year.orElse(convertDateToRoman.getLongYearNumber(new Date())));
+    }
+
+    @GetMapping("/dashboard-divisi")
+    public ResponseEntity<Object> getDashboardDivisi(
+        @RequestParam(required = false) Optional<Long> month,
+        @RequestParam(required = false) Optional<Long> year   
+    ) {
+        return divisiService.dashboardDivision(year.orElse(convertDateToRoman.getLongYearNumber(new Date())), month.orElse(convertDateToRoman.getLongMonthNumber(new Date())));
+    }
+
+    @GetMapping("/dashboard-total")
+    public ResponseEntity<Object> getDashboardTotal(
+        @RequestParam(required = false) Optional<Long> month,
+        @RequestParam(required = false) Optional<Long> year   
+    ) {
+        return totalService.dashboardTotal(year.orElse(convertDateToRoman.getLongYearNumber(new Date())), month.orElse(convertDateToRoman.getLongMonthNumber(new Date())));
     }
     
 }

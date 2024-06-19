@@ -17,6 +17,9 @@ public interface CaseRepository extends JpaRepository<Case,Long>{
     @Query(value = "SELECT * FROM cases u WHERE u.is_delete <> 1", nativeQuery = true)
     public List<Case> findAllCase();
 
+    @Query("SELECT DISTINCT c.code FROM Case c WHERE c.is_delete = 0")
+    List<String> findAllDistinctCaseCodes();
+
     @Query(value = "SELECT u.id,u.name,u.code FROM cases u WHERE u.is_delete <> 1", nativeQuery = true)
     public List<CaseInterface> findSpecificCase();
 

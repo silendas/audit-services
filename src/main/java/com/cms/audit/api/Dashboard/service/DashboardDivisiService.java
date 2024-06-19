@@ -1,8 +1,7 @@
 package com.cms.audit.api.Dashboard.service;
 
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
@@ -15,21 +14,34 @@ import com.cms.audit.api.Clarifications.models.Clarification;
 import com.cms.audit.api.Common.constant.SpecificationFIlter;
 import com.cms.audit.api.Common.constant.convertDateToRoman;
 import com.cms.audit.api.Common.response.ResponseEntittyHandler;
+import com.cms.audit.api.Dashboard.dto.DateCompareDTO;
 import com.cms.audit.api.Dashboard.repository.ClarificationDashboardRepo;
+import com.cms.audit.api.Management.Case.models.Case;
+import com.cms.audit.api.Management.Case.repository.CaseRepository;
 import com.cms.audit.api.Management.User.models.User;
 
 @Service
-public class DashboardFoundService {
+public class DashboardDivisiService {
 
     @Autowired
     private ClarificationDashboardRepo repo;
 
-    public ResponseEntity<Object> dasboardFound(Long year) {
+    @Autowired
+    private CaseRepository caseRepo;
+
+    public ResponseEntity<Object> dashboardDivision(Long year, Long month) {
         User getUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         Specification<Clarification> spec = Specification
                 .where(new SpecificationFIlter<Clarification>().createdAtYear(year))
                 .and(new SpecificationFIlter<Clarification>().isNotDeleted());
+
+        if (month != null && month != 0) {
+            DateCompareDTO monthSeparate = convertDateToRoman.getDateRange(month);
+            spec = spec.and(
+                    new SpecificationFIlter<Clarification>().dateRange(monthSeparate.getDate1(), monthSeparate.getDate2()));
+        }
+
         if (getUser.getLevel().getCode().equals("C")) {
             spec = spec.and(new SpecificationFIlter<Clarification>().userId(getUser.getId()));
         } else if (getUser.getLevel().getCode().equals("B")) {
@@ -39,10 +51,19 @@ public class DashboardFoundService {
             spec = spec.and(regionOrUserSpec);
         }
 
-        List<Object> responseData = new ArrayList<>();
-        for (int i = 1; i <= 12; i++) {
-            long total = calculateMonthlyTotal(spec, year, i);
-            addToResponseData(responseData, i, total);
+        List<Clarification> clarifications = repo.findAll(spec);
+        Map<String, Long> caseCountMap = clarifications.stream()
+                .collect(Collectors.groupingBy(c -> c.getCases().getCode(), Collectors.counting()));
+
+        // Fetch all distinct case codes from the database
+        List<String> allCaseCodes = caseRepo.findAllDistinctCaseCodes();
+
+        List<Map<String, Object>> responseData = new ArrayList<>();
+        for (String caseCode : allCaseCodes) {
+            Map<String, Object> caseData = new HashMap<>();
+            caseData.put("case", caseCode);
+            caseData.put("total", caseCountMap.getOrDefault(caseCode, 0L));
+            responseData.add(caseData);
         }
 
         Map<String, Object> mapping = new LinkedHashMap<>();
@@ -51,31 +72,15 @@ public class DashboardFoundService {
         } else {
             mapping.put("year", convertDateToRoman.getLongYearNumber(new Date()));
         }
+        if (month != null && month != 0) {
+            mapping.put("month", convertDateToRoman.getMonthName(month));
+        } else {
+            mapping.put("month", convertDateToRoman.getMonthName(convertDateToRoman.getLongMonthNumber(new Date())));
+        }
+
         mapping.put("chart", responseData);
 
         return returnResponse(mapping);
-    }
-
-    private long calculateMonthlyTotal(Specification<Clarification> spec, Long year, int month) {
-        LocalDateTime startOfMonth = LocalDateTime.of(year.intValue(), month, 1, 0, 0);
-        LocalDateTime endOfMonth = startOfMonth.withDayOfMonth(startOfMonth.toLocalDate().lengthOfMonth()).withHour(23)
-                .withMinute(59).withSecond(59);
-
-        Specification<Clarification> monthlySpec = spec
-                .and(new SpecificationFIlter<Clarification>().dateRange(
-                        Date.from(startOfMonth.atZone(ZoneId.systemDefault()).toInstant()),
-                        Date.from(endOfMonth.atZone(ZoneId.systemDefault()).toInstant())));
-
-        List<Clarification> fuList = repo.findAll(monthlySpec);
-        return fuList.size();
-    }
-
-    private void addToResponseData(List<Object> responseData, int month, long total) {
-        Map<String, Object> monthData = new LinkedHashMap<>();
-        // monthData.put("month", convertDateToRoman.getMonthName(Long.valueOf(month)));
-        monthData.put("month", month);
-        monthData.put("total", total);
-        responseData.add(monthData);
     }
 
     public ResponseEntity<Object> returnResponse(Map<String, Object> obj) {
@@ -84,5 +89,4 @@ public class DashboardFoundService {
         }
         return ResponseEntittyHandler.allHandler(obj, "Data berhasil ditampilkan", HttpStatus.OK, null);
     }
-
 }
