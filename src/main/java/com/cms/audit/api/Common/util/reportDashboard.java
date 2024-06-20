@@ -3,11 +3,12 @@ package com.cms.audit.api.Common.util;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.text.NumberFormat;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
-import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -17,9 +18,9 @@ import com.cms.audit.api.Clarifications.models.Clarification;
 import com.cms.audit.api.Common.constant.convertDateToRoman;
 
 public class reportDashboard {
-    public static String SHEET_NAME_SOP = "Kategori SOP";
-    public static String SHEET_NAME_DIVISI = "Divisi";
-    public static String SHEET_NAME_AUDIT = "Audit";
+    public static String SHEET_NAME_SOP = "Temuan Kategori SOP";
+    public static String SHEET_NAME_DIVISI = "Temuan Divisi";
+    public static String SHEET_NAME_AUDIT = "Temuan Audit";
 
     public static ByteArrayInputStream dataToExcel(List<Clarification> clarificationsList, Long month) throws IOException {
         Workbook workbook = new XSSFWorkbook();
@@ -68,7 +69,7 @@ public class reportDashboard {
             row.createCell(0).setCellValue(convertDateToRoman.getMonthName(month));
             row.createCell(1).setCellValue(entry.getKey());
             row.createCell(2).setCellValue(entry.getValue().count);
-            row.createCell(3).setCellValue(entry.getValue().totalNominalLoss);
+            row.createCell(3).setCellValue(formatCurrency(entry.getValue().totalNominalLoss));
         }
     }
 
@@ -102,7 +103,7 @@ public class reportDashboard {
             row.createCell(0).setCellValue(convertDateToRoman.getMonthName(month));
             row.createCell(1).setCellValue(entry.getKey());
             row.createCell(2).setCellValue(entry.getValue().count);
-            row.createCell(3).setCellValue(entry.getValue().totalNominalLoss);
+            row.createCell(3).setCellValue(formatCurrency(entry.getValue().totalNominalLoss));
         }
     }
 
@@ -133,6 +134,12 @@ public class reportDashboard {
             row.createCell(1).setCellValue(entry.getKey());
             row.createCell(2).setCellValue(entry.getValue());
         }
+    }
+
+    // Helper method to format currency
+    private static String formatCurrency(long amount) {
+        NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance(new Locale("id", "ID"));
+        return currencyFormatter.format(amount);
     }
 
     // Helper class to hold aggregated data

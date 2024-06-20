@@ -53,9 +53,13 @@ public class DashboardClarificationService {
             // Generate Excel file
             ByteArrayInputStream in = reportDashboard.dataToExcel(clarificationsList, month);
 
+            // Get month name in Roman format
+            String monthName = convertDateToRoman.getMonthName(month);
+
             // Set headers
             HttpHeaders headers = new HttpHeaders();
-            headers.add("Content-Disposition", "attachment; filename=clarifications_report.xlsx");
+            String fileName = "Report-" + monthName + "-" + year + ".xlsx";
+            headers.add("Content-Disposition", "attachment; filename=" + fileName);
 
             return ResponseEntity.ok()
                     .headers(headers)
