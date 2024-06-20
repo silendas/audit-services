@@ -345,8 +345,6 @@ public class DashboardTotalService {
         response.put("year", year != null ? year : convertDateToRoman.getLongYearNumber(new Date()));
         response.put("month", month != null ? convertDateToRoman.getMonthName(month) : convertDateToRoman.getMonthName(convertDateToRoman.getLongMonthNumber(new Date())));
         response.put("summary", chartData);
-        // response.put("topbot", topBotData);
-        // response.put("followUp", followUp);
 
         Map<String, Object> rankingMap = new LinkedHashMap<>();
         rankingMap.put("clarification", topBotData);
@@ -355,13 +353,6 @@ public class DashboardTotalService {
 
         return response;
     }
-
-    // private double calculatePercentage(long part, long total) {
-    //     if (total == 0) {
-    //         return 0.0;
-    //     }
-    //     return (double) part / total * 100;
-    // }
 
     public ResponseEntity<Object> returnResponse(Map<String, Object> obj) {
         if (obj == null || obj.isEmpty()) {
