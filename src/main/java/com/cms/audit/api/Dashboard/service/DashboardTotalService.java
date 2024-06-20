@@ -46,24 +46,28 @@ public class DashboardTotalService {
     public ResponseEntity<Object> dashboardTotal(Long year, Long month) {
         User getUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        Specification<Clarification> clarificationSpec = buildClarificationSpecification(year, month, getUser);
-        Specification<FollowUp> followUpSpec = buildFollowUpSpecification(year, month, getUser);
-        Specification<Schedule> scheduleSpec = buildScheduleSpecification(year, month, getUser);
+        Specification<Clarification> clarificationSpec = buildClarificationSpecification(year, month, getUser, false);
+        Specification<FollowUp> followUpSpec = buildFollowUpSpecification(year, month, getUser, false);
+        Specification<Clarification> allClarificationSpec = buildClarificationSpecification(year, month, getUser, true);
+        Specification<FollowUp> allFollowUpSpec = buildFollowUpSpecification(year, month, getUser, true);
+        Specification<Schedule> scheduleSpec = buildScheduleSpecification(year, month, getUser, false);
 
         List<Clarification> clarifications = clarificationRepo.findAll(clarificationSpec);
+        List<Clarification> allClarifications = clarificationRepo.findAll(allClarificationSpec);
         Map<String, Object> clarificationData = prepareClarificationData(clarifications);
 
         List<FollowUp> followUps = followUpRepo.findAll(followUpSpec);
+        List<FollowUp> allFollowUps = followUpRepo.findAll(allFollowUpSpec);
         Map<String, Object> followUpData = prepareFollowUpData(followUps);
 
         List<Schedule> schedules = scheduleRepository.findAll(scheduleSpec);
         Map<String, Object> scheduleData = prepareScheduleData(schedules);
 
-        List<Map<String, Object>> top5 = prepareTopBotData(clarifications, true);
-        List<Map<String, Object>> bottom5 = prepareBottomData(clarifications);
+        List<Map<String, Object>> top5 = prepareTopBotData(allClarifications, true);
+        List<Map<String, Object>> bottom5 = prepareBottomData(allClarifications);
         Map<String, Object> topBotData = prepareTopBotResponse(top5, bottom5);
 
-        List<Map<String, Object>> rankings = prepareRankingsData(followUps);
+        List<Map<String, Object>> rankings = prepareRankingsData(allFollowUps);
 
         Map<String, Object> chartData = new HashMap<>();
         chartData.put("clarification", clarificationData);
@@ -75,7 +79,7 @@ public class DashboardTotalService {
         return returnResponse(response);
     }
 
-    private Specification<Clarification> buildClarificationSpecification(Long year, Long month, User getUser) {
+    private Specification<Clarification> buildClarificationSpecification(Long year, Long month, User getUser, boolean isAll) {
         Specification<Clarification> clarificationSpec = Specification
                 .where(new SpecificationFIlter<Clarification>().createdAtYear(year))
                 .and(new SpecificationFIlter<Clarification>().isNotDeleted());
@@ -86,19 +90,21 @@ public class DashboardTotalService {
                     new SpecificationFIlter<Clarification>().dateRange(monthSeparate.getDate1(), monthSeparate.getDate2()));
         }
 
-        if (getUser.getLevel().getCode().equals("C")) {
-            clarificationSpec = clarificationSpec.and(new SpecificationFIlter<Clarification>().userId(getUser.getId()));
-        } else if (getUser.getLevel().getCode().equals("B")) {
-            Specification<Clarification> regionOrUserSpecClarification = Specification
-                    .where(new SpecificationFIlter<Clarification>().getByRegionIds(getUser.getRegionId()))
-                    .or(new SpecificationFIlter<Clarification>().userId(getUser.getId()));
-            clarificationSpec = clarificationSpec.and(regionOrUserSpecClarification);
+        if(!isAll){
+            if (getUser.getLevel().getCode().equals("C")) {
+                clarificationSpec = clarificationSpec.and(new SpecificationFIlter<Clarification>().userId(getUser.getId()));
+            } else if (getUser.getLevel().getCode().equals("B")) {
+                Specification<Clarification> regionOrUserSpecClarification = Specification
+                        .where(new SpecificationFIlter<Clarification>().getByRegionIds(getUser.getRegionId()))
+                        .or(new SpecificationFIlter<Clarification>().userId(getUser.getId()));
+                clarificationSpec = clarificationSpec.and(regionOrUserSpecClarification);
+            }
         }
 
         return clarificationSpec;
     }
 
-    private Specification<FollowUp> buildFollowUpSpecification(Long year, Long month, User getUser) {
+    private Specification<FollowUp> buildFollowUpSpecification(Long year, Long month, User getUser, boolean isAll) {
         Specification<FollowUp> followUpSpec = Specification
                 .where(new SpecificationFIlter<FollowUp>().createdAtYear(year))
                 .and(new SpecificationFIlter<FollowUp>().isNotDeleted());
@@ -109,19 +115,21 @@ public class DashboardTotalService {
                     new SpecificationFIlter<FollowUp>().dateRange(monthSeparate.getDate1(), monthSeparate.getDate2()));
         }
 
-        if (getUser.getLevel().getCode().equals("C")) {
-            followUpSpec = followUpSpec.and(new SpecificationFIlter<FollowUp>().userId(getUser.getId()));
-        } else if (getUser.getLevel().getCode().equals("B")) {
-            Specification<FollowUp> regionOrUserSpecFollowUp = Specification
-                    .where(new SpecificationFIlter<FollowUp>().getByRegionIds(getUser.getRegionId()))
-                    .or(new SpecificationFIlter<FollowUp>().userId(getUser.getId()));
-            followUpSpec = followUpSpec.and(regionOrUserSpecFollowUp);
+        if(!isAll){
+            if (getUser.getLevel().getCode().equals("C")) {
+                followUpSpec = followUpSpec.and(new SpecificationFIlter<FollowUp>().userId(getUser.getId()));
+            } else if (getUser.getLevel().getCode().equals("B")) {
+                Specification<FollowUp> regionOrUserSpecFollowUp = Specification
+                        .where(new SpecificationFIlter<FollowUp>().getByRegionIds(getUser.getRegionId()))
+                        .or(new SpecificationFIlter<FollowUp>().userId(getUser.getId()));
+                followUpSpec = followUpSpec.and(regionOrUserSpecFollowUp);
+            }
         }
 
         return followUpSpec;
     }
 
-    private Specification<Schedule> buildScheduleSpecification(Long year, Long month, User getUser) {
+    private Specification<Schedule> buildScheduleSpecification(Long year, Long month, User getUser, boolean isAll) {
         Specification<Schedule> scheduleSpec = Specification
                 .where(new SpecificationFIlter<Schedule>().createdAtYear(year))
                 .and(new SpecificationFIlter<Schedule>().isNotDeleted());
@@ -132,13 +140,15 @@ public class DashboardTotalService {
                     new SpecificationFIlter<Schedule>().dateRange(monthSeparate.getDate1(), monthSeparate.getDate2()));
         }
 
-        if (getUser.getLevel().getCode().equals("C")) {
-            scheduleSpec = scheduleSpec.and(new SpecificationFIlter<Schedule>().userId(getUser.getId()));
-        } else if (getUser.getLevel().getCode().equals("B")) {
-            Specification<Schedule> regionOrUserSpecSchedule = Specification
-                    .where(new SpecificationFIlter<Schedule>().getByRegionIds(getUser.getRegionId()))
-                    .or(new SpecificationFIlter<Schedule>().userId(getUser.getId()));
-            scheduleSpec = scheduleSpec.and(regionOrUserSpecSchedule);
+        if(!isAll) {
+            if (getUser.getLevel().getCode().equals("C")) {
+                scheduleSpec = scheduleSpec.and(new SpecificationFIlter<Schedule>().userId(getUser.getId()));
+            } else if (getUser.getLevel().getCode().equals("B")) {
+                Specification<Schedule> regionOrUserSpecSchedule = Specification
+                        .where(new SpecificationFIlter<Schedule>().getByRegionIds(getUser.getRegionId()))
+                        .or(new SpecificationFIlter<Schedule>().userId(getUser.getId()));
+                scheduleSpec = scheduleSpec.and(regionOrUserSpecSchedule);
+            }
         }
 
         return scheduleSpec;
