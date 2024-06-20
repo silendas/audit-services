@@ -306,19 +306,29 @@ public class DashboardTotalService {
     }
 
     private List<Map<String, Object>> prepareRankingsData(List<FollowUp> followUps) {
+        // Spesifikasi untuk mengambil pengguna dengan level ID 2 yang tidak dihapus
         Specification<User> userSpec = Specification
                 .where(new SpecificationFIlter<User>().isNotDeleted())
                 .and(new SpecificationFIlter<User>().userLevelId(2L));
         List<User> listUser = userRepo.findAll(userSpec);
     
+        // Jika daftar pengguna kosong, kembalikan daftar kosong
+        if (listUser.isEmpty()) {
+            return new ArrayList<>();
+        }
+    
+        // Buat peta untuk menghitung jumlah tindak lanjut untuk setiap pengguna
         Map<User, Long> userFollowUpCount = new HashMap<>();
         for (FollowUp followUp : followUps) {
-            User user = userRepo.findById(followUp.getCreated_by()).orElse(null);
-            if (user != null) {
-                userFollowUpCount.put(user, userFollowUpCount.getOrDefault(user, 0L) + 1);
+            if (followUp.getCreated_by() != null) {
+                User user = userRepo.findById(followUp.getCreated_by()).orElse(null);
+                if (user != null) {
+                    userFollowUpCount.put(user, userFollowUpCount.getOrDefault(user, 0L) + 1);
+                }
             }
         }
     
+        // Buat daftar hasil
         List<Map<String, Object>> resultList = new ArrayList<>();
         for (User user : listUser) {
             Long totalFollowUps = userFollowUpCount.getOrDefault(user, 0L);
@@ -333,11 +343,17 @@ public class DashboardTotalService {
             resultList.add(userData);
         }
     
-        resultList.sort((u1, u2) -> Long.compare((Long) u2.get("total"), (Long) u1.get("total")));
+        // Urutkan hasil berdasarkan jumlah total tindak lanjut (descending), dan jika sama, berdasarkan jumlah done (descending)
+        resultList.sort((u1, u2) -> {
+            int comparison = Long.compare((Long) u2.get("total"), (Long) u1.get("total"));
+            if (comparison == 0) {
+                comparison = Long.compare((Long) u2.get("done"), (Long) u1.get("done"));
+            }
+            return comparison;
+        });
     
         return resultList;
-    }
-    
+    }    
 
     private Map<String, Object> prepareDashboardResponse(Long year, Long month, Map<String, Object> chartData,
             Map<String, Object> topBotData, List<Map<String, Object>> followUp) {
