@@ -321,7 +321,7 @@ public class DashboardTotalService {
         Map<User, Long> userFollowUpCount = new HashMap<>();
         for (FollowUp followUp : followUps) {
             if (followUp.getCreated_by() != null) {
-                User user = userRepo.findById(followUp.getCreated_by()).orElse(null);
+                User user = userRepo.findById(followUp.getUpdated_by()).orElse(null);
                 if (user != null) {
                     userFollowUpCount.put(user, userFollowUpCount.getOrDefault(user, 0L) + 1);
                 }
