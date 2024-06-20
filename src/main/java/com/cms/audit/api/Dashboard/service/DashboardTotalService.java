@@ -63,7 +63,7 @@ public class DashboardTotalService {
         List<Schedule> schedules = scheduleRepository.findAll(scheduleSpec);
         Map<String, Object> scheduleData = prepareScheduleData(schedules);
 
-        List<Map<String, Object>> top5 = prepareTopBotData(allClarifications, true);
+        List<Map<String, Object>> top5 = prepareTopData(allClarifications);
         List<Map<String, Object>> bottom5 = prepareBottomData(allClarifications);
         Map<String, Object> topBotData = prepareTopBotResponse(top5, bottom5);
 
@@ -208,7 +208,7 @@ public class DashboardTotalService {
         return data;
     }
 
-    private List<Map<String, Object>> prepareTopBotData(List<Clarification> clarifications, boolean isTop) {
+    private List<Map<String, Object>> prepareTopData(List<Clarification> clarifications) {
         // Sorting users based on clarification count
         Map<User, Long> userClarificationCount = new HashMap<>();
         Map<User, Long> userDoneClarificationCount = new HashMap<>();
@@ -222,12 +222,12 @@ public class DashboardTotalService {
             }
         }
     
-        // Sorting users by total clarification count first and then by done clarifications
+        // Sorting users by total clarification count in ascending order and then by done clarifications
         List<Map.Entry<User, Long>> sortedEntries = userClarificationCount.entrySet().stream()
                 .sorted((e1, e2) -> {
-                    int comparison = Long.compare(e2.getValue(), e1.getValue());
+                    int comparison = Long.compare(e1.getValue(), e2.getValue());
                     if (comparison == 0) {
-                        return Long.compare(userDoneClarificationCount.getOrDefault(e2.getKey(), 0L), userDoneClarificationCount.getOrDefault(e1.getKey(), 0L));
+                        return Long.compare(userDoneClarificationCount.getOrDefault(e1.getKey(), 0L), userDoneClarificationCount.getOrDefault(e2.getKey(), 0L));
                     }
                     return comparison;
                 })
@@ -255,7 +255,7 @@ public class DashboardTotalService {
     
         return result;
     }
-
+    
     private List<Map<String, Object>> prepareBottomData(List<Clarification> clarifications) {
         // Sorting users based on clarification count
         Map<User, Long> userClarificationCount = new HashMap<>();
@@ -270,18 +270,24 @@ public class DashboardTotalService {
             }
         }
     
-        // Sorting users by total clarification count
+        // Sorting users by total clarification count in descending order
         List<Map.Entry<User, Long>> sortedEntries = userClarificationCount.entrySet().stream()
-                .sorted(Map.Entry.comparingByValue())
+                .sorted((e1, e2) -> {
+                    int comparison = Long.compare(e2.getValue(), e1.getValue());
+                    if (comparison == 0) {
+                        return Long.compare(userDoneClarificationCount.getOrDefault(e2.getKey(), 0L), userDoneClarificationCount.getOrDefault(e1.getKey(), 0L));
+                    }
+                    return comparison;
+                })
                 .collect(Collectors.toList());
     
-        // Prepare bottom 5 users starting from the 25th from the end
+        // Prepare bottom 5 users
         List<Map<String, Object>> result = new ArrayList<>();
-        int totalUsers = sortedEntries.size();
-        int startIdx = Math.max(totalUsers - 6, 0); // Start from the 25th from the bottom
+        int count = 0;
+        int maxResults = 5; // Adjust the number of users you want to retrieve
+        for (Map.Entry<User, Long> entry : sortedEntries) {
+            if (count >= maxResults) break;
     
-        for (int i = startIdx; i < totalUsers; i++) {
-            Map.Entry<User, Long> entry = sortedEntries.get(i);
             User user = entry.getKey();
             Long totalClarifications = entry.getValue();
             Long doneClarifications = userDoneClarificationCount.getOrDefault(user, 0L);
@@ -291,10 +297,14 @@ public class DashboardTotalService {
             userData.put("total", totalClarifications);
             userData.put("done", doneClarifications);
             result.add(userData);
+    
+            count++;
         }
     
         return result;
     }
+    
+    
 
     private Map<String, Object> prepareTopBotResponse(List<Map<String, Object>> top5, List<Map<String, Object>> bottom5) {
         Map<String, Object> topBotData = new HashMap<>();
