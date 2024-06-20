@@ -16,6 +16,7 @@ import com.cms.audit.api.Dashboard.service.DashboardDivisiService;
 import com.cms.audit.api.Dashboard.service.DashboardFollowUpService;
 import com.cms.audit.api.Dashboard.service.DashboardFoundService;
 import com.cms.audit.api.Dashboard.service.DashboardNominalService;
+import com.cms.audit.api.Dashboard.service.DashboardSOPService;
 import com.cms.audit.api.Dashboard.service.DashboardTotalService;
 
 @RestController
@@ -37,6 +38,9 @@ public class DashboardController {
     @Autowired
     private DashboardTotalService totalService;
 
+    @Autowired
+    private DashboardSOPService sopService;
+
     @GetMapping("/dashboard-followup")
     public ResponseEntity<Object> getDashboardFollowUp(
         @RequestParam(required = false) Optional<Long> month,
@@ -57,6 +61,14 @@ public class DashboardController {
         @RequestParam(required = false) Optional<Long> year   
     ) {
         return nominalService.dasboardNominal(year.orElse(convertDateToRoman.getLongYearNumber(new Date())));
+    }
+
+    @GetMapping("/dashboard-sop")
+    public ResponseEntity<byte[]> getDashboardSOP(
+        @RequestParam(required = false) Optional<Long> month,
+        @RequestParam(required = false) Optional<Long> year   
+    ) {
+        return sopService.dashboardSOP(year.orElse(convertDateToRoman.getLongYearNumber(new Date())), month.orElse(convertDateToRoman.getLongMonthNumber(new Date())));
     }
 
     @GetMapping("/dashboard-divisi")

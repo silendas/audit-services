@@ -289,13 +289,11 @@ public class DashboardTotalService {
     }
 
     private List<Map<String, Object>> prepareRankingsData(List<FollowUp> followUps) {
-        // Get all users with level 2
         Specification<User> userSpec = Specification
                 .where(new SpecificationFIlter<User>().isNotDeleted())
                 .and(new SpecificationFIlter<User>().userLevelId(2L));
         List<User> listUser = userRepo.findAll(userSpec);
     
-        // Count closed follow-ups per user
         Map<User, Long> userFollowUpCount = new HashMap<>();
         for (FollowUp followUp : followUps) {
             User user = userRepo.findById(followUp.getCreated_by()).orElse(null);
@@ -304,7 +302,6 @@ public class DashboardTotalService {
             }
         }
     
-        // Prepare rankings data
         List<Map<String, Object>> resultList = new ArrayList<>();
         for (User user : listUser) {
             Long totalFollowUps = userFollowUpCount.getOrDefault(user, 0L);
@@ -319,7 +316,6 @@ public class DashboardTotalService {
             resultList.add(userData);
         }
     
-        // Sort the resultList based on totalFollowUps in descending order
         resultList.sort((u1, u2) -> Long.compare((Long) u2.get("total"), (Long) u1.get("total")));
     
         return resultList;
