@@ -281,6 +281,8 @@ public class FollowupService {
 
     public GlobalResponse save(FollowUpDTO dto) {
         try {
+            User getUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
             if (dto.getFollowup_id() == null) {
                 return GlobalResponse.builder().errorMessage("Tindak lanjut harus diisi")
                         .message("Follow Up with id:" + dto.getFollowup_id() + " is not found")
@@ -337,6 +339,7 @@ public class FollowupService {
             } else {
                 followUp.setIsPenalty(0L);
             }
+            followUp.setUpdated_by(getUser.getId());
             followUp.setStatus(EStatusFollowup.PROGRESS);
             FollowUp response1 = repository.save(followUp);
 

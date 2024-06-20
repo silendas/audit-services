@@ -848,6 +848,7 @@ public class ClarificationService {
                                 followUp.setStatus(EStatusFollowup.CREATE);
                                 followUp.setIs_delete(0);
                                 followUp.setCreated_by(response.getUser().getId());
+                                followUp.setUpdated_by(user.getId());
                                 followUp.setCreated_at(new Date());
 
                                 followUpRepository.save(followUp);

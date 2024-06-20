@@ -90,6 +90,9 @@ public class FollowUp {
     @Column(name = "created_by")
     private Long created_by;
 
+    @Column(name = "updated_by")
+    private Long updated_by;
+
     @Column(name = "created_at", columnDefinition = "DATE")
     private Date created_at;
     

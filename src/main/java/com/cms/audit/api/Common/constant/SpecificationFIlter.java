@@ -41,8 +41,6 @@ public class SpecificationFIlter<T> {
         };
     }
 
-
-
     public Specification<T> byNameLike(String name) {
         return (root, query, criteriaBuilder) -> {
             if (name != null) {
@@ -56,6 +54,16 @@ public class SpecificationFIlter<T> {
         return (root, query, criteriaBuilder) -> {
             if (id != null) {
                 return criteriaBuilder.equal(root.get("user").get("id"), id);
+            }
+            return null;
+        };
+    }
+
+    
+    public Specification<T> userLevelId(Long id) {
+        return (root, query, criteriaBuilder) -> {
+            if (id != null) {
+                return criteriaBuilder.equal(root.get("level").get("id"), id);
             }
             return null;
         };
