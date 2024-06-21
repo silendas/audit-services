@@ -17,6 +17,9 @@ public interface CaseCategoryRepository extends JpaRepository<CaseCategory, Long
     @Query(value = "SELECT * FROM case_category u WHERE u.is_delete <> 1", nativeQuery = true)
     public List<CaseCategory> findAllCaseCategory();
 
+    @Query("SELECT DISTINCT c FROM CaseCategory c WHERE c.is_delete = 0")
+    List<CaseCategory> findAllDistinctCaseCodes();
+
     @Query(value = "SELECT u.id,u.name FROM case_category u WHERE u.is_delete <> 1", nativeQuery = true)
     public List<CaseCategoryInterface> findSpecificCaseCategory();
 
