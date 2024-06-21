@@ -58,13 +58,19 @@ public class DashboardSOPService {
 
         List<Clarification> clarifications = repo.findAll(spec);
         
-        Map<String, Long> caseCategoryNominalLossMap = clarifications.stream()
+        // Filter out clarifications with nominal_loss null or 0
+        List<Clarification> filteredClarifications = clarifications.stream()
                 .filter(c -> c.getNominal_loss() != null && c.getNominal_loss() > 0)
+                .collect(Collectors.toList());
+
+        Map<String, Long> caseCategoryCountMap = filteredClarifications.stream()
+                .collect(Collectors.groupingBy(c -> c.getCaseCategory().getName(), Collectors.counting()));
+
+        Map<String, Long> caseCategoryNominalLossMap = filteredClarifications.stream()
                 .collect(Collectors.groupingBy(c -> c.getCaseCategory().getName(), Collectors.summingLong(Clarification::getNominal_loss)));
 
         // Fetch only case categories that are referenced in clarifications
-        List<CaseCategory> existingCaseCategories = clarifications.stream()
-                .filter(c -> c.getNominal_loss() != null && c.getNominal_loss() > 0)
+        List<CaseCategory> existingCaseCategories = filteredClarifications.stream()
                 .map(Clarification::getCaseCategory)
                 .distinct()
                 .collect(Collectors.toList());
@@ -74,6 +80,7 @@ public class DashboardSOPService {
             Map<String, Object> caseData = new HashMap<>();
             caseData.put("case", caseCategory.getCases().getName());
             caseData.put("case_category", caseCategory.getName());
+            caseData.put("total", caseCategoryCountMap.getOrDefault(caseCategory.getName(), 0L));
             caseData.put("total_nominal_loss", caseCategoryNominalLossMap.getOrDefault(caseCategory.getName(), 0L));
             responseData.add(caseData);
         }
