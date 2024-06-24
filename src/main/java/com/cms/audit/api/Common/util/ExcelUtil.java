@@ -17,7 +17,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
 public class ExcelUtil {
-    public static String HEADER[] = { "comment_clarification", "auditor", "kasus", "kategori", "kerugian",
+    public static String HEADER[] = { "nomor_klarifikasi", "auditor", "kasus", "kategori", "kerugian",
             "batas_evaluasi", "tanggal_mulai_realisasi", "tanggal_selesai_realisasi", "waktu_penyelesaian",
             "tanggal_estimasi", "realisasi_penalty", "lokasi", "auditee", "atasan_auditee", "file", "deskripsi", "prioritas", "tanggal_terbuat","status" };
 
