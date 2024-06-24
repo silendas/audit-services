@@ -8,7 +8,9 @@ import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -76,10 +78,10 @@ public class ReportService {
     @Autowired
     private LhaReportRepository lhaRepository;
 
+
     public ByteArrayInputStream getDataDownloadClarification(Long region_id, Long user_id, Long branchId,
             Date start_date,
-            Date end_date)
-            throws IOException {
+            Date end_date) throws IOException {
         User getUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         Specification<Clarification> spec = Specification
@@ -96,26 +98,30 @@ public class ReportService {
         }
         List<Clarification> response = repository.findAll(spec);
 
-        String realizePenalty = "";
-        // for (Clarification clarification : response) {
-        //     Optional<FollowUp> getFU = fUpRepository.findByClId(clarification.getId());
-        //     if (getFU.isPresent()) {
-        //         FollowUp followUp = getFU.get();
-        //         if (followUp.getPenaltyRealization() != null) {
-        //             for (Long penaltyId : followUp.getPenaltyRealization()) {
-        //                 Optional<Penalty> penaltyOpt = penaltyRepository.findById(penaltyId);
-        //                 if (penaltyOpt.isPresent()) {
-        //                     Penalty penalty = penaltyOpt.get();
-        //                     if (!realizePenalty.isEmpty()) {
-        //                         realizePenalty += ", ";
-        //                     }
-        //                     realizePenalty += penalty.getName();
-        //                 }
-        //             }
-        //         }
-        //     }
-        // }
-        ByteArrayInputStream data = ExcelUtil.dataToExcel(response, realizePenalty);
+        // Menghitung realisasi penalti untuk setiap klarifikasi
+        Map<Long, String> clarificationPenaltyMap = new HashMap<>();
+        for (Clarification clarification : response) {
+            Optional<FollowUp> getFU = fUpRepository.findByClId(clarification.getId());
+            String realizePenalty = "";
+            if (!getFU.isPresent()) {
+                FollowUp followUp = getFU.get();
+                if (followUp.getPenaltyRealization() != null) {
+                    for (Long penaltyId : followUp.getPenaltyRealization()) {
+                        Optional<Penalty> penaltyOpt = penaltyRepository.findById(penaltyId);
+                        if (penaltyOpt.isPresent()) {
+                            Penalty penalty = penaltyOpt.get();
+                            if (!realizePenalty.isEmpty()) {
+                                realizePenalty += ", ";
+                            }
+                            realizePenalty += penalty.getName();
+                        }
+                    }
+                }
+            }
+            clarificationPenaltyMap.put(clarification.getId(), realizePenalty);
+        }
+
+        ByteArrayInputStream data = ExcelUtil.dataToExcel(response, clarificationPenaltyMap);
         return data;
     }
 

@@ -1,32 +1,24 @@
 package com.cms.audit.api.Common.util;
 
 import java.util.*;
-
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-
 import com.cms.audit.api.Clarifications.models.Clarification;
 import com.cms.audit.api.Common.constant.convertDateToRoman;
 import com.cms.audit.api.Common.dto.GapDTO;
 import com.itextpdf.io.source.ByteArrayOutputStream;
-
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
 public class ExcelUtil {
     public static String HEADER[] = { "nomor_klarifikasi", "auditor", "kasus", "kategori", "kerugian",
             "batas_evaluasi", "tanggal_mulai_realisasi", "tanggal_selesai_realisasi", "waktu_penyelesaian",
-            "tanggal_estimasi", "realisasi_penalty", "lokasi", "auditee", "atasan_auditee", "file", "deskripsi", "prioritas", "tanggal_terbuat","status" };
+            "tanggal_estimasi", "realisasi_penalty", "lokasi", "auditee", "atasan_auditee", "file", "deskripsi", "prioritas", "tanggal_terbuat", "status" };
 
     public static String SHEET_NAME = "Laporan Klarifikasi";
 
-    public static ByteArrayInputStream dataToExcel(List<Clarification> clarificationsList, String realizePenalty) throws IOException {
-
+    public static ByteArrayInputStream dataToExcel(List<Clarification> clarificationsList, Map<Long, String> clarificationPenaltyMap) throws IOException {
         Workbook workbook = new XSSFWorkbook();
-
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         try {
             Sheet sheet = workbook.createSheet(SHEET_NAME);
@@ -107,7 +99,8 @@ public class ExcelUtil {
                 } else {
                     row1.createCell(9).setCellValue("-");
                 }
-//row1.createCell(10).setCellValue(realizePenalty);
+                // Menggunakan Map untuk mendapatkan realisasi penalti
+                String realizePenalty = clarificationPenaltyMap.getOrDefault(c.getId(), "");
                 row1.createCell(10).setCellValue(realizePenalty);
                 row1.createCell(11).setCellValue(c.getLocation());
                 row1.createCell(12).setCellValue(c.getAuditee());
@@ -132,5 +125,5 @@ public class ExcelUtil {
             byteArrayOutputStream.close();
         }
         return null;
-    };
+    }
 }
