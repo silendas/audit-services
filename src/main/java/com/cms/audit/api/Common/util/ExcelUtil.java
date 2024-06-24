@@ -13,11 +13,13 @@ import java.io.IOException;
 public class ExcelUtil {
     public static String HEADER[] = { "nomor_klarifikasi", "auditor", "kasus", "kategori", "kerugian",
             "batas_evaluasi", "tanggal_mulai_realisasi", "tanggal_selesai_realisasi", "waktu_penyelesaian",
-            "tanggal_estimasi", "realisasi_penalty", "lokasi", "auditee", "atasan_auditee", "file", "deskripsi", "prioritas", "tanggal_terbuat", "status" };
+            "tanggal_estimasi", "realisasi_sanksi", "lokasi", "auditee", "atasan_auditee", "file", "deskripsi",
+            "prioritas", "tanggal_terbuat", "status" };
 
     public static String SHEET_NAME = "Laporan Klarifikasi";
 
-    public static ByteArrayInputStream dataToExcel(List<Clarification> clarificationsList, Map<Long, String> clarificationPenaltyMap) throws IOException {
+    public static ByteArrayInputStream dataToExcel(List<Clarification> clarificationsList,
+            Map<Long, String> clarificationPenaltyMap) throws IOException {
         Workbook workbook = new XSSFWorkbook();
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         try {
@@ -100,8 +102,12 @@ public class ExcelUtil {
                     row1.createCell(9).setCellValue("-");
                 }
                 // Menggunakan Map untuk mendapatkan realisasi penalti
-                String realizePenalty = clarificationPenaltyMap.getOrDefault(c.getId(), "-");
-                row1.createCell(10).setCellValue(realizePenalty);
+                String realizePenalty = clarificationPenaltyMap.getOrDefault(c.getId(), "");
+                if (realizePenalty.equals("")) {
+                    row1.createCell(10).setCellValue("-");
+                } else {
+                    row1.createCell(10).setCellValue(realizePenalty);
+                }
                 row1.createCell(11).setCellValue(c.getLocation());
                 row1.createCell(12).setCellValue(c.getAuditee());
                 row1.createCell(13).setCellValue(c.getAuditee_leader());
