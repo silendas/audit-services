@@ -103,7 +103,7 @@ public class ReportService {
         for (Clarification clarification : response) {
             Optional<FollowUp> getFU = fUpRepository.findByClId(clarification.getId());
             String realizePenalty = "";
-            if (!getFU.isPresent()) {
+            if (getFU.isPresent()) {
                 FollowUp followUp = getFU.get();
                 if (followUp.getPenaltyRealization() != null) {
                     for (Long penaltyId : followUp.getPenaltyRealization()) {
