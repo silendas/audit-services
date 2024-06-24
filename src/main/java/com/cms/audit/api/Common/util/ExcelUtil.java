@@ -100,7 +100,7 @@ public class ExcelUtil {
                     row1.createCell(9).setCellValue("-");
                 }
                 // Menggunakan Map untuk mendapatkan realisasi penalti
-                String realizePenalty = clarificationPenaltyMap.getOrDefault(c.getId(), "");
+                String realizePenalty = clarificationPenaltyMap.getOrDefault(c.getId(), "-");
                 row1.createCell(10).setCellValue(realizePenalty);
                 row1.createCell(11).setCellValue(c.getLocation());
                 row1.createCell(12).setCellValue(c.getAuditee());
