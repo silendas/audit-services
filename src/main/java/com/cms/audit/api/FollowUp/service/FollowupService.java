@@ -239,6 +239,7 @@ public class FollowupService {
             fuMap.put("clarification", clarification);
 
             fuMap.put("code", fu.getCode());
+            fuMap.put("auditee_leader", fu.getAuditeeLeader());
             fuMap.put("charging_costs", fu.getCharging_costs());
             fuMap.put("description", fu.getDescription());
             fuMap.put("note", fu.getNote());
@@ -339,12 +340,13 @@ public class FollowupService {
             } else {
                 followUp.setIsPenalty(0L);
             }
+            followUp.setAuditeeLeader(dto.getAuditee_leader());
             followUp.setUpdated_by(getUser.getId());
             followUp.setStatus(EStatusFollowup.PROGRESS);
             FollowUp response1 = repository.save(followUp);
 
             List<Penalty> penalties = penaltyRepository.findAllPenalty();
-            PDFResponse generate = GeneratePdf.generateFollowUpPDF(response1, penalties);
+            PDFResponse generate = GeneratePdf.generateFollowUpPDF(response1, penalties, null);
 
             FollowUp edit = response1;
             edit.setFilename(generate.getFileName());
@@ -525,6 +527,18 @@ public class FollowupService {
         if (!response.getStatus().equals(EStatusFollowup.CLOSE)
                 && !response.getStatus().equals(EStatusFollowup.REALIZE)) {
             FollowUp followUp = response;
+            List<Penalty> penalties = penaltyRepository.findAllPenalty();
+            if (response.getFilePath() != null) {
+                File oldFile = new File(response.getFilePath());
+                if (oldFile.exists()) {
+                    oldFile.delete();
+                }
+            }
+            if (response.getFilename() != null) {
+                PDFResponse generate = GeneratePdf.generateFollowUpPDF(response, penalties, response.getFilename());
+                followUp.setFilePath(generate.getFilePath());
+                followUp.setFilename(generate.getFileName());
+            }
             followUp.setStatus(EStatusFollowup.PROGRESS);
             repository.save(followUp);
         }
@@ -541,10 +555,10 @@ public class FollowupService {
         }
         FollowUp followUp = getFollowUp.get();
         // if (followUp.getFilePath() != null) {
-        //     File oldFile = new File(followUp.getFilePath());
-        //     if (oldFile.exists()) {
-        //         oldFile.delete();
-        //     }
+        // File oldFile = new File(followUp.getFilePath());
+        // if (oldFile.exists()) {
+        // oldFile.delete();
+        // }
         // }
         followUp.setIs_delete(1);
         repository.save(followUp);

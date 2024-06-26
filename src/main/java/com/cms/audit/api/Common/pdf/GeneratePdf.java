@@ -35,13 +35,15 @@ import com.itextpdf.layout.property.VerticalAlignment;
 public class GeneratePdf {
 
         @SuppressWarnings("resource")
-        public static PDFResponse generateClarificationPDF(Clarification response, String formulir, String tanggal, String nameFile)
+        public static PDFResponse generateClarificationPDF(Clarification response, String formulir, String tanggal,
+                        String nameFile)
                         throws FileNotFoundException, MalformedURLException {
                 String fileName;
-                if(nameFile == null) {
-                        fileName = randomValueNumber.randomNumberGenerator() + "-" + response.getUser().getInitial_name()
-                                + "-"
-                                + response.getReport_number() + "-clarification.pdf";
+                if (nameFile == null) {
+                        fileName = randomValueNumber.randomNumberGenerator() + "-"
+                                        + response.getUser().getInitial_name()
+                                        + "-"
+                                        + response.getReport_number() + "-clarification.pdf";
                 } else {
                         fileName = nameFile;
                 }
@@ -381,11 +383,16 @@ public class GeneratePdf {
                                 .build();
         }
 
-        public static PDFResponse generateFollowUpPDF(FollowUp response, List<Penalty> penalty)
+        public static PDFResponse generateFollowUpPDF(FollowUp response, List<Penalty> penalty, String nameFile)
                         throws FileNotFoundException, MalformedURLException {
-                String fileName = randomValueNumber.randomNumberGenerator() + "-"
-                                + response.getClarification().getUser().getInitial_name()
-                                + "-followup.pdf";
+                String fileName;
+                if (nameFile == null) {
+                        fileName = randomValueNumber.randomNumberGenerator() + "-"
+                                        + response.getClarification().getUser().getInitial_name()
+                                        + "-followup.pdf";
+                } else {
+                        fileName = nameFile;
+                }
                 String path = FolderPath.FOLDER_PATH_UPLOAD_FOLLOW_UP + fileName;
                 PdfWriter pdfWriter = new PdfWriter(path);
                 PdfDocument pdfDocument = new PdfDocument(pdfWriter);
@@ -416,7 +423,7 @@ public class GeneratePdf {
                 float blank1lenght[] = { 540f };
                 Table blank1 = new Table(blank1lenght).setHorizontalAlignment(HorizontalAlignment.CENTER)
                                 .setBorder(Border.NO_BORDER);
-                blank1.addCell(new Cell().add("").setPadding(5).setBorder(Border.NO_BORDER));
+                blank1.addCell(new Cell().add("Nomor Tindak Lanjut : " + response.getCode()).setPadding(8).setBorder(Border.NO_BORDER));
                 body.addCell(new Cell().add(blank1).setBorder(Border.NO_BORDER));
                 // section 2
 
@@ -495,11 +502,21 @@ public class GeneratePdf {
                 float body5NestedLength[] = { 80f };
                 Table body5Nested = new Table(body5NestedLength).setHorizontalAlignment(HorizontalAlignment.LEFT)
                                 .setBorder(Border.NO_BORDER);
-                body5Nested.addCell(new Cell().add("( " + response.getClarification().getAuditee_leader() + " )")
-                                .setBorderLeft(Border.NO_BORDER).setBorderRight(Border.NO_BORDER)
-                                .setBorderTop(Border.NO_BORDER).setBorderBottom(Border.NO_BORDER).setFontSize(7)
-                                .setTextAlignment(TextAlignment.CENTER)
-                                .setHorizontalAlignment(HorizontalAlignment.CENTER));
+                if (response.getAuditeeLeader() != null) {
+                        body5Nested.addCell(new Cell()
+                                        .add("( " + response.getAuditeeLeader() + " )")
+                                        .setBorderLeft(Border.NO_BORDER).setBorderRight(Border.NO_BORDER)
+                                        .setBorderTop(Border.NO_BORDER).setBorderBottom(Border.NO_BORDER).setFontSize(7)
+                                        .setTextAlignment(TextAlignment.CENTER)
+                                        .setHorizontalAlignment(HorizontalAlignment.CENTER));
+                } else {
+                        body5Nested.addCell(new Cell()
+                                        .add("( " + response.getClarification().getAuditee_leader() + " )")
+                                        .setBorderLeft(Border.NO_BORDER).setBorderRight(Border.NO_BORDER)
+                                        .setBorderTop(Border.NO_BORDER).setBorderBottom(Border.NO_BORDER).setFontSize(7)
+                                        .setTextAlignment(TextAlignment.CENTER)
+                                        .setHorizontalAlignment(HorizontalAlignment.CENTER));
+                }
                 body5.addCell(new Cell().add(body5Nested).setBorder(Border.NO_BORDER));
                 body5.addCell(new Cell().add("").setBorderLeft(Border.NO_BORDER).setBorderRight(Border.NO_BORDER)
                                 .setBorderTop(Border.NO_BORDER));

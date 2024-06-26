@@ -1,5 +1,6 @@
 package com.cms.audit.api.InspectionSchedule.controller;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Optional;
 
@@ -55,6 +56,17 @@ public class MainScheduleConroller {
         String fullname = name.orElse(null);
         Date startDate = start_date.orElse(null);
         Date endDate = end_date.orElse(null);
+        if (startDate == null) {
+            Calendar cal = Calendar.getInstance();
+            cal.set(Calendar.DAY_OF_MONTH, 1);
+            startDate = cal.getTime();
+        }
+        if (endDate == null) {
+            Calendar cal = Calendar.getInstance();
+            cal.add(Calendar.MONTH, 3);
+            cal.set(Calendar.DAY_OF_MONTH, cal.getActualMaximum(Calendar.DAY_OF_MONTH));
+            endDate = cal.getTime();
+        }
         if (startDate != null) {
             startDate = convertDateToRoman.setTimeToZero(startDate);
         }
