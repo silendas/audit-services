@@ -446,7 +446,7 @@ public class GeneratePdf {
                 Table body2 = new Table(body2Lenght).setHorizontalAlignment(HorizontalAlignment.LEFT);
                 body2.addCell(new Cell().add(
                                 response.getDescription())
-                                .setFontSize(8).setBorder(Border.NO_BORDER).setPaddingLeft(10).setHeight(160));
+                                .setFontSize(8).setBorder(Border.NO_BORDER).setPaddingLeft(10).setMinHeight(160));
                 body.addCell(new Cell().add(body2).setBorder(Border.NO_BORDER));
                 // section 4
 
