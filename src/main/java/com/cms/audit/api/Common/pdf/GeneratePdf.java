@@ -423,13 +423,14 @@ public class GeneratePdf {
                 float blank1lenght[] = { 540f };
                 Table blank1 = new Table(blank1lenght).setHorizontalAlignment(HorizontalAlignment.CENTER)
                                 .setBorder(Border.NO_BORDER);
-                blank1.addCell(new Cell().add("Nomor Tindak Lanjut : " + response.getCode()).setPadding(8).setBorder(Border.NO_BORDER));
+                blank1.addCell(new Cell().add("").setPadding(5).setBorder(Border.NO_BORDER));
                 body.addCell(new Cell().add(blank1).setBorder(Border.NO_BORDER));
                 // section 2
 
                 // section 3
                 float body1Lenght[] = { 540f };
                 Table body1 = new Table(body1Lenght).setHorizontalAlignment(HorizontalAlignment.LEFT);
+                body1.addCell(new Cell().add("Nomor Tindak Lanjut : " + response.getCode()).setFontSize(8));
                 body1.addCell(new Cell().add(
                                 "Menindaklanjuti dari hasil Hasil temuan Auditor Internal, sesuai dengan klarifikasi Nomor : "
                                                 + response.getClarification().getCode() + " tanggal "
