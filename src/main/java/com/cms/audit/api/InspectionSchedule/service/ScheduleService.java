@@ -108,7 +108,7 @@ public class ScheduleService {
                         spec = spec.and(new SpecificationFIlter<Schedule>()
                                         .getByRegionIds(getUser.getRegionId()));
                 } else if (getUser.getLevel().getCode().equals("A")) {
-                        List<EStatus> statuses = Arrays.asList(EStatus.APPROVE, EStatus.REQUEST, EStatus.REJECTED,
+                        List<EStatus> statuses = Arrays.asList(EStatus.PENDING,EStatus.APPROVE, EStatus.REQUEST, EStatus.REJECTED,
                                         EStatus.REVISION);
                         spec = spec.and(new SpecificationFIlter<Schedule>().getByStatus(statuses));
                 }
