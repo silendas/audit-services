@@ -140,7 +140,7 @@ public class DashboardTotalService {
         if (month != null && month != 0) {
             DateCompareDTO monthSeparate = convertDateToRoman.getDateRange(month);
             scheduleSpec = scheduleSpec.and(
-                    new SpecificationFIlter<Schedule>().dateRange(monthSeparate.getDate1(), monthSeparate.getDate2()));
+                    new SpecificationFIlter<Schedule>().dateBetween(monthSeparate.getDate1(), monthSeparate.getDate2()));
         }
 
         if (!isAll) {
