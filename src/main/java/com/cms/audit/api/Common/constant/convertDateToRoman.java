@@ -172,7 +172,7 @@ public class convertDateToRoman {
         Date endDate = calendar.getTime();
 
         // Kembalikan DateRangeDTO dengan startDate dan endDate
-        return new DateCompareDTO(startDate, endDate);
+        return new DateCompareDTO(setTimeToZero(startDate), setTimeToLastSecond(endDate));
     }
 
     public static Long getLongMonthNumber(Date date) {
