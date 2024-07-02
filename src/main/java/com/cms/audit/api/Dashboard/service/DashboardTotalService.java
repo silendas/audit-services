@@ -210,11 +210,17 @@ public class DashboardTotalService {
     }
 
     private List<Map<String, Object>> prepareTopData(List<Clarification> clarifications) {
+        List<User> users = userRepo.findAll()
+                .stream()
+                .filter(user -> user.getId() != 1L && user.getId() != 2L)
+                .collect(Collectors.toList());
+
         Map<User, Long> userClarificationCount = new HashMap<>();
         Map<User, Long> userDoneClarificationCount = new HashMap<>();
+        
         for (Clarification clarification : clarifications) {
             User user = clarification.getUser();
-            if (user != null) {
+            if (user != null && user.getId() != 1L && user.getId() != 2L) {
                 userClarificationCount.put(user, userClarificationCount.getOrDefault(user, 0L) + 1);
                 if (EStatusClarification.DONE.equals(clarification.getStatus())) {
                     userDoneClarificationCount.put(user, userDoneClarificationCount.getOrDefault(user, 0L) + 1);
@@ -222,7 +228,8 @@ public class DashboardTotalService {
             }
         }
 
-        List<Map.Entry<User, Long>> sortedEntries = userClarificationCount.entrySet().stream()
+        List<Map.Entry<User, Long>> sortedEntries = users.stream()
+                .map(user -> new AbstractMap.SimpleEntry<>(user, userClarificationCount.getOrDefault(user, 0L)))
                 .sorted((e1, e2) -> {
                     int comparison = Long.compare(e2.getValue(), e1.getValue()); // Descending by total
                     if (comparison == 0) {
@@ -257,11 +264,17 @@ public class DashboardTotalService {
     }
 
     private List<Map<String, Object>> prepareBottomData(List<Clarification> clarifications) {
+        List<User> users = userRepo.findAll()
+                .stream()
+                .filter(user -> user.getId() != 1L && user.getId() != 2L)
+                .collect(Collectors.toList());
+
         Map<User, Long> userClarificationCount = new HashMap<>();
         Map<User, Long> userDoneClarificationCount = new HashMap<>();
+
         for (Clarification clarification : clarifications) {
             User user = clarification.getUser();
-            if (user != null) {
+            if (user != null && user.getId() != 1L && user.getId() != 2L) {
                 userClarificationCount.put(user, userClarificationCount.getOrDefault(user, 0L) + 1);
                 if (EStatusClarification.DONE.equals(clarification.getStatus())) {
                     userDoneClarificationCount.put(user, userDoneClarificationCount.getOrDefault(user, 0L) + 1);
@@ -269,7 +282,8 @@ public class DashboardTotalService {
             }
         }
 
-        List<Map.Entry<User, Long>> sortedEntries = userClarificationCount.entrySet().stream()
+        List<Map.Entry<User, Long>> sortedEntries = users.stream()
+                .map(user -> new AbstractMap.SimpleEntry<>(user, userClarificationCount.getOrDefault(user, 0L)))
                 .sorted((e1, e2) -> {
                     int comparison = Long.compare(e1.getValue(), e2.getValue()); // Ascending by total
                     if (comparison == 0) {
