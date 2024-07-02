@@ -212,7 +212,7 @@ public class DashboardTotalService {
     private List<Map<String, Object>> prepareTopData(List<Clarification> clarifications) {
         List<User> users = userRepo.findAll()
                 .stream()
-                .filter(user -> user.getId() != 1L && user.getId() != 2L)
+                .filter(user -> user.getId() != 1L && user.getId() != 2L && user.getId() != 3L)
                 .collect(Collectors.toList());
 
         Map<User, Long> userClarificationCount = new HashMap<>();
@@ -220,7 +220,7 @@ public class DashboardTotalService {
         
         for (Clarification clarification : clarifications) {
             User user = clarification.getUser();
-            if (user != null && user.getId() != 1L && user.getId() != 2L) {
+            if (user != null && user.getId() != 1L && user.getId() != 2L && user.getId() != 3L) {
                 userClarificationCount.put(user, userClarificationCount.getOrDefault(user, 0L) + 1);
                 if (EStatusClarification.DONE.equals(clarification.getStatus())) {
                     userDoneClarificationCount.put(user, userDoneClarificationCount.getOrDefault(user, 0L) + 1);
@@ -266,7 +266,7 @@ public class DashboardTotalService {
     private List<Map<String, Object>> prepareBottomData(List<Clarification> clarifications) {
         List<User> users = userRepo.findAll()
                 .stream()
-                .filter(user -> user.getId() != 1L && user.getId() != 2L)
+                .filter(user -> user.getId() != 1L && user.getId() != 2L && user.getId() != 3L)
                 .collect(Collectors.toList());
 
         Map<User, Long> userClarificationCount = new HashMap<>();
@@ -274,7 +274,7 @@ public class DashboardTotalService {
 
         for (Clarification clarification : clarifications) {
             User user = clarification.getUser();
-            if (user != null && user.getId() != 1L && user.getId() != 2L) {
+            if (user != null && user.getId() != 1L && user.getId() != 2L && user.getId() != 3L) {
                 userClarificationCount.put(user, userClarificationCount.getOrDefault(user, 0L) + 1);
                 if (EStatusClarification.DONE.equals(clarification.getStatus())) {
                     userDoneClarificationCount.put(user, userDoneClarificationCount.getOrDefault(user, 0L) + 1);
