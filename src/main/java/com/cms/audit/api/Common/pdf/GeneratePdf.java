@@ -503,14 +503,14 @@ public class GeneratePdf {
                         body5Nested.addCell(new Cell()
                                         .add("" + response.getAuditeeLeader() + "")
                                         .setBorderLeft(Border.NO_BORDER).setBorderRight(Border.NO_BORDER)
-                                        .setBorderTop(Border.NO_BORDER).setFontSize(7)
+                                        .setBorderTop(Border.NO_BORDER).setFontSize(8)
                                         .setTextAlignment(TextAlignment.CENTER)
                                         .setHorizontalAlignment(HorizontalAlignment.LEFT));
                 } else {
                         body5Nested.addCell(new Cell()
-                                        .add("( " + response.getClarification().getAuditee_leader() + " )")
+                                        .add("" + response.getClarification().getAuditee_leader() + "")
                                         .setBorderLeft(Border.NO_BORDER).setBorderRight(Border.NO_BORDER)
-                                        .setBorderTop(Border.NO_BORDER).setFontSize(7)
+                                        .setBorderTop(Border.NO_BORDER).setFontSize(8)
                                         .setTextAlignment(TextAlignment.CENTER)
                                         .setHorizontalAlignment(HorizontalAlignment.LEFT));
                 }
@@ -518,7 +518,7 @@ public class GeneratePdf {
                         new Cell().add("................................").setFontSize(8).setBorder(Border.NO_BORDER)
                                         .setTextAlignment(TextAlignment.LEFT).setMinHeight(3).setMarginLeft(20));
                 body5Nested.addCell(
-                        new Cell().add("Ka. Div ............").setFontSize(8).setBorder(Border.NO_BORDER)
+                        new Cell().add("Ka. Div ...............").setFontSize(8).setBorder(Border.NO_BORDER)
                                         .setTextAlignment(TextAlignment.LEFT).setMinHeight(3));
                 body5Nested.addCell(
                                 new Cell().add("Ka. Dept").setFontSize(8).setBorder(Border.NO_BORDER).setMarginLeft(20)
