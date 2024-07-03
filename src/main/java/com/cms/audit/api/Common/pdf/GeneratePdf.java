@@ -523,7 +523,7 @@ public class GeneratePdf {
                                                 .setPaddingLeft(20));
                 body5Nested.addCell(
                                 new Cell().add("Ka. Div ...............").setFontSize(8).setBorder(Border.NO_BORDER)
-                                                .setTextAlignment(TextAlignment.CENTER).setMinHeight(3));
+                                                .setTextAlignment(TextAlignment.LEFT).setMinHeight(3));
                 body5Nested.addCell(
                                 new Cell().add("            Ka. Dept").setFontSize(8).setBorder(Border.NO_BORDER)
                                                 .setPaddingLeft(20).setMarginLeft(20)
