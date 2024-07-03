@@ -501,27 +501,27 @@ public class GeneratePdf {
                                 .setBorder(Border.NO_BORDER);
                 if (response.getAuditeeLeader() != null) {
                         body5Nested.addCell(new Cell()
-                                        .add("" + response.getAuditeeLeader() + "")
+                                        .add("(" + response.getAuditeeLeader() + ")")
                                         .setBorderLeft(Border.NO_BORDER).setBorderRight(Border.NO_BORDER)
-                                        .setBorderTop(Border.NO_BORDER).setFontSize(8)
+                                        .setBorderTop(Border.NO_BORDER).setBorderBottom(Border.NO_BORDER).setFontSize(8)
                                         .setTextAlignment(TextAlignment.CENTER)
                                         .setHorizontalAlignment(HorizontalAlignment.LEFT));
                 } else {
                         body5Nested.addCell(new Cell()
-                                        .add("" + response.getClarification().getAuditee_leader() + "")
+                                        .add("(" + response.getClarification().getAuditee_leader() + ")")
                                         .setBorderLeft(Border.NO_BORDER).setBorderRight(Border.NO_BORDER)
-                                        .setBorderTop(Border.NO_BORDER).setFontSize(8)
+                                        .setBorderTop(Border.NO_BORDER).setBorderBottom(Border.NO_BORDER).setFontSize(8)
                                         .setTextAlignment(TextAlignment.CENTER)
                                         .setHorizontalAlignment(HorizontalAlignment.LEFT));
                 }
                 body5Nested.addCell(
-                        new Cell().add("................................").setFontSize(8).setBorder(Border.NO_BORDER)
-                                        .setTextAlignment(TextAlignment.LEFT).setMinHeight(3).setMarginLeft(20));
+                        new Cell().add("(................................)").setFontSize(8).setBorder(Border.NO_BORDER)
+                                        .setTextAlignment(TextAlignment.LEFT).setMinHeight(3).setMarginLeft(20).setPaddingLeft(20));
                 body5Nested.addCell(
                         new Cell().add("Ka. Div ...............").setFontSize(8).setBorder(Border.NO_BORDER)
                                         .setTextAlignment(TextAlignment.LEFT).setMinHeight(3));
                 body5Nested.addCell(
-                                new Cell().add("Ka. Dept").setFontSize(8).setBorder(Border.NO_BORDER).setMarginLeft(20)
+                                new Cell().add("Ka. Dept").setFontSize(8).setBorder(Border.NO_BORDER).setPaddingLeft(20).setMarginLeft(20)
                                                 .setTextAlignment(TextAlignment.LEFT).setMinHeight(3));
                 body5.addCell(new Cell().add(body5Nested).setBorder(Border.NO_BORDER));
                 body5.addCell(new Cell().add("").setBorderLeft(Border.NO_BORDER).setBorderRight(Border.NO_BORDER)
