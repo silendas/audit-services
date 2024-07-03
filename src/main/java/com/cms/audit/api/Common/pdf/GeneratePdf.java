@@ -457,9 +457,6 @@ public class GeneratePdf {
                 // section 4
                 body.addCell(new Cell().add("Maka kami menerangkan bahwa :").setBold().setFontSize(8)
                         .setBorder(Border.NO_BORDER));
-                body.addCell(new Cell().add(
-                                response.getDescription())
-                                .setFontSize(8).setBorder(Border.NO_BORDER).setPaddingLeft(10));
                 // section 4
                 // section 4.1 - details table
                 float detailTableLength[] = { 100f, 400f };
@@ -475,6 +472,9 @@ public class GeneratePdf {
                 detailTable.addCell(new Cell().add("Realisasi Sanksi").setFontSize(8));
                 detailTable.addCell(new Cell().add("").setFontSize(8));
                 body.addCell(new Cell().add(detailTable).setBorder(Border.NO_BORDER));
+                body.addCell(new Cell().add(
+                        response.getDescription())
+                        .setFontSize(8).setBorder(Border.NO_BORDER).setPaddingLeft(10));
                 // section 4.1 - details table
 
                 // blank line
@@ -496,7 +496,7 @@ public class GeneratePdf {
                                 .setBorder(Border.NO_BORDER)
                                 .setFontSize(7));
                 body5.addCell(new Cell().add("").setBorder(Border.NO_BORDER).setHeight(40));
-                float signatureTableLength[] = { 270f, 270f };
+                float signatureTableLength[] = { 80f, 270f };
                 Table body5Nested = new Table(signatureTableLength).setTextAlignment(TextAlignment.LEFT).setHorizontalAlignment(HorizontalAlignment.LEFT)
                                 .setBorder(Border.NO_BORDER);
                 if (response.getAuditeeLeader() != null) {
