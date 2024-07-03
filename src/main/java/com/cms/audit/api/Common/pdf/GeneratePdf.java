@@ -457,15 +457,17 @@ public class GeneratePdf {
                 // section 4
                 float body2Lenght[] = { 540f };
                 Table body2 = new Table(body2Lenght).setHorizontalAlignment(HorizontalAlignment.LEFT);
+                body2.addCell(new Cell().add("Maka kami menerangkan bahwa :").setBold().setFontSize(8)
+                        .setBorder(Border.NO_BORDER));
+                body.addCell(new Cell().add(body2).setBorder(Border.NO_BORDER));
                 body2.addCell(new Cell().add(
                                 response.getDescription())
-                                .setFontSize(8).setBorder(Border.NO_BORDER).setPaddingLeft(10).setMinHeight(160));
+                                .setFontSize(8).setBorder(Border.NO_BORDER).setPaddingLeft(10));
                 body.addCell(new Cell().add(body2).setBorder(Border.NO_BORDER));
                 // section 4
-
-                // section 3 - details table
+                // section 4.1 - details table
                 float detailTableLength[] = { 100f, 400f };
-                Table detailTable = new Table(detailTableLength).setHorizontalAlignment(HorizontalAlignment.LEFT);
+                Table detailTable = new Table(detailTableLength).setHorizontalAlignment(HorizontalAlignment.LEFT).setBorder(Border.NO_BORDER).setPadding(0);
                 detailTable.addCell(new Cell().add("Nama").setFontSize(8));
                 detailTable.addCell(new Cell().add("").setFontSize(8));
                 detailTable.addCell(new Cell().add("NIP").setFontSize(8));
@@ -477,7 +479,7 @@ public class GeneratePdf {
                 detailTable.addCell(new Cell().add("Realisasi Sanksi").setFontSize(8));
                 detailTable.addCell(new Cell().add("").setFontSize(8));
                 body.addCell(new Cell().add(detailTable));
-                // section 3 - details table
+                // section 4.1 - details table
 
                 // blank line
                 document.add(blank1);
