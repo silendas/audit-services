@@ -455,15 +455,11 @@ public class GeneratePdf {
                 // section 3
 
                 // section 4
-                float body2Lenght[] = { 540f };
-                Table body2 = new Table(body2Lenght).setHorizontalAlignment(HorizontalAlignment.LEFT);
-                body2.addCell(new Cell().add("Maka kami menerangkan bahwa :").setBold().setFontSize(8)
+                body.addCell(new Cell().add("Maka kami menerangkan bahwa :").setBold().setFontSize(8)
                         .setBorder(Border.NO_BORDER));
-                body.addCell(new Cell().add(body2).setBorder(Border.NO_BORDER));
-                body2.addCell(new Cell().add(
+                body.addCell(new Cell().add(
                                 response.getDescription())
                                 .setFontSize(8).setBorder(Border.NO_BORDER).setPaddingLeft(10));
-                body.addCell(new Cell().add(body2).setBorder(Border.NO_BORDER));
                 // section 4
                 // section 4.1 - details table
                 float detailTableLength[] = { 100f, 400f };
@@ -478,7 +474,7 @@ public class GeneratePdf {
                 detailTable.addCell(new Cell().add(sanksiList).setFontSize(8));
                 detailTable.addCell(new Cell().add("Realisasi Sanksi").setFontSize(8));
                 detailTable.addCell(new Cell().add("").setFontSize(8));
-                body.addCell(new Cell().add(detailTable));
+                body.addCell(new Cell().add(detailTable).setBorder(Border.NO_BORDER));
                 // section 4.1 - details table
 
                 // blank line
@@ -501,7 +497,7 @@ public class GeneratePdf {
                                 .setFontSize(7));
                 body5.addCell(new Cell().add("").setBorder(Border.NO_BORDER).setHeight(40));
                 float signatureTableLength[] = { 270f, 270f };
-                Table body5Nested = new Table(signatureTableLength).setHorizontalAlignment(HorizontalAlignment.LEFT)
+                Table body5Nested = new Table(signatureTableLength).setTextAlignment(TextAlignment.LEFT).setHorizontalAlignment(HorizontalAlignment.LEFT)
                                 .setBorder(Border.NO_BORDER);
                 if (response.getAuditeeLeader() != null) {
                         body5Nested.addCell(new Cell()
@@ -520,11 +516,10 @@ public class GeneratePdf {
                 }
                 body5Nested.addCell(
                                 new Cell().add("Ka. Dept ................").setFontSize(8).setBorder(Border.NO_BORDER)
-                                                .setTextAlignment(TextAlignment.LEFT).setMinHeight(50));
+                                                .setTextAlignment(TextAlignment.LEFT).setMinHeight(3));
                 body5.addCell(new Cell().add(body5Nested).setBorder(Border.NO_BORDER));
                 body5.addCell(new Cell().add("").setBorderLeft(Border.NO_BORDER).setBorderRight(Border.NO_BORDER)
                                 .setBorderTop(Border.NO_BORDER));
-                body5.addCell(new Cell().add("" + "").setBorder(Border.NO_BORDER).setFontSize(7).setHeight(40));
                 body.addCell(new Cell().add(body5).setBorder(Border.NO_BORDER));
                 // section 7
 
