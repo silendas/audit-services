@@ -515,7 +515,13 @@ public class GeneratePdf {
                                         .setHorizontalAlignment(HorizontalAlignment.LEFT));
                 }
                 body5Nested.addCell(
-                                new Cell().add("Ka. Dept ................").setFontSize(8).setBorder(Border.NO_BORDER)
+                        new Cell().add(".............................").setFontSize(8).setBorder(Border.NO_BORDER)
+                                        .setTextAlignment(TextAlignment.LEFT).setMinHeight(3));
+                body5Nested.addCell(
+                        new Cell().add("Ka. Div ............").setFontSize(8).setBorder(Border.NO_BORDER)
+                                        .setTextAlignment(TextAlignment.LEFT).setMinHeight(3));
+                body5Nested.addCell(
+                                new Cell().add("Ka. Dept").setFontSize(8).setBorder(Border.NO_BORDER)
                                                 .setTextAlignment(TextAlignment.LEFT).setMinHeight(3));
                 body5.addCell(new Cell().add(body5Nested).setBorder(Border.NO_BORDER));
                 body5.addCell(new Cell().add("").setBorderLeft(Border.NO_BORDER).setBorderRight(Border.NO_BORDER)
