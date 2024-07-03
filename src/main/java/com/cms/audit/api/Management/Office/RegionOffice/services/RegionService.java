@@ -56,10 +56,10 @@ public class RegionService {
 
     public GlobalResponse findAll(String name, int page, int size, Long mainId, String mainName) {
         try {
-             Specification<Region> spec = Specification
-                    .where(new SpecificationFIlter<Region>().byNameLike(name))
+            Specification<Region> spec = Specification
+                    .where(Specification.where(new SpecificationFIlter<Region>().byNameLike(name))
+                            .or(new SpecificationFIlter<Region>().mainNameLike(mainName)))
                     .and(new SpecificationFIlter<Region>().areaIdEqual(mainId))
-                    .and(new SpecificationFIlter<Region>().mainNameLike(mainName))
                     .and(new SpecificationFIlter<Region>().isNotDeleted())
                     .and(new SpecificationFIlter<Region>().orderByIdAsc());
             Page<Region> response = pagRegion.findAll(spec, PageRequest.of(page, size));
@@ -231,11 +231,13 @@ public class RegionService {
     public GlobalResponse save(RegionDTO dto) {
         try {
 
-            if(dto.getMain_id() == null) {
-                return GlobalResponse.builder().message("main tidak boleh kosong").errorMessage("main tidak boleh kosong").status(HttpStatus.BAD_REQUEST).build();
+            if (dto.getMain_id() == null) {
+                return GlobalResponse.builder().message("main tidak boleh kosong")
+                        .errorMessage("main tidak boleh kosong").status(HttpStatus.BAD_REQUEST).build();
             }
-            if(dto.getName() == null || dto.getName() == "") {
-                return GlobalResponse.builder().message("name tidak boleh kosong").errorMessage("name tidak boleh kosong").status(HttpStatus.BAD_REQUEST).build();
+            if (dto.getName() == null || dto.getName() == "") {
+                return GlobalResponse.builder().message("name tidak boleh kosong")
+                        .errorMessage("name tidak boleh kosong").status(HttpStatus.BAD_REQUEST).build();
             }
 
             Optional<Main> mainId = mainRepository.findById(dto.getMain_id());

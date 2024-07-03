@@ -50,10 +50,10 @@ public class BranchService {
     public GlobalResponse findAll(String name, int page, int size, Long areaId, String areaName, String regionName) {
         try {
             Specification<Branch> spec = Specification
-                    .where(new SpecificationFIlter<Branch>().byNameLike(name))
+                    .where(Specification.where(new SpecificationFIlter<Branch>().byNameLike(name))
+                            .or(new SpecificationFIlter<Branch>().branchToRegionNameLike(regionName)
+                                    .or(new SpecificationFIlter<Branch>().areaNameLike(areaName))))
                     .and(new SpecificationFIlter<Branch>().areaIdEqual(areaId))
-                    .and(new SpecificationFIlter<Branch>().areaNameLike(areaName))
-                    .and(new SpecificationFIlter<Branch>().branchToRegionNameLike(regionName))
                     .and(new SpecificationFIlter<Branch>().isNotDeleted())
                     .and(new SpecificationFIlter<Branch>().orderByIdAsc());
 
@@ -94,21 +94,22 @@ public class BranchService {
 
             List<BranchInterface> response = new ArrayList<>();
             // if (getUser.getLevel().getCode().equals("B")) {
-            //     for (int i = 0; i < getUser.getRegionId().size(); i++) {
-            //         List<BranchInterface> getBranch = branchRepository
-            //                 .findSpecificBranchByRegionId(getUser.getRegionId().get(i));
-            //         for (int u = 0; u < getBranch.size(); u++) {
-            //             response.add(getBranch.get(u));
-            //         }
-            //     }
+            // for (int i = 0; i < getUser.getRegionId().size(); i++) {
+            // List<BranchInterface> getBranch = branchRepository
+            // .findSpecificBranchByRegionId(getUser.getRegionId().get(i));
+            // for (int u = 0; u < getBranch.size(); u++) {
+            // response.add(getBranch.get(u));
+            // }
+            // }
             // } else if (getUser.getLevel().getCode().equals("C")) {
-            //     for (int i = 0; i < getUser.getBranchId().size(); i++) {
-            //         Optional<BranchInterface> getBranch = branchRepository
-            //                 .findSpecificBranchById(getUser.getBranchId().get(i));
-            //         response.add(getBranch.get());
-            //     }
-            // } else if (getUser.getLevel().getCode().equals("A") || getUser.getLevel().getCode().equals("A")) {
-            //     response = branchRepository.findSpecificBranch();
+            // for (int i = 0; i < getUser.getBranchId().size(); i++) {
+            // Optional<BranchInterface> getBranch = branchRepository
+            // .findSpecificBranchById(getUser.getBranchId().get(i));
+            // response.add(getBranch.get());
+            // }
+            // } else if (getUser.getLevel().getCode().equals("A") ||
+            // getUser.getLevel().getCode().equals("A")) {
+            // response = branchRepository.findSpecificBranch();
             // }
             response = branchRepository.findSpecificBranch();
             if (response.isEmpty()) {

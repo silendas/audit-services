@@ -40,10 +40,10 @@ public class CaseCategoryService {
 
     public GlobalResponse findAll(Long caseId, String name, int page, int size, String code) {
         try {
-             Specification<CaseCategory> spec = Specification
-                    .where(new SpecificationFIlter<CaseCategory>().byNameLike(name))
+            Specification<CaseCategory> spec = Specification
+                    .where(Specification.where(new SpecificationFIlter<CaseCategory>().byNameLike(name))
+                            .or(new SpecificationFIlter<CaseCategory>().caseCodeLike(code)))
                     .and(new SpecificationFIlter<CaseCategory>().getByCasesId(caseId))
-                    .and(new SpecificationFIlter<CaseCategory>().caseCodeLike(code))
                     .and(new SpecificationFIlter<CaseCategory>().isNotDeleted())
                     .and(new SpecificationFIlter<CaseCategory>().orderByIdAsc());
             Page<CaseCategory> response = pagCaseCategory.findAll(spec, PageRequest.of(page, size));
@@ -111,7 +111,7 @@ public class CaseCategoryService {
     public GlobalResponse findOne(Long id) {
         try {
             Optional<CaseCategory> response = caseCategoryRepository.findOneCaseCategoryById(id);
-            if(!response.isPresent()) {
+            if (!response.isPresent()) {
                 return GlobalResponse
                         .builder()
                         .message("Data tidak ditemukan").data(response)
@@ -215,15 +215,19 @@ public class CaseCategoryService {
 
     public GlobalResponse save(CaseCategoryDTO caseCategoryDTO) {
         try {
-            if(caseCategoryDTO.getCase_id() == null) {
-                return GlobalResponse.builder().errorMessage("Case id tidak boleh kosong").message("Case tidak boleh kosong").status(HttpStatus.BAD_REQUEST).build();
-            } else if(caseCategoryDTO.getName() != null && caseCategoryDTO.getName() == "") {
-                return GlobalResponse.builder().errorMessage("Name tidak boleh kosong").message("Case name tidak boleh kosong").status(HttpStatus.BAD_REQUEST).build();
+            if (caseCategoryDTO.getCase_id() == null) {
+                return GlobalResponse.builder().errorMessage("Case id tidak boleh kosong")
+                        .message("Case tidak boleh kosong").status(HttpStatus.BAD_REQUEST).build();
+            } else if (caseCategoryDTO.getName() != null && caseCategoryDTO.getName() == "") {
+                return GlobalResponse.builder().errorMessage("Name tidak boleh kosong")
+                        .message("Case name tidak boleh kosong").status(HttpStatus.BAD_REQUEST).build();
             }
 
             Optional<Case> caseId = caseRepository.findById(caseCategoryDTO.getCase_id());
             if (!caseId.isPresent()) {
-                return GlobalResponse.builder().message("Data case with id: "+caseCategoryDTO.getCase_id()+" not found").status(HttpStatus.BAD_REQUEST).build();
+                return GlobalResponse.builder()
+                        .message("Data case with id: " + caseCategoryDTO.getCase_id() + " not found")
+                        .status(HttpStatus.BAD_REQUEST).build();
             }
             List<CaseCategory> check = caseCategoryRepository.findAll();
             for (CaseCategory caseCategory : check) {

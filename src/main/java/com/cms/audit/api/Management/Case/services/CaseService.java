@@ -41,8 +41,8 @@ public class CaseService {
     public GlobalResponse findAll(String name, int page, int size, String code) {
         try {
             Specification<Case> spec = Specification
-                    .where(new SpecificationFIlter<Case>().byNameLike(name))
-                    .and(new SpecificationFIlter<Case>().codeLike(code))
+                    .where(Specification.where(new SpecificationFIlter<Case>().byNameLike(name))
+                            .or(new SpecificationFIlter<Case>().codeLike(code)))
                     .and(new SpecificationFIlter<Case>().isNotDeleted())
                     .and(new SpecificationFIlter<Case>().orderByIdDesc());
             Page<Case> response = pagCase.findAll(spec, PageRequest.of(page, size));

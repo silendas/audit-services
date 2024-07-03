@@ -53,9 +53,9 @@ public class AreaService {
     public GlobalResponse findAll(String name, int page, int size, Long regionId, String regionName) {
         try {
             Specification<Area> spec = Specification
-                    .where(new SpecificationFIlter<Area>().byNameLike(name))
+                    .where(Specification.where(new SpecificationFIlter<Area>().byNameLike(name))
+                            .or(new SpecificationFIlter<Area>().regionNameLike(regionName)))
                     .and(new SpecificationFIlter<Area>().regionIdEqual(regionId))
-                    .and(new SpecificationFIlter<Area>().regionNameLike(regionName))
                     .and(new SpecificationFIlter<Area>().isNotDeleted())
                     .and(new SpecificationFIlter<Area>().orderByIdAsc());
             Page<Area> response = pagArea.findAll(spec, PageRequest.of(page, size));

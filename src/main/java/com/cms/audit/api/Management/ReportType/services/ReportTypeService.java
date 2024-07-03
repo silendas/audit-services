@@ -34,9 +34,9 @@ public class ReportTypeService {
 
     public GlobalResponse findAll(String name, int page, int size, String code) {
         try {
-           Specification<ReportType> spec = Specification
-                    .where(new SpecificationFIlter<ReportType>().byNameLike(name))
-                    .and( new SpecificationFIlter<ReportType>().codeLike(code))
+            Specification<ReportType> spec = Specification
+                    .where(Specification.where(new SpecificationFIlter<ReportType>().byNameLike(name))
+                            .or(new SpecificationFIlter<ReportType>().codeLike(code)))
                     .and(new SpecificationFIlter<ReportType>().isNotDeleted())
                     .and(new SpecificationFIlter<ReportType>().orderByIdAsc());
             Page<ReportType> response = pag.findAll(spec, PageRequest.of(page, size));
@@ -104,7 +104,7 @@ public class ReportTypeService {
     public GlobalResponse findOne(Long id) {
         try {
             Optional<ReportType> response = reportTypeRepository.findOneReportTypeById(id);
-            if(!response.isPresent()) {
+            if (!response.isPresent()) {
                 return GlobalResponse
                         .builder()
                         .message("Data tidak ditemukan").data(response)
@@ -136,14 +136,14 @@ public class ReportTypeService {
     public GlobalResponse save(ReportTypeDTO dto) {
         try {
 
-            if(dto.getName() == null || dto.getCode() == null || dto.getName() == "" || dto.getCode() == "") {
+            if (dto.getName() == null || dto.getCode() == null || dto.getName() == "" || dto.getCode() == "") {
                 return GlobalResponse
                         .builder()
                         .message("Data tidak boleh kosong")
                         .errorMessage("Data tidak boleh kosong")
                         .status(HttpStatus.BAD_REQUEST)
                         .build();
-            }   
+            }
 
             List<ReportType> check = reportTypeRepository.findAllReportType();
 
@@ -156,7 +156,7 @@ public class ReportTypeService {
                             .status(HttpStatus.BAD_REQUEST)
                             .build();
                 }
-                if(reportType.getCode().equals(dto.getCode())) {
+                if (reportType.getCode().equals(dto.getCode())) {
                     return GlobalResponse
                             .builder()
                             .errorMessage("Code harus unik")
@@ -201,7 +201,7 @@ public class ReportTypeService {
 
             Optional<ReportType> getReport = reportTypeRepository.findById(id);
 
-            if(!getReport.isPresent()) {
+            if (!getReport.isPresent()) {
                 return GlobalResponse
                         .builder()
                         .message("Data tidak ditemukan")
@@ -209,7 +209,7 @@ public class ReportTypeService {
                         .build();
             }
 
-            if(!getReport.get().getName().equals(dto.getName()) || !getReport.get().getCode().equals(dto.getCode())) {
+            if (!getReport.get().getName().equals(dto.getName()) || !getReport.get().getCode().equals(dto.getCode())) {
 
                 List<ReportType> check = reportTypeRepository.findAllReportType();
 
@@ -222,7 +222,7 @@ public class ReportTypeService {
                                 .status(HttpStatus.BAD_REQUEST)
                                 .build();
                     }
-                    if(reportType.getCode().equals(dto.getCode())) {
+                    if (reportType.getCode().equals(dto.getCode())) {
                         return GlobalResponse
                                 .builder()
                                 .errorMessage("Code harus unik")
@@ -261,8 +261,9 @@ public class ReportTypeService {
 
     public GlobalResponse delete(Long id) {
         try {
-            if(id == 1 || id == 2 || id == 3){
-                return GlobalResponse.builder().message("Tidak dapat menghapus data default").status(HttpStatus.BAD_REQUEST).build();
+            if (id == 1 || id == 2 || id == 3) {
+                return GlobalResponse.builder().message("Tidak dapat menghapus data default")
+                        .status(HttpStatus.BAD_REQUEST).build();
             }
             ReportType getReport = reportTypeRepository.findById(id).get();
 
