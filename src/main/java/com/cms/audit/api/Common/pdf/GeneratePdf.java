@@ -410,15 +410,21 @@ public class GeneratePdf {
                 Table body = new Table(bodyLenght).setHorizontalAlignment(HorizontalAlignment.CENTER).setPadding(10)
                                 .setBorder(Border.NO_BORDER);
                 // body
-
                 StringBuilder sanksiListBuilder = new StringBuilder();
-                for (int i = 0; i < penalty.size(); i++) {
-                        sanksiListBuilder.append(penalty.get(i).getName());
-                        if (i == penalty.size() - 2) {
+                List<Long> followUpPenalties = response.getPenalty(); // Get the penalty IDs from the FollowUp
+                for (int i = 0; i < followUpPenalties.size(); i++) {
+                    Long penaltyId = followUpPenalties.get(i);
+                    for (Penalty penalties : penalty) {
+                        if (penalties.getId().equals(penaltyId)) {
+                            sanksiListBuilder.append(penalties.getName());
+                            if (i == followUpPenalties.size() - 2) {
                                 sanksiListBuilder.append(", dan ");
-                        } else if (i < penalty.size() - 2) {
+                            } else if (i < followUpPenalties.size() - 2) {
                                 sanksiListBuilder.append(", ");
+                            }
+                            break;
                         }
+                    }
                 }
                 String sanksiList = sanksiListBuilder.toString();
 
