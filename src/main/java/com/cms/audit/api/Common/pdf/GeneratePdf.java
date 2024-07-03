@@ -495,8 +495,8 @@ public class GeneratePdf {
                                 .add(".............. , " + convertDateToRoman.convertDateToIndonesia(new Date()))
                                 .setBorder(Border.NO_BORDER)
                                 .setFontSize(7));
-                body5.addCell(new Cell().add("").setBorder(Border.NO_BORDER).setHeight(40));
-                float signatureTableLength[] = { 95f, 270f };
+                body5.addCell(new Cell().add("").setBorder(Border.NO_BORDER).setHeight(60));
+                float signatureTableLength[] = { 105f, 270f };
                 Table body5Nested = new Table(signatureTableLength).setTextAlignment(TextAlignment.LEFT).setHorizontalAlignment(HorizontalAlignment.LEFT)
                                 .setBorder(Border.NO_BORDER);
                 if (response.getAuditeeLeader() != null) {
