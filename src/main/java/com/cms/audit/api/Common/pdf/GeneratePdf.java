@@ -413,12 +413,12 @@ public class GeneratePdf {
 
                 StringBuilder sanksiListBuilder = new StringBuilder();
                 for (int i = 0; i < penalty.size(); i++) {
-                    sanksiListBuilder.append(penalty.get(i).getName());
-                    if (i == penalty.size() - 2) {
-                        sanksiListBuilder.append(", dan ");
-                    } else if (i < penalty.size() - 2) {
-                        sanksiListBuilder.append(", ");
-                    }
+                        sanksiListBuilder.append(penalty.get(i).getName());
+                        if (i == penalty.size() - 2) {
+                                sanksiListBuilder.append(", dan ");
+                        } else if (i < penalty.size() - 2) {
+                                sanksiListBuilder.append(", ");
+                        }
                 }
                 String sanksiList = sanksiListBuilder.toString();
 
@@ -426,9 +426,9 @@ public class GeneratePdf {
                 float headerLength[] = { 540f };
                 Table header = new Table(headerLength).setHorizontalAlignment(HorizontalAlignment.CENTER);
                 header.addCell(new Cell().add("FORM TINDAK LANJUT REKOMENDASI AUDIT").setBold().setFontSize(9)
-                        .setBorder(Border.NO_BORDER).setTextAlignment(TextAlignment.CENTER));
+                                .setBorder(Border.NO_BORDER).setTextAlignment(TextAlignment.CENTER));
                 header.addCell(new Cell().add("No. " + response.getCode()).setFontSize(8)
-                        .setBorder(Border.NO_BORDER).setTextAlignment(TextAlignment.CENTER));
+                                .setBorder(Border.NO_BORDER).setTextAlignment(TextAlignment.CENTER));
                 body.addCell(new Cell().add(header).setBorder(Border.NO_BORDER));
                 // section 1
 
@@ -444,23 +444,24 @@ public class GeneratePdf {
                 float body1Lenght[] = { 540f };
                 Table body1 = new Table(body1Lenght).setHorizontalAlignment(HorizontalAlignment.LEFT);
                 body1.addCell(new Cell().add(
-                        "Menindaklanjuti dari hasil Hasil temuan Auditor dengan nomor klarifikasi "
-                                + response.getClarification().getCode() + " tertanggal "
-                                + convertDateToRoman.convertDateToString(new Date())
-                                + " sebagaimana terlampir Form Klarifikasi, jawaban dari Auditee dan rekomendasi penyelesaian kepada Sdr. "
-                                + response.getClarification().getAuditee() + " "
-                                + ", diberikan Sanksi " + sanksiList)
-                        .setFontSize(8).setBorder(Border.NO_BORDER));
+                                "Menindaklanjuti dari hasil Hasil temuan Auditor dengan nomor klarifikasi "
+                                                + response.getClarification().getCode() + " tertanggal "
+                                                + convertDateToRoman.convertDateToString(new Date())
+                                                + " sebagaimana terlampir Form Klarifikasi, jawaban dari Auditee dan rekomendasi penyelesaian kepada Sdr. "
+                                                + response.getClarification().getAuditee() + " "
+                                                + ", diberikan Sanksi " + sanksiList)
+                                .setFontSize(8).setBorder(Border.NO_BORDER));
                 body.addCell(new Cell().add(body1).setBorder(Border.NO_BORDER));
                 // section 3
 
                 // section 4
                 body.addCell(new Cell().add("Maka kami menerangkan bahwa :").setBold().setFontSize(8)
-                        .setBorder(Border.NO_BORDER));
+                                .setBorder(Border.NO_BORDER));
                 // section 4
                 // section 4.1 - details table
                 float detailTableLength[] = { 100f, 400f };
-                Table detailTable = new Table(detailTableLength).setHorizontalAlignment(HorizontalAlignment.LEFT).setBorder(Border.NO_BORDER);
+                Table detailTable = new Table(detailTableLength).setHorizontalAlignment(HorizontalAlignment.LEFT)
+                                .setBorder(Border.NO_BORDER);
                 detailTable.addCell(new Cell().add("Nama").setFontSize(8));
                 detailTable.addCell(new Cell().add("").setFontSize(8));
                 detailTable.addCell(new Cell().add("NIP").setFontSize(8));
@@ -472,7 +473,7 @@ public class GeneratePdf {
                 detailTable.addCell(new Cell().add("Realisasi Sanksi").setFontSize(8));
                 detailTable.addCell(new Cell().add("").setFontSize(8));
                 body.addCell(new Cell().add(detailTable).setBorder(Border.NO_BORDER));
-                                body.addCell(new Cell().add(
+                body.addCell(new Cell().add(
                                 response.getDescription())
                                 .setFontSize(8).setBorder(Border.NO_BORDER).setPaddingLeft(10));
                 // section 4.1 - details table
@@ -497,7 +498,8 @@ public class GeneratePdf {
                                 .setFontSize(7));
                 body5.addCell(new Cell().add("").setBorder(Border.NO_BORDER).setHeight(60));
                 float signatureTableLength[] = { 105f, 300f };
-                Table body5Nested = new Table(signatureTableLength).setTextAlignment(TextAlignment.LEFT).setHorizontalAlignment(HorizontalAlignment.LEFT)
+                Table body5Nested = new Table(signatureTableLength).setTextAlignment(TextAlignment.LEFT)
+                                .setHorizontalAlignment(HorizontalAlignment.LEFT)
                                 .setBorder(Border.NO_BORDER);
                 if (response.getAuditeeLeader() != null) {
                         body5Nested.addCell(new Cell()
@@ -515,13 +517,16 @@ public class GeneratePdf {
                                         .setHorizontalAlignment(HorizontalAlignment.LEFT));
                 }
                 body5Nested.addCell(
-                        new Cell().add("(................................)").setFontSize(8).setBorder(Border.NO_BORDER)
-                                        .setTextAlignment(TextAlignment.LEFT).setMinHeight(3).setMarginLeft(20).setPaddingLeft(20));
+                                new Cell().add("(................................)").setFontSize(8)
+                                                .setBorder(Border.NO_BORDER)
+                                                .setTextAlignment(TextAlignment.LEFT).setMinHeight(3).setMarginLeft(20)
+                                                .setPaddingLeft(20));
                 body5Nested.addCell(
-                        new Cell().add("Ka. Div ...............").setFontSize(8).setBorder(Border.NO_BORDER)
-                                        .setTextAlignment(TextAlignment.LEFT).setMinHeight(3));
+                                new Cell().add("Ka. Div ...............").setFontSize(8).setBorder(Border.NO_BORDER)
+                                                .setTextAlignment(TextAlignment.CENTER).setMinHeight(3));
                 body5Nested.addCell(
-                                new Cell().add("Ka. Dept").setFontSize(8).setBorder(Border.NO_BORDER).setPaddingLeft(20).setMarginLeft(20)
+                                new Cell().add("            Ka. Dept").setFontSize(8).setBorder(Border.NO_BORDER)
+                                                .setPaddingLeft(20).setMarginLeft(20)
                                                 .setTextAlignment(TextAlignment.LEFT).setMinHeight(3));
                 body5.addCell(new Cell().add(body5Nested).setBorder(Border.NO_BORDER));
                 body5.addCell(new Cell().add("").setBorderLeft(Border.NO_BORDER).setBorderRight(Border.NO_BORDER)
