@@ -460,7 +460,7 @@ public class GeneratePdf {
                 // section 4
                 // section 4.1 - details table
                 float detailTableLength[] = { 100f, 400f };
-                Table detailTable = new Table(detailTableLength).setHorizontalAlignment(HorizontalAlignment.LEFT).setBorder(Border.NO_BORDER).setPadding(0);
+                Table detailTable = new Table(detailTableLength).setHorizontalAlignment(HorizontalAlignment.LEFT).setBorder(Border.NO_BORDER);
                 detailTable.addCell(new Cell().add("Nama").setFontSize(8));
                 detailTable.addCell(new Cell().add("").setFontSize(8));
                 detailTable.addCell(new Cell().add("NIP").setFontSize(8));
@@ -472,9 +472,9 @@ public class GeneratePdf {
                 detailTable.addCell(new Cell().add("Realisasi Sanksi").setFontSize(8));
                 detailTable.addCell(new Cell().add("").setFontSize(8));
                 body.addCell(new Cell().add(detailTable).setBorder(Border.NO_BORDER));
-                body.addCell(new Cell().add(
-                        response.getDescription())
-                        .setFontSize(8).setBorder(Border.NO_BORDER).setPaddingLeft(10));
+                                body.addCell(new Cell().add(
+                                response.getDescription())
+                                .setFontSize(8).setBorder(Border.NO_BORDER).setPaddingLeft(10));
                 // section 4.1 - details table
 
                 // blank line
@@ -504,15 +504,15 @@ public class GeneratePdf {
                                         .add("( " + response.getAuditeeLeader() + " )")
                                         .setBorderLeft(Border.NO_BORDER).setBorderRight(Border.NO_BORDER)
                                         .setBorderTop(Border.NO_BORDER).setBorderBottom(Border.NO_BORDER).setFontSize(7)
-                                        .setTextAlignment(TextAlignment.CENTER)
-                                        .setHorizontalAlignment(HorizontalAlignment.CENTER));
+                                        .setTextAlignment(TextAlignment.LEFT)
+                                        .setHorizontalAlignment(HorizontalAlignment.LEFT));
                 } else {
                         body5Nested.addCell(new Cell()
                                         .add("( " + response.getClarification().getAuditee_leader() + " )")
                                         .setBorderLeft(Border.NO_BORDER).setBorderRight(Border.NO_BORDER)
                                         .setBorderTop(Border.NO_BORDER).setBorderBottom(Border.NO_BORDER).setFontSize(7)
-                                        .setTextAlignment(TextAlignment.CENTER)
-                                        .setHorizontalAlignment(HorizontalAlignment.CENTER));
+                                        .setTextAlignment(TextAlignment.LEFT)
+                                        .setHorizontalAlignment(HorizontalAlignment.LEFT));
                 }
                 body5Nested.addCell(
                                 new Cell().add("Ka. Dept ................").setFontSize(8).setBorder(Border.NO_BORDER)
