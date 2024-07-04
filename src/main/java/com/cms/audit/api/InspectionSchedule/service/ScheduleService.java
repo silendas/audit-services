@@ -978,8 +978,9 @@ public class ScheduleService {
                                                 .build();
                         }
 
-                        List<Schedule> checkDatefExist = repository.findScheduleInDateRangeByUserIdNoCategory(
+                        List<Schedule> checkDatefExist = repository.findScheduleInDateRangeByUserIdNoCategoryEdit(
                                         dto.getUser_id(),
+                                        dto.getSchedule_id(),
                                         dto.getStart_date(),
                                         dto.getEnd_date());
                         if (!checkDatefExist.isEmpty()) {
@@ -1272,8 +1273,9 @@ public class ScheduleService {
                                         .build();
                 }
 
-                List<Schedule> checkDatefExist = repository.findScheduleInDateRangeByUserIdNoCategory(
+                List<Schedule> checkDatefExist = repository.findScheduleInDateRangeByUserIdNoCategoryEdit(
                                 getTrx.getUser().getId(),
+                                id,
                                 getTrx.getStart_date(),
                                 getTrx.getEnd_date());
                 if (!checkDatefExist.isEmpty()) {
