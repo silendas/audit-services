@@ -460,7 +460,7 @@ public class GeneratePdf {
                 body.addCell(new Cell().add(body1).setBorder(Border.NO_BORDER));
                 body.addCell(new Cell().add(
                         response.getDescription())
-                        .setFontSize(8).setBorder(Border.NO_BORDER).setPaddingLeft(10).setMinHeight(100));
+                        .setFontSize(8).setBorder(Border.NO_BORDER).setPaddingLeft(10).setMinHeight(120));
                 // section 3
 
                 // section 4
@@ -518,7 +518,7 @@ public class GeneratePdf {
                 float signatureTableLength[] = { 105f, 300f };
                 Table body5Nested = new Table(signatureTableLength).setTextAlignment(TextAlignment.LEFT)
                                 .setHorizontalAlignment(HorizontalAlignment.LEFT)
-                                .setPaddingLeft(5)
+                                .setPaddingLeft(10)
                                 .setBorder(Border.NO_BORDER);
                 if (response.getAuditeeLeader() != null) {
                         body5Nested.addCell(new Cell()
