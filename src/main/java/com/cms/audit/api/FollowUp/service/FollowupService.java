@@ -386,7 +386,11 @@ public class FollowupService {
             }
             followUp.setCode(reportCode2);
             followUp.setReport_number(reportNumber);
+            followUp.setAuditeeName(dto.getAuditee_name());
+            followUp.setAuditeePosition(dto.getAuditee_position());
+            followUp.setAuditeeNip(dto.getAuditee_nip());
             followUp.setAuditeeLeader(dto.getAuditee_leader());
+            followUp.setAuditeeLeader2(dto.getAuditee_leader2());
             followUp.setUpdated_by(getUser.getId());
             followUp.setStatus(EStatusFollowup.PROGRESS);
             FollowUp response1 = repository.save(followUp);

@@ -18,7 +18,11 @@ import lombok.NoArgsConstructor;
 public class FollowUpDTO {
     private Long followup_id;
     private List<Long> penalty_id;
+    private String auditee_name;
+    private String auditee_position;
+    private String auditee_nip;
     private String auditee_leader;
+    private String auditee_leader2;
     private Long charging_costs;
     private String description;
 }

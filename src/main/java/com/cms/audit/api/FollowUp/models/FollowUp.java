@@ -59,8 +59,20 @@ public class FollowUp {
     @Column(name = "code")
     private String code;
 
+    @Column(name = "auditee_name")
+    private String auditeeName;
+
+    @Column(name = "auditee_position")
+    private String auditeePosition;
+
+    @Column(name = "auditee_nip")
+    private String auditeeNip;
+
     @Column(name = "auditee_leader")
     private String auditeeLeader;
+
+    @Column(name = "auditee_leader_2")
+    private String auditeeLeader2;
 
     @Column(name = "charging_costs", columnDefinition = "integer default 0")
     private Long charging_costs;
