@@ -460,7 +460,7 @@ public class GeneratePdf {
                 body.addCell(new Cell().add(body1).setBorder(Border.NO_BORDER));
                 body.addCell(new Cell().add(
                         response.getDescription())
-                        .setFontSize(8).setBorder(Border.NO_BORDER).setPaddingLeft(10));
+                        .setFontSize(8).setBorder(Border.NO_BORDER).setPaddingLeft(10).setMinHeight(50));
                 // section 3
 
                 // section 4
@@ -497,7 +497,7 @@ public class GeneratePdf {
                 Table body5 = new Table(body5Lenght).setHorizontalAlignment(HorizontalAlignment.LEFT);
                 body5.addCell(new Cell().add("Dengan penjelasan :").setBold().setBorder(Border.NO_BORDER)
                                 .setFontSize(7));
-                body5.addCell(new Cell().add("").setBorder(Border.NO_BORDER).setHeight(140).setFontSize(7));
+                body5.addCell(new Cell().add("").setBorder(Border.NO_BORDER).setHeight(90).setFontSize(7));
                 body5.addCell(new Cell()
                                 .add(".............. , " + convertDateToRoman.convertDateToIndonesia(new Date()))
                                 .setBorder(Border.NO_BORDER)
