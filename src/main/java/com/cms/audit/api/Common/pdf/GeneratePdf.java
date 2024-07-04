@@ -476,8 +476,8 @@ public class GeneratePdf {
                 detailTable.addCell(new Cell().add("").setFontSize(8));
                 detailTable.addCell(new Cell().add("Rekomendasi Sanksi").setFontSize(8));
                 detailTable.addCell(new Cell().add(sanksiList).setFontSize(8));
-                detailTable.addCell(new Cell().add("Realisasi Sanksi").setFontSize(8));
-                detailTable.addCell(new Cell().add("").setFontSize(8));
+                detailTable.addCell(new Cell().add("Realisasi Sanksi").setFontSize(8).setHeight(30));
+                detailTable.addCell(new Cell().add("").setFontSize(8).setHeight(30));
                 body.addCell(new Cell().add(detailTable).setBorder(Border.NO_BORDER));
                 body.addCell(new Cell().add(
                                 response.getDescription())
