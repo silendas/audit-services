@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.cms.audit.api.Clarifications.dto.response.NumberClarificationInterface;
 import com.cms.audit.api.Clarifications.models.Clarification;
 import com.cms.audit.api.Common.constant.FileStorageFU;
 import com.cms.audit.api.Common.constant.FolderPath;
@@ -40,6 +41,8 @@ import com.cms.audit.api.FollowUp.repository.PagFollowup;
 import com.cms.audit.api.Management.Penalty.dto.response.PenaltyInterface;
 import com.cms.audit.api.Management.Penalty.models.Penalty;
 import com.cms.audit.api.Management.Penalty.repository.PenaltyRepository;
+import com.cms.audit.api.Management.ReportType.models.ReportType;
+import com.cms.audit.api.Management.ReportType.repository.ReportTypeRepository;
 import com.cms.audit.api.Management.User.models.User;
 
 import jakarta.transaction.Transactional;
@@ -58,6 +61,9 @@ public class FollowupService {
 
     @Autowired
     private PenaltyRepository penaltyRepository;
+
+    @Autowired
+    private ReportTypeRepository reportTypeRepository;
 
     private final String FOLDER_PATH = FolderPath.FOLDER_PATH_UPLOAD_FOLLOW_UP;
 
@@ -327,6 +333,44 @@ public class FollowupService {
                 }
             }
 
+            Long reportNumber ;
+            String rptNum ;
+            Optional<NumberClarificationInterface> checkTLBefore = repository
+                                                .checkNumberFollowUp(getUser.getId());
+                                if (checkTLBefore.isPresent()) {
+                                        if (checkTLBefore.get().getCreated_Year().longValue() == Long
+                                                        .valueOf(convertDateToRoman.getIntYear())) {
+                                                reportNumber = checkTLBefore.get().getReport_Number() + 1;
+                                                if (reportNumber < 10) {
+                                                        rptNum = "00" + reportNumber;
+                                                } else if (reportNumber < 100) {
+                                                        rptNum = "0" + reportNumber;
+                                                } else {
+                                                        rptNum = reportNumber.toString();
+                                                }
+                                        } else {
+                                                rptNum = "001";
+                                                reportNumber = Long.valueOf(1);
+                                        }
+                                } else {
+                                        rptNum = "001";
+                                        reportNumber = Long.valueOf(1);
+                                }
+
+                                String branchName2 = getFollowUp.get().getBranch().getName();
+                                String initialName2 = getUser.getInitial_name();
+                                String caseName2 = getFollowUp.get().getClarification().getCases().getCode();
+                                String lvlCode2 = getUser.getLevel().getCode();
+                                String romanMonth2 = convertDateToRoman.getRomanMonth();
+                                Integer thisYear2 = convertDateToRoman.getIntYear();
+
+                                Optional<ReportType> reportType2 = reportTypeRepository.findById(3L);
+
+                                String reportCode2 = rptNum + lvlCode2 + "/" + initialName2 + "-" + caseName2 + "/"
+                                                + reportType2.get().getCode() + "/" + branchName2 + "/" + romanMonth2
+                                                + "/"
+                                                + thisYear2;
+
             FollowUp followUp = getFollowUp.get();
             followUp.setPenalty(listPenalty);
             if (dto.getCharging_costs() != null) {
@@ -340,6 +384,8 @@ public class FollowupService {
             } else {
                 followUp.setIsPenalty(0L);
             }
+            followUp.setCode(reportCode2);
+            followUp.setReport_number(reportNumber);
             followUp.setAuditeeLeader(dto.getAuditee_leader());
             followUp.setUpdated_by(getUser.getId());
             followUp.setStatus(EStatusFollowup.PROGRESS);
