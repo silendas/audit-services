@@ -246,6 +246,7 @@ public class FollowupService {
 
             fuMap.put("code", fu.getCode());
             fuMap.put("auditee_leader", fu.getAuditeeLeader());
+            fuMap.put("auditee_leader_2", fu.getAuditeeLeader2());
             fuMap.put("charging_costs", fu.getCharging_costs());
             fuMap.put("description", fu.getDescription());
             fuMap.put("note", fu.getNote());

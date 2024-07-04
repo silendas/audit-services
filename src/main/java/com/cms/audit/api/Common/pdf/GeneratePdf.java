@@ -519,7 +519,7 @@ public class GeneratePdf {
                                 .setBorder(Border.NO_BORDER)
                                 .setFontSize(7));
                 body5.addCell(new Cell().add("").setBorder(Border.NO_BORDER).setHeight(60));
-                float signatureTableLength[] = { 105f, 300f };
+                float signatureTableLength[] = { 125f, 300f };
                 Table body5Nested = new Table(signatureTableLength).setTextAlignment(TextAlignment.LEFT)
                                 .setHorizontalAlignment(HorizontalAlignment.LEFT)
                                 .setPaddingLeft(10)
@@ -543,8 +543,8 @@ public class GeneratePdf {
                         body5Nested.addCell(
                                 new Cell().add("( " + response.getAuditeeLeader2() + " )").setFontSize(8)
                                                 .setBorder(Border.NO_BORDER)
-                                                .setTextAlignment(TextAlignment.LEFT).setMinHeight(3).setMarginLeft(30)
-                                                .setPaddingLeft(30));
+                                                .setTextAlignment(TextAlignment.LEFT).setMinHeight(3).setMarginLeft(50)
+                                                .setPaddingLeft(50));
                 } else {
                         body5Nested.addCell(new Cell().add("").setBorder(Border.NO_BORDER));
                 }
