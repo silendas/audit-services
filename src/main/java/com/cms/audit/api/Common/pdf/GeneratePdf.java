@@ -449,14 +449,18 @@ public class GeneratePdf {
                 // section 3
                 float body1Lenght[] = { 540f };
                 Table body1 = new Table(body1Lenght).setHorizontalAlignment(HorizontalAlignment.LEFT);
+                String auditeeName = response.getAuditeeName();
+                String auditeeText = (auditeeName == null) ? response.getClarification().getAuditee() : auditeeName;
+                String auditeePosition = response.getAuditeePosition();
+                String auditeePositionText = (auditeePosition == null) ? "" : " / " + auditeePosition;
                 body1.addCell(new Cell().add(
                                 "Menindaklanjuti dari hasil Hasil temuan Auditor dengan nomor klarifikasi "
-                                                + response.getClarification().getCode() + " tertanggal "
-                                                + convertDateToRoman.convertDateToString(new Date())
-                                                + " sebagaimana terlampir Form Klarifikasi, jawaban dari Auditee dan rekomendasi penyelesaian kepada Sdr. "
-                                                + response.getClarification().getAuditee() + " "
-                                                + ", diberikan Sanksi " + sanksiList)
-                                .setFontSize(8).setBorder(Border.NO_BORDER));
+                                + response.getClarification().getCode() + " tertanggal "
+                                + convertDateToRoman.convertDateToString(new Date())
+                                + " sebagaimana terlampir Form Klarifikasi, jawaban dari Auditee dan rekomendasi penyelesaian kepada Sdr. "
+                                + auditeeText + auditeePositionText
+                                + ", diberikan Sanksi " + sanksiList)
+                        .setFontSize(8).setBorder(Border.NO_BORDER));
                 body.addCell(new Cell().add(body1).setBorder(Border.NO_BORDER));
                 body.addCell(new Cell().add(
                         response.getDescription())
