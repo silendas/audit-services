@@ -384,8 +384,10 @@ public class FollowupService {
             } else {
                 followUp.setIsPenalty(0L);
             }
-            followUp.setCode(reportCode2);
-            followUp.setReport_number(reportNumber);
+            if(getFollowUp.get().getUser().getId() != getUser.getId()){
+                followUp.setCode(reportCode2);
+                followUp.setReport_number(reportNumber);
+            }
             followUp.setAuditeeName(dto.getAuditee_name());
             followUp.setAuditeePosition(dto.getAuditee_position());
             followUp.setAuditeeNip(dto.getAuditee_nip());

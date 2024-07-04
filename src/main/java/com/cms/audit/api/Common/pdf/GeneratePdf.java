@@ -472,11 +472,23 @@ public class GeneratePdf {
                 Table detailTable = new Table(detailTableLength).setHorizontalAlignment(HorizontalAlignment.LEFT)
                                 .setBorder(Border.NO_BORDER);
                 detailTable.addCell(new Cell().add("Nama").setFontSize(8));
-                detailTable.addCell(new Cell().add(response.getAuditeeName()).setFontSize(8));
+                if(response.getAuditeeName() != null && !response.getAuditeeName().equals("")) {
+                        detailTable.addCell(new Cell().add(response.getAuditeeName()).setFontSize(8));
+                }else{
+                        detailTable.addCell(new Cell().add("").setFontSize(8));
+                }
                 detailTable.addCell(new Cell().add("NIP").setFontSize(8));
-                detailTable.addCell(new Cell().add(response.getAuditeeNip()).setFontSize(8));
+                if(response.getAuditeeNip() != null && !response.getAuditeeNip().equals("")) {
+                        detailTable.addCell(new Cell().add(response.getAuditeeNip()).setFontSize(8));
+                }else{
+                        detailTable.addCell(new Cell().add("").setFontSize(8));
+                }
                 detailTable.addCell(new Cell().add("Jabatan Saat ini").setFontSize(8));
-                detailTable.addCell(new Cell().add(response.getAuditeePosition()).setFontSize(8));
+                if(response.getAuditeePosition() != null && !response.getAuditeePosition().equals("")) {
+                        detailTable.addCell(new Cell().add(response.getAuditeePosition()).setFontSize(8));
+                }else{
+                        detailTable.addCell(new Cell().add("").setFontSize(8));
+                }
                 detailTable.addCell(new Cell().add("Rekomendasi Sanksi").setFontSize(8));
                 detailTable.addCell(new Cell().add(sanksiList).setFontSize(8));
                 detailTable.addCell(new Cell().add("Realisasi Sanksi").setFontSize(8).setHeight(80));
@@ -506,7 +518,7 @@ public class GeneratePdf {
                 float signatureTableLength[] = { 105f, 300f };
                 Table body5Nested = new Table(signatureTableLength).setTextAlignment(TextAlignment.LEFT)
                                 .setHorizontalAlignment(HorizontalAlignment.LEFT)
-                                .setPadding(3)
+                                .setPaddingLeft(5)
                                 .setBorder(Border.NO_BORDER);
                 if (response.getAuditeeLeader() != null) {
                         body5Nested.addCell(new Cell()
@@ -523,12 +535,14 @@ public class GeneratePdf {
                                         .setTextAlignment(TextAlignment.LEFT)
                                         .setHorizontalAlignment(HorizontalAlignment.LEFT));
                 }
-                if(response.getAuditeeLeader2() != null && response.getAuditeeLeader2() != "") {
+                if(response.getAuditeeLeader2() != null && !response.getAuditeeLeader2().equals("")) {
                         body5Nested.addCell(
                                 new Cell().add("( " + response.getAuditeeLeader2() + " )").setFontSize(8)
                                                 .setBorder(Border.NO_BORDER)
                                                 .setTextAlignment(TextAlignment.LEFT).setMinHeight(3).setMarginLeft(30)
                                                 .setPaddingLeft(30));
+                } else {
+                        body5Nested.addCell(new Cell().add("").setBorder(Border.NO_BORDER));
                 }
                 body5.addCell(new Cell().add(body5Nested).setBorder(Border.NO_BORDER));
                 body5.addCell(new Cell().add("").setBorderLeft(Border.NO_BORDER).setBorderRight(Border.NO_BORDER)
