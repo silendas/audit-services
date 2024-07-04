@@ -458,6 +458,9 @@ public class GeneratePdf {
                                                 + ", diberikan Sanksi " + sanksiList)
                                 .setFontSize(8).setBorder(Border.NO_BORDER));
                 body.addCell(new Cell().add(body1).setBorder(Border.NO_BORDER));
+                body.addCell(new Cell().add(
+                        response.getDescription())
+                        .setFontSize(8).setBorder(Border.NO_BORDER).setPaddingLeft(10));
                 // section 3
 
                 // section 4
@@ -476,12 +479,9 @@ public class GeneratePdf {
                 detailTable.addCell(new Cell().add("").setFontSize(8));
                 detailTable.addCell(new Cell().add("Rekomendasi Sanksi").setFontSize(8));
                 detailTable.addCell(new Cell().add(sanksiList).setFontSize(8));
-                detailTable.addCell(new Cell().add("Realisasi Sanksi").setFontSize(8).setHeight(30));
-                detailTable.addCell(new Cell().add("").setFontSize(8).setHeight(30));
+                detailTable.addCell(new Cell().add("Realisasi Sanksi").setFontSize(8).setHeight(80));
+                detailTable.addCell(new Cell().add("").setFontSize(8).setHeight(80));
                 body.addCell(new Cell().add(detailTable).setBorder(Border.NO_BORDER));
-                body.addCell(new Cell().add(
-                                response.getDescription())
-                                .setFontSize(8).setBorder(Border.NO_BORDER).setPaddingLeft(10));
                 // section 4.1 - details table
 
                 // blank line
@@ -523,17 +523,10 @@ public class GeneratePdf {
                                         .setHorizontalAlignment(HorizontalAlignment.LEFT));
                 }
                 body5Nested.addCell(
-                                new Cell().add("(................................)").setFontSize(8)
+                                new Cell().add("(...........................................)").setFontSize(8)
                                                 .setBorder(Border.NO_BORDER)
                                                 .setTextAlignment(TextAlignment.LEFT).setMinHeight(3).setMarginLeft(20)
                                                 .setPaddingLeft(20));
-                body5Nested.addCell(
-                                new Cell().add("Ka. Div ...............").setFontSize(8).setBorder(Border.NO_BORDER)
-                                                .setTextAlignment(TextAlignment.LEFT).setMinHeight(3));
-                body5Nested.addCell(
-                                new Cell().add("            Ka. Dept").setFontSize(8).setBorder(Border.NO_BORDER)
-                                                .setPaddingLeft(20).setMarginLeft(20)
-                                                .setTextAlignment(TextAlignment.LEFT).setMinHeight(3));
                 body5.addCell(new Cell().add(body5Nested).setBorder(Border.NO_BORDER));
                 body5.addCell(new Cell().add("").setBorderLeft(Border.NO_BORDER).setBorderRight(Border.NO_BORDER)
                                 .setBorderTop(Border.NO_BORDER));
@@ -616,7 +609,7 @@ public class GeneratePdf {
                                 .setBold().setFontSize(7).setBorder(Border.NO_BORDER));
 
                 body6.addCell(new Cell()
-                                .add("Biaya pembebanan : Rp." + FormatNumber.formatString(response.getCharging_costs()))
+                                .add("Nominal pembebanan : Rp." + FormatNumber.formatString(response.getCharging_costs()))
                                 .setBold().setFontSize(7).setBorder(Border.NO_BORDER));
                 body6.addCell(new Cell().add("").setBorder(Border.NO_BORDER).setHeight(10));
                 body6.addCell(new Cell()
