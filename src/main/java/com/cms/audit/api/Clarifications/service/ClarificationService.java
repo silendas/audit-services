@@ -796,8 +796,13 @@ public class ClarificationService {
                         }
 
                         if (dto.getIs_followup() != null && dto.getIs_followup() != 0) {
-                                Optional<NumberClarificationInterface> checkTLBefore = followUpRepository
-                                                .checkNumberFollowUp(response.getUser().getId());
+                                Optional<NumberClarificationInterface> checkTLBefore;
+                                if(user.getLevel().getCode().equals("C")) {
+                                        checkTLBefore = followUpRepository.checkNumberFollowUp(response.getUser().getId());
+                                } else {
+                                        checkTLBefore = followUpRepository
+                                                        .checkNumberFollowUpInput(response.getUser().getId());
+                                }
                                 if (checkTLBefore.isPresent()) {
                                         if (checkTLBefore.get().getCreated_Year().longValue() == Long
                                                         .valueOf(convertDateToRoman.getIntYear())) {
@@ -848,7 +853,7 @@ public class ClarificationService {
                                 followUp.setStatus(EStatusFollowup.CREATE);
                                 followUp.setIs_delete(0);
                                 followUp.setCreated_by(response.getUser().getId());
-                                followUp.setUpdated_by(null);
+                                followUp.setUpdated_by(response.getUser().getId());
                                 followUp.setCreated_at(new Date());
 
                                 followUpRepository.save(followUp);
