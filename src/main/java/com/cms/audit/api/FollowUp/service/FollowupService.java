@@ -340,7 +340,7 @@ public class FollowupService {
             Long reportNumber ;
             String rptNum ;
             Optional<NumberClarificationInterface> checkTLBefore = repository
-                                                .checkNumberFollowUp(getUser.getId());
+                                                .checkNumberFollowUpInput(getUser.getId());
                                 if (checkTLBefore.isPresent()) {
                                         if (checkTLBefore.get().getCreated_Year().longValue() == Long
                                                         .valueOf(convertDateToRoman.getIntYear())) {
