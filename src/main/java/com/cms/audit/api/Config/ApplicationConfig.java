@@ -13,8 +13,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.cms.audit.api.Management.User.repository.UserRepository;
 
-//import com.cms.audit.config.jwt.JwtBlacklist;
-
 import lombok.RequiredArgsConstructor;
 
 @Configuration
@@ -46,17 +44,5 @@ public class ApplicationConfig {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-
-    // @Bean
-    // public Jackson2ObjectMapperBuilder jacksonBuilder() {
-    //     Jackson2ObjectMapperBuilder builder = new Jackson2ObjectMapperBuilder();
-    //     builder.serializationInclusion(JsonInclude.Include.NON_NULL);
-    //     return builder;
-    // }
-
-    // @Bean
-    // public JwtBlacklist jwtBlacklist(){
-    // return new JwtBlacklist();
-    // }
 
 }

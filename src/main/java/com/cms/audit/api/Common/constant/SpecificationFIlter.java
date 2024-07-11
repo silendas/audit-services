@@ -32,7 +32,9 @@ public class SpecificationFIlter<T> {
             }
             return null;
         };
-    }    public Specification<T> fullnameLike(String name) {
+    }
+
+    public Specification<T> fullnameLike(String name) {
         return (root, query, criteriaBuilder) -> {
             if (name != null) {
                 return criteriaBuilder.like(root.get("fullname"), "%" + name + "%");
@@ -59,7 +61,6 @@ public class SpecificationFIlter<T> {
         };
     }
 
-    
     public Specification<T> userLevelId(Long id) {
         return (root, query, criteriaBuilder) -> {
             if (id != null) {
@@ -106,7 +107,6 @@ public class SpecificationFIlter<T> {
                 : criteriaBuilder.like(root.get("branch").get("name"), "%" + branchName + "%");
     }
 
-    
     public Specification<T> branchToRegionNameLike(String regionName) {
         return (root, query, criteriaBuilder) -> regionName == null ? null
                 : criteriaBuilder.like(root.get("area").get("region").get("name"), "%" + regionName + "%");
@@ -156,7 +156,6 @@ public class SpecificationFIlter<T> {
         return (root, query, criteriaBuilder) -> shceduleId == null ? null
                 : criteriaBuilder.equal(root.get("schedule").get("id"), shceduleId);
     }
-
 
     public Specification<T> idNotShow(Long id) {
         return (root, query, criteriaBuilder) -> id == null ? null
@@ -277,8 +276,10 @@ public class SpecificationFIlter<T> {
             }
 
             // Mengubah tahun menjadi rentang waktu di tahun tersebut
-            ZonedDateTime startOfYear = ZonedDateTime.of(LocalDateTime.of(year.intValue(), 1, 1, 0, 0), ZoneId.of("UTC"));
-            ZonedDateTime endOfYear = ZonedDateTime.of(LocalDateTime.of(year.intValue(), 12, 31, 23, 59, 59), ZoneId.of("UTC"));
+            ZonedDateTime startOfYear = ZonedDateTime.of(LocalDateTime.of(year.intValue(), 1, 1, 0, 0),
+                    ZoneId.of("UTC"));
+            ZonedDateTime endOfYear = ZonedDateTime.of(LocalDateTime.of(year.intValue(), 12, 31, 23, 59, 59),
+                    ZoneId.of("UTC"));
 
             // Konversi ke Timestamp
             Timestamp startTimestamp = Timestamp.from(startOfYear.toInstant());

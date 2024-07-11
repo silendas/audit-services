@@ -23,7 +23,6 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.cms.audit.api.Clarifications.dto.response.NumberClarificationInterface;
-import com.cms.audit.api.Clarifications.models.Clarification;
 import com.cms.audit.api.Common.constant.FileStorageFU;
 import com.cms.audit.api.Common.constant.FolderPath;
 import com.cms.audit.api.Common.constant.SpecificationFIlter;
@@ -38,7 +37,6 @@ import com.cms.audit.api.FollowUp.models.EStatusFollowup;
 import com.cms.audit.api.FollowUp.models.FollowUp;
 import com.cms.audit.api.FollowUp.repository.FollowUpRepository;
 import com.cms.audit.api.FollowUp.repository.PagFollowup;
-import com.cms.audit.api.Management.Penalty.dto.response.PenaltyInterface;
 import com.cms.audit.api.Management.Penalty.models.Penalty;
 import com.cms.audit.api.Management.Penalty.repository.PenaltyRepository;
 import com.cms.audit.api.Management.ReportType.models.ReportType;
@@ -127,6 +125,7 @@ public class FollowupService {
                 Map<String, Object> clarification = new LinkedHashMap<>();
                 clarification.put("id", fu.getClarification().getId());
                 clarification.put("code", fu.getClarification().getCode());
+                clarification.put("auditee", fu.getClarification().getAuditee());
                 clarification.put("evaluation_limitation", fu.getClarification().getEvaluation_limitation());
                 fuMap.put("clarification", clarification);
 
@@ -236,6 +235,7 @@ public class FollowupService {
             Map<String, Object> clarification = new LinkedHashMap<>();
             clarification.put("id", fu.getClarification().getId());
             clarification.put("code", fu.getClarification().getCode());
+            clarification.put("auditee", fu.getClarification().getAuditee());
             if (fu.getClarification().getEvaluation_limitation() != null) {
                 clarification.put("evaluation_limitation",
                         convertDateToRoman.convertDateToString(fu.getClarification().getEvaluation_limitation()));

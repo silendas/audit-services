@@ -28,28 +28,17 @@ public class SecurityConfiguration {
     
     @Bean 
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        // CorsConfiguration corsConfiguration = new CorsConfiguration();
-        // corsConfiguration.setAllowedHeaders(List.of("Authorization", "Cache-Control", "Content-Type"));
-        // corsConfiguration.setAllowedOrigins(List.of("*"));
-        // corsConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PUT","OPTIONS","PATCH", "DELETE"));
-        // corsConfiguration.setAllowCredentials(true);
-        // corsConfiguration.setExposedHeaders(List.of("Authorization"));
 
         http
                 .csrf(AbstractHttpConfigurer::disable)
-                //.cors(Customizer.withDefaults())
                 .exceptionHandling(exception -> exception.authenticationEntryPoint(jwtException))
                 .authorizeHttpRequests(requests -> requests
                         .requestMatchers("/api/auth/**")
-                        .permitAll()
-                        .requestMatchers("/swagger-ui.html")
                         .permitAll()
                         .requestMatchers("/swagger-ui/index.html")
                         .permitAll()
                         .requestMatchers("/api-docs")
                         .permitAll()
-                        // .requestMatchers("/**")
-                        // .permitAll()
                         .anyRequest()
                         .authenticated())
                 .sessionManagement(management -> management
@@ -61,16 +50,4 @@ public class SecurityConfiguration {
 
     } 
 
-//     @Bean
-//     public CorsFilter corsFilter() {
-//         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-//         CorsConfiguration config = new CorsConfiguration();
-//         config.setAllowedOrigins(List.of("*"));
-//         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
-//         config.setAllowedHeaders(List.of("Authorization", "Cache-Control", "Content-Type"));
-//         config.setExposedHeaders(List.of("Authorization"));
-//         config.setAllowCredentials(true);
-//         source.registerCorsConfiguration("/api/**", config);
-//         return new CorsFilter(source);
-//     }
 }
