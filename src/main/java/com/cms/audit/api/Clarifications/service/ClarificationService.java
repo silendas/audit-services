@@ -89,7 +89,8 @@ public class ClarificationService {
 
         private final String UPLOAD_FOLDER_PATH = FolderPath.FOLDER_PATH_UPLOAD_CLARIFICATION;
 
-        public GlobalResponse getAll(String status, String name, Long branchId, int page, int size, Date start_date, Date end_date) {
+        public GlobalResponse getAll(String status, String name, Long branchId, int page, int size, Date start_date,
+                        Date end_date) {
                 try {
                         User getUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
@@ -100,11 +101,11 @@ public class ClarificationService {
                                         .and(new SpecificationFIlter<Clarification>().dateRange(start_date, end_date))
                                         .and(new SpecificationFIlter<Clarification>().isNotDeleted())
                                         .and(new SpecificationFIlter<Clarification>().orderByIdDesc());
-
+                        if (status != null) {
+                                spec = spec.and(new SpecificationFIlter<Clarification>().byStatus(status));
+                        }
                         if (getUser.getLevel().getCode().equals("C")) {
                                 spec = spec.and(new SpecificationFIlter<Clarification>().userId(getUser.getId()));
-                        } else if(status != null) {
-                                spec = spec.and(new SpecificationFIlter<Clarification>().byStatus(status));
                         } else if (getUser.getLevel().getCode().equals("B")) {
                                 Specification<Clarification> regionOrUserSpec = Specification
                                                 .where(new SpecificationFIlter<Clarification>()
@@ -799,8 +800,9 @@ public class ClarificationService {
 
                         if (dto.getIs_followup() != null && dto.getIs_followup() != 0) {
                                 Optional<NumberClarificationInterface> checkTLBefore;
-                                if(user.getLevel().getCode().equals("C")) {
-                                        checkTLBefore = followUpRepository.checkNumberFollowUp(response.getUser().getId());
+                                if (user.getLevel().getCode().equals("C")) {
+                                        checkTLBefore = followUpRepository
+                                                        .checkNumberFollowUp(response.getUser().getId());
                                 } else {
                                         checkTLBefore = followUpRepository
                                                         .checkNumberFollowUpInput(response.getUser().getId());
@@ -966,7 +968,8 @@ public class ClarificationService {
                                 .orElseThrow(() -> new ResourceNotFoundException(
                                                 "File not found with name: " + fileName));
 
-                if (!response.getStatus().equals(EStatusClarification.IDENTIFICATION) && !response.getStatus().equals(EStatusClarification.DONE)) {
+                if (!response.getStatus().equals(EStatusClarification.IDENTIFICATION)
+                                && !response.getStatus().equals(EStatusClarification.DONE)) {
                         if (response.getFile_path() != null) {
                                 File oldFile = new File(response.getFile_path());
                                 if (oldFile.exists()) {
