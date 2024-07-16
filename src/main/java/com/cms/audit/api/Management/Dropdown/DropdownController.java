@@ -17,6 +17,7 @@ import com.cms.audit.api.Clarifications.models.EStatusClarification;
 import com.cms.audit.api.Common.constant.BasePath;
 import com.cms.audit.api.Common.response.GlobalResponse;
 import com.cms.audit.api.Common.response.ResponseEntittyHandler;
+import com.cms.audit.api.FollowUp.models.EStatusFollowup;
 import com.cms.audit.api.InspectionSchedule.models.ECategory;
 import com.cms.audit.api.InspectionSchedule.models.EStatus;
 import com.cms.audit.api.Management.Case.services.CaseService;
@@ -329,6 +330,11 @@ public class DropdownController {
     @GetMapping("/clarification-status")
     public ResponseEntity<Object> getStatusClarification() {
         return ResponseEntittyHandler.allHandler(EStatusClarification.values(), "Success", HttpStatus.OK, null);
+    }
+
+    @GetMapping("/followup-status")
+    public ResponseEntity<Object> getStatusFollowUp() {
+        return ResponseEntittyHandler.allHandler(EStatusFollowup.values(), "Success", HttpStatus.OK, null);
     }
 
 }
