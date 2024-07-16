@@ -49,6 +49,7 @@ public class ClarificationController {
     public ResponseEntity<Object> get(
             @RequestParam("branch_id") Optional<Long> branch_id,
             @RequestParam("name") Optional<String> name,
+            @RequestParam("status") Optional<String> status,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Optional<Date> start_date,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Optional<Date> end_date,
             @RequestParam("page") Optional<Integer> page,
@@ -63,7 +64,7 @@ public class ClarificationController {
         if (endDate != null) {
             endDate = convertDateToRoman.setTimeToLastSecond(endDate);
         }
-        GlobalResponse response = service.getAll(fullname, branchId, page.orElse(0), size.orElse(10), startDate,
+        GlobalResponse response = service.getAll(status.orElse(null),fullname, branchId, page.orElse(0), size.orElse(10), startDate,
                 endDate);
         return ResponseEntittyHandler.allHandler(response.getData(), response.getMessage(), response.getStatus(),
                 response.getError());

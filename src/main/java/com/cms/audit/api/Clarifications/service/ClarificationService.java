@@ -89,7 +89,7 @@ public class ClarificationService {
 
         private final String UPLOAD_FOLDER_PATH = FolderPath.FOLDER_PATH_UPLOAD_CLARIFICATION;
 
-        public GlobalResponse getAll(String name, Long branchId, int page, int size, Date start_date, Date end_date) {
+        public GlobalResponse getAll(String status, String name, Long branchId, int page, int size, Date start_date, Date end_date) {
                 try {
                         User getUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
@@ -103,6 +103,8 @@ public class ClarificationService {
 
                         if (getUser.getLevel().getCode().equals("C")) {
                                 spec = spec.and(new SpecificationFIlter<Clarification>().userId(getUser.getId()));
+                        } else if(status != null) {
+                                spec = spec.and(new SpecificationFIlter<Clarification>().byStatus(status));
                         } else if (getUser.getLevel().getCode().equals("B")) {
                                 Specification<Clarification> regionOrUserSpec = Specification
                                                 .where(new SpecificationFIlter<Clarification>()

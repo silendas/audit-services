@@ -23,6 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.cms.audit.api.Clarifications.dto.response.NumberClarificationInterface;
+import com.cms.audit.api.Clarifications.models.Clarification;
 import com.cms.audit.api.Common.constant.FileStorageFU;
 import com.cms.audit.api.Common.constant.FolderPath;
 import com.cms.audit.api.Common.constant.SpecificationFIlter;
@@ -65,7 +66,8 @@ public class FollowupService {
 
     private final String FOLDER_PATH = FolderPath.FOLDER_PATH_UPLOAD_FOLLOW_UP;
 
-    public GlobalResponse getAll(String name, Long branch, int page, int size, Date start_date, Date end_date) {
+    public GlobalResponse getAll(String status, String name, Long branch, int page, int size, Date start_date,
+            Date end_date) {
         try {
             User getUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
@@ -80,6 +82,8 @@ public class FollowupService {
             if (getUser.getLevel().getCode().equals("C")) {
                 spec = spec.and(new SpecificationFIlter<FollowUp>().userId(getUser.getId()))
                         .and(new SpecificationFIlter<FollowUp>().getByStatusFU(EStatusFollowup.CLOSE));
+            } else if (status != null) {
+                spec = spec.and(new SpecificationFIlter<FollowUp>().byStatus(status));
             } else if (getUser.getLevel().getCode().equals("B")) {
                 Specification<FollowUp> regionOrUserSpec = Specification
                         .where(new SpecificationFIlter<FollowUp>().getByRegionIds(getUser.getRegionId()))
@@ -337,43 +341,43 @@ public class FollowupService {
                 }
             }
 
-            Long reportNumber ;
-            String rptNum ;
+            Long reportNumber;
+            String rptNum;
             Optional<NumberClarificationInterface> checkTLBefore = repository
-                                                .checkNumberFollowUpInput(getUser.getId());
-                                if (checkTLBefore.isPresent()) {
-                                        if (checkTLBefore.get().getCreated_Year().longValue() == Long
-                                                        .valueOf(convertDateToRoman.getIntYear())) {
-                                                reportNumber = checkTLBefore.get().getReport_Number() + 1;
-                                                if (reportNumber < 10) {
-                                                        rptNum = "00" + reportNumber;
-                                                } else if (reportNumber < 100) {
-                                                        rptNum = "0" + reportNumber;
-                                                } else {
-                                                        rptNum = reportNumber.toString();
-                                                }
-                                        } else {
-                                                rptNum = "001";
-                                                reportNumber = Long.valueOf(1);
-                                        }
-                                } else {
-                                        rptNum = "001";
-                                        reportNumber = Long.valueOf(1);
-                                }
+                    .checkNumberFollowUpInput(getUser.getId());
+            if (checkTLBefore.isPresent()) {
+                if (checkTLBefore.get().getCreated_Year().longValue() == Long
+                        .valueOf(convertDateToRoman.getIntYear())) {
+                    reportNumber = checkTLBefore.get().getReport_Number() + 1;
+                    if (reportNumber < 10) {
+                        rptNum = "00" + reportNumber;
+                    } else if (reportNumber < 100) {
+                        rptNum = "0" + reportNumber;
+                    } else {
+                        rptNum = reportNumber.toString();
+                    }
+                } else {
+                    rptNum = "001";
+                    reportNumber = Long.valueOf(1);
+                }
+            } else {
+                rptNum = "001";
+                reportNumber = Long.valueOf(1);
+            }
 
-                                String branchName2 = getFollowUp.get().getBranch().getName();
-                                String initialName2 = getUser.getInitial_name();
-                                String caseName2 = getFollowUp.get().getClarification().getCases().getCode();
-                                String lvlCode2 = getUser.getLevel().getCode();
-                                String romanMonth2 = convertDateToRoman.getRomanMonth();
-                                Integer thisYear2 = convertDateToRoman.getIntYear();
+            String branchName2 = getFollowUp.get().getBranch().getName();
+            String initialName2 = getUser.getInitial_name();
+            String caseName2 = getFollowUp.get().getClarification().getCases().getCode();
+            String lvlCode2 = getUser.getLevel().getCode();
+            String romanMonth2 = convertDateToRoman.getRomanMonth();
+            Integer thisYear2 = convertDateToRoman.getIntYear();
 
-                                Optional<ReportType> reportType2 = reportTypeRepository.findById(3L);
+            Optional<ReportType> reportType2 = reportTypeRepository.findById(3L);
 
-                                String reportCode2 = rptNum + lvlCode2 + "/" + initialName2 + "-" + caseName2 + "/"
-                                                + reportType2.get().getCode() + "/" + branchName2 + "/" + romanMonth2
-                                                + "/"
-                                                + thisYear2;
+            String reportCode2 = rptNum + lvlCode2 + "/" + initialName2 + "-" + caseName2 + "/"
+                    + reportType2.get().getCode() + "/" + branchName2 + "/" + romanMonth2
+                    + "/"
+                    + thisYear2;
 
             FollowUp followUp = getFollowUp.get();
             followUp.setPenalty(listPenalty);
@@ -388,7 +392,7 @@ public class FollowupService {
             } else {
                 followUp.setIsPenalty(0L);
             }
-            if(getFollowUp.get().getUser().getId() != getUser.getId()){
+            if (getFollowUp.get().getUser().getId() != getUser.getId()) {
                 followUp.setCode(reportCode2);
                 followUp.setReport_number(reportNumber);
             }
