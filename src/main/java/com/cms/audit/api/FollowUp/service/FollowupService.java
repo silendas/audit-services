@@ -78,14 +78,13 @@ public class FollowupService {
                     .and(new SpecificationFIlter<FollowUp>().dateRange(start_date, end_date))
                     .and(new SpecificationFIlter<FollowUp>().isNotDeleted())
                     .and(new SpecificationFIlter<FollowUp>().orderByIdDesc());
-            if (status != null) {
-                spec = spec.and(new SpecificationFIlter<FollowUp>().byStatus(status));
-            }
+            // if (status != null) {
+            //     spec = spec.and(new SpecificationFIlter<FollowUp>().byStatus(status));
+            // }
             if (getUser.getLevel().getCode().equals("C")) {
                 spec = spec.and(new SpecificationFIlter<FollowUp>().userId(getUser.getId()))
                         .and(new SpecificationFIlter<FollowUp>().getByStatusFU(EStatusFollowup.CLOSE));
-            }
-            if (getUser.getLevel().getCode().equals("B")) {
+            } else if (getUser.getLevel().getCode().equals("B")) {
                 Specification<FollowUp> regionOrUserSpec = Specification
                         .where(new SpecificationFIlter<FollowUp>().getByRegionIds(getUser.getRegionId()))
                         .or(new SpecificationFIlter<FollowUp>().userId(getUser.getId()));
