@@ -34,6 +34,7 @@ import com.cms.audit.api.Common.response.GlobalResponse;
 import com.cms.audit.api.Common.response.ResponseEntittyHandler;
 import com.cms.audit.api.FollowUp.dto.FollowUpDTO;
 import com.cms.audit.api.FollowUp.dto.PatchFollowUpDTO;
+import com.cms.audit.api.FollowUp.models.EStatusFollowup;
 import com.cms.audit.api.FollowUp.models.FollowUp;
 import com.cms.audit.api.FollowUp.service.FollowupService;
 
@@ -48,7 +49,7 @@ public class FollowupController {
         @GetMapping
         public ResponseEntity<Object> getAll(
                         @RequestParam(required = false) Optional<String> name,
-                        @RequestParam(required = false) Optional<String> status,
+                        @RequestParam(required = false) Optional<EStatusFollowup> status,
                         @RequestParam(required = false) Optional<Long> branch_id,
                         @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Optional<Date> start_date,
                         @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Optional<Date> end_date,

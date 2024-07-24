@@ -66,7 +66,7 @@ public class FollowupService {
 
     private final String FOLDER_PATH = FolderPath.FOLDER_PATH_UPLOAD_FOLLOW_UP;
 
-    public GlobalResponse getAll(String status, String name, Long branch, int page, int size, Date start_date,
+    public GlobalResponse getAll(EStatusFollowup status, String name, Long branch, int page, int size, Date start_date,
             Date end_date) {
         try {
             User getUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -79,7 +79,7 @@ public class FollowupService {
                     .and(new SpecificationFIlter<FollowUp>().isNotDeleted())
                     .and(new SpecificationFIlter<FollowUp>().orderByIdDesc());
             if (status != null) {
-                spec = spec.and(new SpecificationFIlter<FollowUp>().byStatus(status));
+                spec = spec.and(new SpecificationFIlter<FollowUp>().getByStatusFU(status));
             }
             if (getUser.getLevel().getCode().equals("C")) {
                 spec = spec.and(new SpecificationFIlter<FollowUp>().userId(getUser.getId()))
