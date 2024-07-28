@@ -66,4 +66,10 @@ public class AuditDailyReport {
     @Column(name = "updated_at")
     private Date update_at;
 
+    @Column(name = "file_path")
+    private String filePath;
+
+    @Column(name = "file_name")
+    private String fileName;
+
 }

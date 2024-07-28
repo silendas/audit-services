@@ -1,5 +1,8 @@
 package com.cms.audit.api.AuditDailyReport.service;
 
+import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -10,6 +13,8 @@ import java.util.Optional;
 
 import org.hibernate.exception.DataException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -18,6 +23,8 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.cms.audit.api.AuditDailyReport.dto.AuditDailyReportDTO;
@@ -92,6 +99,8 @@ public class AuditDailyReportService {
 
         @Autowired
         private pagAuditDailyReport pag;
+
+        private final Path fileStorageLocation = Paths.get("./uploaded/lha").toAbsolutePath().normalize();
 
         public GlobalResponse get(int page, int size, Date startDate, Date endDate, Long shcedule_id,
                         Long branch_id,
@@ -711,7 +720,9 @@ public class AuditDailyReportService {
                                         user.getId(),
                                         user.getId(),
                                         new Date(),
-                                        new Date());
+                                        new Date(),
+                                        null,
+                                        null);
 
                         if (getschedule.get().getStart_date_realization() == null
                                         && !getschedule.get().getStatus().equals(EStatus.DONE)) {
@@ -860,6 +871,7 @@ public class AuditDailyReportService {
                         return GlobalResponse
                                         .builder()
                                         .message("Berhasil menambahkan data")
+                                        .data(response1)
                                         .status(HttpStatus.OK)
                                         .build();
                 } catch (ResponseStatusException e) {
@@ -930,7 +942,9 @@ public class AuditDailyReportService {
                                         getBefore.get().getCreated_by(),
                                         user.getId(),
                                         getBefore.get().getCreated_at(),
-                                        new Date());
+                                        new Date(),
+                                        getBefore.get().getFileName(),
+                                        getBefore.get().getFilePath());
 
                         auditDailyReportRepository.save(auditDailyReport);
                         return GlobalResponse
@@ -959,6 +973,59 @@ public class AuditDailyReportService {
                 }
         }
 
+        public GlobalResponse uploadFile(MultipartFile file, Long id) {
+                Optional<AuditDailyReport> optionalReport = auditDailyReportRepository.findById(id);
+                if (!optionalReport.isPresent()) {
+                        return GlobalResponse
+                                        .builder()
+                                        .message("LHA tidak ditemukan")
+                                        .errorMessage("LHA tidak ditemukan")
+                                        .status(HttpStatus.BAD_REQUEST)
+                                        .build();
+                }
+
+                AuditDailyReport report = optionalReport.get();
+                try {
+                        // Save the file to a directory
+                        String fileName = file.getOriginalFilename();
+                        String filePath = fileStorageLocation.resolve(fileName).toString();
+                        file.transferTo(new File(filePath));
+
+                        // Update the report with the file details
+                        report.setFilePath(filePath);
+                        report.setFileName(fileName);
+                        auditDailyReportRepository.save(report);
+
+                        return GlobalResponse
+                                        .builder()
+                                        .message("File uploaded successfully")
+                                        .status(HttpStatus.OK)
+                                        .build();
+                } catch (Exception e) {
+                        return GlobalResponse
+                                        .builder()
+                                        .error(e)
+                                        .message("Failed to upload file")
+                                        .errorMessage("Failed to upload file")
+                                        .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                                        .build();
+                }
+        }
+
+        public Resource downloadFile(String filename) {
+                try {
+                        Path filePath = this.fileStorageLocation.resolve(filename).normalize();
+                        Resource resource = new UrlResource(filePath.toUri());
+                        if (resource.exists()) {
+                                return resource;
+                        } else {
+                                throw new RuntimeException("File not found " + filename);
+                        }
+                } catch (Exception e) {
+                        throw new RuntimeException("File not found " + filename, e);
+                }
+        }
+
         public GlobalResponse delete(Long id) {
                 try {
                         Optional<AuditDailyReport> getBefore = auditDailyReportRepository.findById(id);
@@ -984,7 +1051,9 @@ public class AuditDailyReportService {
                                         getBefore.get().getCreated_by(),
                                         getBefore.get().getCreated_by(),
                                         getBefore.get().getCreated_at(),
-                                        new Date());
+                                        new Date(),
+                                        getBefore.get().getFileName(),
+                                        getBefore.get().getFilePath());
 
                         auditDailyReportRepository.save(auditDailyReport);
                         return GlobalResponse
