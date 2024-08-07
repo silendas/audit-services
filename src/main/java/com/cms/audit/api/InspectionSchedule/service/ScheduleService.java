@@ -723,7 +723,6 @@ public class ScheduleService {
         @Transactional(value = TxType.REQUIRES_NEW)
         public GlobalResponse insertSpecialSchedule(ScheduleRequest scheduleDTO, String username) {
                 try {
-
                         User getUser = userRepository.findByUsername(username)
                                         .orElseThrow(() -> new ResourceNotFoundException("user not found"));
 
