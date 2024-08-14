@@ -29,8 +29,8 @@ public class ClasificationController {
     @GetMapping
     public ResponseEntity<Object> getClasification(
             @RequestParam("pageable") Optional<Boolean> pageable,
-            @RequestParam("pageable") Optional<Integer> page,
-            @RequestParam("pageable") Optional<Integer> size) {
+            @RequestParam("page") Optional<Integer> page,
+            @RequestParam("size") Optional<Integer> size) {
         return service.getClasification(pageable.orElse(false), page.orElse(0), size.orElse(10));
     }
 

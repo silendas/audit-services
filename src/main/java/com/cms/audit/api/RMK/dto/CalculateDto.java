@@ -5,6 +5,6 @@ import lombok.Data;
 @Data
 public class CalculateDto {
 
-    private Long rmk;
+    private Long value;
     
 }

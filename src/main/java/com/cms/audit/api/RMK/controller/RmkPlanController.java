@@ -33,7 +33,7 @@ public class RmkPlanController {
             @RequestParam("size") Optional<Integer> size
     ){
         return service.getRmkPlan(pageable.orElse(false), page.orElse(0), size.orElse(10));
-    }  
+    }
 
     @GetMapping("/{id}")
     public ResponseEntity<Object> getRmkPlanById(@PathVariable("id") Long id){
@@ -42,7 +42,7 @@ public class RmkPlanController {
     
     @PostMapping("/calculate")
     public ResponseEntity<Object> calculateRmkPlan(@RequestBody CalculateDto dto){
-        return service.calculate(dto.getRmk(), null);
+        return service.calculate(dto.getValue());
     }
 
     @PostMapping

@@ -80,5 +80,9 @@ public class RmkRealizeService {
     public RmkPlan getRmkPlanById(Long id) {
         return rmkPlanRepo.findById(id).get();
     }
+
+    public List<RmkRealize> getRmkRealizeByPlanId(Long id){
+        return repo.findByRmkRealize(id);
+    }
     
 }
