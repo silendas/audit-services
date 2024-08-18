@@ -42,7 +42,7 @@ public class ClasificationService {
         if (repo.existsByName(clasification.getName())) {
             return ResponseEntittyHandler.errorResponse("Name sudah ada", "Name sudah ada", HttpStatus.BAD_REQUEST);
         }
-        return ResponseEntittyHandler.allHandler(repo.save(builderClasification(clasification)), "Berhasil", HttpStatus.CREATED, null);
+        return ResponseEntittyHandler.allHandler(repo.save(builderClasification(clasification)), "Berhasil", HttpStatus.OK, null);
     }
 
     public ResponseEntity<Object> getCategory() {
