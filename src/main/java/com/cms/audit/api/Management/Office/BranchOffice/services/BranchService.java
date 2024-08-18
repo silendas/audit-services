@@ -25,7 +25,6 @@ import com.cms.audit.api.Management.Office.BranchOffice.dto.response.BranchInter
 import com.cms.audit.api.Management.Office.BranchOffice.models.Branch;
 import com.cms.audit.api.Management.Office.BranchOffice.repository.BranchRepository;
 import com.cms.audit.api.Management.Office.BranchOffice.repository.PagBranch;
-import com.cms.audit.api.Management.Office.MainOffice.models.Main;
 import com.cms.audit.api.Management.User.models.User;
 import com.cms.audit.api.Management.User.repository.UserRepository;
 
@@ -608,6 +607,10 @@ public class BranchService {
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .build();
         }
+    }
+
+    public Branch getBranchById(Long id) {
+        return branchRepository.findById(id).get();
     }
 
 }

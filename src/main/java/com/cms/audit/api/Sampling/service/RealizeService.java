@@ -12,7 +12,7 @@ import com.cms.audit.api.RMK.service.ClasificationService;
 import com.cms.audit.api.Sampling.dto.request.RealizeDto;
 import com.cms.audit.api.Sampling.dto.response.RealizeRes;
 import com.cms.audit.api.Sampling.model.RealizeSampling;
-import com.cms.audit.api.Sampling.model.Sampling;
+import com.cms.audit.api.Sampling.model.BranchSampling;
 import com.cms.audit.api.Sampling.repository.RealizeRepo;
 
 @Service
@@ -29,7 +29,7 @@ public class RealizeService {
         return createRes(buildAllRealize(realize));
     }
 
-    public void createList(Sampling sample, List<RealizeDto> dto) {
+    public void createList(BranchSampling sample, List<RealizeDto> dto) {
         for (RealizeDto d : dto) {
             RealizeSampling build = new RealizeSampling();
             build.setSampling(sample);

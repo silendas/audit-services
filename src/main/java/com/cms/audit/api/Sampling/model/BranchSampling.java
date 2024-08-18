@@ -21,8 +21,8 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "sampling")
-public class Sampling {
+@Table(name = "branch_sampling")
+public class BranchSampling {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,14 +33,17 @@ public class Sampling {
     @JoinColumn(name = "branch_id")
     private Branch branch;
 
-    @Column(name = "current")
-    private Long current;
+    @Column(name = "current_rmk")
+    private Long current_rmk;
 
-    @Column(name = "target")
-    private Long target;
+    @Column(name = "current_branch")
+    private Long current_branch;
 
-    @Column(name = "collectors", length = 500)
-    private String collectors;
+    @Column(name = "pending_value")
+    private Long pending_value;
+
+    @Column(name = "pending_unit")
+    private Long pending_unit;
 
     @Column(name = "created_at")
     private Date created_at;

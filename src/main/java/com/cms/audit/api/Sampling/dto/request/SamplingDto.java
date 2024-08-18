@@ -6,18 +6,11 @@ import java.util.List;
 
 @Data
 public class SamplingDto {
-    
 
-    private Long branch_id;
+    private BanchSamplingDto branch;
 
-    private Long current;
+    private CollectorSamplingDto collectors;
 
-    private Long target;
-
-    private String collectors;
-
-    private List<UnitDto> unit_sampling;
-
-    private List<RealizeDto> realize_sampling;
+    private List<RealizeDto> sampling;
     
 }

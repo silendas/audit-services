@@ -11,11 +11,11 @@ import org.springframework.stereotype.Service;
 import com.cms.audit.api.Common.response.ResponseEntittyHandler;
 import com.cms.audit.api.Management.Office.BranchOffice.models.Branch;
 import com.cms.audit.api.Management.Office.BranchOffice.repository.BranchRepository;
+import com.cms.audit.api.Sampling.dto.request.CollectorSamplingDto;
 import com.cms.audit.api.Sampling.dto.request.RealizeDto;
 import com.cms.audit.api.Sampling.dto.request.SamplingDto;
-import com.cms.audit.api.Sampling.dto.request.UnitDto;
 import com.cms.audit.api.Sampling.dto.response.SamplingRes;
-import com.cms.audit.api.Sampling.model.Sampling;
+import com.cms.audit.api.Sampling.model.BranchSampling;
 import com.cms.audit.api.Sampling.repository.SamplingRepository;
 
 @Service
@@ -24,8 +24,11 @@ public class SamplingService {
     @Autowired
     private SamplingRepository repo;
 
+    @Autowired 
+    private BranchSamplingService branchSamplingService;
+
     @Autowired
-    private UnitSamplingService unitSamplingService;
+    private CollectorSamplingService collectorService;
 
     @Autowired
     private RealizeService realizeService;
@@ -34,54 +37,47 @@ public class SamplingService {
     private BranchRepository branchRepository;
 
     public ResponseEntity<Object> getSampling(){
-        List<Sampling> sample = repo.findAll();
+        List<BranchSampling> sample = repo.findAll();
         return ResponseEntittyHandler.allHandler(createRes(sample), "Berhasil", HttpStatus.OK, null);
     }
     
     public ResponseEntity<Object> createSampling(SamplingDto dto){
-        Sampling build = new Sampling();
-        build.setBranch(getBranchById(dto.getBranch_id()));
-        build.setCurrent(dto.getCurrent());
-        build.setTarget(dto.getTarget());
-        build.setCollectors(dto.getCollectors());
-        Sampling res = repo.save(build);
-        createSpareLifeSampling(res, dto.getUnit_sampling(), dto.getRealize_sampling());
+        BranchSampling buildBranchSampling = branchSamplingService.create(dto.getBranch());
+        collectorService.create(buildBranchSampling, dto.getCollectors());
+        realizeService.createList(buildBranchSampling, dto.getSampling());
+        //createSpareLifeSampling(res, dto.getUnit_sampling(), dto.getRealize_sampling());
         return ResponseEntittyHandler.allHandler(null, "Berhasil", HttpStatus.OK, null);
     }
 
     public ResponseEntity<Object> deleteSampling(Long id){
-        Sampling res = repo.findById(id).get();
+        BranchSampling res = repo.findById(id).get();
         res.setIs_deleted(1);
         repo.save(res);
         return ResponseEntittyHandler.allHandler(null, "Berhasil", HttpStatus.OK, null);
     }
 
-    public List<SamplingRes> createRes(List<Sampling> sample){
+    public List<SamplingRes> createRes(List<BranchSampling> sample){
         List<SamplingRes> res = new ArrayList<>();
-        for (Sampling s : sample) {
+        for (BranchSampling s : sample) {
             SamplingRes build = new SamplingRes();
-            build.setId(s.getId());
-            build.setBranch_name(s.getBranch().getName());
-            build.setRegion_name(s.getBranch().getArea().getRegion().getName());
-            build.setCurrent(s.getCurrent());
-            build.setTarget(s.getTarget());
-            build.setUnit_sampling(unitSamplingService.getUnitSamplingBySamplingId(s.getId()));
-            build.setRealize_sampling(realizeService.getRealizeBySamplingId(s.getId()));
+            build.setBranch(branchSamplingService.getBranchSamplingDtos(s));
+            build.setCollectors(collectorService.getCollectorSamplingDtos(collectorService.getCollectorSamplingBySamplingId(s.getId())));
+            build.setSampling(realizeService.getRealizeBySamplingId(s.getId()));
             res.add(build);
         }
         return res;
     }
 
-    public void createSpareLifeSampling(Sampling sample, List<UnitDto> listUnit, List<RealizeDto> listRealize){
+    public void createSpareLifeSampling(BranchSampling sample, CollectorSamplingDto listUnit, List<RealizeDto> listRealize){
         doCreateRealize(sample, listRealize);
-        doCreateUnit(sample, listUnit);
+        doCreateCollectors(sample, listUnit);
     }
 
-    public void doCreateUnit(Sampling sample, List<UnitDto> listDto){
-        unitSamplingService.createList(sample, listDto);
+    public void doCreateCollectors(BranchSampling sample, CollectorSamplingDto dto){
+        collectorService.create(sample, dto);
     }
 
-    public void doCreateRealize(Sampling sample, List<RealizeDto> listDto){
+    public void doCreateRealize(BranchSampling sample, List<RealizeDto> listDto){
         realizeService.createList(sample, listDto);
     }
 

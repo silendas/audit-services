@@ -31,7 +31,7 @@ public class RealizeSampling {
     @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "sampling_id")
-    private Sampling sampling;
+    private BranchSampling sampling;
 
     @ManyToOne
     @JoinColumn(name = "clasification_id")
