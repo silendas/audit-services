@@ -88,7 +88,14 @@ public class SamplingService {
             build.setSampling(realizeService.getRealizeBySamplingId(s.getId()));
             res.add(build);
         }
-        map.put("pageable", sample.getPageable());
+        Map<String, Object> pageable = new LinkedHashMap<>();
+        pageable.put("page_size", sample.getPageable().getPageSize());
+        pageable.put("page_number", sample.getPageable().getPageNumber());
+        pageable.put("sort", sample.getPageable().getSort());
+        pageable.put("offset", sample.getPageable().getOffset());
+        pageable.put("paged", sample.getPageable().isPaged());
+        pageable.put("unpaged", sample.getPageable().isUnpaged());
+        map.put("pageable", pageable);
         map.put("total_pages", sample.getTotalPages());
         map.put("total_elements", sample.getTotalElements());
         map.put("current_page", sample.getNumber());
