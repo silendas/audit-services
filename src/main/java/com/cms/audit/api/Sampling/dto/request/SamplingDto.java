@@ -7,7 +7,7 @@ import java.util.List;
 @Data
 public class SamplingDto {
 
-    private BanchSamplingDto branch;
+    private BranchSampleDto branch;
 
     private CollectorSamplingDto collectors;
 

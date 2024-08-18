@@ -26,7 +26,7 @@ public class RealizeService {
 
     public RealizeRes getRealizeBySamplingId(Long samplingId) {
         List<RealizeSampling> realize = repo.findAllBySamplingId(samplingId);
-        return createRes(buildAllRealize(realize));
+        return createRes(realize);
     }
 
     public void createList(BranchSampling sample, List<RealizeDto> dto) {
@@ -74,4 +74,5 @@ public class RealizeService {
         res.setInternal(internal);
         return res;
     }
+
 }

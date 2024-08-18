@@ -1,9 +1,13 @@
 package com.cms.audit.api.Sampling.service;
 
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -36,36 +40,67 @@ public class SamplingService {
     @Autowired
     private BranchRepository branchRepository;
 
-    public ResponseEntity<Object> getSampling(){
-        List<BranchSampling> sample = repo.findAll();
-        return ResponseEntittyHandler.allHandler(createRes(sample), "Berhasil", HttpStatus.OK, null);
+    public ResponseEntity<Object> getSampling(Date start_date, Date end_date, int page, int size, boolean pageable){
+        if (pageable) {
+            Page<BranchSampling> sample = branchSamplingService.getAll(start_date, end_date, page, size);
+            return ResponseEntittyHandler.allHandler(createRes(sample), "Berhasil", HttpStatus.OK, null);
+        }else{
+            List<BranchSampling> sample = branchSamplingService.getAllList(start_date, end_date);
+            return ResponseEntittyHandler.allHandler(createListRes(sample), "Berhasil", HttpStatus.OK, null);
+        }
     }
     
     public ResponseEntity<Object> createSampling(SamplingDto dto){
+        branchSamplingService.validation(dto.getBranch());
+        collectorService.validation(dto.getCollectors());
         BranchSampling buildBranchSampling = branchSamplingService.create(dto.getBranch());
         collectorService.create(buildBranchSampling, dto.getCollectors());
         realizeService.createList(buildBranchSampling, dto.getSampling());
-        //createSpareLifeSampling(res, dto.getUnit_sampling(), dto.getRealize_sampling());
         return ResponseEntittyHandler.allHandler(null, "Berhasil", HttpStatus.OK, null);
     }
 
     public ResponseEntity<Object> deleteSampling(Long id){
         BranchSampling res = repo.findById(id).get();
-        res.setIs_deleted(1);
+        res.setIs_delete(1);
         repo.save(res);
         return ResponseEntittyHandler.allHandler(null, "Berhasil", HttpStatus.OK, null);
     }
 
-    public List<SamplingRes> createRes(List<BranchSampling> sample){
+    public Object createListRes(List<BranchSampling> sample){
         List<SamplingRes> res = new ArrayList<>();
         for (BranchSampling s : sample) {
             SamplingRes build = new SamplingRes();
+            build.setBranch_sampling_id(s.getId());
             build.setBranch(branchSamplingService.getBranchSamplingDtos(s));
             build.setCollectors(collectorService.getCollectorSamplingDtos(collectorService.getCollectorSamplingBySamplingId(s.getId())));
             build.setSampling(realizeService.getRealizeBySamplingId(s.getId()));
             res.add(build);
         }
         return res;
+    }
+
+    public Object createRes(Page<BranchSampling> sample){
+        Map<String, Object> map = new LinkedHashMap<>();
+        List<SamplingRes> res = new ArrayList<>();
+        for (BranchSampling s : sample.getContent()) {
+            SamplingRes build = new SamplingRes();
+            build.setBranch_sampling_id(s.getId());
+            build.setBranch(branchSamplingService.getBranchSamplingDtos(s));
+            build.setCollectors(collectorService.getCollectorSamplingDtos(collectorService.getCollectorSamplingBySamplingId(s.getId())));
+            build.setSampling(realizeService.getRealizeBySamplingId(s.getId()));
+            res.add(build);
+        }
+        map.put("pageable", sample.getPageable());
+        map.put("total_pages", sample.getTotalPages());
+        map.put("total_elements", sample.getTotalElements());
+        map.put("current_page", sample.getNumber());
+        map.put("current_size", sample.getSize());
+        map.put("last", sample.isLast());
+        map.put("first", sample.isFirst());
+        map.put("empty", sample.isEmpty());
+        map.put("last", sample.isLast());
+        map.put("content", res);
+        return map;
     }
 
     public void createSpareLifeSampling(BranchSampling sample, CollectorSamplingDto listUnit, List<RealizeDto> listRealize){

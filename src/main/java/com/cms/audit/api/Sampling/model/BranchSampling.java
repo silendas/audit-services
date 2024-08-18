@@ -3,6 +3,7 @@ package com.cms.audit.api.Sampling.model;
 import java.util.Date;
 
 import com.cms.audit.api.Management.Office.BranchOffice.models.Branch;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -24,6 +25,7 @@ import lombok.ToString;
 @Table(name = "branch_sampling")
 public class BranchSampling {
 
+    @JsonIgnore
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -48,7 +50,7 @@ public class BranchSampling {
     @Column(name = "created_at")
     private Date created_at;
 
-    @Column(name = "is_deleted")
-    private Integer is_deleted;
+    @Column(name = "is_delete")
+    private Integer is_delete;
 
 }

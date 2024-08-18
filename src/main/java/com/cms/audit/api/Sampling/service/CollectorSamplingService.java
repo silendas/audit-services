@@ -1,7 +1,5 @@
 package com.cms.audit.api.Sampling.service;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -35,6 +33,7 @@ public class CollectorSamplingService {
     }
 
     public CollectorSampling create(BranchSampling branchSampling, CollectorSamplingDto dto) {
+        validation(dto);
         CollectorSampling collectorSampling = new CollectorSampling();
         collectorSampling.setBranchSampling(branchSampling);
         collectorSampling.setCollectors(dto.getCollectors());
@@ -47,5 +46,44 @@ public class CollectorSamplingService {
         collectorSampling.setTarget_unit(dto.getTarget_unit());
         collectorSampling.setTarget_value(dto.getTarget_value());
         return repo.save(collectorSampling);
+    }
+
+    public void validation(CollectorSamplingDto dto) {
+        if (dto.getCollectors() == null) {
+            throw new RuntimeException("Collectors is required");
+        }
+
+        if (dto.getRmk_unit() == null) {
+            throw new RuntimeException("Rmk_unit is required");
+        }
+
+        if (dto.getRmk_value() == null) {
+            throw new RuntimeException("Rmk_value is required");
+        }
+
+        if (dto.getPending_unit() == null) {
+            throw new RuntimeException("Pending_unit is required");
+        }
+
+        if (dto.getPending_value() == null) {
+            throw new RuntimeException("Pending_value is required");
+        }
+
+        if (dto.getUnit_sampling_unit() == null) {
+            throw new RuntimeException("Unit_sampling_unit is required");
+        }
+
+        if (dto.getUnit_sampling_value() == null) {
+            throw new RuntimeException("Unit_sampling_value is required");
+        }
+
+        if (dto.getTarget_unit() == null) {
+            throw new RuntimeException("Target_unit is required");
+        }
+
+        if (dto.getTarget_value() == null) {
+            throw new RuntimeException("Target_value is required");
+        }
+
     }
 }
