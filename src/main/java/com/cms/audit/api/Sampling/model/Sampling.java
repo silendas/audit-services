@@ -1,8 +1,8 @@
-package com.cms.audit.api.RMK.model;
+package com.cms.audit.api.Sampling.model;
 
 import java.util.Date;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.cms.audit.api.Management.Office.BranchOffice.models.Branch;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -21,31 +21,31 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "clasification")
-public class Clasification {
+@Table(name = "sampling")
+public class Sampling {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "name")
-    private String name;
+    @ManyToOne
+    @JoinColumn(name = "branch_id")
+    private Branch branch;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "category")
-    private ClasificationCategory category;
+    @Column(name = "current")
+    private Long current;
 
-    @JsonIgnore
+    @Column(name = "target")
+    private Long target;
+
+    @Column(name = "collectors", length = 500)
+    private String collectors;
+
     @Column(name = "created_at")
     private Date created_at;
 
-    @JsonIgnore
-    @Column(name = "updated_at")
-    private Date updated_at;
+    @Column(name = "is_deleted")
+    private Integer is_deleted;
 
-    @JsonIgnore
-    @Column(name = "is_delete")
-    private Integer is_delete;
-    
 }

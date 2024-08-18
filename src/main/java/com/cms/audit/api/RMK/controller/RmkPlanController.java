@@ -42,7 +42,7 @@ public class RmkPlanController {
     
     @PostMapping("/calculate")
     public ResponseEntity<Object> calculateRmkPlan(@RequestBody CalculateDto dto){
-        return service.calculate(dto.getValue());
+        return service.calculate(dto.getValue(), dto.getMargin_error());
     }
 
     @PostMapping

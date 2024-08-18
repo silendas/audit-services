@@ -1,6 +1,7 @@
 package com.cms.audit.api.RMK.service;
 
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -14,7 +15,6 @@ import com.cms.audit.api.Common.response.ResponseEntittyHandler;
 import com.cms.audit.api.RMK.dto.ClasificationDto;
 import com.cms.audit.api.RMK.model.Clasification;
 import com.cms.audit.api.RMK.model.ClasificationCategory;
-import com.cms.audit.api.RMK.model.ClasificationPriority;
 import com.cms.audit.api.RMK.repository.ClasificationRepo;
 import com.cms.audit.api.RMK.repository.PagClasification;
 
@@ -49,10 +49,6 @@ public class ClasificationService {
         return ResponseEntittyHandler.allHandler(ClasificationCategory.values(), "Berhasil", HttpStatus.OK, null);
     }
 
-    public ResponseEntity<Object> getPriority() {
-        return ResponseEntittyHandler.allHandler(ClasificationPriority.values(), "Berhasil", HttpStatus.OK, null);
-    }
-
     public ResponseEntity<Object> updateClasification(ClasificationDto clasification, Long id) {
         if (!repo.existsById(id)) {
             return ResponseEntittyHandler.errorResponse("Data tidak ditemukan", "Data tidak ditemukan", HttpStatus.NOT_FOUND);
@@ -63,7 +59,6 @@ public class ClasificationService {
         Clasification response = repo.findById(id).get();
         response.setName(clasification.getName());
         response.setCategory(clasification.getCategory());
-        response.setPriority(clasification.getPriority());
         response.setUpdated_at(new Date());
         return ResponseEntittyHandler.allHandler(repo.save(response), "Berhasil", HttpStatus.OK, null);
     }
@@ -82,11 +77,18 @@ public class ClasificationService {
         Clasification response = new Clasification();
         response.setName(clasification.getName());
         response.setCategory(clasification.getCategory());
-        response.setPriority(clasification.getPriority());
         response.setIs_delete(0);
         response.setCreated_at(new Date());
         response.setUpdated_at(new Date());
         return response;
+    }
+
+    public Clasification getClasificationById(Long id){
+        return repo.findById(id).get();
+    }
+
+    public List<Clasification> getAllClasification(){
+        return repo.findAll();
     }
 
 }

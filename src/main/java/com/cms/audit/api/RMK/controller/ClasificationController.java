@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,7 +18,6 @@ import com.cms.audit.api.Common.constant.BasePath;
 import com.cms.audit.api.RMK.dto.ClasificationDto;
 import com.cms.audit.api.RMK.service.ClasificationService;
 
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 
 @RestController
 @RequestMapping(value = BasePath.BASE_PATH_CLASIFICATION)
@@ -37,11 +37,6 @@ public class ClasificationController {
     @GetMapping("/category")
     public ResponseEntity<Object> getCategory() {
         return service.getCategory();
-    }
-
-    @GetMapping("/priority")
-    public ResponseEntity<Object> getPriority() {
-        return service.getPriority();
     }
 
     @PostMapping

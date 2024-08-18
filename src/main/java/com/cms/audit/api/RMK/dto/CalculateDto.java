@@ -6,5 +6,6 @@ import lombok.Data;
 public class CalculateDto {
 
     private Long value;
+    private Double margin_error;
     
 }

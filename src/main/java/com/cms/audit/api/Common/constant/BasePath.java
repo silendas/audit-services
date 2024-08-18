@@ -45,6 +45,7 @@ public interface BasePath {
     String BASE_PATH_FOLLOW_UP = BASE_API+"/followup";
 
     String BASE_PATH_CLASIFICATION = BASE_API+"/clasification";
+    String BASE_PATH_SAMPLING = BASE_API+"/sampling";
     String BASE_PATH_RMK_PLAN = BASE_API+"/rmk-plan";
     String BASE_PATH_RMK_REALIZE = BASE_API+"/rmk-realize";
 

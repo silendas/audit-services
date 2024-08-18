@@ -19,6 +19,8 @@ import com.cms.audit.api.RMK.model.RmkPlan;
 import com.cms.audit.api.RMK.repository.PagRmkPlan;
 import com.cms.audit.api.RMK.repository.RmkPlanRepo;
 
+import lombok.val;
+
 @Service
 public class RmkPlanService {
 
@@ -36,7 +38,8 @@ public class RmkPlanService {
         Specification<RmkPlan> spec = Specification
                 .where(new SpecificationFIlter<RmkPlan>().isNotDeleted())
                 .and(new SpecificationFIlter<RmkPlan>().orderByIdDesc());
-        return ResponseEntittyHandler.allHandler(pag.findAll(spec, PageRequest.of(page, size)), "Berhasil", HttpStatus.OK,
+        return ResponseEntittyHandler.allHandler(pag.findAll(spec, PageRequest.of(page, size)), "Berhasil",
+                HttpStatus.OK,
                 null);
     }
 
@@ -45,17 +48,20 @@ public class RmkPlanService {
     }
 
     public ResponseEntity<Object> createRmkPlan(RmkPlanDto dto) {
-        if(dto.getPending() == null || dto.getPending() == 0){
-            return ResponseEntittyHandler.allHandler(repo.save(builderRmkPlan(dto)), "Nilai pending tidak boleh kosong", HttpStatus.CREATED,
-            null);
+        if (dto.getPending() == null || dto.getPending() == 0) {
+            return ResponseEntittyHandler.allHandler(repo.save(builderRmkPlan(dto)), "Nilai pending tidak boleh kosong",
+                    HttpStatus.CREATED,
+                    null);
         }
-        if(dto.getRmk() == null || dto.getRmk() == 0){
-            return ResponseEntittyHandler.allHandler(repo.save(builderRmkPlan(dto)), "Nilai Rmk tidak boleh kosong", HttpStatus.CREATED,
-            null);
+        if (dto.getRmk() == null || dto.getRmk() == 0) {
+            return ResponseEntittyHandler.allHandler(repo.save(builderRmkPlan(dto)), "Nilai Rmk tidak boleh kosong",
+                    HttpStatus.CREATED,
+                    null);
         }
-        if(dto.getSlovin() == null || dto.getSlovin() == 0){
-            return ResponseEntittyHandler.allHandler(repo.save(builderRmkPlan(dto)), "Nilai Slovin tidak boleh kosong", HttpStatus.CREATED,
-            null);
+        if (dto.getSlovin() == null || dto.getSlovin() == 0) {
+            return ResponseEntittyHandler.allHandler(repo.save(builderRmkPlan(dto)), "Nilai Slovin tidak boleh kosong",
+                    HttpStatus.CREATED,
+                    null);
         }
         return ResponseEntittyHandler.allHandler(repo.save(builderRmkPlan(dto)), "Berhasil", HttpStatus.CREATED,
                 null);
@@ -69,9 +75,8 @@ public class RmkPlanService {
         return ResponseEntittyHandler.allHandler(repo.save(builderRmkPlan(rmkPlan)), "Berhasil", HttpStatus.OK, null);
     }
 
-    public ResponseEntity<Object> calculate(Long value) {
-        double marginOfError = 0.05;
-    
+    public ResponseEntity<Object> calculate(Long value, Double margin_error) {
+        double marginOfError = margin_error != null ? margin_error : 0.05;
         if (value == null || marginOfError <= 0) {
             return ResponseEntittyHandler.errorResponse("Nilai atau margin kesalahan tidak valid", "Nilai tidak valid",
                     HttpStatus.BAD_REQUEST);
@@ -79,7 +84,7 @@ public class RmkPlanService {
     
         double slovin = value / (1 + value * Math.pow(marginOfError, 2));
     
-        double roundedSlovin = Math.round(slovin * 1000.0) / 1000.0;
+        double roundedSlovin = Math.round(slovin * 100.0) / 100.0;
     
         Map<String, Object> slovinMap = new HashMap<>();
         slovinMap.put("slovin", roundedSlovin);
@@ -97,7 +102,7 @@ public class RmkPlanService {
         return ResponseEntittyHandler.allHandler(repo.save(model), "Berhasil", HttpStatus.OK, null);
     }
 
-    public ResponseDetailRmk buildDetailResponse(Long id){
+    public ResponseDetailRmk buildDetailResponse(Long id) {
         RmkPlan plan = repo.findById(id).get();
         ResponseDetailRmk res = new ResponseDetailRmk();
         res.setCollector(plan.getCollector());
