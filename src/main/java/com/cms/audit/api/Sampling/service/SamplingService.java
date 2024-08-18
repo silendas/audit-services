@@ -70,7 +70,6 @@ public class SamplingService {
         List<SamplingRes> res = new ArrayList<>();
         for (BranchSampling s : sample) {
             SamplingRes build = new SamplingRes();
-            build.setBranch_sampling_id(s.getId());
             build.setBranch(branchSamplingService.getBranchSamplingDtos(s));
             build.setCollectors(collectorService.getCollectorSamplingDtos(collectorService.getCollectorSamplingBySamplingId(s.getId())));
             build.setSampling(realizeService.getRealizeBySamplingId(s.getId()));
@@ -84,7 +83,6 @@ public class SamplingService {
         List<SamplingRes> res = new ArrayList<>();
         for (BranchSampling s : sample.getContent()) {
             SamplingRes build = new SamplingRes();
-            build.setBranch_sampling_id(s.getId());
             build.setBranch(branchSamplingService.getBranchSamplingDtos(s));
             build.setCollectors(collectorService.getCollectorSamplingDtos(collectorService.getCollectorSamplingBySamplingId(s.getId())));
             build.setSampling(realizeService.getRealizeBySamplingId(s.getId()));

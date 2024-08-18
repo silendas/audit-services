@@ -1,6 +1,5 @@
 package com.cms.audit.api.Sampling.dto.response;
 
-import com.cms.audit.api.Sampling.dto.request.BranchSampleDto;
 import com.cms.audit.api.Sampling.dto.request.CollectorSamplingDto;
 
 import lombok.AllArgsConstructor;
@@ -18,9 +17,7 @@ import lombok.Setter;
 @NoArgsConstructor
 public class SamplingRes {
 
-    private Long branch_sampling_id;
-
-    private BranchSampleDto branch;
+    private BranchSamplingRes branch;
 
     private CollectorSamplingDto collectors;
 

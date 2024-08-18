@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import com.cms.audit.api.Common.constant.SpecificationFIlter;
 import com.cms.audit.api.Management.Office.BranchOffice.services.BranchService;
 import com.cms.audit.api.Sampling.dto.request.BranchSampleDto;
+import com.cms.audit.api.Sampling.dto.response.BranchSamplingRes;
 import com.cms.audit.api.Sampling.model.BranchSampling;
 import com.cms.audit.api.Sampling.repository.PagSampling;
 import com.cms.audit.api.Sampling.repository.SamplingRepository;
@@ -59,9 +60,11 @@ public class BranchSamplingService {
     // return build;
     // }
 
-    public BranchSampleDto getBranchSamplingDtos(BranchSampling branchSampling) {
-        BranchSampleDto dto = new BranchSampleDto();
-        dto.setBranch(branchSampling.getBranch().getId());
+    public BranchSamplingRes getBranchSamplingDtos(BranchSampling branchSampling) {
+        BranchSamplingRes dto = new BranchSamplingRes();
+        dto.setSampling_id(branchSampling.getId());
+        dto.setBranch_name(branchSampling.getBranch().getName());
+        dto.setRegion_name(branchSampling.getBranch().getArea().getRegion().getName());
         dto.setCreated_sampling(branchSampling.getCreated_at());
         dto.setCurrent_branch(branchSampling.getCurrent_branch());
         dto.setCurrent_rmk(branchSampling.getCurrent_rmk());
