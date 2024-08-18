@@ -6,6 +6,7 @@ import java.util.List;
 
 @Data
 public class SamplingDto {
+    
 
     private Long branch_id;
 
