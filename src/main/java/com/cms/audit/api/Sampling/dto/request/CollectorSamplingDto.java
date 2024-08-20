@@ -23,6 +23,6 @@ public class CollectorSamplingDto {
 
     private Long unit_sampling_unit;
 
-    private Long margin_error;
+    private Double margin_error;
 
 }

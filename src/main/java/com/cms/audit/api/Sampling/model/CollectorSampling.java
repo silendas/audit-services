@@ -57,9 +57,8 @@ public class CollectorSampling {
 
     @Column(name = "unit_sampling_unit")
     private Long unit_sampling_unit;
-
     
     @Column(name = "margin_error")
-    private Long margin_error;
+    private Double margin_error;
     
 }
