@@ -45,21 +45,6 @@ public class BranchSamplingService {
         return repo.findAll(spec);
     }
 
-    // public List<BranchSamplingDto> getBranchSamplingDtos(List<BranchSampling>
-    // branchSampling) {
-    // List<BranchSamplingDto> build = new ArrayList<>();
-    // for (BranchSampling item : branchSampling) {
-    // BranchSamplingDto dto = new BranchSamplingDto();
-    // dto.setBranch(item.getBranch().getId());
-    // dto.setCurrent_branch(item.getCurrent_branch());
-    // dto.setCurrent_rmk(item.getCurrent_rmk());
-    // dto.setPending_unit(item.getPending_unit());
-    // dto.setPending_value(item.getPending_value());
-    // build.add(dto);
-    // }
-    // return build;
-    // }
-
     public BranchSamplingRes getBranchSamplingDtos(BranchSampling branchSampling) {
         BranchSamplingRes dto = new BranchSamplingRes();
         dto.setSampling_id(branchSampling.getId());

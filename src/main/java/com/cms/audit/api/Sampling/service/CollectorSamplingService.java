@@ -29,6 +29,7 @@ public class CollectorSamplingService {
         dto.setUnit_sampling_value(collectorSampling.getUnit_sampling_value());
         dto.setTarget_unit(collectorSampling.getTarget_unit());
         dto.setTarget_value(collectorSampling.getTarget_value());
+        dto.setMargin_error(collectorSampling.getMargin_error());
         return dto;
     }
 
@@ -45,6 +46,7 @@ public class CollectorSamplingService {
         collectorSampling.setUnit_sampling_value(dto.getUnit_sampling_value());
         collectorSampling.setTarget_unit(dto.getTarget_unit());
         collectorSampling.setTarget_value(dto.getTarget_value());
+        collectorSampling.setMargin_error(dto.getMargin_error());
         return repo.save(collectorSampling);
     }
 
