@@ -10,6 +10,7 @@ import com.cms.audit.api.RMK.model.Clasification;
 import com.cms.audit.api.RMK.model.ClasificationCategory;
 import com.cms.audit.api.RMK.service.ClasificationService;
 import com.cms.audit.api.Sampling.dto.request.RealizeDto;
+import com.cms.audit.api.Sampling.dto.request.RealizeUpdateDto;
 import com.cms.audit.api.Sampling.dto.response.RealizeRes;
 import com.cms.audit.api.Sampling.model.RealizeSampling;
 import com.cms.audit.api.Sampling.model.BranchSampling;
@@ -32,6 +33,17 @@ public class RealizeService {
     public void createList(BranchSampling sample, List<RealizeDto> dto) {
         for (RealizeDto d : dto) {
             RealizeSampling build = new RealizeSampling();
+            build.setSampling(sample);
+            build.setClasification(clasificationService.getClasificationById(d.getClasification_id()));
+            build.setValue(d.getValue());
+            build.setUnit(d.getUnit());
+            repo.save(build);
+        }
+    }
+
+    public void update(BranchSampling sample, List<RealizeUpdateDto> dto) {
+        for (RealizeUpdateDto d : dto) {
+            RealizeSampling build = repo.findById(d.getId()).get();
             build.setSampling(sample);
             build.setClasification(clasificationService.getClasificationById(d.getClasification_id()));
             build.setValue(d.getValue());

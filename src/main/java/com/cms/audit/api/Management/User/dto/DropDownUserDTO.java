@@ -3,8 +3,7 @@ package com.cms.audit.api.Management.User.dto;
 import java.util.List;
 
 import com.cms.audit.api.Management.Level.models.Level;
-import com.cms.audit.api.Management.Office.BranchOffice.models.Branch;
-import com.cms.audit.api.Management.Office.RegionOffice.models.Region;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import lombok.Data;
 import lombok.Getter;
@@ -17,6 +16,7 @@ import lombok.ToString;
 @Setter
 @Getter
 @NoArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class DropDownUserDTO {
     private Long id;
     private String fullname;

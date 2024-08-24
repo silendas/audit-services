@@ -171,6 +171,11 @@ public class UserService {
                 return listUser;
         }
 
+        public User getUserbyIdObj(Long id){
+                if(id == null) return null;
+                return userRepository.findById(id).get();
+        }
+
         public GlobalResponse findOne(Long id) {
                 try {
                         Optional<User> response = userRepository.findById(id);
@@ -1071,6 +1076,10 @@ public class UserService {
                 } catch (Exception e) {
                         throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Server error");
                 }
+        }
+
+        public User getUserById(Long id){
+                return userRepository.findById(id).get();
         }
 
 }

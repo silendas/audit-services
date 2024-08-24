@@ -23,7 +23,6 @@ import lombok.ToString;
 @Table(name = "realize_sampling")
 public class RealizeSampling {
 
-    @JsonIgnore
     @Id 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")

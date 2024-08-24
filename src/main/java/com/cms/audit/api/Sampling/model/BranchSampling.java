@@ -50,6 +50,9 @@ public class BranchSampling {
     @Column(name = "created_at")
     private Date created_at;
 
+    @Column(name = "created_by")
+    private Long created_by;
+
     @Column(name = "is_delete")
     private Integer is_delete;
 

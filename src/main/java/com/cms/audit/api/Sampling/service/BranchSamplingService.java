@@ -58,7 +58,7 @@ public class BranchSamplingService {
         return dto;
     }
 
-    public BranchSampling create(BranchSampleDto dto) {
+    public BranchSampling create(BranchSampleDto dto, Long userId) {
         validation(dto);
         BranchSampling build = new BranchSampling();
         build.setBranch(branchService.getBranchById(dto.getBranch()));
@@ -67,7 +67,21 @@ public class BranchSamplingService {
         build.setPending_unit(dto.getPending_unit());
         build.setPending_value(dto.getPending_value());
         build.setCreated_at(new Date());
+        build.setCreated_by(userId);
         build.setIs_delete(0);
+        return repo.save(build);
+    }
+
+    public BranchSampling update(BranchSampleDto dto, Long userId, Long branchId) {
+        validation(dto);
+        BranchSampling build = repo.findById(branchId).get();
+        build.setBranch(branchService.getBranchById(dto.getBranch()));
+        build.setCurrent_branch(dto.getCurrent_branch());
+        build.setCurrent_rmk(dto.getCurrent_rmk());
+        build.setPending_unit(dto.getPending_unit());
+        build.setPending_value(dto.getPending_value());
+        build.setCreated_at(new Date());
+        build.setCreated_by(userId);
         return repo.save(build);
     }
 

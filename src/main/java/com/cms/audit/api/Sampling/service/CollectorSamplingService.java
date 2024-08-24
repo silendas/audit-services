@@ -50,6 +50,25 @@ public class CollectorSamplingService {
         return repo.save(collectorSampling);
     }
 
+    public CollectorSampling update(BranchSampling branchSampling, CollectorSamplingDto dto, Long samplingId) {
+        validation(dto);
+        CollectorSampling collectorSampling = repo.findAllBySamplingId(samplingId);
+        collectorSampling.setBranchSampling(branchSampling);
+        collectorSampling.setCollectors(dto.getCollectors());
+        collectorSampling.setRmk_unit(dto.getRmk_unit());
+        collectorSampling.setRmk_value(dto.getRmk_value());
+        collectorSampling.setPending_unit(dto.getPending_unit());
+        collectorSampling.setPending_value(dto.getPending_value());
+        collectorSampling.setUnit_sampling_unit(dto.getUnit_sampling_unit());
+        collectorSampling.setUnit_sampling_value(dto.getUnit_sampling_value());
+        collectorSampling.setTarget_unit(dto.getTarget_unit());
+        collectorSampling.setTarget_value(dto.getTarget_value());
+        collectorSampling.setMargin_error(dto.getMargin_error());
+        return repo.save(collectorSampling);
+    }
+
+
+
     public void validation(CollectorSamplingDto dto) {
         if (dto.getCollectors() == null) {
             throw new RuntimeException("Collectors is required");

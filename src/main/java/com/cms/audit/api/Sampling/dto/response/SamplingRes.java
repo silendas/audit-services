@@ -1,5 +1,6 @@
 package com.cms.audit.api.Sampling.dto.response;
 
+import com.cms.audit.api.Management.User.dto.DropDownUserDTO;
 import com.cms.audit.api.Sampling.dto.request.CollectorSamplingDto;
 
 import lombok.AllArgsConstructor;
@@ -22,5 +23,7 @@ public class SamplingRes {
     private CollectorSamplingDto collectors;
 
     private RealizeRes sampling;
+
+    private DropDownUserDTO created_by;
     
 }
