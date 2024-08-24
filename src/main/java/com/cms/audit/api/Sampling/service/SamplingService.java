@@ -123,11 +123,7 @@ public class SamplingService {
         Map<String, Object> map = new LinkedHashMap<>();
         List<SamplingRes> res = new ArrayList<>();
         for (BranchSampling s : sample.getContent()) {
-            SamplingRes build = new SamplingRes();
-            build.setBranch(branchSamplingService.getBranchSamplingDtos(s));
-            build.setCollectors(collectorService
-                    .getCollectorSamplingDtos(collectorService.getCollectorSamplingBySamplingId(s.getId())));
-            build.setSampling(realizeService.getRealizeBySamplingId(s.getId()));
+            SamplingRes build = createObjRes(s);
             res.add(build);
         }
         Map<String, Object> pageable = new LinkedHashMap<>();
