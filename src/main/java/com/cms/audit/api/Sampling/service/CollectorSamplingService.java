@@ -21,6 +21,7 @@ public class CollectorSamplingService {
     public CollectorSamplingDto getCollectorSamplingDtos(CollectorSampling collectorSampling) {
         CollectorSamplingDto dto = new CollectorSamplingDto();
         dto.setCollectors(collectorSampling.getCollectors());
+        dto.setNip(collectorSampling.getNip());
         dto.setRmk_unit(collectorSampling.getRmk_unit());
         dto.setRmk_value(collectorSampling.getRmk_value());
         dto.setPending_unit(collectorSampling.getPending_unit());
