@@ -9,6 +9,8 @@ public class ClasificationDto {
 
     private String name;
 
+    private String code;
+
     private ClasificationCategory category;
 
 }

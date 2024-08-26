@@ -7,6 +7,8 @@ public class CollectorSamplingDto {
     
     private String collectors;
 
+    private String nip;
+
     private Long rmk_value;
 
     private Long rmk_unit;

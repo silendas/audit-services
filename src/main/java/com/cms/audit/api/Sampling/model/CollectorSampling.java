@@ -34,6 +34,9 @@ public class CollectorSampling {
     @Column(name = "collectors", length = 500)
     private String collectors;
 
+    @Column(name = "nip", length = 500)
+    private String nip;
+
     @Column(name = "rmk_value")
     private Long rmk_value;
 

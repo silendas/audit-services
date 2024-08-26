@@ -38,6 +38,7 @@ public class CollectorSamplingService {
         CollectorSampling collectorSampling = new CollectorSampling();
         collectorSampling.setBranchSampling(branchSampling);
         collectorSampling.setCollectors(dto.getCollectors());
+        collectorSampling.setNip(dto.getNip());
         collectorSampling.setRmk_unit(dto.getRmk_unit());
         collectorSampling.setRmk_value(dto.getRmk_value());
         collectorSampling.setPending_unit(dto.getPending_unit());
@@ -55,6 +56,7 @@ public class CollectorSamplingService {
         CollectorSampling collectorSampling = repo.findAllBySamplingId(samplingId);
         collectorSampling.setBranchSampling(branchSampling);
         collectorSampling.setCollectors(dto.getCollectors());
+        collectorSampling.setNip(dto.getNip());
         collectorSampling.setRmk_unit(dto.getRmk_unit());
         collectorSampling.setRmk_value(dto.getRmk_value());
         collectorSampling.setPending_unit(dto.getPending_unit());
@@ -72,6 +74,10 @@ public class CollectorSamplingService {
     public void validation(CollectorSamplingDto dto) {
         if (dto.getCollectors() == null) {
             throw new RuntimeException("Collectors is required");
+        }
+
+        if (dto.getNip() == null) {
+            throw new RuntimeException("Nip is required");
         }
 
         if (dto.getRmk_unit() == null) {

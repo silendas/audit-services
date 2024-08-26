@@ -42,6 +42,9 @@ public class ClasificationService {
         if (repo.existsByName(clasification.getName())) {
             return ResponseEntittyHandler.errorResponse("Name sudah ada", "Name sudah ada", HttpStatus.BAD_REQUEST);
         }
+        if(repo.existsByCode(clasification.getCode())){
+            return ResponseEntittyHandler.errorResponse("Code sudah ada", "Code sudah ada", HttpStatus.BAD_REQUEST);
+        }
         return ResponseEntittyHandler.allHandler(repo.save(builderClasification(clasification)), "Berhasil", HttpStatus.OK, null);
     }
 
@@ -53,10 +56,13 @@ public class ClasificationService {
         if (!repo.existsById(id)) {
             return ResponseEntittyHandler.errorResponse("Data tidak ditemukan", "Data tidak ditemukan", HttpStatus.NOT_FOUND);
         }
-        if (repo.existsByName(clasification.getName())) {
+        Clasification response = repo.findById(id).get();
+        if (!response.getName().equals(clasification.getName()) && repo.existsByName(clasification.getName())) {
             return ResponseEntittyHandler.errorResponse("Name sudah ada", "Name sudah ada", HttpStatus.BAD_REQUEST);
         }
-        Clasification response = repo.findById(id).get();
+        if(!response.getCode().equals(clasification.getCode()) && repo.existsByCode(clasification.getCode())){
+            return ResponseEntittyHandler.errorResponse("Code sudah ada", "Code sudah ada", HttpStatus.BAD_REQUEST);
+        }
         response.setName(clasification.getName());
         response.setCategory(clasification.getCategory());
         response.setUpdated_at(new Date());
@@ -76,6 +82,7 @@ public class ClasificationService {
     public Clasification builderClasification(ClasificationDto clasification) {
         Clasification response = new Clasification();
         response.setName(clasification.getName());
+        response.setCode(clasification.getCode());
         response.setCategory(clasification.getCategory());
         response.setIs_delete(0);
         response.setCreated_at(new Date());

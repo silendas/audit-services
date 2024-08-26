@@ -9,4 +9,5 @@ import com.cms.audit.api.RMK.model.Clasification;
 @Repository
 public interface ClasificationRepo extends JpaRepository<Clasification, Long>, JpaSpecificationExecutor<Clasification> {
     boolean existsByName(String name);
+    boolean existsByCode(String code);
 }

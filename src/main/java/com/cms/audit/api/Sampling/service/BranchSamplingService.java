@@ -1,6 +1,5 @@
 package com.cms.audit.api.Sampling.service;
 
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -12,8 +11,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.cms.audit.api.Common.constant.SpecificationFIlter;
-import com.cms.audit.api.InspectionSchedule.models.EStatus;
-import com.cms.audit.api.InspectionSchedule.models.Schedule;
 import com.cms.audit.api.Management.Office.BranchOffice.services.BranchService;
 import com.cms.audit.api.Management.User.models.User;
 import com.cms.audit.api.Sampling.dto.request.BranchSampleDto;
