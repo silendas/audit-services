@@ -1,5 +1,6 @@
 package com.cms.audit.api.Sampling.service;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -7,10 +8,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.cms.audit.api.Common.constant.SpecificationFIlter;
+import com.cms.audit.api.InspectionSchedule.models.EStatus;
+import com.cms.audit.api.InspectionSchedule.models.Schedule;
 import com.cms.audit.api.Management.Office.BranchOffice.services.BranchService;
+import com.cms.audit.api.Management.User.models.User;
 import com.cms.audit.api.Sampling.dto.request.BranchSampleDto;
 import com.cms.audit.api.Sampling.dto.response.BranchSamplingRes;
 import com.cms.audit.api.Sampling.model.BranchSampling;
@@ -30,18 +35,30 @@ public class BranchSamplingService {
     private BranchService branchService;
 
     public Page<BranchSampling> getAll(Date start_date, Date end_date, int page, int size) {
+        User getUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Specification<BranchSampling> spec = Specification
                 .where(new SpecificationFIlter<BranchSampling>().isNotDeleted())
                 .and(new SpecificationFIlter<BranchSampling>().dateRange(start_date, end_date))
                 .and(new SpecificationFIlter<BranchSampling>().orderByIdDesc());
+        if (getUser.getLevel().getCode().equals("B")) {
+            spec = spec.and(new SpecificationFIlter<BranchSampling>().getByRegionIds(getUser.getRegionId()));
+        } else if (getUser.getLevel().getCode().equals("C")) {
+            spec = spec.and(new SpecificationFIlter<BranchSampling>().createdByEqual(getUser.getId()));
+        }
         return pagSampling.findAll(spec, PageRequest.of(page, size));
     }
 
     public List<BranchSampling> getAllList(Date start_date, Date end_date) {
+        User getUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Specification<BranchSampling> spec = Specification
                 .where(new SpecificationFIlter<BranchSampling>().isNotDeleted())
                 .and(new SpecificationFIlter<BranchSampling>().dateRange(start_date, end_date))
                 .and(new SpecificationFIlter<BranchSampling>().orderByIdDesc());
+        if (getUser.getLevel().getCode().equals("B")) {
+            spec = spec.and(new SpecificationFIlter<BranchSampling>().getByRegionIds(getUser.getRegionId()));
+        } else if (getUser.getLevel().getCode().equals("C")) {
+            spec = spec.and(new SpecificationFIlter<BranchSampling>().createdByEqual(getUser.getId()));
+        }
         return repo.findAll(spec);
     }
 
@@ -90,7 +107,7 @@ public class BranchSamplingService {
             throw new RuntimeException("Branch is required");
         }
 
-        if (dto.getCurrent_branch() == null) {  
+        if (dto.getCurrent_branch() == null) {
             throw new RuntimeException("Current_branch is required");
         }
 

@@ -101,6 +101,11 @@ public class SpecificationFIlter<T> {
                 : criteriaBuilder.equal(root.get("branch").get("id"), branchId);
     }
 
+    public Specification<T> createdByEqual(Long userId ) {
+        return (root, query, criteriaBuilder) -> userId == null ? null
+                : criteriaBuilder.equal(root.get("created_by"), userId);
+    }
+
     public Specification<T> branchNameLike(String branchName) {
         return (root, query, criteriaBuilder) -> branchName == null ? null
                 : criteriaBuilder.like(root.get("branch").get("name"), "%" + branchName + "%");
