@@ -53,6 +53,9 @@ public class BranchSampling {
     @Column(name = "created_by")
     private Long created_by;
 
+    @Column(name = "updated_by")
+    private Long updated_by;
+
     @Column(name = "is_delete")
     private Integer is_delete;
 

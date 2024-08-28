@@ -96,7 +96,7 @@ public class BranchSamplingService {
         build.setPending_unit(dto.getPending_unit());
         build.setPending_value(dto.getPending_value());
         build.setCreated_at(new Date());
-        build.setCreated_by(userId);
+        build.setUpdated_by(userId);
         return repo.save(build);
     }
 

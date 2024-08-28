@@ -65,6 +65,7 @@ public class ClasificationService {
         }
         response.setName(clasification.getName());
         response.setCategory(clasification.getCategory());
+        response.setCode(clasification.getCode());
         response.setUpdated_at(new Date());
         return ResponseEntittyHandler.allHandler(repo.save(response), "Berhasil", HttpStatus.OK, null);
     }
