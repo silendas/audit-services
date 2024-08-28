@@ -43,7 +43,10 @@ public class RealizeService {
 
     public void update(BranchSampling sample, List<RealizeUpdateDto> dto) {
         for (RealizeUpdateDto d : dto) {
-            RealizeSampling build = repo.findById(d.getId()).get();
+            RealizeSampling build = new RealizeSampling();
+            if(d.getId() != null){
+                build = repo.findById(d.getId()).get();
+            }
             build.setSampling(sample);
             build.setClasification(clasificationService.getClasificationById(d.getClasification_id()));
             build.setValue(d.getValue());

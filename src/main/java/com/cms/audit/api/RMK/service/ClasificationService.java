@@ -57,10 +57,10 @@ public class ClasificationService {
             return ResponseEntittyHandler.errorResponse("Data tidak ditemukan", "Data tidak ditemukan", HttpStatus.NOT_FOUND);
         }
         Clasification response = repo.findById(id).get();
-        if (!response.getName().equals(clasification.getName()) && repo.existsByName(clasification.getName())) {
+        if (response.getName() != null && !response.getName().equals(clasification.getName()) && repo.existsByName(clasification.getName())) {
             return ResponseEntittyHandler.errorResponse("Name sudah ada", "Name sudah ada", HttpStatus.BAD_REQUEST);
         }
-        if(!response.getCode().equals(clasification.getCode()) && repo.existsByCode(clasification.getCode())){
+        if(response.getCode() != null && !response.getCode().equals(clasification.getCode()) && repo.existsByCode(clasification.getCode())){
             return ResponseEntittyHandler.errorResponse("Code sudah ada", "Code sudah ada", HttpStatus.BAD_REQUEST);
         }
         response.setName(clasification.getName());

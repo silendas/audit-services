@@ -19,8 +19,6 @@ import com.cms.audit.api.RMK.model.RmkPlan;
 import com.cms.audit.api.RMK.repository.PagRmkPlan;
 import com.cms.audit.api.RMK.repository.RmkPlanRepo;
 
-import lombok.val;
-
 @Service
 public class RmkPlanService {
 

@@ -19,7 +19,7 @@ public class BranchSamplingRes {
     
     private Long sampling_id;
 
-    private String branch_name;
+    private BranchObjRes branch;
 
     private String region_name;
 
