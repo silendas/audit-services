@@ -51,6 +51,15 @@ public class RandomTableService {
 
     public ResponseEntity<Object> createRandomTable(RandomTableDto dto) {
         User getUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        // Validation: Check if a RandomTable exists for the same branch in the current
+        // month
+        boolean exists = randomTableRepo.existsByBranchInCurrentMonth(dto.getBranch());
+        if (exists) {
+            return ResponseEntittyHandler.allHandler(null,
+                    "RandomTable for this branch already exists for the current month", HttpStatus.BAD_REQUEST, null);
+        }
+
         RandomTable randomTable = new RandomTable();
         randomTable.setValue(dto.getValue());
         randomTable.setBranch(branchService.getBranchById(dto.getBranch()));
@@ -66,6 +75,15 @@ public class RandomTableService {
 
     public ResponseEntity<Object> updateRandomTable(Long id, RandomTableDto dto) {
         RandomTable randomTable = randomTableRepo.findById(id).get();
+
+        // Validation: Check if a RandomTable exists for the same branch in the current
+        // month, excluding the current ID
+        boolean exists = randomTableRepo.existsByBranchInCurrentMonthAndIdNot(dto.getBranch(), id);
+        if (exists) {
+            return ResponseEntittyHandler.allHandler(null,
+                    "RandomTable for this branch already exists for the current month", HttpStatus.BAD_REQUEST, null);
+        }
+
         randomTable.setValue(dto.getValue());
         randomTable.setBranch(branchService.getBranchById(dto.getBranch()));
         randomTable.setMargin_error(dto.getMargin_error());
