@@ -1,5 +1,6 @@
 package com.cms.audit.api.Sampling.service;
 
+import java.util.Calendar;
 import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,15 +50,38 @@ public class RandomTableService {
         return ResponseEntittyHandler.allHandler(randomTableRepo.findById(id), "Berhasil", HttpStatus.OK, null);
     }
 
+   private Date getFirstDayOfMonth() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.DAY_OF_MONTH, 1);
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+        return calendar.getTime();
+    }
+
+    // Calculate the last day of the current month
+    private Date getLastDayOfMonth() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMaximum(Calendar.DAY_OF_MONTH));
+        calendar.set(Calendar.HOUR_OF_DAY, 23);
+        calendar.set(Calendar.MINUTE, 59);
+        calendar.set(Calendar.SECOND, 59);
+        calendar.set(Calendar.MILLISECOND, 999);
+        return calendar.getTime();
+    }
+
     public ResponseEntity<Object> createRandomTable(RandomTableDto dto) {
         User getUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        // Validation: Check if a RandomTable exists for the same branch in the current
-        // month
-        boolean exists = randomTableRepo.existsByBranchInCurrentMonth(dto.getBranch());
+        // Get the first and last day of the current month
+        Date startDate = getFirstDayOfMonth();
+        Date endDate = getLastDayOfMonth();
+
+        // Validation: Check if a RandomTable exists for the same branch in the current month
+        boolean exists = randomTableRepo.existsByBranchAndCreatedAtBetween(dto.getBranch(), startDate, endDate);
         if (exists) {
-            return ResponseEntittyHandler.allHandler(null,
-                    "RandomTable for this branch already exists for the current month", HttpStatus.BAD_REQUEST, null);
+            return ResponseEntittyHandler.allHandler(null, "RandomTable for this branch already exists for the current month", HttpStatus.BAD_REQUEST, null);
         }
 
         RandomTable randomTable = new RandomTable();
@@ -74,14 +98,19 @@ public class RandomTableService {
     }
 
     public ResponseEntity<Object> updateRandomTable(Long id, RandomTableDto dto) {
-        RandomTable randomTable = randomTableRepo.findById(id).get();
+        RandomTable randomTable = randomTableRepo.findById(id).orElse(null);
+        if (randomTable == null) {
+            return ResponseEntittyHandler.allHandler(null, "RandomTable not found", HttpStatus.NOT_FOUND, null);
+        }
 
-        // Validation: Check if a RandomTable exists for the same branch in the current
-        // month, excluding the current ID
-        boolean exists = randomTableRepo.existsByBranchInCurrentMonthAndIdNot(dto.getBranch(), id);
+        // Get the first and last day of the current month
+        Date startDate = getFirstDayOfMonth();
+        Date endDate = getLastDayOfMonth();
+
+        // Validation: Check if a RandomTable exists for the same branch in the current month, excluding the current ID
+        boolean exists = randomTableRepo.existsByBranchAndCreatedAtBetweenAndIdNot(dto.getBranch(), startDate, endDate, id);
         if (exists) {
-            return ResponseEntittyHandler.allHandler(null,
-                    "RandomTable for this branch already exists for the current month", HttpStatus.BAD_REQUEST, null);
+            return ResponseEntittyHandler.allHandler(null, "RandomTable for this branch already exists for the current month", HttpStatus.BAD_REQUEST, null);
         }
 
         randomTable.setValue(dto.getValue());

@@ -1,5 +1,7 @@
 package com.cms.audit.api.Sampling.repository;
 
+import java.util.Date;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
@@ -11,22 +13,23 @@ import com.cms.audit.api.Sampling.model.RandomTable;
 @Repository
 public interface RandomTableRepo extends JpaRepository<RandomTable, Long>, JpaSpecificationExecutor<RandomTable> {
 
-    // Check if a RandomTable exists for the same branch in the current month and year
+    // Check if a RandomTable exists for the same branch in the same month and year
     @Query("SELECT CASE WHEN COUNT(rt) > 0 THEN true ELSE false END FROM RandomTable rt " +
            "WHERE rt.branch.id = :branchId " +
-           "AND rt.created_at BETWEEN " +
-           "DATE_TRUNC('month', CURRENT_DATE) AND " +
-           "DATE_TRUNC('month', CURRENT_DATE) + INTERVAL '1 month' - INTERVAL '1 day' " +
+           "AND rt.created_at BETWEEN :startDate AND :endDate " +
            "AND rt.is_delete = 0")
-    boolean existsByBranchInCurrentMonth(@Param("branchId") Long branchId);
+    boolean existsByBranchAndCreatedAtBetween(@Param("branchId") Long branchId,
+                                              @Param("startDate") Date startDate,
+                                              @Param("endDate") Date endDate);
 
-    // Check if a RandomTable exists for the same branch in the current month and year, excluding the current ID
+    // Check if a RandomTable exists for the same branch in the same month and year, excluding the current ID
     @Query("SELECT CASE WHEN COUNT(rt) > 0 THEN true ELSE false END FROM RandomTable rt " +
            "WHERE rt.branch.id = :branchId " +
-           "AND rt.created_at BETWEEN " +
-           "DATE_TRUNC('month', CURRENT_DATE) AND " +
-           "DATE_TRUNC('month', CURRENT_DATE) + INTERVAL '1 month' - INTERVAL '1 day' " +
+           "AND rt.created_at BETWEEN :startDate AND :endDate " +
            "AND rt.id <> :id " +
            "AND rt.is_delete = 0")
-    boolean existsByBranchInCurrentMonthAndIdNot(@Param("branchId") Long branchId, @Param("id") Long id);
+    boolean existsByBranchAndCreatedAtBetweenAndIdNot(@Param("branchId") Long branchId,
+                                                      @Param("startDate") Date startDate,
+                                                      @Param("endDate") Date endDate,
+                                                      @Param("id") Long id);
 }
