@@ -7,8 +7,12 @@ public class RandomTableDto {
 
     private Long value;
 
-    private Long unit;
+    private Long branch;
 
-    private Long random_value;
+    private Double margin_error;
+
+    private Double slovin_result;
+
+    private String random_sampling;
     
 }

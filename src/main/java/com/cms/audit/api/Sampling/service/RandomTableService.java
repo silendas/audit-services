@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import com.cms.audit.api.Common.constant.SpecificationFIlter;
 import com.cms.audit.api.Common.response.ResponseEntittyHandler;
+import com.cms.audit.api.Management.Office.BranchOffice.services.BranchService;
 import com.cms.audit.api.Management.User.models.User;
 import com.cms.audit.api.Sampling.dto.request.RandomTableDto;
 import com.cms.audit.api.Sampling.model.RandomTable;
@@ -24,6 +25,9 @@ public class RandomTableService {
 
     @Autowired
     private RandomTableRepo randomTableRepo;
+
+    @Autowired
+    private BranchService branchService;
 
     @Autowired
     private PagRandomTable pagRandomTable;
@@ -49,8 +53,10 @@ public class RandomTableService {
         User getUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         RandomTable randomTable = new RandomTable();
         randomTable.setValue(dto.getValue());
-        randomTable.setUnit(dto.getUnit());
-        randomTable.setRandom_value(dto.getRandom_value());
+        randomTable.setBranch(branchService.getBranchById(dto.getBranch()));
+        randomTable.setMargin_error(dto.getMargin_error());
+        randomTable.setSlovin_result(dto.getSlovin_result());
+        randomTable.setRandom_sampling(dto.getRandom_sampling());
         randomTable.setIs_delete(0);
         randomTable.setCreated_at(new Date());
         randomTable.setCreated_by(getUser.getId());
@@ -61,8 +67,10 @@ public class RandomTableService {
     public ResponseEntity<Object> updateRandomTable(Long id, RandomTableDto dto) {
         RandomTable randomTable = randomTableRepo.findById(id).get();
         randomTable.setValue(dto.getValue());
-        randomTable.setUnit(dto.getUnit());
-        randomTable.setRandom_value(dto.getRandom_value());
+        randomTable.setBranch(branchService.getBranchById(dto.getBranch()));
+        randomTable.setMargin_error(dto.getMargin_error());
+        randomTable.setSlovin_result(dto.getSlovin_result());
+        randomTable.setRandom_sampling(dto.getRandom_sampling());
         randomTable.setUpdated_at(new Date());
         randomTableRepo.save(randomTable);
         return ResponseEntittyHandler.allHandler(null, "Berhasil", HttpStatus.OK, null);
